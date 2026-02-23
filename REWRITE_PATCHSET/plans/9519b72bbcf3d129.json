@@ -1,0 +1,28 @@
+{
+  "rewrite_plan_id": "9519b72bbcf3d129",
+  "target_file_id": null,
+  "target_relpath": "DIR_ID_ASSIGNMENT_REPORT.md",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "cac709276fd3f3c867efd99ba2a7cc083da61f92fc835b2b824222914199c77f",
+  "operations": [
+    {
+      "ref_id": "44af354a23a2557438f41c6cc5049fd5a8bfdb0b2c78dfbda5ab9357e2e3f879",
+      "old_value": "01260207201000000116_COUNTER_STORE.json",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/01260207201000000116_COUNTER_STORE.json",
+      "location": "line:113"
+    },
+    {
+      "ref_id": "6f2b3748987821b095d2e73730ba5613b3e9de68833d05f4c2066a910f5c41e8",
+      "old_value": "01260207201000000116_COUNTER_STORE.json",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/01260207201000000116_COUNTER_STORE.json",
+      "location": "line:241"
+    },
+    {
+      "ref_id": "1520bee3444765af9cbdfa86848a006995b5bad79cf0eca39300b0537f964958",
+      "old_value": "govreg_core/P_01999000042260124031_unified_id_allocator.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01999000042260124031_unified_id_allocator.py",
+      "location": "line:299"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\9519b72bbcf3d129.diff"
+}

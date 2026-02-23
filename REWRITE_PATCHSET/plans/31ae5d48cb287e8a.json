@@ -1,0 +1,46 @@
+{
+  "rewrite_plan_id": "31ae5d48cb287e8a",
+  "target_file_id": "01260207201000000144",
+  "target_relpath": "01260207201000000144_ID_CANONICALITY_CORRECTIONS_V2.1.1.md",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "6e12b4487fa305d7037f1eaf5768bf4b5795a7ddf3711aba41040ced42515c26",
+  "operations": [
+    {
+      "ref_id": "45fbe3a2df6f3d8d200855021eb1470f2db2b612cc440fd8bfe338a4950b76be",
+      "old_value": "scripts/P_01999000042260124027_id_allocator.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124027_id_allocator.py",
+      "location": "line:192"
+    },
+    {
+      "ref_id": "1d70708de3094bd35e371b43f90be4cff0f32e51bb399665a3eb307bbd8a3796",
+      "old_value": "scripts/P_01999000042260124027_id_allocator.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124027_id_allocator.py",
+      "location": "line:354"
+    },
+    {
+      "ref_id": "aa1ff5b6cf23981642fee0861a0453098fd927fea917b5bc48ccba55ea21ab8c",
+      "old_value": "gates/P_01999000042260125000_gate_id_canonicality.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/gates/P_01999000042260125000_gate_id_canonicality.py",
+      "location": "line:449"
+    },
+    {
+      "ref_id": "45a1b55b45eaa3c853495bc10c7fbf077991628c1f18be3ada4ac90091e92c7a",
+      "old_value": "scripts/P_01999000042260124999_id_canonicality_enforcer.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124999_id_canonicality_enforcer.py",
+      "location": "line:450"
+    },
+    {
+      "ref_id": "7865cc8b6dbe66059d10ee5736533d2a82fb87a754b0f5fd447a42c0ed0d8196",
+      "old_value": "scripts/P_01999000042260124027_id_allocator.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124027_id_allocator.py",
+      "location": "line:71"
+    },
+    {
+      "ref_id": "f9a6a2f13e254935634903e5cf07a989910cabd4538048aac5aa086f0a7ccee6",
+      "old_value": "govreg_core/P_01999000042260124031_unified_id_allocator.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01999000042260124031_unified_id_allocator.py",
+      "location": "line:72"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\31ae5d48cb287e8a.diff"
+}

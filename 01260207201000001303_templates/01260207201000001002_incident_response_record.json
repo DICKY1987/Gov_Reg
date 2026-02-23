@@ -1,0 +1,23 @@
+{
+  "incident_id": "{{UUID}}",
+  "timestamp_detected": "{{ISO8601_UTC}}",
+  "severity": "LOW|MEDIUM|HIGH|CRITICAL",
+  "category": "security|operational|compliance|data_breach",
+  "description": "{{DESCRIPTION}}",
+  "impact": {
+    "systems_affected": [],
+    "users_affected": 0,
+    "data_compromised": false,
+    "estimated_downtime": "{{DURATION}}"
+  },
+  "response_team": {
+    "incident_commander": "{{NAME}}",
+    "technical_lead": "{{NAME}}",
+    "communications": "{{NAME}}"
+  },
+  "timeline": [],
+  "root_cause": "{{TBD}}",
+  "resolution": "{{TBD}}",
+  "lessons_learned": "{{TBD}}",
+  "status": "OPEN|INVESTIGATING|RESOLVED|CLOSED"
+}

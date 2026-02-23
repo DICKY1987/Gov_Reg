@@ -1,0 +1,22 @@
+{
+  "rewrite_plan_id": "b0377657bd2c6d86",
+  "target_file_id": null,
+  "target_relpath": "01260207201000001288_sections\\01260207201000000953_SCRIPT_USAGE.md",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "4ab426db0d25b3accb934ed2b31ab58246814710b2be863ae8e89a7a378d56b8",
+  "operations": [
+    {
+      "ref_id": "9ad62c5a8972c502a8a3e9cff02e77f8ba9665f0ec9b51e10c563abd9bc82c4c",
+      "old_value": "sections\\combine_sections.ps1",
+      "new_value": "01260207201000001221_Multi CLI\\sections\\combine_sections.ps1",
+      "location": "line:114"
+    },
+    {
+      "ref_id": "0979cb871a209d98ad276566f679bf4caeb5ed30e0ca2f1afca7134ad5ed9515",
+      "old_value": "sections/combine_sections.ps1",
+      "new_value": "01260207201000001221_Multi CLI/sections/combine_sections.ps1",
+      "location": "line:125"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\b0377657bd2c6d86.diff"
+}

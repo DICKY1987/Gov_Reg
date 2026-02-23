@@ -1,0 +1,39 @@
+{
+  "counts": {
+    "errors": 3,
+    "warnings": 0
+  },
+  "edge_schema_errors": [],
+  "findings": [
+    {
+      "entry_path": "governance/geu-registry/entries/9901113568390001.json",
+      "file_id": null,
+      "geu_id": "9901113568390001",
+      "message": "Referenced file_id(s) not found in file registry: ['0199900004226012', '0199900004226015', '0199900004226030', '0199900004226031', '0199900004226040', '0199900004226041', '0199900004226042']",
+      "remediation": "Add missing file records to governance_registry.json or correct the references.",
+      "rule_id": "GEUVAL-R004",
+      "severity": "ERROR"
+    },
+    {
+      "entry_path": "governance/geu-registry/entries/9902167207410001.json",
+      "file_id": null,
+      "geu_id": "9902167207410001",
+      "message": "Referenced file_id(s) not found in file registry: ['0199900004226013', '0199900004226015', '0199900004226016', '0199900004226040', '0199900004226042']",
+      "remediation": "Add missing file records to governance_registry.json or correct the references.",
+      "rule_id": "GEUVAL-R004",
+      "severity": "ERROR"
+    },
+    {
+      "entry_path": null,
+      "file_id": null,
+      "geu_id": null,
+      "message": "Orphan governance-critical file_id(s) (not in any GEU): ['0199900004226012478', '0199900004226012479', '0199900004226012492']",
+      "remediation": "Add these files to an appropriate GEU entry (or create a new GEU).",
+      "rule_id": "GEUVAL-R008",
+      "severity": "ERROR"
+    }
+  ],
+  "generated": true,
+  "passed": false,
+  "file_id": "01260207233100000452"
+}

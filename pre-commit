@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+if command -v python >/dev/null 2>&1; then
+  python Gov_Reg/gates/P_01999000042260125000_gate_id_canonicality.py
+else
+  py -3 Gov_Reg/gates/P_01999000042260125000_gate_id_canonicality.py
+fi

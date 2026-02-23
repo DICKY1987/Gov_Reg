@@ -1,0 +1,128 @@
+{
+  "section_id": "sec_002_task_analysis",
+  "title": "Task Analysis + Classification",
+  "required": true,
+  "instructions_file": "sections/sec_002_task_analysis.inst.md",
+  "task_analysis": {
+    "original_request": {
+      "verbatim": "{{PASTE_USER_REQUEST_VERBATIM}}",
+      "timestamp": "{{ISO8601_TIMESTAMP}}",
+      "source": "{{user_input|github_issue|slack_thread|other}}"
+    },
+    "specificity_transformation": {
+      "objective": "Deliver {{PROJECT_NAME}} with MECHANICALLY VERIFIABLE outcomes",
+      "transformation_examples": [
+        {
+          "vague": "Fast response time",
+          "quantified": "<100ms p95 latency",
+          "validation": "python scripts/benchmark.py --percentile 95 | grep 'p95:' | awk '{print $2}'",
+          "expect_regex": "/^[0-9]{1,2}ms$/"
+        },
+        {
+          "vague": "Reliable",
+          "quantified": "100% of tests pass",
+          "validation": "pytest --tb=short -q",
+          "expect_exit_code": 0
+        },
+        {
+          "vague": "Well-tested",
+          "quantified": ">95% coverage",
+          "validation": "pytest --cov=src --cov-report=term | grep TOTAL | awk '{print $4}'",
+          "expect_regex": "/(9[5-9]|100)%/"
+        }
+      ]
+    },
+    "classification": {
+      "complexity": "{{simple|moderate|complex|enterprise}}",
+      "domain": "{{technical|analytical|creative|general}}",
+      "quality": "{{standard|high|critical|production}}",
+      "inferred_behavior": {
+        "verification_level": "{{1|2|3}}",
+        "test_coverage_min": "{{70|80|90|95}}",
+        "phases": [
+          "{{LIST_OF_PHASE_IDS}}"
+        ],
+        "parallel_groups": [
+          "{{GROUP_IDS}}"
+        ]
+      }
+    }
+  },
+  "classification_decision_tree": {
+    "rules": [
+      {
+        "rule_id": "CLASSIFY-SIMPLE",
+        "condition": "file_count <= 3 AND loc < 200",
+        "result": "simple",
+        "behavior": {
+          "verification_level": 1,
+          "test_coverage_min": 70,
+          "phases": [
+            "intake",
+            "implement",
+            "verify"
+          ],
+          "parallel_groups": []
+        }
+      },
+      {
+        "rule_id": "CLASSIFY-MODERATE",
+        "condition": "file_count <= 10 AND loc < 1000",
+        "result": "moderate",
+        "behavior": {
+          "verification_level": 2,
+          "test_coverage_min": 80,
+          "phases": [
+            "intake",
+            "plan",
+            "implement",
+            "verify"
+          ],
+          "parallel_groups": []
+        }
+      },
+      {
+        "rule_id": "CLASSIFY-COMPLEX",
+        "condition": "file_count <= 30 OR requires_integration_tests",
+        "result": "complex",
+        "behavior": {
+          "verification_level": 2,
+          "test_coverage_min": 90,
+          "phases": [
+            "intake",
+            "architecture",
+            "implement",
+            "integration",
+            "verify"
+          ],
+          "parallel_groups": [
+            "integration_tests"
+          ]
+        }
+      },
+      {
+        "rule_id": "CLASSIFY-ENTERPRISE",
+        "condition": "file_count > 30 OR requires_contracts",
+        "result": "enterprise",
+        "behavior": {
+          "verification_level": 3,
+          "test_coverage_min": 95,
+          "phases": [
+            "bootstrap",
+            "architecture",
+            "contracts",
+            "implement_parallel",
+            "integration",
+            "hardening",
+            "package"
+          ],
+          "parallel_groups": [
+            "implement_parallel",
+            "hardening"
+          ]
+        }
+      }
+    ]
+  },
+  "file_id": "01260207233100000472"
+}

@@ -1,0 +1,53 @@
+{
+  "migration_results": {
+    "records_failed": 0,
+    "application_status": {
+      "restart_successful": true,
+      "restart_required": true,
+      "smoke_tests_passed": true
+    },
+    "records_migrated": 8472,
+    "data_integrity": {
+      "no_data_loss": true,
+      "pre_migration_checksum": "a1b2c3d4e5f6...",
+      "post_migration_checksum": "b2c3d4e5f6a7...",
+      "schema_upgraded": true,
+      "all_validations_passed": true
+    },
+    "records_processed": 8472,
+    "migration_phases": [
+      {
+        "status": "success",
+        "phase": "backup"
+      },
+      {
+        "status": "success",
+        "phase": "validate_source"
+      },
+      {
+        "status": "success",
+        "phase": "execute_migration"
+      },
+      {
+        "status": "success",
+        "phase": "validate_target"
+      },
+      {
+        "status": "success",
+        "phase": "verify_integrity"
+      }
+    ],
+    "success_rate_percent": 100.0
+  },
+  "production_registry_records": 8472,
+  "environment": "PRODUCTION",
+  "migration_start": "2026-02-14T02:38:00Z",
+  "target_schema": "v3.0.0",
+  "rollback_window_hours": 336,
+  "source_schema": "v2.0.0",
+  "migration_duration_s": 83,
+  "migration_id": "MIGRATION-PROD-20260214",
+  "migration_end": "2026-02-14T02:39:23Z",
+  "status": "SUCCESS",
+  "rollback_available": true
+}

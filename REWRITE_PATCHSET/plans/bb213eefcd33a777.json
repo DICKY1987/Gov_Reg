@@ -1,0 +1,64 @@
+{
+  "rewrite_plan_id": "bb213eefcd33a777",
+  "target_file_id": "01260207201000000111",
+  "target_relpath": "01260207201000000111_ARTIFACT_VERIFICATION_REPORT.md",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "df69d9df42da5a6af0d77c2fc154246bb1542f5fe5b1eb988580d25de4de04b3",
+  "operations": [
+    {
+      "ref_id": "7735c45061eafc509c824316bac3b5657fdb9214cde196a9d6831407da54a99e",
+      "old_value": "govreg_core/P_01999000042260124031_unified_id_allocator.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01999000042260124031_unified_id_allocator.py",
+      "location": "line:117"
+    },
+    {
+      "ref_id": "3042f95e2291e50d7794fa58f7a84b2a524a7bddfab49d37ba1d9d5ec9d92007",
+      "old_value": "govreg_core/P_01999000042260124032_reservation_ledger.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01999000042260124032_reservation_ledger.py",
+      "location": "line:118"
+    },
+    {
+      "ref_id": "a554ec005ef4298c46f8898f0937b8f1c951ab386f17a5288a12aebaada6198f",
+      "old_value": "scripts/P_01999000042260124043_pilot_monitor.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124043_pilot_monitor.py",
+      "location": "line:119"
+    },
+    {
+      "ref_id": "dfbd3e56860ad8d547b34681ae7a2a1a94f27550fea0a51705b8983efa97a83a",
+      "old_value": "tests/P_01999000042260124040_test_reservation_system.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/tests/P_01999000042260124040_test_reservation_system.py",
+      "location": "line:120"
+    },
+    {
+      "ref_id": "c4126c163e83bd92f06e95a51c4a6db66a207ceb010c747bce645e90f6204579",
+      "old_value": "C:\\Users\\richg\\Gov_Reg\\govreg_core\\P_01999000042260124031_unified_id_allocator.py",
+      "new_value": "C:\\Users\\richg\\Gov_Reg\\01260207201000001162_GEU\\01260207201000001165_ID\\govreg_core\\P_01999000042260124031_unified_id_allocator.py",
+      "location": "line:173"
+    },
+    {
+      "ref_id": "2e50f631bf2c3a18acc0c15fdee3fc84ad93ce47d9ea7b5b7200c0a58bc86812",
+      "old_value": "C:\\Users\\richg\\Gov_Reg\\govreg_core\\P_01999000042260124032_reservation_ledger.py",
+      "new_value": "C:\\Users\\richg\\Gov_Reg\\01260207201000001162_GEU\\01260207201000001165_ID\\govreg_core\\P_01999000042260124032_reservation_ledger.py",
+      "location": "line:174"
+    },
+    {
+      "ref_id": "1f6bc51950018bdb31e27e1e801388a0da351b8ea22d169076306162a5f23efe",
+      "old_value": "C:\\Users\\richg\\Gov_Reg\\tests\\P_01999000042260124040_test_reservation_system.py",
+      "new_value": "C:\\Users\\richg\\Gov_Reg\\01260207201000001162_GEU\\01260207201000001165_ID\\tests\\P_01999000042260124040_test_reservation_system.py",
+      "location": "line:175"
+    },
+    {
+      "ref_id": "9a23a3279845f644150180324bfefb7c3c3e557d6c60ad61fd475c3567d89b1b",
+      "old_value": "C:\\Users\\richg\\Gov_Reg\\scripts\\P_01999000042260124043_pilot_monitor.py",
+      "new_value": "C:\\Users\\richg\\Gov_Reg\\01260207201000001162_GEU\\01260207201000001165_ID\\scripts\\P_01999000042260124043_pilot_monitor.py",
+      "location": "line:176"
+    },
+    {
+      "ref_id": "80b74ba2c292b86a3d4cf97fa7d0bae39df765ecf7719b53e0a5bb66e9e6ae91",
+      "old_value": "C:\\Users\\richg\\Gov_Reg\\scripts\\P_01999000042260124030_shared_utils.py",
+      "new_value": "C:\\Users\\richg\\Gov_Reg\\01260207201000001162_GEU\\01260207201000001165_ID\\scripts\\P_01999000042260124030_shared_utils.py",
+      "location": "line:177"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\bb213eefcd33a777.diff"
+}

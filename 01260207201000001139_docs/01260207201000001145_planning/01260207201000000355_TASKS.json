@@ -1,0 +1,58 @@
+[
+  {
+    "task_id": "T-01",
+    "title": "Schema and data alignment",
+    "description": "Publish schema v4 and align unified registry JSON with dictionary",
+    "deliverable_ids": ["D-01", "D-02"],
+    "metric_ids": ["M-01"],
+    "depends_on": []
+  },
+  {
+    "task_id": "T-02",
+    "title": "doc_id cleanup",
+    "description": "Remove doc_id references from live specs and docs",
+    "deliverable_ids": ["D-03", "D-09"],
+    "metric_ids": ["M-02"],
+    "depends_on": []
+  },
+  {
+    "task_id": "T-03",
+    "title": "Policy and derivation reconciliation",
+    "description": "Align write policy update rules with derivation formulas",
+    "deliverable_ids": ["D-04"],
+    "metric_ids": ["M-03"],
+    "depends_on": []
+  },
+  {
+    "task_id": "T-04",
+    "title": "Role taxonomy alignment",
+    "description": "Update bundle_role and geu_role definitions to match usage",
+    "deliverable_ids": ["D-05"],
+    "metric_ids": ["M-04"],
+    "depends_on": []
+  },
+  {
+    "task_id": "T-05",
+    "title": "CI integration",
+    "description": "Add schema and no-doc-id validations to CI workflows",
+    "deliverable_ids": ["D-06"],
+    "metric_ids": ["M-05"],
+    "depends_on": []
+  },
+  {
+    "task_id": "T-06",
+    "title": "Naming normalization",
+    "description": "Run ID scanner and normalize registry-tracked file names",
+    "deliverable_ids": ["D-07"],
+    "metric_ids": ["M-06"],
+    "depends_on": []
+  },
+  {
+    "task_id": "T-07",
+    "title": "Tests and validation",
+    "description": "Update tests and run validation suite",
+    "deliverable_ids": ["D-08"],
+    "metric_ids": ["M-07"],
+    "depends_on": ["T-01", "T-02", "T-03", "T-04", "T-05", "T-06"]
+  }
+]

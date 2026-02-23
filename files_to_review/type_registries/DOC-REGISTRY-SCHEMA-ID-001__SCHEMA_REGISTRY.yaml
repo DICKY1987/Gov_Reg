@@ -1,0 +1,130 @@
+# DOC_LINK: DOC-REGISTRY-SCHEMA-ID-001
+doc_id: DOC-REGISTRY-SCHEMA-ID-001
+meta:
+  version: 1.0.0
+  created_utc: '2026-01-04T01:29:03.322901Z'
+  updated_utc: '2026-01-13T08:48:38Z'
+  total_entries: 16
+  owner: Schema Governance
+  description: Stable identifier for data schema definitions
+schema_ids:
+  - schema_id: SCHEMA:io.contract.envelope:1.0.0
+    category: JSON
+    path: GOVERNANCE/ssot/SSOT_System/SSOT_SYS_schemas/io_contract.envelope.v1.schema.json
+    status: active
+    owned_by: System Architecture
+    description: Universal I/O contract envelope
+
+  - schema_id: SCHEMA:task.execution.started:1.0.0
+    category: JSON
+    path: data/schemas/payloads/task.execution.started.v1.schema.json
+    status: active
+    owned_by: PHASE_5_EXECUTION
+    description: Task execution started event payload
+
+  - schema_id: SCHEMA:task.execution.completed:1.0.0
+    category: JSON
+    path: data/schemas/payloads/task.execution.completed.v1.schema.json
+    status: active
+    owned_by: PHASE_5_EXECUTION
+    description: Task execution completed result payload
+
+  - schema_id: SCHEMA:task.execution.failed:1.0.0
+    category: JSON
+    path: data/schemas/payloads/task.execution.failed.v1.schema.json
+    status: active
+    owned_by: PHASE_5_EXECUTION
+    description: Task execution failed error payload
+
+  - schema_id: SCHEMA:router.metrics.snapshot:1.0.0
+    category: JSON
+    path: data/schemas/payloads/router.metrics.snapshot.v1.schema.json
+    status: active
+    owned_by: PHASE_4_ROUTING
+    description: Router state snapshot payload
+
+  - schema_id: SCHEMA:doc_id.assigned:1.0.0
+    category: JSON
+    path: data/schemas/payloads/doc_id.assigned.v1.schema.json
+    status: active
+    owned_by: SUB_DOC_ID
+    description: Document ID assignment event payload
+
+  - schema_id: SCHEMA:doc_id.coverage.snapshot:1.0.0
+    category: JSON
+    path: data/schemas/payloads/doc_id.coverage.snapshot.v1.schema.json
+    status: active
+    owned_by: SUB_DOC_ID
+    description: Doc ID coverage snapshot payload
+
+  - schema_id: SCHEMA:pattern.selection.started:1.0.0
+    category: JSON
+    path: data/schemas/payloads/pattern.selection.started.v1.schema.json
+    status: active
+    owned_by: MOD-PATTERN-ENGINE
+    description: Pattern selection started event payload
+
+  - schema_id: SCHEMA:pattern.selection.resolved:1.0.0
+    category: JSON
+    path: data/schemas/payloads/pattern.selection.resolved.v1.schema.json
+    status: active
+    owned_by: MOD-PATTERN-ENGINE
+    description: Pattern selection resolved event payload
+
+  - schema_id: SCHEMA:pattern.template.expanded:1.0.0
+    category: JSON
+    path: data/schemas/payloads/pattern.template.expanded.v1.schema.json
+    status: active
+    owned_by: MOD-PATTERN-ENGINE
+    description: Pattern template expansion event payload
+
+  - schema_id: SCHEMA:pattern.validation.started:1.0.0
+    category: JSON
+    path: data/schemas/payloads/pattern.validation.started.v1.schema.json
+    status: active
+    owned_by: MOD-PATTERN-ENGINE
+    description: Pattern validation started event payload
+
+  - schema_id: SCHEMA:pattern.validation.completed:1.0.0
+    category: JSON
+    path: data/schemas/payloads/pattern.validation.completed.v1.schema.json
+    status: active
+    owned_by: MOD-PATTERN-ENGINE
+    description: Pattern validation completed result payload
+
+  - schema_id: SCHEMA:file.lifecycle.detected:1.0.0
+    category: JSON
+    path: data/schemas/payloads/file.lifecycle.detected.v1.schema.json
+    status: active
+    owned_by: MOD-FILE-WATCHER
+    description: File detection event payload
+
+  - schema_id: SCHEMA:file.lifecycle.patch_applied:1.0.0
+    category: JSON
+    path: data/schemas/payloads/file.lifecycle.patch_applied.v1.schema.json
+    status: active
+    owned_by: MOD-PATCH-ENGINE
+    description: Patch application event payload
+
+  - schema_id: SCHEMA:system.health.heartbeat:1.0.0
+    category: JSON
+    path: data/schemas/payloads/system.health.heartbeat.v1.schema.json
+    status: active
+    owned_by: MOD-HEALTH-CHECK
+    description: System health heartbeat payload
+
+  - schema_id: SCHEMA:repo.tree.overlay:1.0.0
+    category: JSON
+    path: data/schemas/DOC-CONFIG-REPO-TREE-OVERLAY-SCHEMA-001__REPO_TREE_OVERLAY.schema.json
+    status: active
+    owned_by: RENDER_PIPELINE
+    description: Repo tree overlay schema for scan/overlay merge
+categories:
+  JSON:
+    description: JSON category
+  YAML:
+    description: YAML category
+  SQL:
+    description: SQL category
+  PROTO:
+    description: PROTO category

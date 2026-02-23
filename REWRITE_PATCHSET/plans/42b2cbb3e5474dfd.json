@@ -1,0 +1,40 @@
+{
+  "rewrite_plan_id": "42b2cbb3e5474dfd",
+  "target_file_id": "01260207201000000159",
+  "target_relpath": "01260207201000000159_ID_CANONICALITY_FINAL_SUMMARY.txt",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "3bff90f989efb4357ae8af3d46069eb2fa9ee67ee06ae7fc8f67cb1188d5d34d",
+  "operations": [
+    {
+      "ref_id": "b04fecf96b860689e7bd8a5bed548c7477a01717e6a868c5bc21cbd33752a345",
+      "old_value": "C:\\Users\\richg\\Gov_Reg\\scripts\\P_01999000042260124999_id_canonicality_enforcer.py",
+      "new_value": "C:\\Users\\richg\\Gov_Reg\\01260207201000001162_GEU\\01260207201000001165_ID\\scripts\\P_01999000042260124999_id_canonicality_enforcer.py",
+      "location": "line:157"
+    },
+    {
+      "ref_id": "65fe836623573752b9cc880a4fb7a9f6ad6a1963ac06072cbfc1cb2c3bf1ddc0",
+      "old_value": "C:\\Users\\richg\\Gov_Reg\\gates\\P_01999000042260125000_gate_id_canonicality.py",
+      "new_value": "C:\\Users\\richg\\Gov_Reg\\01260207201000001162_GEU\\01260207201000001165_ID\\gates\\P_01999000042260125000_gate_id_canonicality.py",
+      "location": "line:158"
+    },
+    {
+      "ref_id": "4836456a5ebeaa1d85825c221bc27d8a84e555606d05443af2e1e1ee1cf84c7f",
+      "old_value": "scripts/P_01999000042260124999_id_canonicality_enforcer.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124999_id_canonicality_enforcer.py",
+      "location": "line:31"
+    },
+    {
+      "ref_id": "019a4adb1f6592a539d550276e603be6fb149d319e7bcc1040291c999eab73bb",
+      "old_value": "gates/P_01999000042260125000_gate_id_canonicality.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/gates/P_01999000042260125000_gate_id_canonicality.py",
+      "location": "line:32"
+    },
+    {
+      "ref_id": "b0acc187b9c6704324d42039a53f7ed2606259caa86056094a6ef40eb52b529a",
+      "old_value": "govreg_core/P_01999000042260125002_canonical_id_patterns.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01999000042260125002_canonical_id_patterns.py",
+      "location": "line:96"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\42b2cbb3e5474dfd.diff"
+}

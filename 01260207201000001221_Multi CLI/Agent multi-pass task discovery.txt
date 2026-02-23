@@ -1,0 +1,717 @@
+focused on single-artifact iterative refinement (plan → critique → refine → converge).
+describes a multi-pass task discovery and aggregation layer that should happen before the refinement loop.
+Combined Architecture:
+
+┌─────────────────────────────────────────────────────────────────┐
+│ PHASE 1: MULTI-PASS DISCOVERY (Old Plan)                       │
+│ ─────────────────────────────────────────────────────────────── │
+│ Scope A: Security      → TASKLIST.PASS_SEC_001.json            │
+│ Scope B: Performance   → TASKLIST.PASS_PERF_002.json           │
+│ Scope C: Types         → TASKLIST.PASS_TYPES_003.json          │
+│ Scope D: Dependencies  → TASKLIST.PASS_DEPS_004.json           │
+└────────────────────────┬────────────────────────────────────────┘
+                         ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ PHASE 2: NORMALIZATION & CONFLICT DETECTION (Old Plan)         │
+│ ─────────────────────────────────────────────────────────────── │
+│ 1. Fingerprint tasks (hash targets + type + title)             │
+│ 2. Deduplicate (merge identical/overlapping tasks)             │
+│ 3. Detect conflicts (mutually exclusive instructions)          │
+│ 4. Build dependency graph (based on touch_set overlap)         │
+│ Output: TASKS.MERGED.raw.json                                  │
+└────────────────────────┬────────────────────────────────────────┘
+                         ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ PHASE 3: ITERATIVE REFINEMENT (My Expanded Plan)               │
+│ ─────────────────────────────────────────────────────────────── │
+│ ITERATION 1:                                                    │
+│   Planner: Validate DAG structure, check acceptance tests      │
+│   Output: ERROR_LOG_V1.json (missing tests, circular deps)     │
+│                                                                 │
+│ ITERATION 2:                                                    │
+│   Refiner: Resolve conflicts, add missing tests, fix deps      │
+│   Output: TASKS.REFINED_V1.json                                │
+│                                                                 │
+│ ITERATION 3:                                                    │
+│   Auditor: Security review, performance impact analysis        │
+│   Output: ERROR_LOG_V2.json (regressions, new risks)           │
+│                                                                 │
+│ CONVERGENCE CHECK:                                              │
+│   - All conflicts resolved?                                     │
+│   - All tasks have acceptance_tests?                            │
+│   - DAG is executable (no cycles, dependencies satisfied)?      │
+│   → If YES: TASKS.FINAL.adj.json                               │
+│   → If NO: Continue refining (max 5 iterations)                │
+└────────────────────────┬────────────────────────────────────────┘
+                         ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ PHASE 4: EXECUTION (Task Runner)                               │
+│ Consume TASKS.FINAL.adj.json and execute in topological order  │
+└─────────────────────────────────────────────────────────────────┘
+
+
+What the Old Plan Adds to My Architecture
+1. Concrete CLI Implementation Patterns
+Critical Addition: You provided exact shell patterns I glossed over:
+Codex CLI (streaming, schema-enforced):
+
+# Step 1: Schema-enforced output
+codex exec --output-schema ./schemas/security_scan.schema.json \
+  "Scan src/auth/ for hardcoded secrets, output per schema" \
+  > tasks/passes/TASKLIST.PASS_SEC_001.json
+
+# Step 2: Consume previous output
+PREV=$(cat tasks/passes/TASKLIST.PASS_SEC_001.json)
+codex exec --output-schema ./schemas/refinement.schema.json \
+  "Validate this task list and flag conflicts: $PREV" \
+  > tasks/validation/ERROR_LOG_V1.json
+
+
+Claude Code CLI (stdin-friendly):
+
+# Pipe-based chaining
+cat tasks/merged/TASKS.MERGED.raw.json | \
+  claude -p --append-system-prompt-file ./prompts/dedupe_rules.txt \
+  "Deduplicate these tasks using fingerprinting" \
+  > tasks/merged/TASKS.MERGED.deduped.json
+
+
+PowerShell Equivalents:
+
+# Windows-compatible version
+$tasks = Get-Content -Raw tasks\passes\TASKLIST.PASS_SEC_001.json
+codex exec "Validate and refine: $tasks" | Out-File -Encoding utf8 tasks\refined\TASKS_V1.json
+
+
+My plan lacked this specificity—I said “use CLI tools” but didn’t show how to enforce schemas or chain reliably.
+
+2. Multi-Scope Parallel Discovery
+Your Pattern:
+
+Run 4+ independent scoped passes in parallel:
+  Pass 1: Security vulnerabilities in src/auth/
+  Pass 2: Performance bottlenecks in src/api/  
+  Pass 3: Type errors in src/models/
+  Pass 4: Dependency conflicts in requirements.txt
+
+Each outputs:
+  TASKLIST.PASS_<SCOPE>_<ID>.json
+
+
+Why This Is Better Than Single-Pass:
+
+
+
+|Single-Pass (My Implication)         |Multi-Scope (Your Pattern)         |
+|-------------------------------------|-----------------------------------|
+|One agent analyzes entire codebase   |Specialized passes per domain      |
+|50K token context for everything     |5K tokens × 10 focused passes      |
+|Agent must balance competing concerns|Each pass has singular focus       |
+|Higher hallucination risk            |Lower cognitive load per pass      |
+|Sequential bottleneck                |Parallelizable (run simultaneously)|
+
+Integration with My Plan:
+The Planner step in my architecture should actually be this multi-pass discovery:
+
+# Enhanced Step 1 Configuration
+planner:
+  mode: multi_pass_discovery
+  passes:
+    - id: PASS_SEC_001
+      scope: {paths: ["src/auth/", "src/api/"], globs: ["**/*.py"]}
+      agent: security_specialist
+      error_patterns: ["hardcoded_secrets", "weak_hashing", "sql_injection"]
+      schema: schemas/security_task.schema.json
+      
+    - id: PASS_PERF_002
+      scope: {paths: ["src/api/", "src/db/"]}
+      agent: performance_auditor  
+      error_patterns: ["n+1_queries", "missing_indexes", "unbounded_loops"]
+      schema: schemas/performance_task.schema.json
+      
+    - id: PASS_TYPES_003
+      scope: {paths: ["src/"], exclude: ["**/tests/**"]}
+      agent: type_checker
+      error_patterns: ["missing_types", "any_usage", "unsafe_casts"]
+      schema: schemas/type_task.schema.json
+
+
+This eliminates the “single giant PLAN.md” anti-pattern I implicitly described.
+
+3. Task Deduplication Logic
+Your Fingerprinting Approach:
+
+// Pseudo-code from your design
+function fingerprint(task) {
+  return hash({
+    type: task.type,
+    targets: normalize(task.targets),  // Sort, canonicalize paths
+    title: normalize(task.title)       // Lowercase, remove articles
+  });
+}
+
+function deduplicate(tasklists) {
+  const seen = new Map();
+  const merged = [];
+  
+  for (const task of tasklists.flatMap(tl => tl.tasks)) {
+    const fp = fingerprint(task);
+    
+    if (seen.has(fp)) {
+      // Merge: union instructions, keep highest priority
+      const existing = seen.get(fp);
+      existing.instructions = [...new Set([...existing.instructions, ...task.instructions])];
+      existing.acceptance_tests = [...new Set([...existing.acceptance_tests, ...task.acceptance_tests])];
+      existing.priority = max(existing.priority, task.priority);
+    } else {
+      seen.set(fp, task);
+      merged.push(task);
+    }
+  }
+  
+  return merged;
+}
+
+
+My plan had “regression detection” but not this proactive deduplication before execution. This is critical because:
+	∙	Multiple passes will independently discover the same issue (e.g., “missing error handling in auth.py” found by both security and reliability passes)
+	∙	Without deduplication, you’d execute redundant tasks
+	∙	With merge logic, you get the union of insights from different perspectives
+
+4. Conflict Detection Mechanism
+Your Conflict Rules:
+
+conflict_detection_rules:
+  rule_1_mutually_exclusive_actions:
+    pattern: |
+      Task A modifies symbol X with instruction "delete"
+      Task B modifies symbol X with instruction "extend"
+    resolution: "Flag for human decision"
+    
+  rule_2_incompatible_dependencies:
+    pattern: |
+      Task A: "Upgrade library Z to v3.0"  
+      Task B: "Use library Z v2.x API pattern"
+    resolution: "Rewrite Task B instructions to use v3.0 API"
+    
+  rule_3_circular_dependency:
+    pattern: |
+      Task A depends_on Task B
+      Task B depends_on Task C  
+      Task C depends_on Task A
+    resolution: "Break cycle by removing weakest dependency edge"
+
+
+Output Schema:
+
+{
+  "conflicts": [
+    {
+      "conflict_id": "CONFLICT_001",
+      "severity": "HIGH",
+      "tasks_involved": ["T_SEC_0042", "T_REFACTOR_0089"],
+      "conflict_type": "mutually_exclusive_instructions",
+      "description": "T_SEC_0042 requires deleting auth.legacy_login(), but T_REFACTOR_0089 extends it",
+      "resolution_strategies": [
+        {
+          "strategy": "deprecate_then_migrate",
+          "steps": [
+            "First execute T_REFACTOR_0089 (migrate callers to new API)",
+            "Then execute T_SEC_0042 (delete legacy function)"
+          ],
+          "confidence": 0.85
+        },
+        {
+          "strategy": "reject_refactor",
+          "reason": "Security vulnerability takes precedence",
+          "confidence": 0.60
+        }
+      ],
+      "requires_human_decision": true
+    }
+  ]
+}
+
+
+My ERROR_LOG schema didn’t explicitly handle conflicts between proposed fixes—it assumed linear application. Your approach is more robust.
+
+5. DAG Construction for Execution Ordering
+Your TASKS.FINAL.adj.json Format:
+
+{
+  "plan_id": "PLAN_20260204_PROD_001",
+  "metadata": {
+    "total_tasks": 47,
+    "critical_path_length": 12,
+    "parallelizable_tasks": 35,
+    "estimated_duration": "8 hours"
+  },
+  "nodes": [
+    {
+      "node_id": "N1",
+      "task_id": "T_DEPS_0001",
+      "task_summary": "Upgrade numpy to v2.0",
+      "run_after": [],  // No dependencies, can start immediately
+      "touch_set": ["requirements.txt"],
+      "acceptance_tests": [
+        "pip install succeeds with numpy==2.0",
+        "All unit tests pass"
+      ],
+      "estimated_duration": "5 minutes",
+      "criticality": "blocking"  // Other tasks depend on this
+    },
+    {
+      "node_id": "N2",
+      "task_id": "T_TYPES_0015",
+      "task_summary": "Add type hints to src/models/user.py",
+      "run_after": ["N1"],  // Depends on numpy upgrade
+      "touch_set": ["src/models/user.py"],
+      "acceptance_tests": ["mypy src/models/user.py passes"],
+      "estimated_duration": "15 minutes",
+      "criticality": "normal"
+    },
+    {
+      "node_id": "N3",
+      "task_id": "T_PERF_0022", 
+      "task_summary": "Add database index on users.email",
+      "run_after": [],  // Independent, can run in parallel with N1
+      "touch_set": ["migrations/add_email_index.sql"],
+      "acceptance_tests": [
+        "SELECT * FROM users WHERE email='x' completes in <50ms",
+        "Migration applies without errors"
+      ],
+      "estimated_duration": "10 minutes",
+      "criticality": "high"
+    }
+  ],
+  "execution_order": {
+    "wave_1": ["N1", "N3"],      // Parallel execution
+    "wave_2": ["N2", "N4", "N5"], // After N1 completes
+    "wave_3": ["N6"]              // After N2, N4, N5 complete
+  }
+}
+
+
+This is the missing piece from my PLAN.md—I described steps linearly, but your format supports:
+✅ Parallel execution (tasks with no dependencies run simultaneously)✅ Topological ordering (respects run_after constraints)✅ Critical path analysis (identifies bottleneck tasks)✅ Resource estimation (total duration, parallelization potential)
+Integration Point:
+My Refiner agent should transform PLAN_REVISED.md into this DAG format:
+
+# After iteration N converges
+cat iterations/iteration_005/PLAN_REVISED_V4.md | \
+  claude -p --output-schema schemas/dag.schema.json \
+  "Convert this plan into executable DAG with dependencies" \
+  > TASKS.FINAL.adj.json
+
+
+6. Acceptance Test Enforcement
+Your Hard Rule:
+“No task without acceptance tests. If the AI can’t specify an acceptance test, the task gets tagged status='needs_spec' and is excluded from the final executable plan until resolved.”
+Validation Logic:
+
+def validate_task_completeness(task):
+    issues = []
+    
+    # Hard requirements
+    if not task.get("acceptance_tests"):
+        issues.append({
+            "severity": "BLOCKING",
+            "field": "acceptance_tests",
+            "reason": "Task cannot be verified as complete without tests"
+        })
+    
+    if not task.get("targets"):
+        issues.append({
+            "severity": "BLOCKING", 
+            "field": "targets",
+            "reason": "Task must specify files/symbols it modifies"
+        })
+    
+    # Soft requirements (warnings)
+    if not task.get("instructions") or len(task["instructions"]) == 0:
+        issues.append({
+            "severity": "WARNING",
+            "field": "instructions",
+            "reason": "Task should have explicit implementation steps"
+        })
+    
+    if task.get("confidence", 1.0) < 0.5:
+        issues.append({
+            "severity": "WARNING",
+            "field": "confidence",
+            "reason": "Low confidence tasks should be reviewed before execution"
+        })
+    
+    return issues
+
+# In merge phase
+for task in merged_tasks:
+    issues = validate_task_completeness(task)
+    blocking_issues = [i for i in issues if i["severity"] == "BLOCKING"]
+    
+    if blocking_issues:
+        task["status"] = "needs_spec"
+        task["blocked_by"] = blocking_issues
+    else:
+        task["status"] = "ready"
+        if any(i["severity"] == "WARNING" for i in issues):
+            task["warnings"] = [i for i in issues if i["severity"] == "WARNING"]
+
+
+This prevents the “vague plan” problem I alluded to in convergence criteria. You’ve made it mechanically enforceable.
+
+7. Stderr/Stdout Separation for Reliable Piping
+Your Note:
+“codex exec streams progress to stderr and prints the final answer to stdout, so it pipes cleanly.”
+Why This Matters:
+
+# BAD: Progress logs pollute the JSON output
+codex exec "Generate tasks" > tasks.json
+# tasks.json contains:
+# "Analyzing files... (1/50)
+# Scanning for patterns...  
+# { "tasks": [...] }"
+# ❌ Not valid JSON!
+
+# GOOD: Progress to stderr, clean JSON to stdout  
+codex exec "Generate tasks" > tasks.json 2> logs/progress.log
+# tasks.json contains ONLY:
+# { "tasks": [...] }
+# ✅ Valid JSON, parseable by next step
+
+# logs/progress.log contains:
+# "Analyzing files... (1/50)
+# Scanning for patterns..."
+
+
+This is a production-readiness detail I completely omitted. Without it, your pipe chains break on the first free-text status message.
+Enhanced Orchestration:
+
+#!/bin/bash
+set -euo pipefail  # Fail fast on errors
+
+# Create timestamped run directory
+RUN_ID="RUN_$(date +%Y%m%d_%H%M%S)"
+mkdir -p runs/$RUN_ID/{passes,logs,merged}
+
+# Pass 1: Security scan
+codex exec --output-schema schemas/security_task.schema.json \
+  "Scan src/auth/ for vulnerabilities" \
+  > runs/$RUN_ID/passes/TASKLIST.SEC.json \
+  2> runs/$RUN_ID/logs/pass_security.log
+
+# Pass 2: Performance audit  
+codex exec --output-schema schemas/perf_task.schema.json \
+  "Analyze src/api/ for bottlenecks" \
+  > runs/$RUN_ID/passes/TASKLIST.PERF.json \
+  2> runs/$RUN_ID/logs/pass_performance.log
+
+# Merge phase (capture both output and errors)
+{
+  cat runs/$RUN_ID/passes/*.json | \
+    claude -p --output-schema schemas/merged_tasks.schema.json \
+    "Deduplicate and detect conflicts in these task lists" \
+    > runs/$RUN_ID/merged/TASKS.MERGED.json
+} 2> runs/$RUN_ID/logs/merge.log
+
+# Validation (check for parse errors)
+if ! jq empty runs/$RUN_ID/merged/TASKS.MERGED.json 2>/dev/null; then
+  echo "ERROR: Merge produced invalid JSON" >&2
+  cat runs/$RUN_ID/logs/merge.log >&2
+  exit 1
+fi
+
+echo "SUCCESS: Merged tasks written to runs/$RUN_ID/merged/TASKS.MERGED.json"
+
+
+What My Plan Adds That Your Old Plan Lacks
+1. Iterative Quality Improvement
+Your old plan: One-shot merge → done
+My plan: Merge → Validate → Refine → Re-validate → Converge
+Why Iteration Matters:
+Even with perfect deduplication, the merged DAG might have:
+	∙	Missing acceptance tests that can’t be auto-generated
+	∙	Circular dependencies that need manual breaking
+	∙	Risk assessments that require domain expertise
+	∙	Conflicts with no clear algorithmic resolution
+The refinement loop adds:
+
+iteration_1:
+  input: TASKS.MERGED.raw.json
+  auditor_finds:
+    - "Task T_SEC_0042 has no acceptance test"
+    - "Task T_PERF_0018 depends on T_PERF_0019, which depends on T_PERF_0018 (cycle)"
+    - "Conflict CONFLICT_001 has 3 resolution strategies but no confidence ranking"
+  output: ERROR_LOG_V1.json
+
+iteration_2:
+  refiner_actions:
+    - "Generated acceptance test for T_SEC_0042: 'Secret scanner finds 0 hardcoded keys'"
+    - "Broke cycle by removing weak dependency in T_PERF_0019"
+    - "Ranked conflict resolutions by impact analysis"
+  output: TASKS.REFINED_V1.json
+
+iteration_3:
+  auditor_validates:
+    - "All tasks now have acceptance_tests ✓"
+    - "DAG is acyclic ✓"  
+    - "Conflicts have recommended strategies ✓"
+  convergence_score: 0.92 (threshold: 0.90)
+  result: CONVERGED → TASKS.FINAL.adj.json
+
+
+2. Structured Error Taxonomy
+Your old plan detects conflicts, but my plan adds comprehensive error classification:
+
+{
+  "errors": [
+    {
+      "error_id": "E042",
+      "category": "missing_specification",  // vs "security", "performance", "logic"
+      "severity": "HIGH",
+      "affected_tasks": ["T_SEC_0042"],
+      "description": "Acceptance test is too vague: 'Code should be secure'",
+      "recommendation": {
+        "action": "Replace with measurable test",
+        "example": "Secret scanner (e.g., truffleHog) finds 0 matches in src/auth/"
+      }
+    }
+  ]
+}
+
+
+This enables category-specific auditors (security expert, performance expert) in parallel validation teams.
+3. Convergence Metrics
+Your old plan: Binary “conflicts resolved Y/N”
+My plan: Quantitative convergence scoring
+
+def calculate_convergence_score(tasks, errors):
+    # Weighted quality factors
+    completeness = len([t for t in tasks if t.get("acceptance_tests")]) / len(tasks)
+    testability = avg([rate_test_quality(t["acceptance_tests"]) for t in tasks])
+    risk_assessed = len([t for t in tasks if t.get("risk_level")]) / len(tasks)
+    
+    # Error severity penalties
+    critical_penalty = len([e for e in errors if e["severity"] == "CRITICAL"]) * 0.2
+    high_penalty = len([e for e in errors if e["severity"] == "HIGH"]) * 0.1
+    
+    score = (0.4 * completeness + 0.3 * testability + 0.3 * risk_assessed) - critical_penalty - high_penalty
+    return max(0.0, min(1.0, score))
+
+
+This allows adaptive loop control:
+	∙	If score improves by <0.05 per iteration → plateau detected → halt
+	∙	If score regresses → rollback to previous version
+
+Unified System Design
+Directory Structure:
+
+project_root/
+├── schemas/
+│   ├── security_task.schema.json
+│   ├── performance_task.schema.json
+│   ├── merged_tasks.schema.json
+│   ├── dag.schema.json
+│   └── error_log.schema.json
+│
+├── prompts/
+│   ├── discovery/
+│   │   ├── security_scan.md
+│   │   ├── performance_audit.md
+│   │   └── type_check.md
+│   ├── merge/
+│   │   ├── deduplicate.md
+│   │   └── conflict_detect.md
+│   └── refinement/
+│       ├── validate_dag.md
+│       └── improve_tests.md
+│
+├── runs/
+│   └── RUN_20260204_143022/
+│       ├── passes/
+│       │   ├── TASKLIST.PASS_SEC_001.json
+│       │   ├── TASKLIST.PASS_PERF_002.json
+│       │   └── TASKLIST.PASS_TYPES_003.json
+│       ├── merged/
+│       │   ├── TASKS.MERGED.raw.json
+│       │   ├── TASKS.MERGED.conflicts.json
+│       │   └── TASKS.MERGED.deduped.json
+│       ├── iterations/
+│       │   ├── iteration_001/
+│       │   │   ├── ERROR_LOG_V1.json
+│       │   │   └── convergence_metrics.json
+│       │   ├── iteration_002/
+│       │   │   ├── TASKS.REFINED_V1.json
+│       │   │   ├── ERROR_LOG_V2.json
+│       │   │   └── convergence_metrics.json
+│       │   └── iteration_003/
+│       │       ├── TASKS.REFINED_V2.json
+│       │       └── CONVERGED_FINAL.json
+│       ├── logs/
+│       │   ├── pass_security.log
+│       │   ├── pass_performance.log
+│       │   ├── merge.log
+│       │   └── refinement_iter_*.log
+│       └── TASKS.FINAL.adj.json  ← EXECUTABLE OUTPUT
+│
+└── orchestrate.sh  ← Main automation script
+
+
+Orchestration Script (Combined Approach):
+
+#!/bin/bash
+set -euo pipefail
+
+# Configuration
+RUN_ID="RUN_$(date +%Y%m%d_%H%M%S)"
+RUN_DIR="runs/$RUN_ID"
+MAX_ITERATIONS=5
+CONVERGENCE_THRESHOLD=0.90
+
+# Setup
+mkdir -p $RUN_DIR/{passes,merged,iterations,logs}
+echo "Starting run: $RUN_ID"
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# PHASE 1: MULTI-PASS DISCOVERY
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "[PHASE 1] Running discovery passes..."
+
+# Pass 1: Security
+codex exec --output-schema schemas/security_task.schema.json \
+  --prompt-file prompts/discovery/security_scan.md \
+  > $RUN_DIR/passes/TASKLIST.PASS_SEC_001.json \
+  2> $RUN_DIR/logs/pass_security.log &
+PID_SEC=$!
+
+# Pass 2: Performance
+codex exec --output-schema schemas/performance_task.schema.json \
+  --prompt-file prompts/discovery/performance_audit.md \
+  > $RUN_DIR/passes/TASKLIST.PASS_PERF_002.json \
+  2> $RUN_DIR/logs/pass_performance.log &
+PID_PERF=$!
+
+# Pass 3: Type Safety
+codex exec --output-schema schemas/type_task.schema.json \
+  --prompt-file prompts/discovery/type_check.md \
+  > $RUN_DIR/passes/TASKLIST.PASS_TYPES_003.json \
+  2> $RUN_DIR/logs/pass_types.log &
+PID_TYPES=$!
+
+# Wait for all passes to complete
+wait $PID_SEC $PID_PERF $PID_TYPES
+echo "✓ Discovery complete: $(ls $RUN_DIR/passes/ | wc -l) passes"
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# PHASE 2: MERGE & DEDUPLICATE
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "[PHASE 2] Merging and deduplicating tasks..."
+
+cat $RUN_DIR/passes/*.json | \
+  claude -p --output-schema schemas/merged_tasks.schema.json \
+  --append-system-prompt-file prompts/merge/deduplicate.md \
+  "Merge these task lists, deduplicate by fingerprint, detect conflicts" \
+  > $RUN_DIR/merged/TASKS.MERGED.raw.json \
+  2> $RUN_DIR/logs/merge.log
+
+# Validate JSON
+jq empty $RUN_DIR/merged/TASKS.MERGED.raw.json || {
+  echo "ERROR: Merge produced invalid JSON" >&2
+  exit 1
+}
+
+TASK_COUNT=$(jq '.tasks | length' $RUN_DIR/merged/TASKS.MERGED.raw.json)
+CONFLICT_COUNT=$(jq '.conflicts | length' $RUN_DIR/merged/TASKS.MERGED.raw.json)
+echo "✓ Merged: $TASK_COUNT tasks, $CONFLICT_COUNT conflicts detected"
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# PHASE 3: ITERATIVE REFINEMENT
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "[PHASE 3] Starting iterative refinement..."
+
+CURRENT_INPUT="$RUN_DIR/merged/TASKS.MERGED.raw.json"
+ITERATION=1
+
+while [ $ITERATION -le $MAX_ITERATIONS ]; do
+  echo "  Iteration $ITERATION/$MAX_ITERATIONS"
+  ITER_DIR="$RUN_DIR/iterations/iteration_$(printf '%03d' $ITERATION)"
+  mkdir -p $ITER_DIR
+  
+  # Validate current state
+  cat $CURRENT_INPUT | \
+    claude -p --output-schema schemas/error_log.schema.json \
+    --prompt-file prompts/refinement/validate_dag.md \
+    "Validate this task DAG for completeness, conflicts, and quality" \
+    > $ITER_DIR/ERROR_LOG_V${ITERATION}.json \
+    2> $RUN_DIR/logs/refinement_iter_${ITERATION}.log
+  
+  # Calculate convergence score
+  CONVERGENCE=$(jq '.convergence_metrics.score' $ITER_DIR/ERROR_LOG_V${ITERATION}.json)
+  CRITICAL_ERRORS=$(jq '[.errors[] | select(.severity=="CRITICAL")] | length' $ITER_DIR/ERROR_LOG_V${ITERATION}.json)
+  
+  echo "    Convergence: $CONVERGENCE (threshold: $CONVERGENCE_THRESHOLD)"
+  echo "    Critical errors: $CRITICAL_ERRORS"
+  
+  # Check convergence
+  if (( $(echo "$CONVERGENCE >= $CONVERGENCE_THRESHOLD" | bc -l) )) && [ $CRITICAL_ERRORS -eq 0 ]; then
+    echo "✓ CONVERGED at iteration $ITERATION"
+    cp $CURRENT_INPUT $RUN_DIR/TASKS.FINAL.adj.json
+    break
+  fi
+  
+  # Refine
+  cat $CURRENT_INPUT $ITER_DIR/ERROR_LOG_V${ITERATION}.json | \
+    claude -p --output-schema schemas/dag.schema.json \
+    --prompt-file prompts/refinement/improve_tests.md \
+    "Fix all errors in ERROR_LOG. Maintain DAG structure." \
+    > $ITER_DIR/TASKS.REFINED_V${ITERATION}.json \
+    2>> $RUN_DIR/logs/refinement_iter_${ITERATION}.log
+  
+  CURRENT_INPUT="$ITER_DIR/TASKS.REFINED_V${ITERATION}.json"
+  ITERATION=$((ITERATION + 1))
+done
+
+if [ $ITERATION -gt $MAX_ITERATIONS ]; then
+  echo "⚠ WARNING: Max iterations reached without full convergence"
+  echo "  Final convergence score: $CONVERGENCE"
+  echo "  Manual review required: $RUN_DIR/iterations/iteration_$(printf '%03d' $MAX_ITERATIONS)/"
+  exit 2
+fi
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# PHASE 4: FINALIZATION
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "[PHASE 4] Finalizing execution plan..."
+
+# Generate execution metadata
+cat > $RUN_DIR/execution_plan.yaml <<EOF
+run_id: $RUN_ID
+status: ready_for_execution
+convergence_score: $CONVERGENCE
+iterations_required: $((ITERATION - 1))
+total_tasks: $(jq '.nodes | length' $RUN_DIR/TASKS.FINAL.adj.json)
+critical_path_length: $(jq '.metadata.critical_path_length' $RUN_DIR/TASKS.FINAL.adj.json)
+estimated_duration: $(jq -r '.metadata.estimated_duration' $RUN_DIR/TASKS.FINAL.adj.json)
+EOF
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "SUCCESS: Executable plan ready"
+echo "  Location: $RUN_DIR/TASKS.FINAL.adj.json"
+echo "  Metadata: $RUN_DIR/execution_plan.yaml"
+echo "  Audit trail: $RUN_DIR/iterations/"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+
+Key Takeaways
+
+
+
+|**Aspect**          |**Old Plan Contribution**    |**My Plan Contribution**|**Combined System**                        |
+|--------------------|-----------------------------|------------------------|-------------------------------------------|
+|**Discovery**       |✅ Multi-scope parallel passes|❌ Single-pass implied   |Multi-agent specialized discovery          |
+|**Deduplication**   |✅ Fingerprinting logic       |❌ Not covered           |Automated merge with conflict detection    |
+|**Validation**      |❌ One-shot merge             |✅ Iterative refinement  |Multi-layer gates + convergence loop       |
+|**Execution Format**|✅ DAG with dependencies      |❌ Linear sequence       |Topologically ordered executable graph     |
+|**CLI Patterns**    |✅ Concrete shell examples    |❌ Abstract references   |Production-ready bash/PowerShell scripts   |
+|**Quality Metrics** |❌ Binary pass/fail           |✅ Convergence scoring   |Quantitative + qualitative gates           |
+|**Acceptance Tests**|✅ Hard requirement           |✅ Validation enforcement|Mechanically enforced, iteratively improved|

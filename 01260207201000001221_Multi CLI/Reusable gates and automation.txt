@@ -1,0 +1,308 @@
+Yes. Use a single reusable pattern: Gate Spec → Gate Run → Gate Result → (optional) Heal Sequence → Final Gate Verdict. Only the gate adapter changes per gate (inputs, command, evidence extractors). Everything else is identical.
+
+Reusable pattern (the invariant pipeline)
+
+A) Inputs (per-gate config only)
+
+Each gate supplies a GateSpec (per gate instance):
+	•	gate_id
+	•	validator_id
+	•	inputs (paths, ids, parameters)
+	•	commands[] (how to run)
+	•	evidence_contract (what evidence must be produced + schema ids)
+	•	pass_criteria (binary)
+	•	failure_fingerprint_contract (which normalized fields contribute)
+
+Everything above is “data”, not code.
+
+B) Execution (shared runner)
+
+A shared GateRunner does the same steps for every gate:
+	1.	Acquire locks (if required)
+	2.	Run commands[]
+	3.	Collect raw outputs
+	4.	Normalize → error_codes[], exit_code, validator_id
+	5.	Validate evidence schemas
+	6.	Emit GateResult (binary passed: true|false) + failure_fingerprint
+
+C) Remediation (shared self-heal)
+
+If passed=false:
+	1.	Classify → failure_mode_id via deterministic matchers
+	2.	Execute ordered heal_template_ids[]
+	3.	Produce HealSequenceReport with healed: true|false
+	4.	If healed=true → rerun gate → emit final verdict
+	5.	If healed=false → escalate
+
+D) Outputs (stable across all gates)
+
+Every gate produces the same output set:
+	•	GateResult.json
+	•	(optional) HealSequenceReport.json
+	•	evidence bundle(s) referenced by paths in the above
+
+Only the content of inputs and evidence changes per gate.
+
+⸻
+
+What varies per gate (small, bounded differences)
+
+1) Gate adapter (the only gate-specific “module”)
+
+For each gate you define:
+	•	Input shape: which files/ids/registries it consumes
+	•	Command recipe: command list + environment assumptions
+	•	Evidence extractor: how raw tool output maps to normalized error_codes[]
+	•	Evidence schemas used: which schema IDs validate the evidence artifacts
+	•	Pass criteria: still binary, but specific to the gate’s validator outputs
+
+Everything else is shared.
+
+2) Failure modes mapping (data-only changes)
+
+You may add:
+	•	new FailureMode objects
+	•	new matcher conditions
+	•	new heal_sequence order
+
+No per-gate healing scripts.
+
+⸻
+
+Concrete reusable “interface” to standardize
+
+GateSpec (pattern)
+
+{
+  "gate_id": "GATE_SCHEMA_VALIDATE_PLAN",
+  "validator_id": "JSONSCHEMA_VALIDATOR",
+  "inputs": {
+    "plan_path": "plans/main.plan.json",
+    "schema_id": "schemas/NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json"
+  },
+  "commands": [
+    {
+      "tool": "jsonschema",
+      "args": ["-i", "{{inputs.plan_path}}", "{{inputs.schema_id}}"]
+    }
+  ],
+  "evidence_contract": {
+    "required_artifacts": [
+      {
+        "kind": "validator_report",
+        "path": "evidence/gates/{{gate_id}}/validator_report.json",
+        "schema_id": "schemas/validator_report.schema.json"
+      }
+    ]
+  },
+  "fingerprint_contract": {
+    "fields": ["exit_code", "validator_id", "error_codes"]
+  }
+}
+
+GateResult (pattern output)
+
+{
+  "gate_id": "GATE_SCHEMA_VALIDATE_PLAN",
+  "validator_id": "JSONSCHEMA_VALIDATOR",
+  "passed": false,
+  "exit_code": 2,
+  "error_codes": ["SCHEMA_VALIDATION_FAILED"],
+  "failure_fingerprint": "sha256:...",
+  "evidence_paths": [
+    "evidence/gates/GATE_SCHEMA_VALIDATE_PLAN/validator_report.json"
+  ]
+}
+
+Optional HealSequenceReport (pattern output)
+
+Always identical schema; only values differ.
+
+⸻
+
+The reusable pattern name (so you can codify it)
+
+Use a single contract called:
+
+“Binary Gate + Deterministic Remediation Loop (BG-DRL)”
+
+Define it once in your technical spec and require every gate to implement it via:
+	•	GateSpec (gate-specific)
+	•	shared GateRunner + SelfHealOrchestrator
+	•	shared schemas (GateResult, HealTemplateResult, HealSequenceReport, FailureMode)
+
+⸻
+
+Practical rule to keep “small gate-specific changes” true
+
+A gate is allowed to customize only these five fields:
+	1.	inputs
+	2.	commands
+	3.	evidence_contract
+	4.	error_code_normalization mapping (tool output → enums)
+	5.	pass_criteria (still binary)
+
+If a gate needs more customization than that, it’s a sign you’re missing a reusable template or a normalized error taxonomy.
+
+If you want the next deterministic step: define a single gate_spec.schema.json and a gate_result.schema.json so GateRunner consumes/produces identical shapes for every gate, and gate variability remains confined to inputs/commands/evidence.
+
+
+
+——
+
+
+
+Yes. Treat phase-to-phase handoff exactly like gates: a single reusable deterministic transport pattern where only the phase adapter changes (inputs accepted, outputs produced).
+
+Reusable pattern
+
+“Artifact Envelope + Handoff Contract + State Transition”.
+
+1) Every phase consumes the same wrapper, not raw files
+
+Define one canonical wrapper object (call it ArtifactEnvelope) that carries:
+	•	identity (run_id, plan_id, phase_id, attempt)
+	•	normalized inputs (artifact references, not inline blobs)
+	•	evidence references
+	•	snapshot signature(s)
+	•	provenance (what produced what)
+
+A phase is only allowed to read from the envelope + referenced artifacts.
+
+2) Every phase emits the same wrapper
+
+Each phase produces:
+	•	PhaseResult (binary: advanced=true|false)
+	•	updated ArtifactEnvelope (new artifacts appended, old retained)
+	•	HandoffReport (schema-valid) that becomes the next phase’s input
+
+3) The orchestrator is a deterministic state machine
+
+The orchestrator does the same thing for every phase:
+	1.	Validate envelope schema
+	2.	Validate required artifacts and evidence (per phase contract)
+	3.	Run the phase’s commands/templates
+	4.	Validate produced artifacts against declared schemas
+	5.	Compute snapshot signature(s)
+	6.	Emit PhaseResult + HandoffReport
+	7.	Route to next phase strictly by next_phase_id (declared in the plan)
+
+No “special case” phase logic.
+
+What varies per phase (small bounded changes)
+
+Each phase only customizes:
+	1.	Required inputs: artifact kinds + schema_ids it needs
+	2.	Commands/templates: what runs
+	3.	Produced outputs: artifact kinds + schema_ids it must emit
+	4.	Advance criteria: still binary (advance or stop)
+	5.	Write-set/locks: what it is allowed to touch
+
+Everything else is shared.
+
+⸻
+
+The minimal contracts you need (data-only)
+
+A) phase_contract (per phase)
+
+Defines what the phase requires and what it must produce.
+
+{
+  "phase_id": "PHASE_VALIDATE",
+  "requires": [
+    { "kind": "plan", "schema_id": "schemas/plan.schema.json" },
+    { "kind": "gate_catalog", "schema_id": "schemas/gate_catalog.schema.json" }
+  ],
+  "produces": [
+    { "kind": "gate_results_bundle", "schema_id": "schemas/gate_results_bundle.schema.json" },
+    { "kind": "handoff_report", "schema_id": "schemas/handoff_report.schema.json" }
+  ],
+  "advance_rule": { "type": "binary", "field": "phase_passed", "must_equal": true },
+  "write_policy": { "write_set_id": "WS_VALIDATE" }
+}
+
+B) ArtifactEnvelope (always the same)
+
+References artifacts by path + hash + schema_id so downstream consumption is deterministic.
+
+{
+  "run_id": "RUN_20260208_001",
+  "plan_id": "PLAN_MAIN",
+  "phase_id": "PHASE_VALIDATE",
+  "attempt": 1,
+  "artifacts": [
+    {
+      "kind": "plan",
+      "path": "plans/main.plan.json",
+      "sha256": "…",
+      "schema_id": "schemas/plan.schema.json"
+    }
+  ],
+  "evidence_paths": [
+    "evidence/phase/PHASE_VALIDATE/preflight.json"
+  ],
+  "snapshot_signature": {
+    "inputs_sig": "sha256:…",
+    "artifacts_sig": "sha256:…"
+  }
+}
+
+C) HandoffReport (always the same shape)
+
+This is the deterministic “move data to next phase” object.
+
+{
+  "from_phase_id": "PHASE_VALIDATE",
+  "to_phase_id": "PHASE_EXECUTE",
+  "phase_passed": true,
+  "advanced": true,
+  "envelope_path": "state/envelopes/RUN_20260208_001/PHASE_VALIDATE.out.json",
+  "required_artifacts_present": true,
+  "produced_artifacts_valid": true,
+  "termination_reason": "phase_success"
+}
+
+Downstream logic uses only:
+	•	advanced (boolean)
+	•	to_phase_id
+	•	envelope_path
+
+Deterministic routing rule
+
+Phase progression is a pure function of:
+	•	current phase_id
+	•	advanced boolean
+	•	the plan’s declared phase_graph (or ordered list)
+
+No “if this phase, do this special thing”.
+
+Add one guardrail to avoid drift
+
+Require that every phase declares:
+	•	requires[] and produces[] with schema_id
+	•	and the orchestrator enforces:
+	•	missing required inputs → fail closed
+	•	any produced artifact fails schema validation → fail closed
+	•	envelope signature mismatch → fail closed
+
+⸻
+
+Bottom line
+
+Yes: the same concept applies cleanly. Gates are “micro-transitions.” Phases are “macro-transitions.” Both become instances of the same reusable pattern:
+
+Deterministic Contracted Handoff (DCH):
+	•	envelope in
+	•	validate
+	•	run
+	•	validate outputs
+	•	envelope out
+	•	single boolean controls routing
+
+If you want the next step, it’s to define three schemas mirroring what you did for self-heal:
+	•	artifact_envelope.schema.json
+	•	phase_contract.schema.json
+	•	handoff_report.schema.json
+
+That locks the phase-to-phase automation into the same deterministic, reusable shape as your gates.

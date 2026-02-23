@@ -1,0 +1,48 @@
+{
+  "baselines_version": "1.0",
+  "last_measured": "2026-02-12T17:11:34.094Z",
+  "system_metrics": {
+    "verification_script_execution": {
+      "metric": "execution_time_seconds",
+      "baseline_value": 2.5,
+      "threshold_warning": 5.0,
+      "threshold_critical": 10.0,
+      "unit": "seconds"
+    },
+    "approval_processing": {
+      "metric": "processing_time_seconds",
+      "baseline_value": 1.0,
+      "threshold_warning": 3.0,
+      "threshold_critical": 5.0,
+      "unit": "seconds"
+    },
+    "impact_assessment": {
+      "metric": "analysis_time_seconds",
+      "baseline_value": 30.0,
+      "threshold_warning": 60.0,
+      "threshold_critical": 120.0,
+      "unit": "seconds"
+    },
+    "evidence_generation": {
+      "metric": "generation_time_seconds",
+      "baseline_value": 5.0,
+      "threshold_warning": 15.0,
+      "threshold_critical": 30.0,
+      "unit": "seconds"
+    }
+  },
+  "quality_metrics": {
+    "verification_success_rate": {
+      "baseline_value": 100.0,
+      "threshold_warning": 95.0,
+      "threshold_critical": 90.0,
+      "unit": "percent"
+    },
+    "approval_unanimous_rate": {
+      "baseline_value": 100.0,
+      "threshold_warning": 90.0,
+      "threshold_critical": 80.0,
+      "unit": "percent"
+    }
+  }
+}

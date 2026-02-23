@@ -1,0 +1,169 @@
+═════════════════════════════════════════════════════════════════════════════
+                    ID ALLOCATOR OVERLAP ANALYSIS - QUICK REFERENCE
+═════════════════════════════════════════════════════════════════════════════
+
+THE PROBLEM:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  6 allocator files with 3 different implementations, 90% overlapping functions
+
+
+FILES FOUND:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1. ✓ scripts/P_01999000042260124027_id_allocator.py
+     [232 lines] [FUNCTIONAL] [IN USE] [Threading-based locking]
+     Functions: allocate_single_id, allocate_batch_ids, peek_next_id,
+               get_allocation_stats, reserve_id_range
+     Uses: 01999000042260124026_ID_COUNTER.json
+
+  2. ✗ REGISTRY/scripts/P_01999000042260124027_id_allocator.py
+     [242 lines] [CLASS-BASED] [DUPLICATE - NOT USED] [OS-level locking]
+     Same functions as #1 but different implementation
+     CRITICAL: SAME FILE_ID AS #1 - CONFLICT!
+
+  3. ✓ src/registry_writer/P_01260207233100000333_id_allocator.py
+     [167 lines] [CLASS-BASED] [REGISTRY-BASED] [Atomic writes]
+     Functions: allocate_id, is_allocated, register_id, load_registry, 
+               save_registry, get_next_sequence
+     Uses: Registry file (not separate counter)
+
+  4. ○ src/registry_writer/id_allocator.py
+     [2 lines] [WRAPPER] - Just re-exports #3
+
+  5. ○ src/repo_autoops/automation_descriptor/P_01260207233100000366_id_allocator.py
+     [26 lines] [FACADE] - Delegates to #3
+
+  6. ✓ tests/P_01999000042260124029_test_id_allocator.py
+     [161 lines] [TEST] - Imports from #1 (scripts version)
+
+
+CRITICAL ISSUES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  🔴 ISSUE #1: DUPLICATE FILE_ID
+     ├─ File 1: scripts/P_01999000042260124027_id_allocator.py (IN USE)
+     └─ File 2: REGISTRY/scripts/P_01999000042260124027_id_allocator.py (CONFLICT!)
+     Action: DELETE file #2, keep file #1
+
+  🔴 ISSUE #2: 90% CODE DUPLICATION
+     Files #1 and #2 have identical functions but different implementations:
+     ├─ allocate_single_id()     ✓ both
+     ├─ allocate_batch_ids()     ✓ both
+     ├─ peek_next_id()           ✓ both
+     ├─ get_allocation_stats()   ✓ both
+     └─ reserve_id_range()       ✓ both
+     Action: CONSOLIDATE to one implementation
+
+  🔴 ISSUE #3: INCONSISTENT INTERFACES
+     File 1&2: allocate_single_id()  (used)
+     File 3:   allocate_id()          (used)
+     Action: STANDARDIZE naming (use allocate_single_id)
+
+  🟠 ISSUE #4: MISSING FUNCTIONS
+     File 1&2: No is_allocated() or register_id()
+     File 3:   No batch operations or reserve_id_range()
+     Action: MERGE both approaches
+
+  🟠 ISSUE #5: TEST/PROD MISMATCH
+     Tests: Import from scripts/ version
+     Prod:  Uses src/registry_writer/ version
+     Action: UNIFY test imports
+
+
+FUNCTION COVERAGE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Function                    scripts/027  REGISTRY/027  registry_writer/333
+  ─────────────────────────────────────────────────────────────────────────
+  allocate_single_id()             ✓           ✓              ✗
+  allocate_batch_ids()             ✓           ✓              ✗
+  allocate_id()                    ✗           ✗              ✓
+  peek_next_id()                   ✓           ✓              ✗
+  reserve_id_range()               ✓           ✓              ✗
+  get_allocation_stats()           ✓           ✓              ✗
+  is_allocated()                   ✗           ✗              ✓
+  register_id()                    ✗           ✗              ✓
+  load_registry()                  ✗           ✗              ✓
+  save_registry()                  ✗           ✗              ✓
+
+
+LOCKING STRATEGIES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Approach A (scripts/027): threading.Lock()
+    ├─ In-process thread safety only
+    ├─ Won't prevent inter-process conflicts
+    └─ Relies on atomic_json_read/write utilities
+
+  Approach B (REGISTRY/scripts/027): OS-level file locking
+    ├─ Cross-process safe (msvcrt on Windows, fcntl on Unix)
+    ├─ Platform-aware implementation
+    └─ NOT USED (no imports found)
+
+  Approach C (registry_writer/333): Atomic writes
+    ├─ Temp file + fsync + atomic rename
+    ├─ POSIX standard, cross-process safe
+    └─ Integrated with registry file
+
+
+IMPORT GRAPH:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  tests/P_01999000042260124029_test_id_allocator.py
+    └─→ P_01999000042260124027_id_allocator (scripts/ version)
+
+  src/repo_autoops/automation_descriptor/P_01260207233100000366_id_allocator.py
+    └─→ src/registry_writer/P_01260207233100000333_id_allocator (via facade)
+
+  src/registry_writer/id_allocator.py (wrapper)
+    └─→ src/registry_writer/P_01260207233100000333_id_allocator
+
+  ❌ REGISTRY/scripts/P_01999000042260124027_id_allocator.py
+     └─→ NOT IMPORTED BY ANYTHING (dead code)
+
+
+ACTION ITEMS (Priority Order):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1️⃣  [IMMEDIATE] DELETE DUPLICATE
+      File: C:\Users\richg\Gov_Reg\REGISTRY\scripts\P_01999000042260124027_id_allocator.py
+      Action: Archive to CENTRAL_ARCHIVE/DUPLICATE_ALLOCATORS/
+      Why: Duplicate FILE_ID, not used, causes confusion
+
+  2️⃣  [HIGH] CREATE UNIFIED ALLOCATOR
+      Location: src/registry_writer/id_allocator.py (canonical)
+      Merge:
+        • Functional interface from scripts/027
+        • Registry integration from registry_writer/333
+        • OS-level locking (cross-process safe)
+      Provide:
+        • allocate_single_id(purpose) → str
+        • allocate_batch_ids(count, purpose) → List[str]
+        • peek_next_id() → str
+        • reserve_id_range(start, end, purpose) → None
+        • get_allocation_stats() → Dict
+        • is_allocated(file_id) → bool
+        • register_id(file_id) → None
+
+  3️⃣  [MEDIUM] UPDATE TEST FILE
+      File: tests/P_01999000042260124029_test_id_allocator.py
+      Change: Import from canonical allocator
+      Add: Tests for merged functionality
+
+  4️⃣  [MEDIUM] UPDATE IMPORTS
+      File: src/repo_autoops/automation_descriptor/P_01260207233100000366_id_allocator.py
+      Ensure: Facade points to new canonical implementation
+
+  5️⃣  [LOW] DEPRECATE OLD SCRIPTS
+      Delete: scripts/P_01999000042260124027_id_allocator.py
+      Only after canonical is fully tested and deployed
+
+
+DOCUMENTATION:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Full analysis: C:\Users\richg\Gov_Reg\ID_ALLOCATOR_OVERLAP_ANALYSIS.md
+                (includes code samples, implementation plan, trade-offs)
+
+═════════════════════════════════════════════════════════════════════════════

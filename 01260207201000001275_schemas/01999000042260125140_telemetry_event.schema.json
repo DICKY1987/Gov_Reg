@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://govreg.local/schemas/telemetry_event.v1.json",
+  "title": "Unified Telemetry Event Schema",
+  "description": "Unified event envelope for all telemetry (metrics, gates, audits, lifecycle, errors)",
+  "type": "object",
+  "required": [
+    "event_id",
+    "event_type",
+    "timestamp",
+    "source",
+    "severity",
+    "payload",
+    "content_hash"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "Unique event identifier (UUID4)",
+      "format": "uuid"
+    },
+    "event_type": {
+      "type": "string",
+      "description": "Type of telemetry event",
+      "enum": [
+        "gate_result",
+        "metric",
+        "scan",
+        "audit",
+        "lifecycle",
+        "error",
+        "warning",
+        "info"
+      ]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when event occurred"
+    },
+    "run_id": {
+      "type": ["string", "null"],
+      "description": "Optional run ID if event is scoped to a run"
+    },
+    "phase_id": {
+      "type": ["string", "null"],
+      "description": "Optional phase ID if event is scoped to a phase"
+    },
+    "source": {
+      "type": "string",
+      "description": "Module or component that emitted the event",
+      "minLength": 1
+    },
+    "severity": {
+      "type": "string",
+      "description": "Event severity level",
+      "enum": ["info", "warning", "error", "critical"]
+    },
+    "payload": {
+      "type": "object",
+      "description": "Event-specific payload data",
+      "additionalProperties": true
+    },
+    "content_hash": {
+      "type": "string",
+      "description": "SHA256 hash of canonical payload (for deduplication)",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "correlation_id": {
+      "type": "string",
+      "description": "Optional correlation ID for tracking related events"
+    },
+    "tags": {
+      "type": "array",
+      "description": "Optional tags for filtering/grouping",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "file_id": "01999000042260125140"
+}

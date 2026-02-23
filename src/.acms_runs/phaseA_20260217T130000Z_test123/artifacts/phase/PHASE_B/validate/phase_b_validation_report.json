@@ -1,0 +1,23 @@
+{
+  "run_id": "phaseB_20260217T132114Z_638c9b01-f00e-458b-8b80-28dc57d90d30",
+  "phase_a_run_id": "phaseA_20260217T130000Z_test123",
+  "validated_at": "2026-02-17T13:21:14.325321+00:00",
+  "result": "FAIL",
+  "checks": [
+    {
+      "gate": "G13",
+      "passed": false,
+      "detail": "Termination record not found: Required file not found: .acms_runs\\phaseA_20260217T130000Z_test123\\artifacts\\phase\\PHASE_A\\loop\\refinement_termination_record.json"
+    },
+    {
+      "gate": "G14",
+      "passed": false,
+      "detail": "LIV verification for 2 artifacts"
+    },
+    {
+      "gate": "G15",
+      "passed": false,
+      "detail": "No refined plan found"
+    }
+  ]
+}

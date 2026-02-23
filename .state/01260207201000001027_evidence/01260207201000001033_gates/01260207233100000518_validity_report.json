@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-02-06T20:46:40.055219Z",
+  "pass": false,
+  "exit_code": 11,
+  "violations": [
+    {
+      "type": "missing_immutable",
+      "record_id": "rec-001",
+      "field": "file_id"
+    },
+    {
+      "type": "missing_immutable",
+      "record_id": "rec-001",
+      "field": "created_utc"
+    }
+  ],
+  "summary": {
+    "total_violations": 2,
+    "by_type": {
+      "missing_immutable": 2
+    }
+  },
+  "file_id": "01260207233100000518"
+}

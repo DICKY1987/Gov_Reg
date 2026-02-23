@@ -1,0 +1,134 @@
+{
+  "schema": "caps_keyword_archiver.manifest.v1",
+  "created_utc": "2026-02-22T22:22:28Z",
+  "parent_dir": "C:\\Users\\richg\\Gov_Reg",
+  "archive_dir": "C:\\Users\\richg\\CENTRAL_ARCHIVE",
+  "keywords": [
+    "CHAT",
+    "CHECKLIST",
+    "COMPLETE",
+    "FINAL",
+    "GUIDE",
+    "PHASE",
+    "PLAN",
+    "QUICKSTART",
+    "REPORT",
+    "SCRIPT",
+    "STATUS",
+    "SUMMARY",
+    "WEEK"
+  ],
+  "include_exts": [
+    ".docx",
+    ".json",
+    ".pdf",
+    ".txt"
+  ],
+  "exclude_dirs": [
+    ".git",
+    ".hg",
+    ".idea",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".svn",
+    ".venv",
+    ".vscode",
+    "__pycache__",
+    "node_modules",
+    "venv"
+  ],
+  "counts": {
+    "planned_moves": 8,
+    "non_matching_files_seen": 1034
+  },
+  "planned_moves": [
+    {
+      "src": "C:\\Users\\richg\\Gov_Reg\\GOVREG_MANIFEST_IMPLEMENTATION_PLAN_V1.json",
+      "src_rel": "GOVREG_MANIFEST_IMPLEMENTATION_PLAN_V1.json",
+      "keywords": [
+        "PLAN"
+      ],
+      "dest": "C:\\Users\\richg\\CENTRAL_ARCHIVE\\PLAN\\GOVREG_MANIFEST_IMPLEMENTATION_PLAN_V1.json",
+      "dest_rel": "PLAN/GOVREG_MANIFEST_IMPLEMENTATION_PLAN_V1.json",
+      "collision_note": "none",
+      "size_bytes": 36145
+    },
+    {
+      "src": "C:\\Users\\richg\\Gov_Reg\\ONE_PROCESS_PIPELINE_INTEGRATION_REPORT.json",
+      "src_rel": "ONE_PROCESS_PIPELINE_INTEGRATION_REPORT.json",
+      "keywords": [
+        "REPORT"
+      ],
+      "dest": "C:\\Users\\richg\\CENTRAL_ARCHIVE\\REPORT\\ONE_PROCESS_PIPELINE_INTEGRATION_REPORT.json",
+      "dest_rel": "REPORT/ONE_PROCESS_PIPELINE_INTEGRATION_REPORT.json",
+      "collision_note": "none",
+      "size_bytes": 23219
+    },
+    {
+      "src": "C:\\Users\\richg\\Gov_Reg\\PYTHON_RESTORE_REPORT.json",
+      "src_rel": "PYTHON_RESTORE_REPORT.json",
+      "keywords": [
+        "REPORT"
+      ],
+      "dest": "C:\\Users\\richg\\CENTRAL_ARCHIVE\\REPORT\\PYTHON_RESTORE_REPORT.json",
+      "dest_rel": "REPORT/PYTHON_RESTORE_REPORT.json",
+      "collision_note": "none",
+      "size_bytes": 115915
+    },
+    {
+      "src": "C:\\Users\\richg\\Gov_Reg\\01260207201000001139_docs\\planning\\CLI application that implements planning-only refinement loop PLAN.txt",
+      "src_rel": "01260207201000001139_docs/planning/CLI application that implements planning-only refinement loop PLAN.txt",
+      "keywords": [
+        "PLAN"
+      ],
+      "dest": "C:\\Users\\richg\\CENTRAL_ARCHIVE\\PLAN\\01260207201000001139_docs\\planning\\CLI application that implements planning-only refinement loop PLAN.txt",
+      "dest_rel": "PLAN/01260207201000001139_docs/planning/CLI application that implements planning-only refinement loop PLAN.txt",
+      "collision_note": "none",
+      "size_bytes": 39853
+    },
+    {
+      "src": "C:\\Users\\richg\\Gov_Reg\\01260207201000001313_capability_mapping_system\\01260207220000001316_CONSOLIDATION_REPORT.txt",
+      "src_rel": "01260207201000001313_capability_mapping_system/01260207220000001316_CONSOLIDATION_REPORT.txt",
+      "keywords": [
+        "REPORT"
+      ],
+      "dest": "C:\\Users\\richg\\CENTRAL_ARCHIVE\\REPORT\\01260207201000001313_capability_mapping_system\\01260207220000001316_CONSOLIDATION_REPORT.txt",
+      "dest_rel": "REPORT/01260207201000001313_capability_mapping_system/01260207220000001316_CONSOLIDATION_REPORT.txt",
+      "collision_note": "none",
+      "size_bytes": 1523
+    },
+    {
+      "src": "C:\\Users\\richg\\Gov_Reg\\01260207201000001313_capability_mapping_system\\01260207220000001321_SCRIPT_CLASSIFIER_OVERRIDES.json",
+      "src_rel": "01260207201000001313_capability_mapping_system/01260207220000001321_SCRIPT_CLASSIFIER_OVERRIDES.json",
+      "keywords": [
+        "SCRIPT"
+      ],
+      "dest": "C:\\Users\\richg\\CENTRAL_ARCHIVE\\SCRIPT\\01260207201000001313_capability_mapping_system\\01260207220000001321_SCRIPT_CLASSIFIER_OVERRIDES.json",
+      "dest_rel": "SCRIPT/01260207201000001313_capability_mapping_system/01260207220000001321_SCRIPT_CLASSIFIER_OVERRIDES.json",
+      "collision_note": "none",
+      "size_bytes": 151
+    },
+    {
+      "src": "C:\\Users\\richg\\Gov_Reg\\schemas\\CRITIC_REPORT.schema.json",
+      "src_rel": "schemas/CRITIC_REPORT.schema.json",
+      "keywords": [
+        "REPORT"
+      ],
+      "dest": "C:\\Users\\richg\\CENTRAL_ARCHIVE\\REPORT\\schemas\\CRITIC_REPORT.schema.json",
+      "dest_rel": "REPORT/schemas/CRITIC_REPORT.schema.json",
+      "collision_note": "none",
+      "size_bytes": 2883
+    },
+    {
+      "src": "C:\\Users\\richg\\Gov_Reg\\schemas\\PLAN.schema.json",
+      "src_rel": "schemas/PLAN.schema.json",
+      "keywords": [
+        "PLAN"
+      ],
+      "dest": "C:\\Users\\richg\\CENTRAL_ARCHIVE\\PLAN\\schemas\\PLAN.schema.json",
+      "dest_rel": "PLAN/schemas/PLAN.schema.json",
+      "collision_note": "none",
+      "size_bytes": 9061
+    }
+  ]
+}

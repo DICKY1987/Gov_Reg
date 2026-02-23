@@ -1,0 +1,26 @@
+{
+  "generated_at": "2026-02-03T19:00:00Z",
+  "registry_path": "REGISTRY\\TEST\\registry_test.json",
+  "total_records": 1359,
+  "checks": {
+    "file_id_format": {
+      "valid": 1283,
+      "invalid_19_digit": 76,
+      "invalid_type": 0,
+      "invalid_length": 0,
+      "invalid_format": 0
+    },
+    "duplicates": {
+      "duplicate_groups": 0,
+      "total_duplicates": 0
+    },
+    "geu_type_drift": {
+      "string_geu_ids": 63
+    },
+    "geu_format": {
+      "label_format_issues": 189
+    }
+  },
+  "status": "FAIL",
+  "file_id": "01260207233100000579"
+}

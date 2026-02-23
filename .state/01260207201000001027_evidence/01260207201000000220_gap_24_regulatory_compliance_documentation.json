@@ -1,0 +1,32 @@
+{
+  "gap_id": "GAP-024",
+  "gap_name": "Regulatory Compliance Documentation",
+  "verification_timestamp": "2026-02-12T17:19:04.886991+00:00",
+  "status": "VERIFIED",
+  "checks": [
+    {
+      "check_id": "CHECK-024-001",
+      "description": "Compliance registry with SOX/GDPR/ISO mappings",
+      "status": "PASS",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\.state\\compliance_registry.json",
+        "exists": true,
+        "sha256": "66B850B6FC4CCBAF2B93FE1044063474CB89311FDED7A41C1912F8147C52C8B3",
+        "frameworks_count": 3
+      }
+    },
+    {
+      "check_id": "CHECK-024-002",
+      "description": "Evidence artifacts mapped to compliance requirements",
+      "status": "PASS",
+      "evidence": {
+        "all_artifacts_present": true
+      }
+    }
+  ],
+  "cryptographic_proof": {
+    "algorithm": "SHA256",
+    "hash": "80DC9BF461BDEA96FB419F878E8EB71375D032C7859BCEC6DD6F65111EFD6D4B",
+    "timestamp": "2026-02-12T17:19:04.886991+00:00"
+  }
+}

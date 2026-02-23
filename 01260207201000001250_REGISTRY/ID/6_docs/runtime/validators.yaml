@@ -1,0 +1,439 @@
+category: "validators"
+purpose: "ID format validation and canonicality enforcement"
+location: "1_runtime/validators/"
+last_updated: "2026-02-22"
+
+modules:
+  - name: "id_format_scanner"
+    file: "P_01999000042260124521_id_format_scanner.py"
+    status: "ACTIVE"
+    purpose: "Scan files for missing or incorrect ID formats"
+    priority: "HIGH"
+    
+    functions:
+      - name: "scan_directory"
+        signature: "scan_directory(path: str, recursive: bool = True) -> dict"
+        description: "Scan directory for ID format violations"
+        
+        parameters:
+          - name: "path"
+            type: "str"
+            description: "Directory to scan"
+          - name: "recursive"
+            type: "bool"
+            default: true
+        
+        returns:
+          type: "dict"
+          structure:
+            files_scanned: "int"
+            violations: "list[dict]"
+            compliant: "list[str]"
+            summary: "dict"
+        
+        violation_types:
+          - "missing_file_id: File has no ID prefix"
+          - "invalid_format: ID doesn't match \\d{20}"
+          - "wrong_prefix: Using wrong prefix (not P_ for .py)"
+          - "no_boundary: Missing underscore boundary"
+        
+        example: |
+          from ID.1_runtime.validators.P_01999000042260124521_id_format_scanner import scan_directory
+          
+          results = scan_directory('C:/Users/richg/Gov_Reg/ID', recursive=True)
+          # Returns: {
+          #   "files_scanned": 47,
+          #   "violations": [
+          #     {"file": "bad_file.py", "type": "missing_file_id"},
+          #     {"file": "P_123_short.py", "type": "invalid_format"}
+          #   ],
+          #   "compliant": ["P_01999000042260124031_unified_id_allocator.py", ...],
+          #   "summary": {"total": 47, "violations": 2, "compliance_rate": 0.96}
+          # }
+      
+      - name: "validate_filename"
+        signature: "validate_filename(filename: str) -> tuple[bool, str]"
+        description: "Validate single filename format"
+        
+        parameters:
+          - name: "filename"
+            type: "str"
+        
+        returns:
+          type: "tuple[bool, str]"
+          description: "(is_valid, error_message)"
+        
+        example: |
+          is_valid, error = validate_filename("P_01999000042260124027_allocator.py")
+          # Returns: (True, "")
+          
+          is_valid, error = validate_filename("bad_file.py")
+          # Returns: (False, "missing_file_id")
+      
+      - name: "extract_file_id"
+        signature: "extract_file_id(filename: str) -> str | None"
+        description: "Extract file_id from filename"
+        
+        parameters:
+          - name: "filename"
+            type: "str"
+        
+        returns:
+          type: "str | None"
+          description: "20-digit file_id or None if not found"
+        
+        example: |
+          file_id = extract_file_id("P_01999000042260124027_allocator.py")
+          # Returns: "01999000042260124027"
+    
+    dependencies:
+      imports:
+        - module: "canonical_id_patterns"
+          file: "P_01999000042260125002_canonical_id_patterns.py"
+          usage: "Import regex patterns"
+        - module: "os"
+        - module: "pathlib"
+      
+      contracts:
+        - path: "contracts/id_contract.yaml"
+          usage: "ID format specifications"
+
+  - name: "gate_id_canonicality"
+    file: "P_01999000042260125000_gate_id_canonicality.py"
+    status: "ACTIVE"
+    purpose: "Pre-commit gate for ID canonicality enforcement"
+    priority: "CRITICAL"
+    
+    functions:
+      - name: "check_staged_files"
+        signature: "check_staged_files() -> tuple[bool, list[str]]"
+        description: "Check all staged files for ID canonicality"
+        
+        returns:
+          type: "tuple[bool, list[str]]"
+          description: "(all_pass, violations)"
+        
+        side_effects:
+          - "Reads git staged files"
+          - "Validates each file"
+          - "Blocks commit if violations found"
+        
+        example: |
+          from ID.1_runtime.validators.P_01999000042260125000_gate_id_canonicality import check_staged_files
+          
+          all_pass, violations = check_staged_files()
+          if not all_pass:
+              print("Commit blocked:")
+              for v in violations:
+                  print(f"  - {v}")
+              sys.exit(1)
+      
+      - name: "enforce_canonicality"
+        signature: "enforce_canonicality(file_path: str) -> tuple[bool, list[str]]"
+        description: "Enforce all canonicality rules on file"
+        
+        parameters:
+          - name: "file_path"
+            type: "str"
+        
+        returns:
+          type: "tuple[bool, list[str]]"
+          description: "(is_canonical, rule_violations)"
+        
+        rules_checked:
+          - "VR001: file_id is 20 digits"
+          - "VR002: file_id is numeric"
+          - "VR003: Python files use P_ prefix"
+          - "VR004: Boundary underscore present"
+          - "VR005: No duplicate IDs"
+    
+    integration:
+      git_hooks:
+        - hook: "pre-commit"
+          installed_by: "2_cli_tools/maintenance/install_automation.py"
+          entry_point: "check_staged_files()"
+        - hook: "pre-push"
+          installed_by: "2_cli_tools/maintenance/install_automation.py"
+          entry_point: "check_all_files()"
+    
+    configuration:
+      enforcement_level:
+        - "ERROR: Block commit"
+        - "WARNING: Log but allow"
+        - "INFO: Report only"
+      
+      exemptions:
+        - "Files in .git/"
+        - "Files in .venv/"
+        - "Files matching .gitignore"
+
+  - name: "canonical_id_patterns"
+    file: "P_01999000042260125002_canonical_id_patterns.py"
+    status: "ACTIVE"
+    purpose: "Canonical regex patterns for ID validation"
+    priority: "CRITICAL"
+    
+    constants:
+      FILE_ID_PATTERN:
+        value: "re.compile(r'^\\d{20}$')"
+        usage: "Validate file_id format"
+      
+      DOC_ID_PATTERN:
+        value: "re.compile(r'^P_\\d{20}$')"
+        usage: "Validate doc_id format"
+      
+      FILENAME_PREFIX_PATTERN:
+        value: "re.compile(r'^(?:(?P<doc_prefix>P_))?(?P<file_id>\\d{20})_')"
+        usage: "Extract ID from filename"
+      
+      ENHANCED_ID_PATTERN:
+        value: "re.compile(r'^\\d{22}$')"
+        usage: "Validate 22-digit enhanced IDs"
+      
+      DIR_ID_PATTERN:
+        value: "re.compile(r'^\\d{20}$')"
+        usage: "Validate dir_id format"
+    
+    functions:
+      - name: "validate_file_id"
+        signature: "validate_file_id(value: str) -> bool"
+        description: "Validate file_id format"
+        
+        parameters:
+          - name: "value"
+            type: "str"
+        
+        returns:
+          type: "bool"
+        
+        example: |
+          from ID.1_runtime.validators.P_01999000042260125002_canonical_id_patterns import validate_file_id
+          
+          validate_file_id("01999000042260124027")  # True
+          validate_file_id("P_01999000042260124027")  # False (has prefix)
+      
+      - name: "validate_doc_id"
+        signature: "validate_doc_id(value: str) -> bool"
+      
+      - name: "validate_dir_id"
+        signature: "validate_dir_id(value: str) -> bool"
+    
+    note: "DO NOT redefine these patterns elsewhere - import from this module"
+
+  - name: "zone_classifier"
+    file: "P_01999000042260125067_zone_classifier.py"
+    status: "ACTIVE"
+    purpose: "Classify directories into governance zones"
+    priority: "HIGH"
+    
+    functions:
+      - name: "classify_directory"
+        signature: "classify_directory(dir_path: str, config: dict = None) -> str"
+        description: "Classify directory into governance zone"
+        
+        parameters:
+          - name: "dir_path"
+            type: "str"
+            description: "Directory to classify"
+          - name: "config"
+            type: "dict"
+            default: "Load from .idpkg/config.json"
+        
+        returns:
+          type: "str"
+          values: ["governed", "staging", "excluded"]
+        
+        classification_logic:
+          staging:
+            condition: "depth <= staging_depth"
+            example: "depth=0 (project root)"
+          
+          excluded:
+            condition: "Matches exclusion pattern"
+            patterns:
+              - ".git/**"
+              - ".venv/**"
+              - "**/__pycache__/**"
+              - "**/node_modules/**"
+          
+          governed:
+            condition: "depth > staging_depth AND not excluded"
+            description: "All other directories"
+        
+        example: |
+          from ID.1_runtime.validators.P_01999000042260125067_zone_classifier import classify_directory
+          
+          zone = classify_directory('C:/Users/richg/Gov_Reg/ID')
+          # Returns: "governed"
+          
+          zone = classify_directory('C:/Users/richg/Gov_Reg/.git')
+          # Returns: "excluded"
+      
+      - name: "is_governed"
+        signature: "is_governed(dir_path: str) -> bool"
+        description: "Check if directory is in governed zone"
+        
+        returns:
+          type: "bool"
+    
+    configuration:
+      config_file: "4_config/idpkg_active_config.json"
+      config_keys:
+        - key: "governance.staging_depth"
+          type: "integer"
+          description: "Maximum depth for staging zone"
+          default: 0
+        
+        - key: "governance.governed_min_depth"
+          type: "integer"
+          description: "Minimum depth for governed zone"
+          default: 1
+        
+        - key: "exclusions.patterns"
+          type: "list[str]"
+          description: "Glob patterns for excluded directories"
+    
+    dependencies:
+      imports:
+        - module: "pathlib"
+        - module: "fnmatch"
+          usage: "Pattern matching"
+      
+      files:
+        reads:
+          - path: ".idpkg/config.json"
+            keys: ["governance", "exclusions"]
+
+dependency_graph:
+  canonical_id_patterns:
+    imports: ["re"]
+    imported_by: ["id_format_scanner", "gate_id_canonicality", "handlers"]
+    note: "Central pattern definitions - DO NOT duplicate"
+  
+  id_format_scanner:
+    imports: ["canonical_id_patterns", "os", "pathlib"]
+    imported_by: ["CLI tools", "gate_id_canonicality"]
+    calls: ["validate_filename", "extract_file_id"]
+  
+  gate_id_canonicality:
+    imports: ["canonical_id_patterns", "id_format_scanner"]
+    imported_by: ["Git hooks"]
+    calls: ["validate_file_id", "scan_directory"]
+  
+  zone_classifier:
+    imports: ["pathlib", "fnmatch"]
+    imported_by: ["dir_identity_resolver", "allocators", "CLI tools"]
+    calls: ["classify_directory", "is_governed"]
+
+validation_rules:
+  VR001:
+    rule: "file_id must be exactly 20 digits"
+    pattern: "^\\d{20}$"
+    enforced_by: "canonical_id_patterns.FILE_ID_PATTERN"
+  
+  VR002:
+    rule: "file_id must be numeric only"
+    enforced_by: "canonical_id_patterns.FILE_ID_PATTERN"
+  
+  VR003:
+    rule: "Python files must use P_ prefix"
+    pattern: "^P_\\d{20}_.*\\.py$"
+    enforced_by: "gate_id_canonicality"
+  
+  VR004:
+    rule: "ID must be separated by underscore boundary"
+    pattern: "^(?:P_)?\\d{20}_"
+    enforced_by: "canonical_id_patterns.FILENAME_PREFIX_PATTERN"
+  
+  VR005:
+    rule: "No duplicate file_ids in system"
+    enforced_by: "gate_id_canonicality.check_staged_files()"
+  
+  VR006:
+    rule: "dir_id must be 20 digits"
+    pattern: "^\\d{20}$"
+    enforced_by: "canonical_id_patterns.DIR_ID_PATTERN"
+  
+  VR007:
+    rule: "Governed directories must have .dir_id files"
+    enforced_by: "pre-commit hooks"
+
+common_workflows:
+  validate_repository:
+    steps:
+      - "Import scan_directory from id_format_scanner"
+      - "Call scan_directory(project_root, recursive=True)"
+      - "Review violations list"
+      - "Fix violations or exempt files"
+  
+  enforce_on_commit:
+    steps:
+      - "Git commit triggered"
+      - "Pre-commit hook calls gate_id_canonicality.check_staged_files()"
+      - "If violations: commit blocked, errors displayed"
+      - "If clean: commit proceeds"
+  
+  classify_new_directory:
+    steps:
+      - "Import classify_directory from zone_classifier"
+      - "Call classify_directory(new_dir_path)"
+      - "If governed: generate .dir_id"
+      - "If staging/excluded: skip .dir_id"
+
+integration_points:
+  with_allocators:
+    - "zone_classifier determines if ID allocation needed"
+    - "Only governed zones get allocated IDs"
+  
+  with_handlers:
+    - "canonical_id_patterns used by dir_id_handler for validation"
+    - "Shared pattern definitions ensure consistency"
+  
+  with_git_hooks:
+    - "gate_id_canonicality installed as pre-commit hook"
+    - "Blocks commits with ID violations"
+  
+  with_cli_tools:
+    - "CLI tools use id_format_scanner for reporting"
+    - "Validation before bulk operations"
+
+performance:
+  scan_directory:
+    typical_time: "100-500ms per 1000 files"
+    cache_eligible: false
+    note: "Depends on filesystem speed"
+  
+  validate_filename:
+    typical_time: "<1ms"
+    cache_eligible: true
+  
+  classify_directory:
+    typical_time: "5-10ms"
+    cache_eligible: true
+
+troubleshooting:
+  commit_blocked:
+    symptoms:
+      - "Pre-commit hook fails"
+      - "ID canonicality violations"
+    diagnosis:
+      - "Run: python 1_runtime/validators/P_01999000042260124521_id_format_scanner.py"
+      - "Review violations list"
+    resolution:
+      - "Rename files to match pattern: {file_id}_{name}"
+      - "Add P_ prefix to Python files"
+      - "Ensure 20-digit IDs"
+      - "Or exempt files in .gitignore"
+  
+  wrong_zone_classification:
+    symptoms:
+      - "Directory classified incorrectly"
+      - ".dir_id generated when it shouldn't be"
+    diagnosis:
+      - "Check config: .idpkg/config.json"
+      - "Verify governance.staging_depth"
+      - "Check exclusions.patterns"
+    resolution:
+      - "Update config values"
+      - "Add exclusion pattern if needed"
+      - "Re-run classification"

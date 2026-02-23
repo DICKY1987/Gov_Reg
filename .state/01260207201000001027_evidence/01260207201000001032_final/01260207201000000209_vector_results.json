@@ -1,0 +1,174 @@
+{
+  "timestamp": "2026-02-09T08:22:45.268128Z",
+  "vectors_executed": 23,
+  "passed": 21,
+  "failed": 0,
+  "skipped": 2,
+  "results": [
+    {
+      "vector_id": "VEC-001",
+      "category": "happy_path",
+      "description": "PLANNED \u2192 PRESENT via exact path match",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "vector_id": "VEC-002",
+      "category": "happy_path",
+      "description": "PRESENT \u2192 DEPRECATED with replacement",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "vector_id": "VEC-003",
+      "category": "happy_path",
+      "description": "DEPRECATED \u2192 DELETED after retention",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "vector_id": "VEC-004",
+      "category": "happy_path",
+      "description": "PLANNED \u2192 PRESENT via rename-intent match",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "vector_id": "VEC-005",
+      "category": "happy_path",
+      "description": "PLANNED \u2192 PRESENT via strong identity (file_id prefix)",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "vector_id": "VEC-006",
+      "category": "blocked",
+      "description": "PLANNED \u2192 PRESENT blocked (identity not resolved)",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "vector_id": "VEC-007",
+      "category": "blocked",
+      "description": "PLANNED \u2192 DELETED rejected (no_skip_states rule)",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "vector_id": "VEC-008",
+      "category": "conflict",
+      "description": "MULTI_MATCH: two plans match one observed file",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "vector_id": "VEC-009",
+      "category": "conflict",
+      "description": "DUPLICATE_PLANS: two plans for same path",
+      "passed": false,
+      "errors": [],
+      "skipped": true,
+      "reason": "No resolution action specified"
+    },
+    {
+      "vector_id": "VEC-010",
+      "category": "conflict",
+      "description": "PATH_COLLISION: rename collides with existing path",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "vector_id": "VEC-011",
+      "category": "conflict",
+      "description": "ID_COLLISION: two files embed same file_id prefix",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "vector_id": "VEC-012",
+      "category": "quarantine",
+      "description": "Unmatched file \u2192 ORPHANED",
+      "passed": false,
+      "errors": [],
+      "skipped": true,
+      "reason": "No transition specified"
+    },
+    {
+      "vector_id": "VEC-013",
+      "category": "quarantine",
+      "description": "ORPHANED \u2192 PLANNED via manual reclassification",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "vector_id": "VEC-014",
+      "category": "quarantine",
+      "description": "CONFLICT \u2192 PRESENT after adjudication",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "vector_id": "VEC-015",
+      "category": "field_precedence",
+      "description": "scan_authoritative (size_bytes) overwrites planned null",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "vector_id": "VEC-016",
+      "category": "field_precedence",
+      "description": "immutable (file_id) conflict with scan \u2192 CONFLICT state",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "vector_id": "VEC-017",
+      "category": "field_precedence",
+      "description": "scan_inferred (artifact_kind) preserved from plan, warning emitted",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "vector_id": "VEC-018",
+      "category": "gate",
+      "description": "Completeness gate passes (all planned \u2192 PRESENT)",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "vector_id": "VEC-019",
+      "category": "gate",
+      "description": "Completeness gate fails (one still PLANNED)",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "vector_id": "VEC-020",
+      "category": "gate",
+      "description": "Validity gate passes",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "vector_id": "VEC-021",
+      "category": "gate",
+      "description": "Validity gate fails (null in forbid_null column)",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "vector_id": "VEC-022",
+      "category": "batch",
+      "description": "3 files resolved, 1 orphaned, 1 conflict",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "vector_id": "VEC-023",
+      "category": "waiver",
+      "description": "Completeness passes with DEPRECATED + waiver",
+      "passed": true,
+      "errors": []
+    }
+  ]
+}

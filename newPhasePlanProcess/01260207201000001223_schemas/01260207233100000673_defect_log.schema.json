@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/01260207233100000673_defect_log.schema.json",
+  "title": "Plan Defect Log",
+  "description": "Defect log output from verifier CLI containing defects with RFC-6902 JSON Patch operations",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["plan_id", "generated_at_utc", "defects"],
+  "properties": {
+    "plan_id": {
+      "type": "string",
+      "description": "Plan ID that was validated"
+    },
+    "generated_at_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when defect log was generated"
+    },
+    "defects": {
+      "type": "array",
+      "description": "List of defects found during plan validation",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "defect_id",
+          "severity",
+          "category",
+          "location",
+          "problem",
+          "why_it_matters",
+          "fix_patch"
+        ],
+        "properties": {
+          "defect_id": {
+            "type": "string",
+            "pattern": "^D\\d{4}$",
+            "description": "Unique defect identifier (D0001-D9999)"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["low", "medium", "high", "critical"],
+            "description": "Severity level of the defect"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "schema",
+              "missing_field",
+              "contradiction",
+              "non_determinism",
+              "verification_gap",
+              "rollback_gap",
+              "ordering",
+              "environment",
+              "security",
+              "other"
+            ],
+            "description": "Category of defect"
+          },
+          "location": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["json_pointer"],
+            "properties": {
+              "json_pointer": {
+                "type": "string",
+                "minLength": 1,
+                "description": "JSON Pointer (RFC 6901) to defect location"
+              },
+              "step_id": {
+                "type": "string",
+                "description": "Step ID if defect is in a step"
+              },
+              "phase_id": {
+                "type": "string",
+                "description": "Phase ID if defect is in a phase"
+              }
+            }
+          },
+          "problem": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Concise description of the problem"
+          },
+          "why_it_matters": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Explanation of why this defect impacts plan execution or correctness"
+          },
+          "fix_patch": {
+            "type": "array",
+            "description": "RFC-6902 JSON Patch operations to fix this defect",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["op", "path"],
+              "properties": {
+                "op": {
+                  "type": "string",
+                  "enum": ["add", "remove", "replace", "move", "copy", "test"],
+                  "description": "JSON Patch operation"
+                },
+                "path": {
+                  "type": "string",
+                  "description": "JSON Pointer to target location"
+                },
+                "from": {
+                  "type": "string",
+                  "description": "Source JSON Pointer (for move/copy operations)"
+                },
+                "value": {
+                  "description": "Value to add/replace (for add/replace/test operations)"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

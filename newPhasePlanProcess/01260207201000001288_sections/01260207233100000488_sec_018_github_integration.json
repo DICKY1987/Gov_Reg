@@ -1,0 +1,81 @@
+{
+  "section_id": "sec_018_github_integration",
+  "title": "GitHub Integration (Optional)",
+  "required": false,
+  "instructions_file": "sections/sec_018_github_integration.inst.md",
+  "github_integration": {
+    "enabled": "{{true|false}}",
+    "repository": {
+      "owner": "{{GITHUB_USERNAME_OR_ORG}}",
+      "name": "{{REPO_NAME}}",
+      "default_branch": "{{main|master|develop}}",
+      "visibility": "{{public|private}}"
+    },
+    "issue_management": {
+      "mode": "one-per-phase",
+      "issue_config": {
+        "number": null,
+        "title_template": "[{phase_id}] {title}",
+        "body_template_path": "templates/github_issue.md",
+        "labels": [
+          "phase-plan",
+          "ai-generated",
+          "{{CUSTOM_LABEL}}"
+        ],
+        "assignees": [
+          "{{GITHUB_USERNAME}}"
+        ],
+        "milestone": "{{MILESTONE_TITLE}}"
+      }
+    },
+    "project_management": {
+      "url": "{{https://github.com/orgs/ORG/projects/N}}",
+      "owner": "{{ORG_OR_USER}}",
+      "project_number": "{{N}}",
+      "item_id": null,
+      "field_mappings": {
+        "phase_id_field": "Phase ID",
+        "workstream_field": "Workstream",
+        "status_field": "Status",
+        "risk_field": "Risk",
+        "target_date_field": "Target date",
+        "doc_id_field": "doc_id",
+        "story_points_field": null,
+        "owner_field": null
+      },
+      "status_mappings": {
+        "planned": "Todo",
+        "in_progress": "In Progress",
+        "blocked": "Blocked",
+        "done": "Done",
+        "abandoned": "Abandoned"
+      }
+    },
+    "automation": {
+      "allow_issue_create": true,
+      "allow_issue_update": true,
+      "allow_project_item_create": true,
+      "allow_project_item_update": true,
+      "sync_direction": "yaml->github",
+      "on_phase_status_change_update_project": true,
+      "on_project_status_change_update_phase": false,
+      "last_synced_at": null,
+      "last_synced_by": null
+    },
+    "sync_script": {
+      "command": {
+        "exe": "python",
+        "args": [
+          "scripts/sync_github.py",
+          "{{PLAN_FILE}}"
+        ],
+        "timeout_seconds": 600,
+        "expected_exit_codes": [
+          0
+        ]
+      },
+      "expect_exit_code": 0
+    }
+  },
+  "file_id": "01260207233100000488"
+}

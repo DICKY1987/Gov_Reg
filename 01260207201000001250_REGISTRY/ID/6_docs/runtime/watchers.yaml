@@ -1,0 +1,441 @@
+category: "watchers"
+purpose: "Filesystem monitoring, auto-repair, and maintenance"
+location: "1_runtime/watchers/"
+last_updated: "2026-02-22"
+
+modules:
+  - name: "dir_id_auto_repair"
+    file: "P_01999000042260125104_dir_id_auto_repair.py"
+    status: "ACTIVE"
+    purpose: "Automatically repair corrupted .dir_id files"
+    priority: "HIGH"
+    
+    functions:
+      - name: "scan_and_repair"
+        signature: "scan_and_repair(root_path: str, quarantine: bool = True) -> dict"
+        description: "Scan for and repair corrupted .dir_id files"
+        
+        parameters:
+          - name: "root_path"
+            type: "str"
+            description: "Root directory to scan"
+          - name: "quarantine"
+            type: "bool"
+            default: true
+            description: "Quarantine corrupted files before repair"
+        
+        returns:
+          type: "dict"
+          structure:
+            scanned: "int (directories checked)"
+            corrupted: "int (files needing repair)"
+            repaired: "int (successfully fixed)"
+            failed: "int (could not repair)"
+            quarantined: "list[str] (backup locations)"
+        
+        repair_actions:
+          - "Fix malformed JSON syntax"
+          - "Correct wrong relative_path"
+          - "Fix wrong project_root_id"
+          - "Regenerate if digit count wrong"
+          - "Validate against schema"
+        
+        example: |
+          from ID.1_runtime.watchers.P_01999000042260125104_dir_id_auto_repair import scan_and_repair
+          
+          results = scan_and_repair('C:/Users/richg/Gov_Reg', quarantine=True)
+          # Returns: {
+          #   "scanned": 100,
+          #   "corrupted": 3,
+          #   "repaired": 2,
+          #   "failed": 1,
+          #   "quarantined": [".dir_id.quarantine/..."]
+          # }
+      
+      - name: "repair_single"
+        signature: "repair_single(dir_path: str) -> tuple[bool, str]"
+        description: "Repair single .dir_id file"
+        
+        parameters:
+          - name: "dir_path"
+            type: "str"
+        
+        returns:
+          type: "tuple[bool, str]"
+          description: "(success, error_or_action)"
+        
+        side_effects:
+          - "Backs up original .dir_id to quarantine"
+          - "Writes repaired .dir_id"
+          - "Generates evidence file"
+      
+      - name: "quarantine_file"
+        signature: "quarantine_file(file_path: str) -> str"
+        description: "Move corrupted file to quarantine"
+        
+        returns:
+          type: "str"
+          description: "Quarantine path"
+    
+    quarantine_system:
+      location: ".state/quarantine/dir_id/"
+      naming: "{original_name}.{timestamp}.backup"
+      retention: "30 days"
+      restoration: "Manual review required"
+    
+    evidence_generation:
+      enabled: true
+      output_dir: "01260207201000001148_evidence/repairs/"
+      format: "JSON with before/after state"
+    
+    dependencies:
+      imports:
+        - module: "dir_id_handler"
+          file: "P_01999000042260125068_dir_id_handler.py"
+          usage: "Read/write .dir_id files"
+        - module: "zone_classifier"
+          file: "P_01999000042260125067_zone_classifier.py"
+          usage: "Verify governance zone"
+
+  - name: "dir_id_watcher"
+    file: "P_01999000042260125105_dir_id_watcher.py"
+    status: "ACTIVE"
+    purpose: "Continuous filesystem monitoring for directory changes"
+    priority: "MEDIUM"
+    
+    functions:
+      - name: "start_watcher"
+        signature: "start_watcher(root_path: str, daemon: bool = True) -> None"
+        description: "Start filesystem watcher daemon"
+        
+        parameters:
+          - name: "root_path"
+            type: "str"
+            description: "Root directory to monitor"
+          - name: "daemon"
+            type: "bool"
+            default: true
+            description: "Run as background daemon"
+        
+        side_effects:
+          - "Starts watchdog observer"
+          - "Monitors directory creation/deletion"
+          - "Auto-allocates .dir_id for new directories in governed zones"
+        
+        example: |
+          from ID.1_runtime.watchers.P_01999000042260125105_dir_id_watcher import start_watcher
+          
+          # Start in daemon mode
+          start_watcher('C:/Users/richg/Gov_Reg', daemon=True)
+      
+      - name: "on_directory_created"
+        signature: "on_directory_created(event: FileSystemEvent) -> None"
+        description: "Handle directory creation event"
+        
+        actions:
+          - "Classify directory zone"
+          - "If governed: allocate and write .dir_id"
+          - "Emit event evidence"
+      
+      - name: "on_directory_deleted"
+        signature: "on_directory_deleted(event: FileSystemEvent) -> None"
+        description: "Handle directory deletion event"
+        
+        actions:
+          - "Log deletion event"
+          - "Mark dir_id as orphaned in registry"
+      
+      - name: "stop_watcher"
+        signature: "stop_watcher() -> None"
+        description: "Stop watcher daemon gracefully"
+    
+    event_handling:
+      directory_created:
+        trigger: "New directory detected"
+        action: "Auto-generate .dir_id if governed"
+        latency: "< 1 second"
+      
+      directory_moved:
+        trigger: "Directory renamed or moved"
+        action: "Update relative_path in .dir_id"
+      
+      directory_deleted:
+        trigger: "Directory removed"
+        action: "Log orphaned dir_id"
+    
+    dependencies:
+      imports:
+        - module: "watchdog"
+          usage: "Filesystem event monitoring"
+        - module: "dir_id_handler"
+        - module: "zone_classifier"
+        - module: "unified_id_allocator"
+
+  - name: "orphan_purger"
+    file: "P_01999000042260125111_orphan_purger.py"
+    status: "ACTIVE"
+    purpose: "Cleanup orphaned and dead registry entries"
+    priority: "LOW"
+    
+    functions:
+      - name: "scan_orphans"
+        signature: "scan_orphans(registry_path: str) -> dict"
+        description: "Scan registry for orphaned entries"
+        
+        parameters:
+          - name: "registry_path"
+            type: "str"
+            description: "Path to registry file"
+        
+        returns:
+          type: "dict"
+          structure:
+            orphaned_dirs: "list[dict] (dir_ids with no filesystem presence)"
+            orphaned_files: "list[dict] (file_ids with no filesystem presence)"
+            dead_paths: "list[str] (paths that don't resolve)"
+            total_orphans: "int"
+        
+        example: |
+          from ID.1_runtime.watchers.P_01999000042260125111_orphan_purger import scan_orphans
+          
+          orphans = scan_orphans('../../01260207201000001250_REGISTRY/01999000042260124503_REGISTRY_file.json')
+          # Returns: {
+          #   "orphaned_dirs": [{"dir_id": "...", "last_seen": "..."}],
+          #   "orphaned_files": [...],
+          #   "dead_paths": [...],
+          #   "total_orphans": 15
+          # }
+      
+      - name: "purge_orphans"
+        signature: "purge_orphans(orphan_list: list[dict], dry_run: bool = True) -> dict"
+        description: "Remove orphaned entries from registry"
+        
+        parameters:
+          - name: "orphan_list"
+            type: "list[dict]"
+            description: "Orphans to purge"
+          - name: "dry_run"
+            type: "bool"
+            default: true
+            description: "Simulate without actually deleting"
+        
+        returns:
+          type: "dict"
+          structure:
+            purged: "int"
+            failed: "int"
+            skipped: "int"
+        
+        safety:
+          - "Dry-run mode by default"
+          - "Backup registry before purge"
+          - "Confirm before deletion"
+      
+      - name: "mark_stale"
+        signature: "mark_stale(dir_id: str, reason: str) -> bool"
+        description: "Mark entry as stale without deleting"
+    
+    scheduling:
+      recommended: "Nightly maintenance window"
+      frequency: "Daily or weekly"
+      integration: "healthcheck.py includes orphan scan"
+    
+    safety_measures:
+      - "Default dry_run=True"
+      - "Automatic backup before purge"
+      - "Confirmation required for production"
+      - "Audit log of all deletions"
+
+  - name: "idpkg_runtime"
+    file: "P_01999000042260126000__idpkg_runtime.py"
+    status: "ACTIVE"
+    purpose: "Unified runtime coordinator for entire ID package"
+    priority: "HIGH"
+    
+    functions:
+      - name: "initialize_runtime"
+        signature: "initialize_runtime(config_path: str = None) -> bool"
+        description: "Initialize IDPKG runtime system"
+        
+        parameters:
+          - name: "config_path"
+            type: "str"
+            default: ".idpkg/config.json"
+        
+        returns:
+          type: "bool"
+          description: "True if initialization successful"
+        
+        initialization_steps:
+          - "Load configuration"
+          - "Verify counter store accessible"
+          - "Validate schemas present"
+          - "Start watcher if configured"
+          - "Register signal handlers"
+        
+        example: |
+          from ID.1_runtime.watchers.P_01999000042260126000__idpkg_runtime import initialize_runtime
+          
+          if initialize_runtime():
+              print("IDPKG runtime ready")
+      
+      - name: "run_maintenance"
+        signature: "run_maintenance(tasks: list[str] = None) -> dict"
+        description: "Run maintenance tasks"
+        
+        parameters:
+          - name: "tasks"
+            type: "list[str]"
+            default: "['scan_orphans', 'repair_corrupted', 'validate_all']"
+        
+        returns:
+          type: "dict"
+          description: "Results of each maintenance task"
+        
+        available_tasks:
+          - "scan_orphans: Find orphaned entries"
+          - "repair_corrupted: Auto-repair .dir_id files"
+          - "validate_all: Full system validation"
+          - "cleanup_locks: Remove stale lock files"
+          - "backup_counter: Backup counter store"
+      
+      - name: "shutdown_runtime"
+        signature: "shutdown_runtime() -> None"
+        description: "Gracefully shutdown runtime"
+        
+        actions:
+          - "Stop watcher daemon"
+          - "Release all locks"
+          - "Flush logs"
+          - "Save state"
+    
+    runtime_coordination:
+      managed_components:
+        - "dir_id_watcher (optional)"
+        - "auto_repair (on-demand)"
+        - "orphan_purger (scheduled)"
+        - "health_checks (periodic)"
+      
+      lifecycle:
+        - "initialize_runtime() on startup"
+        - "run_maintenance() periodically"
+        - "shutdown_runtime() on exit"
+
+dependency_graph:
+  dir_id_auto_repair:
+    imports: ["dir_id_handler", "zone_classifier", "json"]
+    imported_by: ["idpkg_runtime", "CLI maintenance tools"]
+    calls: ["read_dir_id", "write_dir_id", "classify_directory"]
+  
+  dir_id_watcher:
+    imports: ["watchdog", "dir_id_handler", "zone_classifier", "unified_id_allocator"]
+    imported_by: ["idpkg_runtime"]
+    calls: ["allocate_id", "write_dir_id"]
+    triggers: "on filesystem events"
+  
+  orphan_purger:
+    imports: ["dir_id_handler", "registry reader"]
+    imported_by: ["idpkg_runtime", "healthcheck"]
+    calls: ["read registry", "validate paths"]
+  
+  idpkg_runtime:
+    imports: ["dir_id_watcher", "dir_id_auto_repair", "orphan_purger"]
+    imported_by: ["CLI maintenance tools", "System startup"]
+    orchestrates: "All watcher components"
+
+common_workflows:
+  auto_repair_system:
+    steps:
+      - "Import scan_and_repair"
+      - "Run: scan_and_repair(project_root, quarantine=True)"
+      - "Review results"
+      - "Check quarantine folder for backups"
+  
+  start_continuous_monitoring:
+    steps:
+      - "Import start_watcher"
+      - "Run: start_watcher(project_root, daemon=True)"
+      - "Watcher runs in background"
+      - "Auto-generates .dir_id for new directories"
+  
+  cleanup_orphans:
+    steps:
+      - "Import scan_orphans and purge_orphans"
+      - "Run: orphans = scan_orphans(registry_path)"
+      - "Review orphan list"
+      - "Run: purge_orphans(orphans, dry_run=False)"
+  
+  full_maintenance:
+    steps:
+      - "Import run_maintenance from idpkg_runtime"
+      - "Run: run_maintenance(['scan_orphans', 'repair_corrupted', 'validate_all'])"
+      - "Review maintenance report"
+
+integration_points:
+  with_allocators:
+    - "dir_id_watcher calls allocate_id() for new directories"
+    - "Coordinates ID allocation on filesystem events"
+  
+  with_handlers:
+    - "auto_repair uses dir_id_handler for read/write"
+    - "All watchers depend on handler functions"
+  
+  with_validators:
+    - "auto_repair validates after repair"
+    - "zone_classifier determines repair eligibility"
+  
+  with_registry:
+    - "orphan_purger reads registry for comparison"
+    - "Syncs filesystem state with registry"
+
+performance:
+  auto_repair:
+    typical_time: "50-200ms per file"
+    batch_performance: "500-1000 files/minute"
+  
+  watcher:
+    event_latency: "< 1 second"
+    resource_usage: "Low (watchdog is efficient)"
+  
+  orphan_scan:
+    typical_time: "1-5 seconds per 1000 entries"
+
+troubleshooting:
+  watcher_not_starting:
+    symptoms:
+      - "start_watcher() fails"
+      - "No auto-generation of .dir_id"
+    diagnosis:
+      - "Check watchdog installed: pip list | grep watchdog"
+      - "Check permissions on root_path"
+      - "Check for conflicting watchers"
+    resolution:
+      - "Install watchdog: pip install watchdog"
+      - "Fix permissions"
+      - "Stop conflicting watchers"
+  
+  auto_repair_fails:
+    symptoms:
+      - "repair_single() returns False"
+      - "Files remain in quarantine"
+    diagnosis:
+      - "Check quarantine folder"
+      - "Review error messages"
+      - "Validate .dir_id schema"
+    resolution:
+      - "Manual inspection of quarantine files"
+      - "Regenerate .dir_id if unrepairable"
+      - "Reference: operations/troubleshooting.yaml#malformed_dir_id"
+  
+  orphans_not_purging:
+    symptoms:
+      - "purge_orphans() runs but orphans remain"
+      - "dry_run=False but no deletions"
+    diagnosis:
+      - "Check if dry_run accidentally True"
+      - "Check registry write permissions"
+      - "Verify orphan list is valid"
+    resolution:
+      - "Ensure dry_run=False"
+      - "Backup registry first"
+      - "Check file locks on registry"

@@ -1,0 +1,53 @@
+{
+  "plan_id": "PLAN_20260218T205848Z_b59d8050",
+  "version": "2.0",
+  "objective": "Generated plan skeleton - placeholder",
+  "scope": {
+    "in_scope": [
+      "Schema definitions",
+      "CLI framework"
+    ],
+    "out_of_scope": [
+      "Production deployment"
+    ]
+  },
+  "assumptions": [],
+  "constraints": [],
+  "workstreams": [
+    {
+      "workstream_id": "WS_FOUNDATION",
+      "name": "Foundation Setup",
+      "owner": "SYSTEM",
+      "inputs": [],
+      "outputs": [],
+      "steps": [],
+      "evidence_requirements": []
+    }
+  ],
+  "deliverables": [
+    {
+      "deliverable_id": "DEL-001",
+      "description": "Placeholder deliverable",
+      "acceptance_test": "pytest tests/"
+    }
+  ],
+  "acceptance_criteria": [
+    {
+      "criteria_id": "AC-001",
+      "description": "All tests pass",
+      "measurement_method": "pytest --cov",
+      "target_value": "95%"
+    }
+  ],
+  "risks": [],
+  "dependencies": [],
+  "gates": [],
+  "declared_new_artifacts": [],
+  "metadata": {
+    "created_at": "2026-02-18T20:58:48.454945Z",
+    "created_by": "PLANNER_AGENT",
+    "template_version": "3.0.0",
+    "planning_run_id": "CONTEXT_20260218T205847Z_198e89f2",
+    "iteration": 0
+  }
+}

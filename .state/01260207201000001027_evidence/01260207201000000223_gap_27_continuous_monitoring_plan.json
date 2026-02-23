@@ -1,0 +1,35 @@
+{
+  "gap_id": "GAP-027",
+  "gap_name": "Continuous Monitoring Plan",
+  "verification_timestamp": "2026-02-12T17:19:05.204176+00:00",
+  "status": "VERIFIED",
+  "checks": [
+    {
+      "check_id": "CHECK-027-001",
+      "description": "Monitoring configuration with continuous checks",
+      "status": "PASS",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\.state\\monitoring_config.json",
+        "exists": true,
+        "sha256": "6EF1EA77375FF4524BE440BE89C28DEAE11F22B53D88F8AC0ABE9D11D5428B82",
+        "monitors_count": 5,
+        "continuous_enabled": true
+      }
+    },
+    {
+      "check_id": "CHECK-027-002",
+      "description": "Performance baselines integration (GAP #26)",
+      "status": "PASS",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\.state\\performance_baselines.json",
+        "exists": true,
+        "sha256": "CCB825D7D110DA1E0764833B5AEFD2E60CCA543662875E87ED51D85B884C9A60"
+      }
+    }
+  ],
+  "cryptographic_proof": {
+    "algorithm": "SHA256",
+    "hash": "C087E06BFA742862DFA60D8B6661CCF607CD5EB6B34C88B6E2A11E8D5DC1AFB2",
+    "timestamp": "2026-02-12T17:19:05.204176+00:00"
+  }
+}

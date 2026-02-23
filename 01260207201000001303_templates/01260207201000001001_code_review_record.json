@@ -1,0 +1,32 @@
+{
+  "review_id": "{{UUID}}",
+  "timestamp": "{{ISO8601_UTC}}",
+  "change_id": "{{CHANGE_ID}}",
+  "pull_request": "{{PR_NUMBER}}",
+  "author": "{{AUTHOR}}",
+  "reviewers": [],
+  "review_checklist": {
+    "code_quality": {
+      "checked": false,
+      "notes": ""
+    },
+    "security_review": {
+      "checked": false,
+      "notes": ""
+    },
+    "test_coverage": {
+      "checked": false,
+      "notes": ""
+    },
+    "documentation": {
+      "checked": false,
+      "notes": ""
+    },
+    "performance_impact": {
+      "checked": false,
+      "notes": ""
+    }
+  },
+  "approval_status": "PENDING|APPROVED|CHANGES_REQUESTED",
+  "approval_timestamp": "{{ISO8601_UTC}}"
+}

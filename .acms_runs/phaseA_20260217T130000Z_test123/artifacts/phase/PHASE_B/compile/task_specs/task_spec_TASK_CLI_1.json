@@ -1,0 +1,29 @@
+{
+  "task_id": "TASK-CLI-1",
+  "safe_task_id": "TASK_CLI_1",
+  "summary": "Create CLI entry point",
+  "depends_on": [],
+  "write_operations": [
+    {
+      "type": "create",
+      "path": "src/cli.py",
+      "backup_required": false
+    }
+  ],
+  "acceptance_tests": [
+    {
+      "command": "python -m pytest tests/test_cli.py",
+      "expected_exit_code": 0
+    }
+  ],
+  "rollback_operations": [
+    {
+      "type": "delete",
+      "path": "src/cli.py",
+      "backup_ref": null,
+      "sha256_before": null
+    }
+  ],
+  "estimated_duration_seconds": 120,
+  "retries_allowed": 0
+}

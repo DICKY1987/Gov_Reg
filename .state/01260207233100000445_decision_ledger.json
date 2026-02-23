@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-01-29T13:10:23Z",
+  "context": {
+    "requires_contracts": true,
+    "requires_integration_tests": true,
+    "file_count": 7
+  },
+  "options": [
+    "simple",
+    "moderate",
+    "complex",
+    "enterprise"
+  ],
+  "selected_option": "complex",
+  "category": "classification",
+  "decision_id": "DEC-COLPOP-001",
+  "rationale": "Project involves 7 new files, requires schema contracts, DAG validation, and integration testing across existing validators. Estimated 1000+ LOC with topological sort algorithms and error handling.",
+  "file_id": "01260207233100000445"
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.internal/schemas/critique_report.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "critique_id", "plan_id", "verdict", "defects", "computed_at"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0" },
+    "critique_id": { "type": "string", "format": "uuid" },
+    "plan_id": { "type": "string", "format": "uuid" },
+    "computed_at": { "type": "string", "format": "date-time" },
+    "verdict": { "type": "string", "enum": ["pass", "needs_revision", "fail"] },
+    "scorecard": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "completeness": { "type": "integer", "minimum": 0, "maximum": 5 },
+        "testability": { "type": "integer", "minimum": 0, "maximum": 5 },
+        "risk_coverage": { "type": "integer", "minimum": 0, "maximum": 5 },
+        "sequencing": { "type": "integer", "minimum": 0, "maximum": 5 },
+        "gate_quality": { "type": "integer", "minimum": 0, "maximum": 5 }
+      }
+    },
+    "defects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "severity", "message", "fix"],
+        "properties": {
+          "code": { "type": "string" },
+          "severity": { "type": "string", "enum": ["blocker", "major", "minor"] },
+          "message": { "type": "string" },
+          "evidence": { "type": "string" },
+          "fix": { "type": "string" }
+        }
+      }
+    }
+  }
+}

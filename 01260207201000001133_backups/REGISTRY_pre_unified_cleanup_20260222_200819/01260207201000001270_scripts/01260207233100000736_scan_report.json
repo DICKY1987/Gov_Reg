@@ -1,0 +1,59 @@
+{
+  "scan_timestamp": "2026-02-02T23:52:59.641721Z",
+  "total_files": 114,
+  "files_with_ids": 110,
+  "files_without_ids": 4,
+  "valid_ids": 110,
+  "invalid_ids": 0,
+  "id_mismatches": 0,
+  "duplicate_ids": 1,
+  "duplicates": {
+    "01260202173939000039": [
+      "..\\scripts\\01260202173939000039_scripts_file.py",
+      "..\\mapp_py\\.runs\\01260202173939000039_DOC-SCRIPT-1008__gate_validation_checkpoint.json"
+    ]
+  },
+  "files_needing_attention": [
+    {
+      "file_path": ".runs\\validation_file_id_20260202_134237.json",
+      "file_name": "validation_file_id_20260202_134237.json",
+      "has_id": false,
+      "id_value": null,
+      "id_valid": false,
+      "id_format_issue": "No 20-digit ID found in filename",
+      "content_id": null,
+      "id_mismatch": false
+    },
+    {
+      "file_path": ".runs\\validation_file_id_20260202_134247.json",
+      "file_name": "validation_file_id_20260202_134247.json",
+      "has_id": false,
+      "id_value": null,
+      "id_valid": false,
+      "id_format_issue": "No 20-digit ID found in filename",
+      "content_id": null,
+      "id_mismatch": false
+    },
+    {
+      "file_path": ".runs\\validation_file_id_20260202_134357.json",
+      "file_name": "validation_file_id_20260202_134357.json",
+      "has_id": false,
+      "id_value": null,
+      "id_valid": false,
+      "id_format_issue": "No 20-digit ID found in filename",
+      "content_id": null,
+      "id_mismatch": false
+    },
+    {
+      "file_path": ".state\\evidence\\pre_migration\\normalization_report.json",
+      "file_name": "normalization_report.json",
+      "has_id": false,
+      "id_value": null,
+      "id_valid": false,
+      "id_format_issue": "No 20-digit ID found in filename",
+      "content_id": null,
+      "id_mismatch": false
+    }
+  ],
+  "file_id": "01260207233100000736"
+}

@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://govreg.local/schemas/summary.schema.json",
+  "title": "Planning Run Summary Schema",
+  "description": "Final summary of a planning loop execution",
+  "type": "object",
+  "required": [
+    "planning_run_id",
+    "policy_hash",
+    "context_bundle_hash",
+    "iterations_executed",
+    "termination_reason",
+    "final_hard_defects_count",
+    "final_soft_defects_count",
+    "soft_defects_delta_total",
+    "final_plan_hash",
+    "artifact_index",
+    "defect_trajectory"
+  ],
+  "properties": {
+    "planning_run_id": {
+      "type": "string",
+      "pattern": "^planning_[0-9]{8}T[0-9]{6}Z_[a-f0-9]{8}$"
+    },
+    "policy_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "context_bundle_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "iterations_executed": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "termination_reason": {
+      "type": "string",
+      "enum": [
+        "ZERO_HARD_DEFECTS",
+        "SOFT_DEFECTS_PLATEAUED",
+        "MAX_ITERATIONS_REACHED",
+        "CONTEXT_STALE",
+        "MANUAL_STOP"
+      ]
+    },
+    "final_hard_defects_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "final_soft_defects_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "soft_defects_delta_total": {
+      "type": "integer",
+      "description": "Net change in soft defects (negative = improvement)"
+    },
+    "final_plan_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "artifact_index": {
+      "type": "array",
+      "description": "All artifacts produced during run",
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256", "created_at"],
+        "properties": {
+          "path": {"type": "string"},
+          "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "created_at": {"type": "string", "format": "date-time"},
+          "artifact_type": {"type": "string"}
+        }
+      }
+    },
+    "defect_trajectory": {
+      "type": "array",
+      "description": "Defect counts over iterations",
+      "items": {
+        "type": "object",
+        "required": ["iteration", "hard_count", "soft_count"],
+        "properties": {
+          "iteration": {"type": "integer", "minimum": 0},
+          "hard_count": {"type": "integer", "minimum": 0},
+          "soft_count": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "total_duration_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "llm_costs": {
+      "type": "object",
+      "properties": {
+        "total_tokens": {"type": "integer", "minimum": 0},
+        "estimated_cost_usd": {"type": "number", "minimum": 0}
+      }
+    }
+  }
+}

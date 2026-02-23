@@ -1,0 +1,2527 @@
+{
+  "schema_version": "1.1.0",
+  "generated_utc": "2026-02-17T05:43:47.565745+00:00",
+  "run_id": "20260217_054331_50173d",
+  "repo_root": "C:\\Users\\richg\\Gov_Reg",
+  "category_scope": "NEWPHASE_TEMPLATE_PROCESS",
+  "dir_id_resolution": {
+    "NEWPHASE_TEMPLATE_PROCESS": {
+      "abs_path": "C:\\Users\\richg\\Gov_Reg\\newPhasePlanProcess",
+      "dir_id": "01260207201000001177",
+      "dir_id_source": ".dir_id metadata file"
+    }
+  },
+  "counts_by_category": {
+    "NEWPHASE_TEMPLATE_PROCESS": 139
+  },
+  "counts_by_eligibility": {
+    "ELIGIBLE": 125,
+    "MISMATCH_REGISTRY_VS_FS": 0,
+    "NOT_IN_REGISTRY": 0,
+    "SKIPPED_NO_ID": 14
+  },
+  "moves": [
+    {
+      "entity_type": "file",
+      "file_id": null,
+      "source_relpath": "newPhasePlanProcess/# LangGraph Integration Architecture.txt",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/# LangGraph Integration Architecture.txt",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "SKIPPED_NO_ID",
+      "module_id_current": null,
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": null,
+      "source_relpath": "newPhasePlanProcess/.dir_id",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/.dir_id",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "SKIPPED_NO_ID",
+      "module_id_current": null,
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000180",
+      "source_relpath": "newPhasePlanProcess/01260207201000000180_NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000000180_NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000194",
+      "source_relpath": "newPhasePlanProcess/01260207201000000194_UPDATES_FOR_NPP.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000000194_UPDATES_FOR_NPP.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000454",
+      "source_relpath": "newPhasePlanProcess/01260207201000000454_capability_mapping_status_report.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000000454_capability_mapping_status_report.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000455",
+      "source_relpath": "newPhasePlanProcess/01260207201000000455_ChatGPT-MCP Servers for Planning.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000000455_ChatGPT-MCP Servers for Planning.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000458",
+      "source_relpath": "newPhasePlanProcess/01260207201000000458_COMPLETENESS_ASSESSMENT.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000000458_COMPLETENESS_ASSESSMENT.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000460",
+      "source_relpath": "newPhasePlanProcess/01260207201000000460_CORRECTED_OPERATIONAL_ROADMAP.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000000460_CORRECTED_OPERATIONAL_ROADMAP.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000461",
+      "source_relpath": "newPhasePlanProcess/01260207201000000461_DECISION_POINT_NEXT_STEPS.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000000461_DECISION_POINT_NEXT_STEPS.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000462",
+      "source_relpath": "newPhasePlanProcess/01260207201000000462_DELIVERABLES_2026_02_12.txt",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000000462_DELIVERABLES_2026_02_12.txt",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000480",
+      "source_relpath": "newPhasePlanProcess/01260207201000000480_DOCUMENTATION_CORRECTIONS_APPLIED.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000000480_DOCUMENTATION_CORRECTIONS_APPLIED.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000481",
+      "source_relpath": "newPhasePlanProcess/01260207201000000481_EXECUTION_COMPLETION_CERTIFICATE.txt",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000000481_EXECUTION_COMPLETION_CERTIFICATE.txt",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000486",
+      "source_relpath": "newPhasePlanProcess/01260207201000000486_GOVERNANCE_GAP_ANALYSIS_ACCURACY_ASSESSMENT.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000000486_GOVERNANCE_GAP_ANALYSIS_ACCURACY_ASSESSMENT.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000487",
+      "source_relpath": "newPhasePlanProcess/01260207201000000487_INDEX_AUDIT_CORRECTIONS_AND_NEW_GOVERNANCE.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000000487_INDEX_AUDIT_CORRECTIONS_AND_NEW_GOVERNANCE.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000488",
+      "source_relpath": "newPhasePlanProcess/01260207201000000488_INDEX_BRIEFING_MATERIALS.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000000488_INDEX_BRIEFING_MATERIALS.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000489",
+      "source_relpath": "newPhasePlanProcess/01260207201000000489_MASTER_INDEX_ALL_DELIVERABLES.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000000489_MASTER_INDEX_ALL_DELIVERABLES.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000509",
+      "source_relpath": "newPhasePlanProcess/01260207201000000509_mcp_progress_report.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000000509_mcp_progress_report.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000510",
+      "source_relpath": "newPhasePlanProcess/01260207201000000510_NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000000510_NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000512",
+      "source_relpath": "newPhasePlanProcess/01260207201000000512_npp_mcp_tool_contracts.v1.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000000512_npp_mcp_tool_contracts.v1.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000513",
+      "source_relpath": "newPhasePlanProcess/01260207201000000513_patch excution.txt",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000000513_patch excution.txt",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000515",
+      "source_relpath": "newPhasePlanProcess/01260207201000000515_Planning-Time File ID Reservation System.txt",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000000515_Planning-Time File ID Reservation System.txt",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000516",
+      "source_relpath": "newPhasePlanProcess/01260207201000000516_Planning-Time_File_ID_Reservation_System_UPDATED.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000000516_Planning-Time_File_ID_Reservation_System_UPDATED.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000528",
+      "source_relpath": "newPhasePlanProcess/01260207201000000528_README_SESSION_2026_02_12.txt",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000000528_README_SESSION_2026_02_12.txt",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": null,
+      "source_relpath": "newPhasePlanProcess/AutoGen Feedback Loops.docx",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/AutoGen Feedback Loops.docx",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "SKIPPED_NO_ID",
+      "module_id_current": null,
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": null,
+      "source_relpath": "newPhasePlanProcess/ChatGPT-Multi CLI Integration Summary.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/ChatGPT-Multi CLI Integration Summary.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "SKIPPED_NO_ID",
+      "module_id_current": null,
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": null,
+      "source_relpath": "newPhasePlanProcess/01260207201000001216_Docs/.dir_id",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001216_Docs/.dir_id",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "SKIPPED_NO_ID",
+      "module_id_current": null,
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000463",
+      "source_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000463_AI_AGENT_INSTRUCTIONS.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000463_AI_AGENT_INSTRUCTIONS.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000464",
+      "source_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000464_Analysis Complete Process Map_NPP.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000464_Analysis Complete Process Map_NPP.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000465",
+      "source_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000465_ChatGPT-Reusable Pattern Programs (1).json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000465_ChatGPT-Reusable Pattern Programs (1).json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000466",
+      "source_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000466_ChatGPT-Self-Healing Gate Process.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000466_ChatGPT-Self-Healing Gate Process.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000467",
+      "source_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000467_CLAUDE.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000467_CLAUDE.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000468",
+      "source_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000468_Complete Context Analysis_newPhasePlanProcess System.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000468_Complete Context Analysis_newPhasePlanProcess System.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000469",
+      "source_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000469_Complete Process Map_NPP.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000469_Complete Process Map_NPP.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000470",
+      "source_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000470_COMPREHENSIVE DEEP DIVE.txt",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000470_COMPREHENSIVE DEEP DIVE.txt",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000471",
+      "source_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000471_CURRENT_SYSTEM_TECHNICAL_SPECIFICATION.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000471_CURRENT_SYSTEM_TECHNICAL_SPECIFICATION.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000472",
+      "source_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000472_deep-dive check.txt",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000472_deep-dive check.txt",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000473",
+      "source_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000473_FILE_NECESSITY_ANALYSIS.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000473_FILE_NECESSITY_ANALYSIS.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000474",
+      "source_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000474_Gate‑Specific Files, Reusable Compo.txt",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000474_Gate‑Specific Files, Reusable Compo.txt",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000476",
+      "source_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000476_NPP_Current_vs_Proposed_Deep_Dive_Analysis.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000476_NPP_Current_vs_Proposed_Deep_Dive_Analysis.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000477",
+      "source_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000477_NPP_System_Deep_Dive_Analysis.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000477_NPP_System_Deep_Dive_Analysis.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000479",
+      "source_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000479_WIRING_ENHANCEMENT_OPTION4_ENFORCED.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001216_Docs/01260207201000000479_WIRING_ENHANCEMENT_OPTION4_ENFORCED.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": null,
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/.dir_id",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/.dir_id",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "SKIPPED_NO_ID",
+      "module_id_current": null,
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000492",
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000000492_mcp_config.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000000492_mcp_config.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000490",
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/P_01260207201000000490___init__.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/P_01260207201000000490___init__.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000493",
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/P_01260207201000000493_server.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/P_01260207201000000493_server.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": null,
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001218_contracts/.dir_id",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001218_contracts/.dir_id",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "SKIPPED_NO_ID",
+      "module_id_current": null,
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000491",
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001218_contracts/01260207201000000491_tool_contracts.v1.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001218_contracts/01260207201000000491_tool_contracts.v1.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": null,
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001219_tools/.dir_id",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001219_tools/.dir_id",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "SKIPPED_NO_ID",
+      "module_id_current": null,
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000494",
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001219_tools/P_01260207201000000494___init__.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001219_tools/P_01260207201000000494___init__.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000495",
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001219_tools/P_01260207201000000495_plan_validate_ssot.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001219_tools/P_01260207201000000495_plan_validate_ssot.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000496",
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001219_tools/P_01260207201000000496_plan_validate_step_contracts.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001219_tools/P_01260207201000000496_plan_validate_step_contracts.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000497",
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001219_tools/P_01260207201000000497_plan_validate_structure.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001219_tools/P_01260207201000000497_plan_validate_structure.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000498",
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001219_tools/P_01260207201000000498_planning_extract_file_mutation_set.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001219_tools/P_01260207201000000498_planning_extract_file_mutation_set.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": null,
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001220_utils/.dir_id",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001220_utils/.dir_id",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "SKIPPED_NO_ID",
+      "module_id_current": null,
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000500",
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001220_utils/P_01260207201000000500___init__.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001220_utils/P_01260207201000000500___init__.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000501",
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001220_utils/P_01260207201000000501_config.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001220_utils/P_01260207201000000501_config.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000502",
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001220_utils/P_01260207201000000502_defects.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001220_utils/P_01260207201000000502_defects.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000503",
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001220_utils/P_01260207201000000503_evidence.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001220_utils/P_01260207201000000503_evidence.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000504",
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001220_utils/P_01260207201000000504_hashing.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001220_utils/P_01260207201000000504_hashing.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000505",
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001220_utils/P_01260207201000000505_paths.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001220_utils/P_01260207201000000505_paths.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000506",
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001220_utils/P_01260207201000000506_schema.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001220_utils/P_01260207201000000506_schema.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000507",
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001220_utils/P_01260207201000000507_subprocess_runner.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001220_utils/P_01260207201000000507_subprocess_runner.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000508",
+      "source_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001220_utils/P_01260207201000000508_tool_result.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001217_mcp/01260207201000001220_utils/P_01260207201000000508_tool_result.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": null,
+      "source_relpath": "newPhasePlanProcess/01260207201000001222_Plans_Instructions/.dir_id",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001222_Plans_Instructions/.dir_id",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "SKIPPED_NO_ID",
+      "module_id_current": null,
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000517",
+      "source_relpath": "newPhasePlanProcess/01260207201000001222_Plans_Instructions/01260207201000000517_curious-sniffing-honey.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001222_Plans_Instructions/01260207201000000517_curious-sniffing-honey.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000518",
+      "source_relpath": "newPhasePlanProcess/01260207201000001222_Plans_Instructions/01260207201000000518_curious-sniffing-honey.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001222_Plans_Instructions/01260207201000000518_curious-sniffing-honey.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000521",
+      "source_relpath": "newPhasePlanProcess/01260207201000001222_Plans_Instructions/01260207201000000521_Modify the Purpose Mapping.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001222_Plans_Instructions/01260207201000000521_Modify the Purpose Mapping.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000522",
+      "source_relpath": "newPhasePlanProcess/01260207201000001222_Plans_Instructions/01260207201000000522_Modify the Purpose Mapping.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001222_Plans_Instructions/01260207201000000522_Modify the Purpose Mapping.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000523",
+      "source_relpath": "newPhasePlanProcess/01260207201000001222_Plans_Instructions/01260207201000000523_Plan Overviews.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001222_Plans_Instructions/01260207201000000523_Plan Overviews.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000524",
+      "source_relpath": "newPhasePlanProcess/01260207201000001222_Plans_Instructions/01260207201000000524_Plan Overviews.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001222_Plans_Instructions/01260207201000000524_Plan Overviews.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000525",
+      "source_relpath": "newPhasePlanProcess/01260207201000001222_Plans_Instructions/01260207201000000525_wobbly-purring-island.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001222_Plans_Instructions/01260207201000000525_wobbly-purring-island.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000526",
+      "source_relpath": "newPhasePlanProcess/01260207201000001222_Plans_Instructions/01260207201000000526_wobbly-purring-island.md",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001222_Plans_Instructions/01260207201000000526_wobbly-purring-island.md",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": null,
+      "source_relpath": "newPhasePlanProcess/01260207201000001223_schemas/.dir_id",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001223_schemas/.dir_id",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "SKIPPED_NO_ID",
+      "module_id_current": null,
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000529",
+      "source_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207201000000529_CAPABILITIES.schema.v1.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207201000000529_CAPABILITIES.schema.v1.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000530",
+      "source_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207201000000530_FILE_INVENTORY.record.schema.v1.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207201000000530_FILE_INVENTORY.record.schema.v1.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207201000000532",
+      "source_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207201000000532_NEWPHASEPLANPROCESS_plan.schema.v2.4.0.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207201000000532_NEWPHASEPLANPROCESS_plan.schema.v2.4.0.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000672",
+      "source_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207233100000672_coverage_v1.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207233100000672_coverage_v1.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000673",
+      "source_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207233100000673_defect_log.schema.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207233100000673_defect_log.schema.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000675",
+      "source_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207233100000675_NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207233100000675_NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000676",
+      "source_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207233100000676_parquet_schema_v1.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207233100000676_parquet_schema_v1.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": null,
+      "source_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207201000001224_etl/.dir_id",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207201000001224_etl/.dir_id",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "SKIPPED_NO_ID",
+      "module_id_current": null,
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000731",
+      "source_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207201000001224_etl/01260207233100000731_clean_data.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207201000001224_etl/01260207233100000731_clean_data.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000732",
+      "source_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207201000001224_etl/01260207233100000732_load_receipt.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207201000001224_etl/01260207233100000732_load_receipt.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000733",
+      "source_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207201000001224_etl/01260207233100000733_raw_data.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001223_schemas/01260207201000001224_etl/01260207233100000733_raw_data.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": null,
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/.dir_id",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/.dir_id",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "SKIPPED_NO_ID",
+      "module_id_current": null,
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000678",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207233100000678_gate_dependencies.json",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207233100000678_gate_dependencies.json",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000222",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000222_analyze_file_conflicts.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000222_analyze_file_conflicts.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000224",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000224_apply_patch.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000224_apply_patch.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000225",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000225_audit_metric_thresholds.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000225_audit_metric_thresholds.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000226",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000226_build_automation_index.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000226_build_automation_index.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000227",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000227_check_file_scope.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000227_check_file_scope.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000228",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000228_check_permissions.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000228_check_permissions.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000229",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000229_check_resources.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000229_check_resources.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000230",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000230_check_secrets.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000230_check_secrets.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000231",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000231_DOC-CORE-CONVERTERS-CCIS-TO-PHASE-PLAN-388__ccis_to_phase_plan.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000231_DOC-CORE-CONVERTERS-CCIS-TO-PHASE-PLAN-388__ccis_to_phase_plan.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000232",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000232_DOC-CORE-PHASE-1-CONVERTER-001__phase_plan_converter.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000232_DOC-CORE-PHASE-1-CONVERTER-001__phase_plan_converter.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000233",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000233_DOC-CORE-PHASE-PLAN-TO-WORKSTREAM-CONVERTER-PY-001__phase_plan_to_workstream_converter.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000233_DOC-CORE-PHASE-PLAN-TO-WORKSTREAM-CONVERTER-PY-001__phase_plan_to_workstream_converter.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000234",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000234_DOC-CORE-SCHEMAS-PHASE-PLAN-1015__phase_plan.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000234_DOC-CORE-SCHEMAS-PHASE-PLAN-1015__phase_plan.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000235",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000235_evaluate_criteria.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000235_evaluate_criteria.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000237",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000237_generate_automation_diagrams.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000237_generate_automation_diagrams.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000238",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000238_generate_dag.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000238_generate_dag.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000240",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000240_generate_metrics_report.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000240_generate_metrics_report.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000242",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000242_NEWPHASEPLANPROCESS_plan_cli.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000242_NEWPHASEPLANPROCESS_plan_cli.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000243",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000243_standardize_argparse.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000243_standardize_argparse.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000245",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000245_test_orchestration.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000245_test_orchestration.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000246",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000246_validate_artifact_closure.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000246_validate_artifact_closure.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000248",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000248_validate_assumptions.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000248_validate_assumptions.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000249",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000249_validate_automation_audit.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000249_validate_automation_audit.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000250",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000250_validate_automation_spec.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000250_validate_automation_spec.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000251",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000251_validate_ci_compatibility.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000251_validate_ci_compatibility.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000252",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000252_validate_file_manifest.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000252_validate_file_manifest.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000253",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000253_validate_gates.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000253_validate_gates.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000254",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000254_validate_goal_reconciliation.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000254_validate_goal_reconciliation.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000255",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000255_validate_ground_truth.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000255_validate_ground_truth.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000256",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000256_validate_metrics.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000256_validate_metrics.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000257",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000257_validate_planning_artifacts.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000257_validate_planning_artifacts.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000258",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000258_validate_plan_structure.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000258_validate_plan_structure.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000259",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000259_validate_rollback_completeness.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000259_validate_rollback_completeness.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000260",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000260_validate_single_source_of_truth.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000260_validate_single_source_of_truth.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000261",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000261_validate_spine_coverage_map.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000261_validate_spine_coverage_map.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000262",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000262_validate_step_contracts.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000262_validate_step_contracts.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000263",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000263_validate_structure.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000263_validate_structure.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000264",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000264_validate_verification_completeness.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000264_validate_verification_completeness.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000265",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000265_validate_wiring_proof.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/P_01260207233100000265_validate_wiring_proof.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": null,
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/.dir_id",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/.dir_id",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "SKIPPED_NO_ID",
+      "module_id_current": null,
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000273",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000273_audit_failure_modes.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000273_audit_failure_modes.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000274",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000274_check_dead_artifacts.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000274_check_dead_artifacts.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000275",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000275_check_dormant_flows.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000275_check_dormant_flows.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000276",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000276_check_missing_producers.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000276_check_missing_producers.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000277",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000277_check_orphans.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000277_check_orphans.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000278",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000278_detect_cycles.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000278_detect_cycles.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000279",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000279_detect_write_conflicts.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000279_detect_write_conflicts.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000280",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000280_run_all_e2e_proofs.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000280_run_all_e2e_proofs.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000281",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000281_test_idempotency_all.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000281_test_idempotency_all.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000282",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000282_validate_detection_gates.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000282_validate_detection_gates.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000283",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000283_validate_e2e_proof_linkage.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000283_validate_e2e_proof_linkage.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000284",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000284_validate_evidence_bundles.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000284_validate_evidence_bundles.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000285",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000285_validate_handoffs.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000285_validate_handoffs.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    },
+    {
+      "entity_type": "file",
+      "file_id": "01260207233100000286",
+      "source_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000286_validate_recovery_policies.py",
+      "dest_dir_id": "01260207201000001177",
+      "dest_dir_relpath": "newPhasePlanProcess",
+      "dest_relpath": "newPhasePlanProcess/01260207201000001225_scripts/01260207201000001226_wiring/P_01260207233100000286_validate_recovery_policies.py",
+      "category": "NEWPHASE_TEMPLATE_PROCESS",
+      "confidence": "HIGH",
+      "matched_group": "B",
+      "match_signals": [
+        "path_under:Gov_Reg\\newPhasePlanProcess"
+      ],
+      "move_enabled": false,
+      "eligibility_status": "ELIGIBLE",
+      "module_id_current": "01260207201000001177",
+      "module_id_target": "01260207201000001177"
+    }
+  ]
+}

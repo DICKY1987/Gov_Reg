@@ -1,0 +1,30 @@
+{
+  "run_id": "phaseB_20260217T132119Z_ddae2714-403f-4624-9245-fc2027d45a58",
+  "phase_a_run_id": "phaseA_20260217T130000Z_test123",
+  "validated_at": "2026-02-17T13:21:38.533336+00:00",
+  "result": "PASS",
+  "checks": [
+    {
+      "gate": "G13",
+      "passed": true,
+      "detail": "Termination reason: NO_HARD_DEFECTS"
+    },
+    {
+      "gate": "G14",
+      "passed": true,
+      "detail": "LIV verification for 3 artifacts"
+    },
+    {
+      "gate": "G15",
+      "passed": true,
+      "detail": "Schema validation: workstreams=True, schema=True"
+    },
+    {
+      "gate": "acceptance_tests",
+      "passed": true,
+      "detail": "All tasks have acceptance_tests"
+    }
+  ],
+  "phase_a_plan_sha256": "placeholder_hash",
+  "termination_reason": "NO_HARD_DEFECTS"
+}

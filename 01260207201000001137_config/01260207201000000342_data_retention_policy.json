@@ -1,0 +1,48 @@
+{
+  "policy_version": "1.0",
+  "effective_date": "2026-02-12",
+  "retention_schedules": {
+    "governance_artifacts": {
+      "retention_period": "7_YEARS",
+      "rationale": "SOX compliance requirement",
+      "classification": "CONFIDENTIAL",
+      "includes": [
+        "approval records",
+        "impact assessments",
+        "access audit logs",
+        "compliance evidence"
+      ]
+    },
+    "operational_logs": {
+      "retention_period": "90_DAYS",
+      "rationale": "Operational troubleshooting",
+      "classification": "INTERNAL",
+      "includes": [
+        "application logs",
+        "performance metrics",
+        "monitoring data"
+      ]
+    },
+    "incident_records": {
+      "retention_period": "PERMANENT",
+      "rationale": "Legal and compliance",
+      "classification": "RESTRICTED",
+      "includes": [
+        "security incidents",
+        "data breaches",
+        "regulatory violations"
+      ]
+    },
+    "personal_data": {
+      "retention_period": "GDPR_COMPLIANT",
+      "rationale": "GDPR Article 5(1)(e) - storage limitation",
+      "classification": "RESTRICTED",
+      "includes": [
+        "PII",
+        "user accounts",
+        "customer data"
+      ],
+      "notes": "Right to erasure (Article 17) supersedes retention"
+    }
+  }
+}

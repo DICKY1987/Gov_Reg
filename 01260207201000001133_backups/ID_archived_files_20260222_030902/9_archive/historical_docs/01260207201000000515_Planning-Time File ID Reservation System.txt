@@ -1,0 +1,520 @@
+# TECHNICAL SPECIFICATION
+
+## Planning-Time File ID Reservation System
+
+### For CLI Exploration, Design, and Implementation
+
+---
+
+# 1. Executive Objective
+
+Eliminate the condition where files exist in planning artifacts without `file_id`, and only receive IDs at ingest time.
+
+**New invariant:**
+
+> Every `created_file` defined during planning must already contain a valid, reserved `file_id` before execution begins.
+
+This document defines:
+
+* Architectural model
+* Required behaviors
+* Counter store integration
+* Reservation ledger design
+* Ingest modifications
+* Validation gates
+* Failure modes
+* Evidence artifacts
+* Exploration steps for CLI
+* Inventory of uploaded files with value analysis
+
+---
+
+# 2. Architectural Model
+
+## 2.1 Current Problem
+
+Today:
+
+* IDs are assigned at ingest.
+* Plans list files without IDs.
+* Registry counter assigns ID later.
+* Planning and execution phases are temporally inconsistent.
+
+This causes:
+
+* Identity drift
+* Planning ambiguity
+* Non-deterministic downstream derivations
+* Execution-time surprises
+
+---
+
+## 2.2 Target Model
+
+### New Flow
+
+```
+PLAN PHASE
+    ↓
+Discover created files
+    ↓
+Reserve IDs from COUNTER_STORE
+    ↓
+Inject file_id into PFMS + plan
+    ↓
+Execute
+    ↓
+Ingest validates + commits reservation
+```
+
+No file may exist in planning artifacts without a `file_id`.
+
+---
+
+# 3. Counter Architecture
+
+## 3.1 COUNTER_STORE.json (SSOT)
+
+Source: 
+Schema:
+
+### Structure
+
+```
+{
+  "version": "1.0",
+  "updated_at": "...",
+  "counters": {
+     "SCOPE:NS:TYPE": 12345678901234567890
+  }
+}
+```
+
+### Key Format (enforced by schema)
+
+Pattern:
+
+```
+^\d{6}:\d{3}:\d{2}$
+```
+
+Meaning:
+
+* SCOPE = 6 digits
+* NS = 3 digits
+* TYPE = 2 digits
+
+Example:
+
+```
+720066:001:01
+```
+
+---
+
+# 4. Reservation System Design
+
+## 4.1 New Operation: reserve_ids()
+
+### Purpose
+
+Atomically allocate ID range from COUNTER_STORE during planning.
+
+### Inputs
+
+```
+{
+  "plan_id": "PH-03-20260212-001",
+  "scope": "720066",
+  "namespace": "001",
+  "type": "01",
+  "count": 5,
+  "purpose": "PLAN_CREATED_FILES"
+}
+```
+
+### Behavior
+
+1. Acquire file lock on COUNTER_STORE.json
+2. Load JSON
+3. Resolve key = scope:namespace:type
+4. If key not exists → initialize to 0
+5. Increment by count
+6. Generate contiguous range
+7. Persist updated store
+8. Write reservation ledger
+9. Release lock
+10. Return reserved IDs
+
+---
+
+## 4.2 Reservation Ledger (New Artifact)
+
+Location:
+
+```
+REGISTRY/reservations/RES-{plan_id}.json
+```
+
+Structure:
+
+```
+{
+  "reservation_id": "RES-720066-20260212-001",
+  "plan_id": "...",
+  "counter_key": "720066:001:01",
+  "reserved_ids": [
+     "720066001010000000001",
+     ...
+  ],
+  "count": 5,
+  "created_at": "...",
+  "status": "RESERVED",
+  "counter_store_hash": "sha256:..."
+}
+```
+
+---
+
+# 5. Planning Engine Modifications
+
+## 5.1 Algorithm
+
+1. Build `created_files[]`
+2. Sort by `relative_path`
+3. Call `reserve_ids(count)`
+4. Map IDs deterministically
+5. Inject into plan + PFMS
+
+---
+
+## 5.2 Deterministic Mapping Rule
+
+```
+created_files sorted lexicographically
+assigned sequentially from reserved_ids[]
+```
+
+This ensures:
+
+* Re-running planning produces identical assignment
+* No randomness
+
+---
+
+# 6. Ingest Modifications
+
+Reference ingest spec:
+
+Modify allocator stage:
+
+### Current:
+
+If no ID → allocate
+
+### New:
+
+If no ID → FAIL
+If ID exists → verify reservation ledger
+
+Validation:
+
+```
+if file_id not in RES-{plan_id}.json:
+    fail_closed
+```
+
+On success:
+
+* Mark reservation status = COMMITTED
+
+---
+
+# 7. Required Validation Gates
+
+## 7.1 Planning Gate
+
+Modeled after:
+
+New validator:
+
+```
+validate_no_missing_file_id.py
+```
+
+Fails if:
+
+```
+created_files[].file_id == null
+```
+
+---
+
+## 7.2 Format Enforcement
+
+Reuse IDFormatScanner (previously uploaded) to ensure:
+
+* Correct prefix
+* Correct length
+* No duplicates
+* Filename consistency
+
+---
+
+## 7.3 Normalization Gate
+
+Use IDNormalizer logic (previous upload) to:
+
+* Normalize legacy 19-digit IDs
+* Merge duplicates deterministically
+* Prevent numeric casting errors
+
+---
+
+# 8. CLI Exploration Plan
+
+The CLI must:
+
+### Phase 1 – Inventory & SSOT Validation
+
+* Validate COUNTER_STORE.json against schema
+* Detect duplicate allocators in repo
+* Identify all imports of:
+
+  * id_allocator
+  * id_registry
+  * counter file references
+
+### Phase 2 – Unification
+
+Decide allocator SSOT:
+
+Option A: Counter Store backend
+Option B: Registry-backed max+1
+
+Recommendation: Counter Store
+
+Deprecate:
+
+* id_registry max+1 model
+
+---
+
+### Phase 3 – Implement reserve_ids()
+
+CLI tasks:
+
+* Implement locking
+* Add ledger writer
+* Add expiration policy
+* Add status transitions (RESERVED → COMMITTED)
+
+---
+
+### Phase 4 – Integrate Into Planning
+
+Modify planning engine:
+
+* Detect created files
+* Call reservation
+* Inject IDs
+* Emit reservation evidence
+
+---
+
+### Phase 5 – Modify Ingest
+
+Update ingest allocator behavior:
+
+* Validate reservation existence
+* Reject unreserved file_ids
+* Commit reservation
+
+---
+
+# 9. Failure Modes
+
+| Code  | Condition                    | Behavior |
+| ----- | ---------------------------- | -------- |
+| E-R01 | Counter key malformed        | Abort    |
+| E-R02 | Reservation ledger missing   | Abort    |
+| E-R03 | ID already committed         | Abort    |
+| E-R04 | Counter store schema invalid | Abort    |
+| E-R05 | Missing file_id in plan      | Abort    |
+| E-R06 | Duplicate ID in batch        | Abort    |
+
+Fail-closed always.
+
+---
+
+# 10. Uploaded File Value Analysis
+
+Below is a complete inventory of uploaded files that add value to this feature.
+
+---
+
+## COUNTER_STORE.json
+
+
+
+**Value:**
+
+* Authoritative multi-key counter backend
+* Required for planning-time atomic reservation
+
+---
+
+## COUNTER_STORE.schema.json
+
+**Value:**
+
+* Enforces structural validity
+* Prevents malformed counter keys
+* Protects against corruption
+
+---
+
+## locate_id_counter.py
+
+
+
+**Value:**
+
+* Path resolution strategy
+* Should be adapted to resolve COUNTER_STORE
+* Prevents hardcoded paths
+
+---
+
+## INGEST_SPEC_UNIFIED_REGISTRY.txt
+
+**Value:**
+
+* Defines allocator interface (I06_id_allocator)
+* Provides lock semantics
+* Defines ingest stage behavior
+* Must be extended for reservation validation
+
+---
+
+## P_01999000042260126012_validate_no_doc_id.py
+
+**Value:**
+
+* Pattern for fail-closed registry validation
+* Template for planning-time file_id validator
+
+---
+
+## id_registry.py
+
+**Value:**
+
+* Legacy ID model (DIR-00001 style)
+* Demonstrates scan-max+1 pattern
+* Should not be used for unified file_id system
+* Candidate for deprecation or rewrite
+
+---
+
+## control_count.txt
+
+
+
+**Value:**
+
+* Deterministic test control
+* Can be used to validate batch reservation logic
+
+---
+
+## id_allocator variants (multiple versions uploaded previously)
+
+**Value:**
+
+* Atomic lock + allocation logic
+* Batch reservation capability
+* Foundation for reserve_ids()
+
+Must unify to single canonical allocator.
+
+---
+
+## batch_assign_file_ids.py
+
+**Value:**
+
+* Demonstrates deterministic mapping
+* Provides assignment structure
+* Should be refactored to remove filesystem mutation
+* Reused for planning-stage mapping only
+
+---
+
+## identity_resolver.py
+
+**Value:**
+
+* Critical for ingest reconciliation
+* Verifies plan vs observed state
+* Required for enforcing reservation integrity
+
+---
+
+## id_normalizer.py
+
+**Value:**
+
+* Handles legacy ID normalization
+* Prevents duplicate drift
+* Should be post-reservation gate
+
+---
+
+## generate_component_id.py
+
+**Value:**
+
+* Demonstrates dependency on stable file_id
+* Justifies moving allocation to planning phase
+
+---
+
+# 11. Governance Rules
+
+1. COUNTER_STORE is SSOT for next ID.
+2. No registry mutation during planning.
+3. All ID allocation must pass through reserve_ids().
+4. No ingest auto-allocation if plan phase is enabled.
+5. All reservations must be auditable.
+6. No max+1 scanning from registry files.
+7. No implicit ID creation.
+
+---
+
+# 12. Implementation Sequence (Recommended)
+
+1. Deprecate id_registry max+1 logic.
+2. Implement reserve_ids().
+3. Add reservation ledger schema.
+4. Modify planning engine.
+5. Add planning validator.
+6. Modify ingest allocator stage.
+7. Add commit reservation logic.
+8. Add expiration handling.
+
+---
+
+# 13. Final System Invariant
+
+After implementation:
+
+* A plan without file_id on created files cannot execute.
+* Execution without valid reservation cannot ingest.
+* Counter is globally consistent.
+* Registry remains patch-driven and auditable.
+* No duplicate or ambiguous file identities exist.
+
+---
+
+

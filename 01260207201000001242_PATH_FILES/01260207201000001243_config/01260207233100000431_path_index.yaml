@@ -1,0 +1,99 @@
+version: 1
+repo_root: C:/Users/richg/Gov_Reg
+paths:
+  SHARED_UTILS:
+    path: scripts/P_01999000042260124030_shared_utils.py
+    kind: python_module
+    description: Atomic file operations, locking, timestamps
+    layer: CORE
+  ID_ALLOCATOR:
+    path: scripts/P_01999000042260124027_id_allocator.py
+    kind: python_module
+    description: Thread-safe ID allocation engine
+    layer: CORE
+  FILE_CREATOR:
+    path: scripts/P_01999000042260124028_file_creator.py
+    kind: python_module
+    description: File creation with auto-ID assignment
+    layer: CORE
+  REGISTRY_UNIFIED:
+    path: 01999000042260124503_governance_registry_unified.json
+    kind: data
+    description: Unified governance registry (SSOT)
+    layer: SSOT
+  SCHEMA_V3:
+    path: 01999000042260124012_governance_registry_schema.v3.json
+    kind: schema
+    description: JSON Schema for governance registry v3
+    layer: VALIDATION
+  ID_COUNTER:
+    path: 01999000042260124026_ID_COUNTER.json
+    kind: data
+    description: ID allocation counter with history
+    layer: SSOT
+  REPO_ROOTS:
+    path: 01999000042260124019_repo_roots.json
+    kind: config
+    description: Repository root paths configuration
+    layer: CONFIGURATION
+  ANALYZE_REGISTRY:
+    path: scripts/P_01999000042260124543_analyze_registry.py
+    kind: python_module
+    description: Registry analysis and statistics
+    layer: TOOL
+  VALIDATE_SCHEMA:
+    path: scripts/P_01999000042260124547_validate_schema.py
+    kind: python_module
+    description: Schema validation utility
+    layer: VALIDATION
+  CHECK_BUNDLES:
+    path: scripts/P_01999000042260124545_check_bundles.py
+    kind: python_module
+    description: Bundle assignment checker
+    layer: TOOL
+  BUNDLE_DETECTOR_STARTER:
+    path: scripts/P_01999000042260124544_bundle_detector_starter.py
+    kind: python_module
+    description: Initial bundle detection framework
+    layer: TOOL
+  ENHANCED_BUNDLE_DETECTOR:
+    path: scripts/P_01999000042260124546_enhanced_bundle_detector.py
+    kind: python_module
+    description: Advanced bundle detection with clustering
+    layer: TOOL
+  ID_FORMAT_SCANNER:
+    path: scripts/P_01999000042260124521_id_format_scanner.py
+    kind: python_module
+    description: Scans for ID format compliance
+    layer: TOOL
+  RUN_ALL_468:
+    path: scripts/P_01999000042260124468_run_all.py
+    kind: python_module
+    description: Main CLI entry point (GEU governance)
+    layer: EXECUTION
+  RUN_ALL_520:
+    path: scripts/P_01999000042260124520_run_all.py
+    kind: python_module
+    description: Alternative CLI entry point
+    layer: EXECUTION
+  GOVREG_CLI:
+    path: P_01999000042260124015_govreg.py
+    kind: python_module
+    description: Governance Registry CLI application
+    layer: CORE
+REGISTRY_WRITER_SERVICE:
+  path: src/registry_writer/01999000042260125037_registry_writer_service.py
+  file_id: 01999000042260125037
+  description: Migrated registry_writer_service.py
+REPO_AUTOOPS_ORCHESTRATOR:
+  path: src/repo_autoops/01999000042260125030_orchestrator.py
+  file_id: 01999000042260125030
+  description: Migrated orchestrator.py
+REPO_AUTOOPS_VALIDATORS:
+  path: src/repo_autoops/01999000042260125033_validators.py
+  file_id: 01999000042260125033
+  description: Migrated validators.py
+GENERATOR_ORCHESTRATOR:
+  path: src/generators/01999000042260125047_generator_orchestrator.py
+  file_id: 01999000042260125047
+  description: Migrated generator_orchestrator.py

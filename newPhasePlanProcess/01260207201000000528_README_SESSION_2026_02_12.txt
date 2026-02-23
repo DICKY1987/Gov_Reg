@@ -1,0 +1,171 @@
+================================================================================
+README - Session 2026-02-12: Gap Resolution & Step 4 Readiness
+================================================================================
+
+This directory now contains complete documentation addressing all 5 critical gaps
+identified in the 2026-02-11 System Review.
+
+================================================================================
+QUICK START (READ IN THIS ORDER)
+================================================================================
+
+⚠️ IMPORTANT: Read CANONICAL_STATUS_SINGLE_SOURCE_OF_TRUTH.md FIRST
+   This contains fact-checked status that supersedes other docs if they contradict
+
+1. START HERE:
+   → CANONICAL_STATUS_SINGLE_SOURCE_OF_TRUTH.md
+     Fact-checked status on patches, scripts, and prerequisites
+     
+2. THEN REVIEW:
+   → DELIVERABLES_2026_02_12.txt (this directory)
+     Summary of changes and gap resolutions
+     
+3. UNDERSTAND THE DECISION:
+   → Plans_Instructions/INDEX_BRIEFING_MATERIALS.md
+     Master index with document map
+     
+3. FOR PROJECT LEADS (DECIDE):
+   → Plans_Instructions/ACTION_ITEMS_COMPLETION_SUMMARY.md
+     Executive summary, ~2,500 words
+     DECISION: ✅ Conditional GO to Step 4 apply
+     
+4. FOR OPERATORS (DO THE WORK):
+   → Plans_Instructions/STEP4_GO_NOGO_READINESS_CHECKLIST.md
+     Step-by-step procedures, ~4,000 words
+     Use this to execute Step 4 apply when approved
+
+5. FOR ARCHITECTS (UNDERSTAND):
+   → Plans_Instructions/COMPREHENSIVE_STATUS_REPORT.md
+     Technical deep-dive, ~5,000 words
+     Risk assessment, FAQ, long-term recommendations
+
+================================================================================
+NEW FILES IN THIS SESSION
+================================================================================
+
+Configuration:
+  mcp/mcp_config.json
+    • MCP tool script bindings
+    • External registry allowlist
+    • Metadata documentation
+    
+Documentation (Plans_Instructions/):
+  ACTION_ITEMS_COMPLETION_SUMMARY.md
+  STEP4_GO_NOGO_READINESS_CHECKLIST.md
+  COMPREHENSIVE_STATUS_REPORT.md
+  INDEX_BRIEFING_MATERIALS.md
+
+Summary Files (This Directory):
+  DELIVERABLES_2026_02_12.txt
+  README_SESSION_2026_02_12.txt (this file)
+
+================================================================================
+THE 5 GAPS (ALL RESOLVED)
+================================================================================
+
+Gap #1: MCP Tool Stubs → ✅ RESOLVED
+        registry.snapshot_query & planning.extract_file_mutation_set
+        now have script bindings in mcp_config.json
+
+Gap #2: External Registry Paths → ✅ RESOLVED  
+        Allowlisted in mcp_config.json with allow_external_registry:true
+        
+Gap #3: SSOT Duplicate-Path Warnings → ✅ ANALYZED
+        Expected pattern; plan already implements validator's fix
+        
+Gap #4: No Gates Defined → ✅ ANALYZED
+        Expected for implementation-level plan type
+        
+Gap #5: Step 4 Safety → ✅ RESOLVED
+        Complete pre/during/post-apply procedures documented
+
+DECISION: ✅ CONDITIONAL GO TO STEP 4 APPLY
+          (pending pre-apply checklist completion)
+
+================================================================================
+VERIFICATION
+================================================================================
+
+All Deliverables Created: ✅
+  ✓ 4 comprehensive documentation files (~14,500 words)
+  ✓ 1 MCP configuration file (mcp_config.json)
+  ✓ External dependencies verified
+  ✓ Safety procedures documented
+
+System Readiness: ✅ CONDITIONAL GO
+  ✓ MCP tools configured with bindings
+  ✓ All validation gates passing
+  ✓ Steps 1-3 complete with artifacts
+  ✓ Step 4 dry-run successful
+  ✓ Pre/post-apply procedures ready
+
+Next Action: Review and approve per pre-apply checklist
+
+================================================================================
+FILE LOCATIONS
+================================================================================
+
+MCP Configuration:
+  C:\Users\richg\Gov_Reg\LP_LONG_PLAN\newPhasePlanProcess\mcp\mcp_config.json
+
+Documentation:
+  C:\Users\richg\Gov_Reg\LP_LONG_PLAN\newPhasePlanProcess\Plans_Instructions\
+    ├─ ACTION_ITEMS_COMPLETION_SUMMARY.md
+    ├─ STEP4_GO_NOGO_READINESS_CHECKLIST.md
+    ├─ COMPREHENSIVE_STATUS_REPORT.md
+    ├─ INDEX_BRIEFING_MATERIALS.md
+    ├─ capability_mapping_status_report.md (pre-existing)
+    └─ mcp_progress_report.md (pre-existing)
+
+Evidence:
+  C:\Users\richg\Gov_Reg\LP_LONG_PLAN\newPhasePlanProcess\.state\
+    ├─ purpose_mapping/ (Steps 1-3 outputs)
+    └─ evidence/mcp/ (Validation gates evidence)
+
+Plan File:
+  C:\Users\richg\Gov_Reg\LP_LONG_PLAN\newPhasePlanProcess\
+    └─ Plans_Instructions\wobbly-purring-island_registry-integrated.plan.json
+
+================================================================================
+DECISION MATRIX
+================================================================================
+
+Criterion                           Status    Result
+─────────────────────────────────────────────────────
+MCP tools configured & bound?       ✅ YES    GO
+Plan validates GATE-003 & GATE-017? ✅ YES    GO  
+Steps 1-3 complete with artifacts?  ✅ YES    GO
+External registry paths allowlist?  ✅ YES    GO
+Pre-apply procedures documented?    ✅ YES    GO
+Post-apply procedures documented?   ✅ YES    GO
+Safety verification procedures?     ✅ YES    GO
+─────────────────────────────────────────────────────
+FINAL DECISION:                     ✅ CONDITIONAL GO
+
+To lift conditions, complete pre-apply checklist when ready.
+
+================================================================================
+NEXT ACTIONS
+================================================================================
+
+Now (Decision Phase):
+  1. Review: ACTION_ITEMS_COMPLETION_SUMMARY.md
+  2. Decide: Proceed with Step 4?
+  3. Approve: CONDITIONAL GO status
+
+When Ready (Pre-Apply Phase):
+  4. Read: STEP4_GO_NOGO_READINESS_CHECKLIST.md
+  5. Execute: Pre-apply items (backup, hash, review)
+  6. Confirm: Ready for Step 4 apply
+
+During Apply Phase:
+  7. Run: Step 4 with --registry-mode apply
+  8. Monitor: Exit code and logs
+
+After Apply Phase:
+  9. Verify: Hash, structure, determinism checks
+  10. Report: Evidence of success
+
+================================================================================
+END OF README
+================================================================================

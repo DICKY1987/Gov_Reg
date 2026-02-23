@@ -1,0 +1,76 @@
+{
+  "rewrite_plan_id": "8c90ac5f1b0c24b2",
+  "target_file_id": "01260207201000000154",
+  "target_relpath": "01260207201000000154_ID_CANONICALITY_EXECUTION_SUMMARY.txt",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "986298c1ede3d06df1c67d7aaaf0c49851c1e9a6b15d43b330bf37eb97c8a996",
+  "operations": [
+    {
+      "ref_id": "4b720afbfbbb5478f0f0fdc7736f56a130c64f8396aa33e476938c6a3b81d32e",
+      "old_value": "scripts/P_01999000042260124027_id_allocator.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124027_id_allocator.py",
+      "location": "line:110"
+    },
+    {
+      "ref_id": "6ce400b25291b0ac413880ef7bffb1b5d9f13faec276f47a4d88837bc33738a2",
+      "old_value": "scripts/P_01999000042260124521_id_format_scanner.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124521_id_format_scanner.py",
+      "location": "line:113"
+    },
+    {
+      "ref_id": "08f329cf20429a87050841c3b2510faa86bac02cff66fd00953f292be72b8adb",
+      "old_value": "govreg_core/P_01999000042260125002_canonical_id_patterns.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01999000042260125002_canonical_id_patterns.py",
+      "location": "line:175"
+    },
+    {
+      "ref_id": "c2238266dd53cbb117aa47c7568a859a236afbf25adec56c5f78d876e87fdc30",
+      "old_value": "govreg_core/P_01999000042260125006_id_allocator_facade.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01999000042260125006_id_allocator_facade.py",
+      "location": "line:177"
+    },
+    {
+      "ref_id": "63014492f22150ba6e07c68ce4e51a28db6f6aea279dc15583389db67adf29ad",
+      "old_value": "gates/P_01999000042260125000_gate_id_canonicality.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/gates/P_01999000042260125000_gate_id_canonicality.py",
+      "location": "line:178"
+    },
+    {
+      "ref_id": "81ed2ddda55947e46ce3916e05ea39c206a2a9346ef64fec44b06a53e99285b3",
+      "old_value": "scripts/P_01999000042260124999_id_canonicality_enforcer.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124999_id_canonicality_enforcer.py",
+      "location": "line:179"
+    },
+    {
+      "ref_id": "d302d8e448ee1a7431d65aba6932ce8a208c45df7afc0661646cc44a3f59fe0e",
+      "old_value": "scripts\\P_01999000042260124999_id_canonicality_enforcer.py",
+      "new_value": "01260207201000001162_GEU\\01260207201000001165_ID\\scripts\\P_01999000042260124999_id_canonicality_enforcer.py",
+      "location": "line:210"
+    },
+    {
+      "ref_id": "cb19dcd5b9a5b851a015aceaf1023b96ad11f95576fad2614311634df3cfda05",
+      "old_value": "govreg_core/P_01999000042260125006_id_allocator_facade.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01999000042260125006_id_allocator_facade.py",
+      "location": "line:48"
+    },
+    {
+      "ref_id": "ea38b47bb5f300751f8cf05b843d613dd58a78f152178492d576a6a849bb40a3",
+      "old_value": "govreg_core/P_01999000042260125002_canonical_id_patterns.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01999000042260125002_canonical_id_patterns.py",
+      "location": "line:53"
+    },
+    {
+      "ref_id": "b75773997b118b5ad98e8648a30c418d94ef0f06d501621fd3942ae96f267825",
+      "old_value": "gates/P_01999000042260125000_gate_id_canonicality.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/gates/P_01999000042260125000_gate_id_canonicality.py",
+      "location": "line:58"
+    },
+    {
+      "ref_id": "5a451db4ba4021d5e3b6fa783328f6f9d17dea3367c8f68aea427b67af41cc3a",
+      "old_value": "scripts/P_01999000042260124999_id_canonicality_enforcer.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124999_id_canonicality_enforcer.py",
+      "location": "line:75"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\8c90ac5f1b0c24b2.diff"
+}

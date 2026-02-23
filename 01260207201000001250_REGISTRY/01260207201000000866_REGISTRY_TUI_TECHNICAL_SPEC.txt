@@ -1,0 +1,363 @@
+
+---
+
+# REGISTRY_TUI_TECHNICAL_SPEC.md
+
+## 1. Purpose
+
+Define a **low-overhead, read-only Terminal UI (TUI)** for visualizing registry health, coverage, and risk.
+The TUI provides **situational awareness**, not mutation or enforcement.
+
+Primary goals:
+
+* Deterministic metrics
+* Minimal system overhead
+* Fast identification of gaps (missing IDs, violations)
+* Drill-down visibility with evidence-ready exports
+
+---
+
+## 2. Operating Constraints (Hard Rules)
+
+* **READ-ONLY**: TUI must never mutate registry or filesystem
+* **SNAPSHOT-BASED**: No continuous scanning
+* **DETERMINISTIC**: Same input snapshot → same output
+* **LOW OVERHEAD**: O(n) over registry size per refresh
+* **NO IMPLICIT IO**: All filesystem access must be explicit and bounded
+
+---
+
+## 3. Execution Model
+
+### Invocation
+
+```bash
+registry-tui \
+  --registry-path <path> \
+  [--metrics-snapshot <path>] \
+  [--refresh-interval seconds] \
+  [--read-only]
+```
+
+### Execution Phases
+
+1. Load input snapshot(s)
+2. Validate minimal schema expectations
+3. Compute metric set (lazy + cached)
+4. Render default view
+5. Handle user input loop
+6. Optional export actions
+7. Clean shutdown
+
+---
+
+## 4. Input Data Contracts
+
+### 4.1 Primary Input (Required)
+
+**Registry Snapshot**
+
+```json
+{
+  "files": [ { ... } ],
+  "edges": [ { ... } ],
+  "metadata": { ... }
+}
+```
+
+Required per-file fields (minimum):
+
+* `file_id` (nullable)
+* `relative_path`
+* `artifact_kind`
+* `layer`
+* `canonicality`
+* `status`
+
+Unknown fields must be ignored, not rejected.
+
+---
+
+### 4.2 Optional Input
+
+**Metrics Snapshot Artifact**
+
+```json
+{
+  "generated_at": "ISO-8601",
+  "source_registry_hash": "sha256",
+  "metrics": {
+    "total_files": 522,
+    "missing_file_id": 35,
+    "by_extension": { ".py": 214 }
+  }
+}
+```
+
+If provided:
+
+* Use snapshot values for cheap metrics
+* Fall back to live computation for drill-down
+
+---
+
+## 5. Internal Architecture
+
+### 5.1 Module Layers
+
+```
+registry_tui/
+├── cli/
+│   └── entrypoint.py
+├── io/
+│   ├── registry_loader.py
+│   └── snapshot_cache.py
+├── metrics/
+│   ├── metric_registry.py
+│   ├── base_metric.py
+│   └── implementations/
+├── views/
+│   ├── dashboard.py
+│   ├── breakdown.py
+│   ├── coverage.py
+│   └── file_inspector.py
+├── navigation/
+│   ├── keymap.py
+│   └── router.py
+├── export/
+│   ├── json_export.py
+│   └── csv_export.py
+└── errors/
+    └── error_model.py
+```
+
+---
+
+## 6. Metric System (Core Engine)
+
+### 6.1 Metric Definition Contract
+
+```python
+MetricDefinition:
+  metric_id: str
+  title: str
+  description: str
+  severity: INFO | WARN | ERROR
+  compute_cost: CHEAP | MEDIUM | HEAVY
+  dependencies: [field_name]
+  compute(snapshot) -> MetricResult
+```
+
+### 6.2 Metric Result Contract
+
+```json
+{
+  "metric_id": "missing_file_id",
+  "value": 35,
+  "percentage": 6.7,
+  "affected_records": [record_ref],
+  "computed_at": "ISO-8601"
+}
+```
+
+### 6.3 Required Core Metrics (v1)
+
+* total_files
+* files_with_file_id
+* files_missing_file_id
+* invalid_file_id_format
+* duplicate_file_id
+* by_extension
+* by_artifact_kind
+* by_layer
+* canonical_vs_legacy
+
+Heavy metrics MUST NOT compute unless explicitly requested.
+
+---
+
+## 7. Snapshot & Caching Rules
+
+### Change Detection
+
+* Hash or mtime of registry file
+* If unchanged → reuse cached metrics
+
+### Cache Scope
+
+* In-memory only (default)
+* Optional on-disk cache keyed by registry hash
+
+### Invalidation
+
+* Any registry change invalidates entire cache
+* No partial recomputation unless metric-scoped
+
+---
+
+## 8. TUI Views (Screens)
+
+### 8.1 Dashboard (Default)
+
+Non-scrolling summary:
+
+* Total files
+* % ID coverage
+* Missing ID count
+* Violations count
+* Canonical vs legacy split
+
+### 8.2 Breakdown View
+
+Selectable dimension:
+
+* extension
+* artifact_kind
+* layer
+
+Rendered as:
+
+* horizontal bars
+* count + percentage
+
+---
+
+### 8.3 Coverage & Risk View
+
+Stratified list:
+
+* CRITICAL: missing / duplicate IDs
+* HIGH: malformed IDs
+* MEDIUM: missing required identity fields
+* LOW: legacy status
+
+---
+
+### 8.4 File Inspector View
+
+Single record detail:
+
+* identity fields
+* derived metadata
+* violations
+* registry provenance
+
+No editing allowed.
+
+---
+
+## 9. Navigation Model
+
+### Global Keys
+
+| Key       | Action          |
+| --------- | --------------- |
+| Tab       | Next screen     |
+| Shift+Tab | Previous screen |
+| ↑ ↓       | Move selection  |
+| Enter     | Drill down      |
+| Esc       | Back            |
+| R         | Refresh         |
+| E         | Export          |
+| Q         | Quit            |
+
+No modal state. No hidden commands.
+
+---
+
+## 10. Error Handling Policy
+
+### Registry Load Errors
+
+* Show banner
+* Preserve last valid snapshot
+* Disable drill-down
+
+### Schema Mismatch
+
+* Warn, continue with best-effort parsing
+
+### Metric Failures
+
+* Isolate per-metric
+* Do not crash entire UI
+
+---
+
+## 11. Export & Evidence Outputs
+
+### Supported Exports
+
+* Current metric snapshot → JSON
+* Current problem list → CSV / JSON
+* Timestamped filenames
+
+Example:
+
+```bash
+REPORTS/registry_tui_snapshot_2026-02-02T21-30Z.json
+```
+
+---
+
+## 12. Performance Targets
+
+| Scenario                 | Target  |
+| ------------------------ | ------- |
+| Load 1k files            | < 50ms  |
+| Compute cheap metrics    | < 100ms |
+| UI refresh               | < 16ms  |
+| Heavy metric (on demand) | < 500ms |
+
+---
+
+## 13. Testing Requirements
+
+### Unit
+
+* Metric computation correctness
+* ID validation (`^[0-9]{20}$`)
+
+### Golden Snapshot
+
+* Fixed registry → fixed metric outputs
+
+### Performance
+
+* Linear scaling test up to expected registry size
+
+---
+
+## 14. Definition of Done (v1)
+
+* CLI launches TUI reliably
+* Dashboard renders without scrolling
+* ID coverage visible + drill-down works
+* Exports generate valid artifacts
+* Zero registry mutation paths
+* Refresh does not exceed O(n)
+
+---
+
+## 15. Explicit Non-Goals
+
+* Registry editing
+* Filesystem scanning
+* Enforcement or gating
+* Background daemons
+* GUI replacement
+
+---
+
+### Final Note
+
+This TUI is a **diagnostic instrument**, not a control plane.
+If it stays read-only, snapshot-driven, and metric-centric, it will remain fast, safe, and useful even as the registry scales.
+
+If you want next:
+
+* A **metric catalog v1** (exact formulas)
+* A **Textual/Rich implementation blueprint**
+* A **metrics snapshot generator spec**
+
+Say which one to proceed with.

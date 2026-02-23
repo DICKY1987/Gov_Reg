@@ -1,0 +1,164 @@
+# Registry Transition Contract Bundle v2.0
+# 6-state lifecycle with quarantine states
+
+contract_id: transition_contract_bundle_v2
+version: "2.0"
+created_at: "2026-01-30T07:24:00Z"
+
+lifecycle_state:
+  enum:
+    - PLANNED
+    - PRESENT
+    - DEPRECATED
+    - DELETED
+    - ORPHANED
+    - CONFLICT
+  quarantine_states:
+    - ORPHANED
+    - CONFLICT
+
+conflict_kinds:
+  - MULTI_MATCH
+  - DUPLICATE_PLANS
+  - PATH_COLLISION
+  - ID_COLLISION
+
+transitions:
+  PLANNED_to_PRESENT:
+    from: PLANNED
+    to: PRESENT
+    conditions:
+      - field: identity_resolved
+        operator: eq
+        value: true
+      - field: no_conflicts
+        operator: eq
+        value: true
+    effects:
+      - action: apply
+        target: field_precedence
+        rule: PLANNED_to_PRESENT
+      - action: set_field
+        target: lifecycle_state
+        value: PRESENT
+      - action: set_field
+        target: transitioned_at
+        value: "{{timestamp}}"
+  
+  PRESENT_to_DEPRECATED:
+    from: PRESENT
+    to: DEPRECATED
+    conditions:
+      - field: deprecation_reason
+        operator: not_null
+      - field: replacement_id
+        operator: not_null
+    effects:
+      - action: set_field
+        target: lifecycle_state
+        value: DEPRECATED
+      - action: set_field
+        target: deprecated_at
+        value: "{{timestamp}}"
+  
+  DEPRECATED_to_DELETED:
+    from: DEPRECATED
+    to: DELETED
+    conditions:
+      - field: no_active_references
+        operator: eq
+        value: true
+      - field: retention_elapsed
+        operator: eq
+        value: true
+    effects:
+      - action: set_field
+        target: lifecycle_state
+        value: DELETED
+      - action: set_field
+        target: deleted_at
+        value: "{{timestamp}}"
+  
+  PLANNED_to_DEPRECATED:
+    from: PLANNED
+    to: DEPRECATED
+    conditions:
+      - field: plan_cancelled
+        operator: eq
+        value: true
+    effects:
+      - action: set_field
+        target: lifecycle_state
+        value: DEPRECATED
+      - action: set_field
+        target: deprecated_at
+        value: "{{timestamp}}"
+  
+  any_to_ORPHANED:
+    from: ["PLANNED", "PRESENT", "DEPRECATED"]
+    to: ORPHANED
+    conditions:
+      - field: no_planned_match
+        operator: eq
+        value: true
+    effects:
+      - action: set_field
+        target: lifecycle_state
+        value: ORPHANED
+      - action: set_field
+        target: quarantined_at
+        value: "{{timestamp}}"
+  
+  any_to_CONFLICT:
+    from: ["PLANNED", "PRESENT", "DEPRECATED", "ORPHANED"]
+    to: CONFLICT
+    conditions:
+      - field: conflict_detected
+        operator: eq
+        value: true
+    effects:
+      - action: set_field
+        target: lifecycle_state
+        value: CONFLICT
+      - action: set_field
+        target: conflict_kind
+        value: "{{conflict_kind}}"
+      - action: set_field
+        target: quarantined_at
+        value: "{{timestamp}}"
+  
+  ORPHANED_to_PLANNED:
+    from: ORPHANED
+    to: PLANNED
+    conditions:
+      - field: manual_reclassification
+        operator: eq
+        value: true
+    effects:
+      - action: set_field
+        target: lifecycle_state
+        value: PLANNED
+      - action: set_field
+        target: reclassified_at
+        value: "{{timestamp}}"
+  
+  CONFLICT_to_PRESENT:
+    from: CONFLICT
+    to: PRESENT
+    conditions:
+      - field: adjudication_complete
+        operator: eq
+        value: true
+    effects:
+      - action: set_field
+        target: lifecycle_state
+        value: PRESENT
+      - action: set_field
+        target: resolved_at
+        value: "{{timestamp}}"
+
+validation_rules:
+  - no_skip_states
+  - single_direction
+  - conflict_requires_adjudication
+  - batch_atomicity

@@ -1,0 +1,538 @@
+{
+  "section_id": "sec_019_runbooks",
+  "title": "Operational Runbooks",
+  "required": true,
+  "instructions_file": "sections/sec_019_runbooks.inst.md",
+  "runbooks": {
+    "installation": {
+      "prerequisites": {
+        "os": [
+          "{{Windows|Linux|macOS}}"
+        ],
+        "runtime": "{{Python >=3.11, <3.13}}",
+        "tools": [
+          "git >=2.40",
+          "docker >=24 (optional)"
+        ]
+      },
+      "steps": [
+        {
+          "step": "1. Clone repository",
+          "command": {
+            "exe": "git",
+            "args": [
+              "clone",
+              "{{REPO_URL}}",
+              "&&",
+              "cd",
+              "{{REPO_NAME}}"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        },
+        {
+          "step": "2. Create virtual environment",
+          "command": {
+            "exe": "python",
+            "args": [
+              "-m",
+              "venv",
+              ".venv"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        },
+        {
+          "step": "3. Activate virtual environment",
+          "command": {
+            "exe": ".venv\\Scripts\\activate",
+            "args": [
+              "#",
+              "Windows",
+              "PowerShell",
+              "source",
+              ".venv/bin/activate",
+              "#",
+              "Linux/macOS"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        },
+        {
+          "step": "4. Install dependencies",
+          "command": {
+            "exe": "pip",
+            "args": [
+              "install",
+              "-r",
+              "requirements.txt"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        },
+        {
+          "step": "5. Verify installation",
+          "command": {
+            "exe": "python",
+            "args": [
+              "scripts/verify_install.py"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          },
+          "expect_exit_code": 0
+        }
+      ],
+      "troubleshooting": [
+        {
+          "issue": "pip install fails with dependency conflict",
+          "solution": "pip install --upgrade pip && pip install -r requirements.txt --force-reinstall"
+        },
+        {
+          "issue": "Virtual environment activation fails",
+          "solution": "Check PowerShell execution policy: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser"
+        }
+      ]
+    },
+    "execution": {
+      "development": [
+        {
+          "step": "1. Run plan generation",
+          "command": {
+            "exe": "python",
+            "args": [
+              "scripts/generate_plan.py",
+              "--input",
+              "{{INPUT}}",
+              "--output",
+              "{{OUTPUT}}"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        },
+        {
+          "step": "2. Validate plan",
+          "command": {
+            "exe": "python",
+            "args": [
+              "scripts/validate_plan.py",
+              "{{PLAN_FILE}}"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          },
+          "expect_exit_code": 0
+        },
+        {
+          "step": "3. Execute plan (dry-run)",
+          "command": {
+            "exe": "python",
+            "args": [
+              "scripts/execute_plan.py",
+              "{{PLAN_FILE}}",
+              "--dry-run"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        },
+        {
+          "step": "4. Execute plan (real)",
+          "command": {
+            "exe": "python",
+            "args": [
+              "scripts/execute_plan.py",
+              "{{PLAN_FILE}}",
+              "--execute"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        }
+      ],
+      "production": [
+        {
+          "step": "1. Run smoke tests",
+          "command": {
+            "exe": "python",
+            "args": [
+              "scripts/smoke_tests.py",
+              "--env",
+              "production"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          },
+          "expect_exit_code": 0
+        },
+        {
+          "step": "2. Deploy with feature flag",
+          "command": {
+            "exe": "python",
+            "args": [
+              "scripts/deploy.py",
+              "--env",
+              "production",
+              "--feature-flag",
+              "{{FLAG_NAME}}=off"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        },
+        {
+          "step": "3. Monitor metrics",
+          "command": {
+            "exe": "python",
+            "args": [
+              "scripts/monitor_metrics.py",
+              "--duration",
+              "300"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        },
+        {
+          "step": "4. Enable feature flag",
+          "command": {
+            "exe": "python",
+            "args": [
+              "scripts/toggle_feature.py",
+              "--flag",
+              "{{FLAG_NAME}}",
+              "--value",
+              "on"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        }
+      ]
+    },
+    "maintenance": {
+      "backup": [
+        {
+          "step": "Backup state database",
+          "command": {
+            "exe": "sqlite3",
+            "args": [
+              ".state/pipeline.db",
+              "'.backup",
+              ".state/backups/pipeline_$(date",
+              "+%Y%m%d_%H%M%S).db'"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        },
+        {
+          "step": "Backup decision ledger",
+          "command": {
+            "exe": "cp",
+            "args": [
+              ".state/decisions.jsonl",
+              ".state/backups/decisions_$(date",
+              "+%Y%m%d_%H%M%S).jsonl"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        }
+      ],
+      "restore": [
+        {
+          "step": "Restore state database",
+          "command": {
+            "exe": "sqlite3",
+            "args": [
+              ".state/pipeline.db",
+              "'.restore",
+              ".state/backups/{{BACKUP_FILE}}'"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        },
+        {
+          "step": "Verify restore",
+          "command": {
+            "exe": "sqlite3",
+            "args": [
+              ".state/pipeline.db",
+              "'SELECT",
+              "COUNT(*)",
+              "FROM",
+              "phases;'"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        }
+      ],
+      "upgrade": [
+        {
+          "step": "1. Backup current version",
+          "command": {
+            "exe": "python",
+            "args": [
+              "scripts/backup_all.py"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        },
+        {
+          "step": "2. Pull latest changes",
+          "command": {
+            "exe": "git",
+            "args": [
+              "pull",
+              "origin",
+              "main"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        },
+        {
+          "step": "3. Upgrade dependencies",
+          "command": {
+            "exe": "pip",
+            "args": [
+              "install",
+              "-r",
+              "requirements.txt",
+              "--upgrade"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        },
+        {
+          "step": "4. Run migrations",
+          "command": {
+            "exe": "python",
+            "args": [
+              "scripts/run_migrations.py"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        },
+        {
+          "step": "5. Verify upgrade",
+          "command": {
+            "exe": "python",
+            "args": [
+              "scripts/verify_upgrade.py"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          },
+          "expect_exit_code": 0
+        }
+      ]
+    },
+    "rollback": {
+      "default_procedure": [
+        {
+          "step": "1. Revert commits",
+          "command": {
+            "exe": "git",
+            "args": [
+              "revert",
+              "{{COMMIT_HASH}}"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        },
+        {
+          "step": "2. Rerun validations",
+          "command": {
+            "exe": "pytest",
+            "args": [
+              "tests/",
+              "-v"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          },
+          "expect_exit_code": 0
+        },
+        {
+          "step": "3. Verify rollback",
+          "command": {
+            "exe": "python",
+            "args": [
+              "scripts/verify_rollback.py"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        }
+      ],
+      "additional_steps": [
+        "{{ADDITIONAL_ROLLBACK_STEP_1}}",
+        "{{ADDITIONAL_ROLLBACK_STEP_2}}"
+      ],
+      "enterprise_mode_specific": [
+        {
+          "step": "1. Disable feature flag",
+          "command": {
+            "exe": "python",
+            "args": [
+              "scripts/toggle_feature.py",
+              "--flag",
+              "{{FLAG_NAME}}",
+              "--value",
+              "off"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        },
+        {
+          "step": "2. Drain traffic",
+          "command": {
+            "exe": "python",
+            "args": [
+              "scripts/drain_traffic.py",
+              "--duration",
+              "300"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        },
+        {
+          "step": "3. Revert deployment",
+          "command": {
+            "exe": "python",
+            "args": [
+              "scripts/rollback_deployment.py",
+              "--to-version",
+              "{{PREVIOUS_VERSION}}"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        },
+        {
+          "step": "4. Verify rollback",
+          "command": {
+            "exe": "python",
+            "args": [
+              "scripts/smoke_tests.py",
+              "--env",
+              "production"
+            ],
+            "timeout_seconds": 600,
+            "expected_exit_codes": [
+              0
+            ]
+          }
+        }
+      ]
+    },
+    "troubleshooting_guide": {
+      "common_issues": [
+        {
+          "issue": "Phase fails with scope violation",
+          "diagnosis": "File touched outside allowed paths",
+          "resolution": "Review file_scope in phase contract, amend if needed"
+        },
+        {
+          "issue": "Circuit breaker trips",
+          "diagnosis": "Oscillation detected in fix loop",
+          "resolution": "Review fix attempt logs, identify root cause, manual intervention required"
+        },
+        {
+          "issue": "Determinism test fails",
+          "diagnosis": "Non-deterministic behavior (timestamps, random, UUIDs)",
+          "resolution": "Use fixed seeds, mock time sources, use stable IDs"
+        }
+      ],
+      "escalation_paths": [
+        {
+          "level": "L1 - Automated repair",
+          "trigger": "First failure",
+          "action": "Invoke fix pattern from allowed actions"
+        },
+        {
+          "level": "L2 - Human review",
+          "trigger": "Circuit breaker trip",
+          "action": "Create GitHub issue with fix loop logs"
+        },
+        {
+          "level": "L3 - Plan amendment",
+          "trigger": "Unresolvable scope violation",
+          "action": "Update phase contract, re-validate plan"
+        }
+      ]
+    }
+  },
+  "file_id": "01260207233100000489"
+}

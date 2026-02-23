@@ -1,0 +1,605 @@
+# Action Taxonomy Compliant Step Definition Schema v1.0
+# Based on AI-Safety Readiness Framework principles
+# Generated: 2026-01-27T06:22:00Z
+
+version: "1.0"
+schema_id: "action_taxonomy_step_pipeline"
+canonical_source: true
+
+# ============================================================================
+# CANONICAL ACTION TAXONOMY (9 Classes - Framework Requirement)
+# ============================================================================
+
+action_taxonomy:
+  enum:
+    - artifact_resolution
+    - registry_query
+    - template_injection
+    - validation
+    - computation
+    - external_execution
+    - write_commit
+    - state_transition
+    - ledger_emission
+  
+  definitions:
+    artifact_resolution:
+      purpose: "Normalize inputs; derive canonical paths; compute idempotency keys"
+      deterministic: required
+      side_effects: none
+      typical_inputs: ["raw_event", "filesystem_path"]
+      typical_outputs: ["normalized_event", "canonical_path", "idempotency_key"]
+    
+    registry_query:
+      purpose: "Read current state; lookup existing records; no mutations"
+      deterministic: required
+      side_effects: none
+      typical_inputs: ["query_key", "registry_handle"]
+      typical_outputs: ["existing_record", "query_result"]
+    
+    template_injection:
+      purpose: "Apply templates; interpolate variables; generate artifacts from templates"
+      deterministic: required
+      side_effects: none
+      typical_inputs: ["template", "variables", "policy_config"]
+      typical_outputs: ["rendered_output", "injected_artifact"]
+    
+    validation:
+      purpose: "Check policy gates; validate schema; enforce invariants; produce structured errors"
+      deterministic: required
+      side_effects: none
+      typical_inputs: ["artifact_to_validate", "policy_rules", "schema"]
+      typical_outputs: ["validation_result", "structured_errors"]
+      fast_feedback: required  # Must be callable without side effects
+    
+    computation:
+      purpose: "Build plans; compute transformations; deterministic logic only"
+      deterministic: required
+      side_effects: none
+      typical_inputs: ["validated_input", "registry_snapshot", "policy_config"]
+      typical_outputs: ["transaction_plan", "computed_result"]
+      mcp_exposure: recommended  # Expose as dry-run oracle
+    
+    external_execution:
+      purpose: "Call external tools; network requests; shell commands; non-atomic ops"
+      deterministic: false
+      side_effects: mutating
+      typical_inputs: ["command_spec", "execution_context"]
+      typical_outputs: ["execution_result", "stdout", "stderr", "exit_code"]
+      rollback: recommended
+    
+    write_commit:
+      purpose: "Atomic registry updates; filesystem mutations; transactional commits"
+      deterministic: false
+      side_effects: mutating
+      typical_inputs: ["transaction_plan", "registry_handle"]
+      typical_outputs: ["commit_result", "new_registry_state"]
+      rollback: required
+      lock: required
+      stability_gate: recommended
+    
+    state_transition:
+      purpose: "Explicit state machine transitions; lifecycle events; status changes"
+      deterministic: true
+      side_effects: mutating
+      typical_inputs: ["current_state", "transition_event"]
+      typical_outputs: ["new_state", "transition_log"]
+      ledger: required
+    
+    ledger_emission:
+      purpose: "Emit audit records; evidence logging; mandatory for all outcomes"
+      deterministic: true
+      side_effects: append_only
+      typical_inputs: ["outcome", "evidence_bundle", "intent_context"]
+      typical_outputs: ["audit_record", "ledger_entry"]
+      mandatory: true  # Every pipeline must end with this
+
+# ============================================================================
+# BOUNDED OUTCOME CLASSIFICATION (Framework Requirement)
+# ============================================================================
+
+outcome_taxonomy:
+  enum:
+    - SUCCESS
+    - EXPECTED_NOOP
+    - VALIDATION_FAIL
+    - EXECUTION_ERROR
+    - SYSTEM_FAULT
+  
+  definitions:
+    SUCCESS:
+      exit_code: 0
+      meaning: "Operation completed; mutation applied (if applicable)"
+      ledger_required: true
+      retryable: false
+    
+    EXPECTED_NOOP:
+      exit_code: 1
+      meaning: "Filtered out by policy; no mutation needed (expected behavior)"
+      ledger_required: true
+      retryable: false
+      examples: ["duplicate event ignored", "excluded path", "idempotent no-op"]
+    
+    VALIDATION_FAIL:
+      exit_code: 20
+      meaning: "Policy violation; expected failure (bad input, schema mismatch)"
+      ledger_required: true
+      retryable: false
+      structured_errors: required
+      remediation: must_provide
+    
+    EXECUTION_ERROR:
+      exit_code: 10
+      meaning: "Transient failure (filesystem lock timeout, network blip)"
+      ledger_required: true
+      retryable: true
+      max_retries: 3
+    
+    SYSTEM_FAULT:
+      exit_code: 30
+      meaning: "Requires operator intervention (disk full, permissions, corruption)"
+      ledger_required: true
+      retryable: false
+      escalation: required
+
+# ============================================================================
+# PROCESS MECHANICS (NOT ACTIONS - Operational Concerns)
+# ============================================================================
+
+mechanics:
+  categories:
+    - debounce
+    - lock
+    - stability_gate
+    - idempotency_check
+    - rate_limiting
+  
+  note: |
+    These are NOT steps in the action taxonomy.
+    They are declared under `mechanics:` in step definitions.
+    They control HOW actions execute, not WHAT they do.
+  
+  lock:
+    strategies:
+      - file_lock
+      - advisory_lock
+      - distributed_lock
+    required_for: ["write_commit", "external_execution"]
+  
+  stability_gate:
+    strategies:
+      - none
+      - mtime_quiet_period
+      - content_hash_two_pass
+      - size_stable
+    required_for: ["write_commit"]
+  
+  debounce:
+    strategies:
+      - time_window
+      - event_coalescing
+      - idempotency_key_dedup
+    required_for: ["artifact_resolution"]
+
+# ============================================================================
+# STEP DEFINITION FORMAT (What Authors Write)
+# ============================================================================
+
+step_definition:
+  required_fields:
+    - step_id
+    - action  # MUST be one of the 9 taxonomy classes
+    - description
+    - deterministic
+    - side_effects
+    - inputs
+    - outputs
+    - outcomes
+    - ledger
+  
+  optional_fields:
+    - mechanics
+    - rollback
+    - mcp
+    - fast_feedback
+    - intent_capture
+  
+  validation_rules:
+    - "action MUST be from action_taxonomy.enum"
+    - "ledger.required MUST be true for all steps"
+    - "write_commit steps MUST have rollback + lock mechanics"
+    - "validation steps MUST support fast_feedback (dry-run mode)"
+    - "computation steps SHOULD expose MCP tool interface"
+    - "Pipeline MUST end with ledger_emission step"
+    - "side_effects MUST match action definition (e.g., write_commit = mutating)"
+
+# ============================================================================
+# MCP TOOL EXPOSURE (Framework Requirement for AI-Native)
+# ============================================================================
+
+mcp_contract:
+  purpose: "Make validation/computation steps queryable without side effects"
+  required_for: ["validation", "computation"]
+  
+  tool_definition:
+    required_fields:
+      - tool_name
+      - input_schema_ref
+      - output_schema_ref
+      - description
+    
+    optional_fields:
+      - examples
+      - max_tokens
+      - timeout_sec
+  
+  example:
+    tool_name: "validate_file_watcher_event"
+    description: "Dry-run oracle: validate event without applying mutations"
+    input_schema_ref: "#/schemas/EventEnvelope"
+    output_schema_ref: "#/schemas/ValidationResult"
+    side_effects: none
+    deterministic: true
+
+# ============================================================================
+# LEDGER EMISSION (Mandatory for All Outcomes)
+# ============================================================================
+
+ledger_requirements:
+  mandatory: true
+  applies_to: "every step in every outcome branch"
+  
+  record_fields:
+    required:
+      - timestamp
+      - step_id
+      - action
+      - outcome
+      - evidence
+      - intent_context
+    
+    optional:
+      - semantic_drift_delta
+      - remediation_applied
+      - retry_count
+  
+  intent_capture:
+    purpose: "Detect semantic drift: did tool do what user intended?"
+    required_for: ["write_commit", "external_execution", "state_transition"]
+    fields:
+      - original_user_intent
+      - tool_executed_action
+      - drift_detection_result
+
+# ============================================================================
+# FAST FEEDBACK ORACLE (Framework Optimization Goal)
+# ============================================================================
+
+fast_feedback:
+  purpose: "AI agents call validation before triggering mutations"
+  implementation: "Expose validation + computation steps as MCP tools"
+  
+  requirements:
+    - "MUST return structured error vectors with remediation"
+    - "MUST be deterministic (same input → same output)"
+    - "MUST have zero side effects"
+    - "MUST complete in <100ms for typical inputs"
+  
+  error_vector_format:
+    required_fields:
+      - error_code
+      - field
+      - message
+      - remediation
+      - context
+    
+    example:
+      error_code: "DUPLICATE_FILE_ID"
+      field: "file_id"
+      message: "File ID P_01999000042260124015 already exists in registry"
+      remediation: "Use allocator.next_id() to generate unique ID"
+      context:
+        existing_record: "P_01999000042260124015_govreg.py"
+        suggested_id: "P_01999000042260127001"
+
+# ============================================================================
+# ROLLBACK CONTRACTS (Required for Mutating Actions)
+# ============================================================================
+
+rollback:
+  required_for: ["write_commit", "external_execution", "state_transition"]
+  
+  strategies:
+    snapshot_restore:
+      description: "Copy-on-write; restore from snapshot on failure"
+      implementation: "registry.backup.json → registry.json on rollback"
+      atomicity: required
+    
+    reverse_ops:
+      description: "Execute inverse operations in reverse order"
+      implementation: "DELETE file → CREATE file (with original content)"
+      complexity: high
+    
+    none:
+      description: "No rollback (append-only or idempotent ops)"
+      allowed_for: ["ledger_emission", "registry_query"]
+  
+  evidence_requirements:
+    - "Snapshot path or reverse op log MUST be in ledger"
+    - "Rollback execution MUST emit separate ledger entry"
+    - "Rollback failure MUST trigger SYSTEM_FAULT outcome"
+
+# ============================================================================
+# PIPELINE ORDERING CONSTRAINTS (Enforced by Linter)
+# ============================================================================
+
+ordering_rules:
+  note: "JSON Schema cannot enforce ordering; use separate linter"
+  
+  required_flow:
+    - artifact_resolution → validation
+    - validation → computation
+    - computation → write_commit OR external_execution
+    - write_commit → ledger_emission
+  
+  forbidden_patterns:
+    - "write_commit before validation"
+    - "external_execution without prior validation"
+    - "ledger_emission not as final step"
+    - "multiple write_commit steps without intermediate validation"
+  
+  linter_rules:
+    - "Pipeline MUST have exactly one ledger_emission as final step"
+    - "All side_effects=mutating steps MUST be after side_effects=none steps"
+    - "write_commit MUST be preceded by computation or validation"
+    - "Each step MUST have unique step_id matching /^S[0-9]{2,3}$/"
+
+# ============================================================================
+# EXAMPLE: FILE WATCHER PIPELINE (Compliant)
+# ============================================================================
+
+example_pipeline:
+  version: "1.0"
+  pipeline_id: "file_watcher_core_v1"
+  
+  steps:
+    - step_id: "S01"
+      action: artifact_resolution
+      description: "Normalize watchDirectory event; derive canonical paths"
+      deterministic: true
+      side_effects: none
+      mechanics:
+        debounce:
+          required: true
+          strategy: "idempotency_key_dedup"
+          window_ms: 100
+      inputs:
+        - name: event_envelope
+          schema_ref: "#/schemas/EventEnvelope"
+      outputs:
+        - name: normalized_event
+          schema_ref: "#/schemas/NormalizedEvent"
+      outcomes:
+        success: SUCCESS
+        failure: SYSTEM_FAULT
+      ledger:
+        required: true
+        record_kind: "event_ingest"
+    
+    - step_id: "S02"
+      action: registry_query
+      description: "Lookup existing record by file_id and path"
+      deterministic: true
+      side_effects: none
+      inputs:
+        - name: file_id
+          schema_ref: "#/schemas/FileID"
+        - name: registry_handle
+          schema_ref: "#/schemas/RegistryHandle"
+      outputs:
+        - name: existing_record
+          schema_ref: "#/schemas/RegistryRecord"
+      outcomes:
+        success: SUCCESS
+        failure: SYSTEM_FAULT
+      ledger:
+        required: true
+        record_kind: "registry_lookup"
+    
+    - step_id: "S03"
+      action: validation
+      description: "Validate event against policy (root allowlist, schema, duplicates)"
+      deterministic: true
+      side_effects: none
+      fast_feedback:
+        required: true
+        mcp_tool_name: "validate_file_event"
+      mcp:
+        tool_name: "validate_file_event"
+        input_schema_ref: "#/schemas/NormalizedEvent"
+        output_schema_ref: "#/schemas/ValidationResult"
+      inputs:
+        - name: normalized_event
+          schema_ref: "#/schemas/NormalizedEvent"
+        - name: policy_config
+          schema_ref: "#/schemas/PolicyConfig"
+        - name: existing_record
+          schema_ref: "#/schemas/RegistryRecord"
+      outputs:
+        - name: validation_result
+          schema_ref: "#/schemas/ValidationResult"
+      outcomes:
+        success: SUCCESS
+        failure: VALIDATION_FAIL
+      ledger:
+        required: true
+        record_kind: "validation"
+    
+    - step_id: "S04"
+      action: computation
+      description: "Build transaction plan (dry-run; no mutations)"
+      deterministic: true
+      side_effects: none
+      mcp:
+        tool_name: "plan_file_watcher_transaction"
+        input_schema_ref: "#/schemas/ComputationInput"
+        output_schema_ref: "#/schemas/TransactionPlan"
+      inputs:
+        - name: validated_event
+          schema_ref: "#/schemas/NormalizedEvent"
+        - name: registry_snapshot
+          schema_ref: "#/schemas/RegistryState"
+        - name: policy_config
+          schema_ref: "#/schemas/PolicyConfig"
+      outputs:
+        - name: transaction_plan
+          schema_ref: "#/schemas/TransactionPlan"
+      outcomes:
+        success: SUCCESS
+        failure: SYSTEM_FAULT
+      ledger:
+        required: true
+        record_kind: "transaction_plan"
+    
+    - step_id: "S05"
+      action: write_commit
+      description: "Apply plan: filesystem ops + atomic registry update with rollback"
+      deterministic: false
+      side_effects: mutating
+      mechanics:
+        lock:
+          required: true
+          lock_name: "registry_single_writer"
+          strategy: "file_lock"
+        stability_gate:
+          required: true
+          strategy: "content_hash_two_pass"
+      rollback:
+        required: true
+        strategy: "snapshot_restore"
+        snapshot_paths:
+          - "registry.backup.json"
+      inputs:
+        - name: transaction_plan
+          schema_ref: "#/schemas/TransactionPlan"
+        - name: registry_handle
+          schema_ref: "#/schemas/RegistryHandle"
+      outputs:
+        - name: commit_result
+          schema_ref: "#/schemas/CommitResult"
+      outcomes:
+        success: SUCCESS
+        failure: EXECUTION_ERROR
+      ledger:
+        required: true
+        record_kind: "commit"
+        intent_capture:
+          required: true
+          intent_ref: "original_user_intent"
+    
+    - step_id: "S06"
+      action: ledger_emission
+      description: "Emit final audit record with evidence (mandatory for all outcomes)"
+      deterministic: true
+      side_effects: append_only
+      inputs:
+        - name: pipeline_context
+          schema_ref: "#/schemas/PipelineContext"
+        - name: all_step_outputs
+          schema_ref: "#/schemas/StepOutputs"
+      outputs:
+        - name: audit_record
+          schema_ref: "#/schemas/AuditRecord"
+      outcomes:
+        success: SUCCESS
+        failure: SYSTEM_FAULT
+      ledger:
+        required: true
+        record_kind: "audit_final"
+
+# ============================================================================
+# SCHEMA REFERENCES (To Be Defined Separately)
+# ============================================================================
+
+schemas:
+  note: "Define these in schemas/ directory; reference via schema_ref"
+  
+  required_schemas:
+    - EventEnvelope
+    - NormalizedEvent
+    - FileID
+    - RegistryHandle
+    - RegistryRecord
+    - PolicyConfig
+    - ValidationResult
+    - ComputationInput
+    - TransactionPlan
+    - RegistryState
+    - CommitResult
+    - PipelineContext
+    - StepOutputs
+    - AuditRecord
+  
+  schema_format: "JSON Schema Draft 2020-12"
+  schema_location: "schemas/"
+
+# ============================================================================
+# COMPLIANCE CHECKLIST (For Plan Validation)
+# ============================================================================
+
+compliance_checklist:
+  action_taxonomy:
+    - "Every step declares exactly one of 9 action taxonomy classes"
+    - "No steps use custom/undefined action types"
+    - "Action semantics match definition (e.g., validation = side_effects none)"
+  
+  bounded_outcomes:
+    - "Every step declares success + failure outcomes"
+    - "All outcomes map to one of 5 outcome taxonomy classes"
+    - "Outcome classification matches step semantics (e.g., validation → VALIDATION_FAIL)"
+  
+  ledger_emission:
+    - "Every step has ledger.required = true"
+    - "Pipeline ends with ledger_emission step"
+    - "Ledger captures intent context for mutating actions"
+  
+  fast_feedback:
+    - "Validation steps expose MCP tool interface"
+    - "Computation steps support dry-run mode"
+    - "Structured error vectors include remediation"
+  
+  mechanics_separation:
+    - "Debounce/lock/stability declared under mechanics, not as steps"
+    - "Process concerns separated from action taxonomy"
+  
+  rollback_contracts:
+    - "write_commit steps define rollback strategy"
+    - "Rollback evidence captured in ledger"
+    - "Snapshot paths or reverse ops documented"
+  
+  ordering_constraints:
+    - "ledger_emission is final step"
+    - "Mutating actions follow non-mutating actions"
+    - "Validation precedes computation"
+
+# ============================================================================
+# VERSION HISTORY
+# ============================================================================
+
+version_history:
+  v1.0:
+    date: "2026-01-27"
+    changes:
+      - "Initial release"
+      - "9-class action taxonomy defined"
+      - "5-state outcome taxonomy defined"
+      - "MCP tool contracts specified"
+      - "Fast feedback oracle requirements"
+      - "Ledger emission mandatory"
+      - "Rollback contracts for mutating actions"
+      - "Process mechanics separated from actions"
+    compliance: "AI-Safety Readiness Framework aligned"
+
+# ============================================================================
+# END OF SCHEMA
+# ============================================================================

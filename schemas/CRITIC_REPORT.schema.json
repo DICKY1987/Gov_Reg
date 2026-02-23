@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://govreg.local/schemas/CRITIC_REPORT.schema.json",
+  "title": "Critic Report Schema",
+  "description": "Schema for critic analysis reports identifying plan defects",
+  "type": "object",
+  "required": [
+    "report_id",
+    "plan_hash",
+    "timestamp",
+    "hard_defects",
+    "soft_defects",
+    "summary"
+  ],
+  "properties": {
+    "report_id": {
+      "type": "string",
+      "pattern": "^CRITIC_[0-9]{8}T[0-9]{6}Z_[a-f0-9]{8}$"
+    },
+    "plan_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA256 hash of plan being analyzed"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "hard_defects": {
+      "type": "array",
+      "description": "Critical defects that must be fixed",
+      "items": {
+        "type": "object",
+        "required": [
+          "defect_id",
+          "severity",
+          "rule_code",
+          "json_pointer",
+          "evidence_excerpt",
+          "recommended_fix"
+        ],
+        "properties": {
+          "defect_id": {"type": "string"},
+          "severity": {"type": "string", "enum": ["CRITICAL", "HIGH"]},
+          "rule_code": {"type": "string", "pattern": "^[A-Z]+-[0-9]{3}$"},
+          "json_pointer": {"type": "string", "pattern": "^/.*"},
+          "evidence_excerpt": {"type": "string"},
+          "recommended_fix": {"type": "string"},
+          "optional_patch": {"type": "object"}
+        }
+      }
+    },
+    "soft_defects": {
+      "type": "array",
+      "description": "Improvement suggestions",
+      "items": {
+        "type": "object",
+        "required": [
+          "defect_id",
+          "severity",
+          "rule_code",
+          "json_pointer",
+          "evidence_excerpt",
+          "recommended_fix"
+        ],
+        "properties": {
+          "defect_id": {"type": "string"},
+          "severity": {"type": "string", "enum": ["MEDIUM", "LOW", "INFO"]},
+          "rule_code": {"type": "string", "pattern": "^[A-Z]+-[0-9]{3}$"},
+          "json_pointer": {"type": "string", "pattern": "^/.*"},
+          "evidence_excerpt": {"type": "string"},
+          "recommended_fix": {"type": "string"},
+          "optional_patch": {"type": "object"}
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["total_defects", "hard_count", "soft_count", "recommendation"],
+      "properties": {
+        "total_defects": {"type": "integer", "minimum": 0},
+        "hard_count": {"type": "integer", "minimum": 0},
+        "soft_count": {"type": "integer", "minimum": 0},
+        "recommendation": {
+          "type": "string",
+          "enum": ["PROCEED", "REFINE", "REJECT"]
+        },
+        "notes": {"type": "string"}
+      }
+    }
+  }
+}

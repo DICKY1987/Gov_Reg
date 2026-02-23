@@ -1,0 +1,322 @@
+health_checks:
+  full_system_validation:
+    id: "HC001"
+    name: "Full System Validation"
+    frequency: "Nightly"
+    estimated_time: "2-10 minutes depending on system size"
+    
+    tool: "2_cli_tools/maintenance/P_01999000042260125113_healthcheck.py"
+    command: "python 2_cli_tools/maintenance/P_01999000042260125113_healthcheck.py --full"
+    
+    checks:
+      - check: "dir_id_validation"
+        module: "2_cli_tools/dir_id/P_01999000042260125101_validate_dir_ids.py"
+        validates:
+          - "All governed directories have .dir_id files"
+          - "All .dir_id files pass schema validation"
+          - "No duplicate dir_id values"
+          - "relative_path matches actual location"
+        pass_criteria: "100% of governed directories valid"
+      
+      - check: "file_id_format_scan"
+        module: "1_runtime/validators/P_01999000042260124521_id_format_scanner.py"
+        validates:
+          - "All files have proper ID format"
+          - "Python files use P_ prefix"
+          - "No files with malformed IDs"
+        pass_criteria: ">95% compliance rate"
+      
+      - check: "counter_store_health"
+        validates:
+          - "COUNTER_STORE.json exists"
+          - "No lock files present"
+          - "Counter value is reasonable"
+          - "No corruption detected"
+        pass_criteria: "Accessible and uncorrupted"
+      
+      - check: "orphan_detection"
+        module: "1_runtime/watchers/P_01999000042260125111_orphan_purger.py"
+        validates:
+          - "Registry entries match filesystem"
+          - "No orphaned dir_ids"
+          - "No dead paths"
+        pass_criteria: "<5 orphaned entries"
+      
+      - check: "schema_compliance"
+        validates:
+          - "All .dir_id files against schema"
+          - "Config file against schema"
+        pass_criteria: "100% schema compliance"
+    
+    output:
+      report_file: "health_check_{timestamp}.json"
+      location: "01260207201000001148_evidence/health_checks/"
+      format:
+        status: "PASS | FAIL | WARNING"
+        summary:
+          directories_scanned: "int"
+          files_scanned: "int"
+          issues_found: "int"
+          compliance_rate: "float (0.0-1.0)"
+        details:
+          by_check: "individual check results"
+          violations: "list of issues"
+          recommendations: "list of actions"
+    
+    thresholds:
+      critical:
+        - "Counter store corrupted"
+        - "Duplicate IDs detected"
+        - "<50% compliance rate"
+      
+      warning:
+        - "Orphaned entries > 5"
+        - "Compliance rate < 95%"
+        - "Corrupted .dir_id files > 2"
+      
+      info:
+        - "Minor format violations"
+        - "Stale lock files"
+
+  quick_validation:
+    id: "HC002"
+    name: "Quick Validation"
+    frequency: "On-demand, pre-deployment"
+    estimated_time: "30-60 seconds"
+    
+    command: "python 2_cli_tools/maintenance/P_01999000042260125113_healthcheck.py --quick"
+    
+    checks:
+      - "Counter store accessible"
+      - "No stale locks"
+      - "Config file valid"
+      - "Critical directories have .dir_id"
+    
+    use_cases:
+      - "Before deployment"
+      - "After configuration change"
+      - "Quick status check"
+    
+    pass_criteria: "All critical checks pass"
+
+  counter_store_check:
+    id: "HC003"
+    name: "Counter Store Health"
+    frequency: "Before each allocation batch"
+    
+    checks:
+      - check: "File exists"
+        path: "%APPDATA%/GovReg/IdAllocator/COUNTER_STORE.json"
+        critical: true
+      
+      - check: "Valid JSON"
+        action: "Parse JSON"
+        critical: true
+      
+      - check: "Required keys present"
+        keys: ["current_counter", "last_updated"]
+        critical: true
+      
+      - check: "No lock file"
+        path: "%APPDATA%/GovReg/IdAllocator/COUNTER_STORE.json.lock"
+        action: "Check age if exists"
+      
+      - check: "Counter value reasonable"
+        validation: "current_counter > 0 and < 10^20"
+      
+      - check: "Timestamp recent"
+        validation: "last_updated within last 30 days"
+    
+    remediation:
+      lock_file_present: "operations/troubleshooting.yaml#counter_store_locked"
+      corrupted: "operations/troubleshooting.yaml#counter_store_corrupted"
+      missing: "Restore from backup"
+
+  dir_id_integrity:
+    id: "HC004"
+    name: "Directory ID Integrity Check"
+    frequency: "Weekly"
+    
+    checks:
+      - check: "All governed directories have .dir_id"
+        module: "2_cli_tools/dir_id/P_01999000042260125101_validate_dir_ids.py"
+      
+      - check: "No duplicate dir_ids"
+        method: "Scan all .dir_id files, check uniqueness"
+      
+      - check: "relative_path accuracy"
+        validation: "Recorded path matches actual location"
+      
+      - check: "Schema compliance"
+        schema: "3_schemas/.dir_id.schema.json"
+      
+      - check: "No orphaned .dir_id files"
+        validation: "Every .dir_id is in governed zone"
+    
+    auto_repair: true
+    repair_tool: "1_runtime/watchers/P_01999000042260125104_dir_id_auto_repair.py"
+
+  registry_sync_check:
+    id: "HC005"
+    name: "Registry-Filesystem Sync"
+    frequency: "Weekly"
+    
+    checks:
+      - check: "Registry entries match filesystem"
+        action: "Compare registry paths to actual files/dirs"
+      
+      - check: "Orphaned entries"
+        module: "1_runtime/watchers/P_01999000042260125111_orphan_purger.py"
+      
+      - check: "Missing entries"
+        action: "Find filesystem items not in registry"
+    
+    output:
+      orphaned_count: "int"
+      missing_count: "int"
+      sync_rate: "float (0.0-1.0)"
+    
+    remediation:
+      orphans_found: "Run cleanup workflow"
+      missing_entries: "Run registry population"
+
+monitoring:
+  metrics:
+    system_health:
+      - "Total directories with .dir_id"
+      - "Compliance rate (%)"
+      - "Orphaned entries count"
+      - "Average validation time"
+    
+    allocation_health:
+      - "Counter store availability (%)"
+      - "Lock contention incidents"
+      - "Failed allocation count"
+      - "Average allocation time"
+    
+    validation_health:
+      - "Pre-commit gate pass rate"
+      - "Format violations count"
+      - "Auto-repair success rate"
+  
+  alerting:
+    critical_alerts:
+      - "Counter store corrupted"
+      - "Duplicate IDs detected"
+      - "Compliance rate < 50%"
+      - trigger: "Immediate notification"
+    
+    warning_alerts:
+      - "Compliance rate < 95%"
+      - "Orphaned entries > 5"
+      - "Lock contentions > 10/hour"
+      - trigger: "Daily digest"
+    
+    info_alerts:
+      - "Routine health check pass"
+      - "Auto-repair completed"
+      - trigger: "Weekly summary"
+
+scheduling:
+  nightly_full_check:
+    time: "02:00 AM"
+    command: "python 2_cli_tools/maintenance/P_01999000042260125113_healthcheck.py --full"
+    output: "01260207201000001148_evidence/health_checks/nightly_{date}.json"
+  
+  weekly_deep_scan:
+    day: "Sunday"
+    time: "03:00 AM"
+    tasks:
+      - "Full system validation"
+      - "Dir ID integrity check"
+      - "Registry sync check"
+      - "Orphan scan"
+  
+  pre_deployment:
+    trigger: "Manual before deploy"
+    command: "python 2_cli_tools/maintenance/P_01999000042260125113_healthcheck.py --quick"
+
+reporting:
+  report_format:
+    timestamp: "ISO 8601"
+    version: "ID system version"
+    checks_run: "list of check IDs"
+    status: "PASS | FAIL | WARNING"
+    summary:
+      total_checks: "int"
+      passed: "int"
+      failed: "int"
+      warnings: "int"
+    details:
+      per_check: "individual results"
+    recommendations: "list of actions"
+  
+  report_destinations:
+    - "01260207201000001148_evidence/health_checks/"
+    - "Email on critical failures (optional)"
+    - "Dashboard (optional)"
+  
+  retention:
+    daily_reports: "30 days"
+    weekly_reports: "1 year"
+    critical_failures: "Indefinite"
+
+remediation_matrix:
+  status_PASS:
+    action: "No action required"
+    next_check: "Scheduled next run"
+  
+  status_WARNING:
+    action: "Review warnings"
+    priority: "Medium"
+    timeline: "Within 24 hours"
+  
+  status_FAIL:
+    action: "Immediate investigation"
+    priority: "High"
+    escalation: "Alert on-call"
+    reference: "operations/troubleshooting.yaml"
+
+integration:
+  with_workflows:
+    - "Validate system after workflows complete"
+    - "Block deployments if health check fails"
+  
+  with_git:
+    - "Run quick check on pre-push hook"
+    - "Block push if critical issues"
+  
+  with_monitoring:
+    - "Export metrics to monitoring system"
+    - "Alert on threshold breaches"
+
+best_practices:
+  before_health_check:
+    - "Ensure system is idle (no active allocations)"
+    - "Review recent changes"
+  
+  during_health_check:
+    - "Monitor progress if interactive"
+    - "Be ready to interrupt if needed"
+  
+  after_health_check:
+    - "Review report thoroughly"
+    - "Address failures immediately"
+    - "Schedule warnings for review"
+    - "Archive report"
+
+automated_remediation:
+  enabled_for:
+    - "Stale lock file removal"
+    - ".dir_id auto-repair"
+    - "Minor format violations"
+  
+  requires_approval:
+    - "Orphan purging"
+    - "Counter store restoration"
+    - "Duplicate ID resolution"
+  
+  disabled_for:
+    - "Counter store corruption"
+    - "Registry modifications"
+    - "Mass deletions"

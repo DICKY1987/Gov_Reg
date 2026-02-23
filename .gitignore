@@ -1,0 +1,17 @@
+# Secrets - never commit
+open api key and GitHub Token.txt
+*.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Lock files
+*.lock
+
+# OS
+nul
+Thumbs.db
+.DS_Store

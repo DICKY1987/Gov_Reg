@@ -1,0 +1,360 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://newphaseplanprocess.schemas/etl/01260207233100000732_load_receipt.json",
+  "title": "ETL Load Receipt Schema",
+  "description": "Schema for load receipt artifact that proves successful data loading. Provides cryptographic proof of ETL completion with checksums and timestamps.",
+  "version": "1.0.0",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "load_id",
+    "load_metadata",
+    "load_results",
+    "verification"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Version of this load receipt schema",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "examples": ["1.0.0"]
+    },
+    "load_id": {
+      "type": "string",
+      "description": "Unique identifier for this load operation",
+      "pattern": "^LOAD-[A-Z0-9]{12,20}$",
+      "examples": ["LOAD-20260201T013726Z"]
+    },
+    "load_metadata": {
+      "type": "object",
+      "description": "Metadata about the load operation",
+      "required": [
+        "started_at",
+        "completed_at",
+        "loader_version",
+        "target_system"
+      ],
+      "properties": {
+        "started_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when load started"
+        },
+        "completed_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when load completed"
+        },
+        "duration_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Load duration in milliseconds"
+        },
+        "loader_version": {
+          "type": "string",
+          "description": "Version of load tool/script",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "loader_user": {
+          "type": "string",
+          "description": "User/service account that performed load"
+        },
+        "loader_host": {
+          "type": "string",
+          "description": "Hostname where load was executed"
+        },
+        "target_system": {
+          "type": "string",
+          "description": "Target system/database name"
+        },
+        "target_environment": {
+          "type": "string",
+          "enum": ["development", "staging", "production", "test"],
+          "description": "Target environment"
+        },
+        "source_data_path": {
+          "type": "string",
+          "description": "Path to source clean data file"
+        },
+        "source_data_checksum": {
+          "type": "string",
+          "description": "SHA256 checksum of source data",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "load_results": {
+      "type": "object",
+      "description": "Results of the load operation",
+      "required": ["status", "records_processed"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["success", "partial_success", "failure"],
+          "description": "Overall load status"
+        },
+        "records_processed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of records processed"
+        },
+        "records_loaded": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of records successfully loaded"
+        },
+        "records_failed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of records that failed to load"
+        },
+        "records_skipped": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of records skipped"
+        },
+        "load_rate_records_per_second": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Load throughput"
+        },
+        "data_volume_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total data volume loaded in bytes"
+        },
+        "target_location": {
+          "type": "string",
+          "description": "Final location of loaded data (table, collection, path)"
+        },
+        "target_record_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Final record count in target after load"
+        },
+        "transaction_id": {
+          "type": "string",
+          "description": "Transaction ID for atomic loads"
+        }
+      }
+    },
+    "load_errors": {
+      "type": "array",
+      "description": "Errors encountered during load",
+      "items": {
+        "type": "object",
+        "required": ["error_code", "error_message"],
+        "properties": {
+          "error_code": {
+            "type": "string",
+            "description": "Error classification code"
+          },
+          "error_message": {
+            "type": "string",
+            "description": "Detailed error description"
+          },
+          "error_timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When error occurred"
+          },
+          "affected_records": {
+            "type": "array",
+            "description": "Record IDs affected by error",
+            "items": {
+              "type": "string"
+            }
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["warning", "error", "critical"],
+            "description": "Error severity"
+          },
+          "is_retryable": {
+            "type": "boolean",
+            "description": "Whether error is retryable"
+          },
+          "error_context": {
+            "type": "object",
+            "description": "Additional error context"
+          }
+        }
+      }
+    },
+    "load_warnings": {
+      "type": "array",
+      "description": "Warnings generated during load",
+      "items": {
+        "type": "object",
+        "properties": {
+          "warning_code": {
+            "type": "string"
+          },
+          "warning_message": {
+            "type": "string"
+          },
+          "affected_records": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "description": "Cryptographic verification of load",
+      "required": ["verification_timestamp", "verification_status"],
+      "properties": {
+        "verification_timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When verification was performed"
+        },
+        "verification_status": {
+          "type": "string",
+          "enum": ["verified", "verification_failed", "not_verified"],
+          "description": "Verification result"
+        },
+        "data_integrity_check": {
+          "type": "object",
+          "description": "Data integrity verification results",
+          "properties": {
+            "source_checksum": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$",
+              "description": "SHA256 of source data"
+            },
+            "target_checksum": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$",
+              "description": "SHA256 of loaded data"
+            },
+            "checksums_match": {
+              "type": "boolean",
+              "description": "Whether checksums match"
+            },
+            "record_count_match": {
+              "type": "boolean",
+              "description": "Whether record counts match"
+            }
+          }
+        },
+        "load_receipt_signature": {
+          "type": "string",
+          "description": "Digital signature of this receipt (for critical loads)"
+        },
+        "verification_method": {
+          "type": "string",
+          "enum": ["checksum", "record_count", "sampling", "full_comparison"],
+          "description": "Verification method used"
+        },
+        "verification_errors": {
+          "type": "array",
+          "description": "Errors found during verification",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "rollback_info": {
+      "type": "object",
+      "description": "Rollback information (if load failed)",
+      "properties": {
+        "rollback_performed": {
+          "type": "boolean",
+          "description": "Whether rollback was executed"
+        },
+        "rollback_timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "rollback_status": {
+          "type": "string",
+          "enum": ["success", "partial", "failed", "not_attempted"]
+        },
+        "rollback_method": {
+          "type": "string",
+          "enum": ["transaction_rollback", "backup_restore", "manual", "not_applicable"]
+        },
+        "backup_location": {
+          "type": "string",
+          "description": "Location of backup used for rollback"
+        }
+      }
+    },
+    "performance_metrics": {
+      "type": "object",
+      "description": "Performance metrics for the load",
+      "properties": {
+        "cpu_usage_percent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "memory_usage_mb": {
+          "type": "number",
+          "minimum": 0
+        },
+        "disk_io_mb": {
+          "type": "number",
+          "minimum": 0
+        },
+        "network_io_mb": {
+          "type": "number",
+          "minimum": 0
+        },
+        "peak_load_rate": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Peak records per second"
+        },
+        "average_load_rate": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Average records per second"
+        }
+      }
+    },
+    "compliance": {
+      "type": "object",
+      "description": "Compliance and audit information",
+      "properties": {
+        "audit_trail_id": {
+          "type": "string",
+          "description": "Reference to audit trail entry"
+        },
+        "compliance_checks": {
+          "type": "array",
+          "description": "Compliance checks performed",
+          "items": {
+            "type": "object",
+            "properties": {
+              "check_name": {
+                "type": "string"
+              },
+              "check_status": {
+                "type": "string",
+                "enum": ["passed", "failed", "not_applicable"]
+              },
+              "check_details": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "data_classification": {
+          "type": "string",
+          "enum": ["public", "internal", "confidential", "restricted"],
+          "description": "Data classification level"
+        },
+        "retention_policy": {
+          "type": "string",
+          "description": "Data retention policy applied"
+        }
+      }
+    }
+  }
+}

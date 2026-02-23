@@ -1,0 +1,345 @@
+{
+  "manifest_version": "1.0",
+  "generated_at": "2026-02-22T10:02:00Z",
+  "id_system_version": "1.0.0",
+  "purpose": "Machine-readable documentation catalog for AI agents",
+  
+  "documentation_index": {
+    "01_CONTEXT_PRIMER.md": {
+      "priority": "CRITICAL",
+      "load_order": 1,
+      "purpose": "Essential context for AI agents - load this first",
+      "token_estimate": 400,
+      "required_for": ["all_operations"]
+    },
+    
+    "contracts": {
+      "path": "contracts/",
+      "priority": "CRITICAL",
+      "load_order": 2,
+      "description": "Immutable specifications and canonical definitions",
+      
+      "files": {
+        "id_contract.yaml": {
+          "purpose": "ID terminology single source of truth",
+          "covers": ["file_id", "doc_id", "dir_id", "validation_rules"],
+          "required_for": ["all_operations"],
+          "token_estimate": 800,
+          "source": "contracts/01260207201000000174_ID_IDENTITY_CONTRACT.md"
+        },
+        "01260207201000000174_ID_IDENTITY_CONTRACT.md": {
+          "purpose": "Original contract (prose format)",
+          "status": "REFERENCE_ONLY",
+          "note": "Use id_contract.yaml for AI consumption",
+          "token_estimate": 1500
+        }
+      }
+    },
+    
+    "schemas": {
+      "path": "schemas/",
+      "priority": "HIGH",
+      "load_order": 3,
+      "description": "JSON schema definitions for data structures",
+      
+      "files": {
+        ".dir_id.schema.json": {
+          "purpose": "Schema for .dir_id anchor files",
+          "validates": "Directory ID JSON files",
+          "token_estimate": 200
+        }
+      }
+    },
+    
+    "runtime": {
+      "path": "runtime/",
+      "priority": "HIGH",
+      "load_order": 4,
+      "description": "Runtime module behavior documentation",
+      
+      "files": {
+        "allocators.yaml": {
+          "purpose": "ID allocation and reservation modules",
+          "covers_modules": [
+            "P_01999000042260124031_unified_id_allocator.py",
+            "P_01999000042260125006_id_allocator_facade.py",
+            "P_01999000042260124032_reservation_ledger.py",
+            "P_01999000042260124489_id_scheme.py"
+          ],
+          "token_estimate": 1200,
+          "required_for": ["id_allocation", "generate_dir_ids", "add_file_ids"]
+        },
+        "handlers.yaml": {
+          "purpose": "File and directory ID handlers",
+          "covers_modules": [
+            "P_01999000042260125068_dir_id_handler.py",
+            "P_01260207233100000070_dir_identity_resolver.py"
+          ],
+          "token_estimate": 800,
+          "status": "COMPLETE"
+        },
+        "validators.yaml": {
+          "purpose": "Validation and canonicality enforcement",
+          "covers_modules": [
+            "P_01999000042260124521_id_format_scanner.py",
+            "P_01999000042260125000_gate_id_canonicality.py",
+            "P_01999000042260125002_canonical_id_patterns.py",
+            "P_01999000042260125067_zone_classifier.py"
+          ],
+          "token_estimate": 1000,
+          "status": "COMPLETE"
+        },
+        "watchers.yaml": {
+          "purpose": "Monitoring, auto-repair, and maintenance",
+          "covers_modules": [
+            "P_01999000042260125104_dir_id_auto_repair.py",
+            "P_01999000042260125105_dir_id_watcher.py",
+            "P_01999000042260125111_orphan_purger.py",
+            "P_01999000042260126000__idpkg_runtime.py"
+          ],
+          "token_estimate": 1000,
+          "status": "COMPLETE"
+        }
+      }
+    },
+    
+    "operations": {
+      "path": "operations/",
+      "priority": "MEDIUM",
+      "load_order": 5,
+      "description": "Operational procedures and workflows",
+      
+      "files": {
+        "workflows.yaml": {
+          "purpose": "Standard operational workflows",
+          "workflows": [
+            "generate_directory_ids",
+            "repair_corrupted_dir_ids",
+            "add_file_ids_recursive",
+            "validate_system_health",
+            "install_automation",
+            "cleanup_orphans"
+          ],
+          "token_estimate": 1500,
+          "status": "COMPLETE"
+        },
+        "troubleshooting.yaml": {
+          "purpose": "Issue diagnosis and resolution",
+          "covers": [
+            "counter_store_locked",
+            "malformed_dir_id",
+            "commit_blocked_id_violation",
+            "allocation_failed",
+            "counter_store_corrupted",
+            "duplicate_ids_detected",
+            "watcher_not_running",
+            "wrong_zone_classification"
+          ],
+          "token_estimate": 1000,
+          "status": "COMPLETE"
+        },
+        "health_checks.yaml": {
+          "purpose": "System health validation procedures",
+          "checks": [
+            "full_system_validation",
+            "quick_validation",
+            "counter_store_check",
+            "dir_id_integrity",
+            "registry_sync_check"
+          ],
+          "token_estimate": 500,
+          "status": "COMPLETE"
+        }
+      }
+    },
+    
+    "history": {
+      "path": "history/",
+      "priority": "LOW",
+      "load_order": 99,
+      "description": "Historical context and completion reports",
+      
+      "files": {
+        "CONSOLIDATION_COMPLETE.md": {
+          "purpose": "Registry consolidation completion report",
+          "date": "2026-02-16",
+          "token_estimate": 800
+        },
+        "README_CONSOLIDATION.md": {
+          "purpose": "Registry scripts consolidation guide",
+          "token_estimate": 600
+        },
+        "ID_AUTOMATION_COMPLETE.md": {
+          "purpose": "ID automation implementation report",
+          "date": "2026-02-17",
+          "token_estimate": 1200
+        }
+      }
+    },
+    
+    "system_design": {
+      "path": "system_design/",
+      "priority": "LOW",
+      "load_order": 98,
+      "description": "Legacy system documentation (narrative format)",
+      "note": "Use contracts/ and runtime/ instead for AI consumption",
+      
+      "files": {
+        "01260207201000000122_DIR_ID_SYSTEM_DOCUMENTATION.md": {
+          "purpose": "Complete DIR_ID system documentation (prose)",
+          "token_estimate": 3000,
+          "status": "LEGACY",
+          "note": "High token cost - use structured docs instead"
+        }
+      }
+    }
+  },
+  
+  "quick_reference": {
+    "generate_dir_ids": {
+      "workflow": "operations/workflows.yaml#generate_directory_ids",
+      "cli_tool": "2_cli_tools/dir_id/P_01999000042260125100_generate_dir_ids_gov_reg.py",
+      "runtime_module": "runtime/allocators.yaml#unified_id_allocator"
+    },
+    "allocate_id": {
+      "api": "runtime/allocators.yaml#unified_id_allocator.allocate_id",
+      "contract": "contracts/id_contract.yaml#definitions.file_id"
+    },
+    "validate_system": {
+      "workflow": "operations/health_checks.yaml#full_system_validation",
+      "cli_tool": "2_cli_tools/maintenance/P_01999000042260125113_healthcheck.py"
+    },
+    "repair_corruption": {
+      "workflow": "operations/workflows.yaml#repair_corrupted_dir_ids",
+      "runtime_module": "runtime/watchers.yaml#dir_id_auto_repair"
+    },
+    "troubleshoot_error": {
+      "guide": "operations/troubleshooting.yaml",
+      "by_error_type": {
+        "AllocationError": "operations/troubleshooting.yaml#counter_store_locked",
+        "ValidationError": "operations/troubleshooting.yaml#malformed_dir_id"
+      }
+    }
+  },
+  
+  "ai_context_budget": {
+    "minimal_context": {
+      "description": "Bare minimum for basic operations",
+      "files": [
+        "01_CONTEXT_PRIMER.md",
+        "contracts/id_contract.yaml"
+      ],
+      "estimated_tokens": 1200,
+      "use_when": "Simple queries about ID formats or basic operations"
+    },
+    
+    "standard_context": {
+      "description": "Common operations and workflows",
+      "files": [
+        "01_CONTEXT_PRIMER.md",
+        "contracts/id_contract.yaml",
+        "runtime/allocators.yaml"
+      ],
+      "estimated_tokens": 2400,
+      "use_when": "Working with allocation, generation, or CLI tools"
+    },
+    
+    "full_context": {
+      "description": "Complete system understanding",
+      "files": [
+        "01_CONTEXT_PRIMER.md",
+        "contracts/id_contract.yaml",
+        "runtime/allocators.yaml",
+        "runtime/handlers.yaml",
+        "runtime/validators.yaml",
+        "operations/workflows.yaml"
+      ],
+      "estimated_tokens": 5000,
+      "use_when": "Complex operations, debugging, or system-wide changes"
+    }
+  },
+  
+  "module_registry": {
+    "1_runtime/allocators": {
+      "docs": "runtime/allocators.yaml",
+      "count": 4,
+      "entry_point": "P_01999000042260124031_unified_id_allocator.py"
+    },
+    "1_runtime/handlers": {
+      "docs": "runtime/handlers.yaml",
+      "count": 2,
+      "entry_point": "P_01999000042260125068_dir_id_handler.py",
+      "status": "TODO"
+    },
+    "1_runtime/validators": {
+      "docs": "runtime/validators.yaml",
+      "count": 4,
+      "entry_point": "P_01999000042260125000_gate_id_canonicality.py",
+      "status": "TODO"
+    },
+    "1_runtime/watchers": {
+      "docs": "runtime/watchers.yaml",
+      "count": 4,
+      "entry_point": "P_01999000042260126000__idpkg_runtime.py",
+      "status": "TODO"
+    },
+    "2_cli_tools/dir_id": {
+      "docs": "operations/workflows.yaml#dir_id_tools",
+      "count": 3,
+      "status": "TODO"
+    },
+    "2_cli_tools/file_id": {
+      "docs": "operations/workflows.yaml#file_id_tools",
+      "count": 2,
+      "status": "TODO"
+    },
+    "2_cli_tools/hooks": {
+      "docs": "runtime/validators.yaml#git_hooks",
+      "count": 2,
+      "status": "TODO"
+    },
+    "2_cli_tools/maintenance": {
+      "docs": "operations/workflows.yaml#maintenance_tools",
+      "count": 2,
+      "status": "TODO"
+    }
+  },
+  
+  "completion_status": {
+    "contracts": {
+      "id_contract.yaml": "COMPLETE",
+      "01260207201000000174_ID_IDENTITY_CONTRACT.md": "REFERENCE_ONLY"
+    },
+    "runtime": {
+      "allocators.yaml": "COMPLETE",
+      "handlers.yaml": "COMPLETE",
+      "validators.yaml": "COMPLETE",
+      "watchers.yaml": "COMPLETE"
+    },
+    "operations": {
+      "workflows.yaml": "COMPLETE",
+      "troubleshooting.yaml": "COMPLETE",
+      "health_checks.yaml": "COMPLETE"
+    },
+    "schemas": {
+      ".dir_id.schema.json": "EXISTS (from 3_schemas/)"
+    },
+    "documentation_complete": true,
+    "completion_date": "2026-02-22"
+  },
+  
+  "maintenance": {
+    "last_updated": "2026-02-22T11:34:00Z",
+    "update_triggers": [
+      "New module added to runtime",
+      "Contract definition changed",
+      "New workflow created",
+      "Error handling updated"
+    ],
+    "validation": {
+      "run": "Validate this manifest against schema",
+      "check_links": "Verify all file references exist",
+      "token_estimates": "Recalculate when files change"
+    }
+  }
+}

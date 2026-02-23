@@ -1,0 +1,59 @@
+{
+  "tool": "plan.validate_step_contracts",
+  "tool_version": "1.0.0",
+  "run_id": "RUN-CAPMAP04",
+  "status": "fail",
+  "exit_code": 1,
+  "summary": "Evidence written to: C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess\\.state\\evidence\\mcp\\RUN-CAPMAP04\\step_contracts_validation.json\n\u00e2\u0153\u2014 GATE-003 FAILED: 4 defects found\n  [low] /plan/phases/0/steps/0/rollback/strategy: rollback strategy is 'manual' (requires human intervention)\n  [low] /plan/phases/1/steps/0/rollback/strategy: rollback strategy is 'manual' (requires human intervention)\n  [low] /plan/phases/2/steps/0/rollback/strategy: rollback strategy is 'manual' (requires human intervention)\n  [low] /plan/phases/3/steps/0/rollback/strategy: rollback strategy is 'manual' (requires human intervention)",
+  "input": {
+    "context": {
+      "repo_root": "C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess",
+      "run_id": "RUN-CAPMAP04",
+      "invoker": "human"
+    },
+    "plan_path": "C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess\\Plans_Instructions\\wobbly-purring-island_registry-integrated.plan.json",
+    "phase_filter": [],
+    "write_evidence": true,
+    "evidence_path": ".state/evidence/mcp/{run_id}/plan_validate_step_contracts.json",
+    "timeout_s": 300
+  },
+  "defects": [
+    {
+      "severity": "low",
+      "code": "ROLLBACK_INVALID",
+      "location": "/plan/phases/0/steps/0/rollback/strategy",
+      "message": "rollback strategy is 'manual' (requires human intervention)",
+      "why_it_matters": "Manual rollback cannot be automated; consider automated alternatives"
+    },
+    {
+      "severity": "low",
+      "code": "ROLLBACK_INVALID",
+      "location": "/plan/phases/1/steps/0/rollback/strategy",
+      "message": "rollback strategy is 'manual' (requires human intervention)",
+      "why_it_matters": "Manual rollback cannot be automated; consider automated alternatives"
+    },
+    {
+      "severity": "low",
+      "code": "ROLLBACK_INVALID",
+      "location": "/plan/phases/2/steps/0/rollback/strategy",
+      "message": "rollback strategy is 'manual' (requires human intervention)",
+      "why_it_matters": "Manual rollback cannot be automated; consider automated alternatives"
+    },
+    {
+      "severity": "low",
+      "code": "ROLLBACK_INVALID",
+      "location": "/plan/phases/3/steps/0/rollback/strategy",
+      "message": "rollback strategy is 'manual' (requires human intervention)",
+      "why_it_matters": "Manual rollback cannot be automated; consider automated alternatives"
+    }
+  ],
+  "hashes": {
+    "step_contracts_evidence_sha256": "sha256:1971593cd706ff6bf9c4c5022eb155cbf9fdd74d3d4627690b4c48872ae22744"
+  },
+  "artifacts_emitted": [
+    "C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess\\.state\\evidence\\mcp\\RUN-CAPMAP04\\step_contracts_validation.json"
+  ],
+  "timestamps": {
+    "generated_at": "2026-02-11T22:12:32.991961+00:00"
+  }
+}

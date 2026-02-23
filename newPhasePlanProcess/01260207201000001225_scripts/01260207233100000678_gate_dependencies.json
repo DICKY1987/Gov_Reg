@@ -1,0 +1,172 @@
+{
+  "gates": [
+    {
+      "id": "GATE-000",
+      "name": "No Obfuscation Check",
+      "script": "P_01260207233100000258_validate_plan_structure.py",
+      "depends_on": [],
+      "phase": "pre-validation"
+    },
+    {
+      "id": "GATE-001",
+      "name": "Schema Validation",
+      "script": "P_01260207233100000263_validate_structure.py",
+      "depends_on": ["GATE-000"],
+      "phase": "core-validation"
+    },
+    {
+      "id": "GATE-002",
+      "name": "Gate Definitions Valid",
+      "script": "P_01260207233100000253_validate_gates.py",
+      "depends_on": ["GATE-001"],
+      "phase": "core-validation"
+    },
+    {
+      "id": "GATE-003",
+      "name": "Step Contracts Complete",
+      "script": "P_01260207233100000262_validate_step_contracts.py",
+      "depends_on": ["GATE-001"],
+      "phase": "core-validation"
+    },
+    {
+      "id": "GATE-004",
+      "name": "Assumptions Documented",
+      "script": "P_01260207233100000248_validate_assumptions.py",
+      "depends_on": ["GATE-001"],
+      "phase": "core-validation"
+    },
+    {
+      "id": "GATE-005",
+      "name": "Planning Artifacts",
+      "script": "P_01260207233100000257_validate_planning_artifacts.py",
+      "depends_on": ["GATE-001"],
+      "phase": "core-validation"
+    },
+    {
+      "id": "GATE-006",
+      "name": "Automation Spec",
+      "script": "P_01260207233100000250_validate_automation_spec.py",
+      "depends_on": ["GATE-002", "GATE-003"],
+      "phase": "automation"
+    },
+    {
+      "id": "GATE-007",
+      "name": "Automation Index",
+      "script": "P_01260207233100000226_build_automation_index.py",
+      "depends_on": ["GATE-006"],
+      "phase": "automation"
+    },
+    {
+      "id": "GATE-008",
+      "name": "Automation Diagrams",
+      "script": "P_01260207233100000237_generate_automation_diagrams.py",
+      "depends_on": ["GATE-007"],
+      "phase": "automation"
+    },
+    {
+      "id": "GATE-010",
+      "name": "Wiring Proof",
+      "script": "P_01260207233100000265_validate_wiring_proof.py",
+      "depends_on": ["GATE-002", "GATE-003"],
+      "phase": "wiring"
+    },
+    {
+      "id": "GATE-011",
+      "name": "Artifact Registry",
+      "script": "P_01260207233100000247_validate_artifact_registry.py",
+      "depends_on": ["GATE-010"],
+      "phase": "wiring"
+    },
+    {
+      "id": "GATE-012",
+      "name": "Failure Modes Audit",
+      "script": "wiring/P_01260207233100000273_audit_failure_modes.py",
+      "depends_on": ["GATE-011"],
+      "phase": "wiring"
+    },
+    {
+      "id": "GATE-013",
+      "name": "E2E Wiring Validation",
+      "script": "wiring/P_01260207233100000283_validate_e2e_proof_linkage.py",
+      "depends_on": ["GATE-012"],
+      "phase": "wiring"
+    },
+    {
+      "id": "GATE-014",
+      "name": "Artifact Closure",
+      "script": "P_01260207233100000246_validate_artifact_closure.py",
+      "depends_on": ["GATE-011"],
+      "phase": "validation"
+    },
+    {
+      "id": "GATE-015",
+      "name": "Rollback Completeness",
+      "script": "P_01260207233100000259_validate_rollback_completeness.py",
+      "depends_on": ["GATE-003"],
+      "phase": "validation"
+    },
+    {
+      "id": "GATE-016",
+      "name": "Verification Completeness",
+      "script": "P_01260207233100000264_validate_verification_completeness.py",
+      "depends_on": ["GATE-003"],
+      "phase": "validation"
+    },
+    {
+      "id": "GATE-017",
+      "name": "Single Source of Truth",
+      "script": "P_01260207233100000260_validate_single_source_of_truth.py",
+      "depends_on": ["GATE-001"],
+      "phase": "validation"
+    },
+    {
+      "id": "GATE-998",
+      "name": "Automation Audit",
+      "script": "P_01260207233100000249_validate_automation_audit.py",
+      "depends_on": ["GATE-008"],
+      "phase": "meta-validation"
+    },
+    {
+      "id": "GATE-999",
+      "name": "Goal Reconciliation",
+      "script": "P_01260207233100000254_validate_goal_reconciliation.py",
+      "depends_on": ["GATE-002", "GATE-003", "GATE-004", "GATE-014", "GATE-015", "GATE-016", "GATE-017"],
+      "phase": "meta-validation"
+    },
+    {
+      "id": "VAL-FILE-MANIFEST",
+      "name": "File Manifest Validation",
+      "script": "P_01260207233100000252_validate_file_manifest.py",
+      "depends_on": ["GATE-001"],
+      "phase": "optional"
+    },
+    {
+      "id": "VAL-CI-COMPAT",
+      "name": "CI Compatibility",
+      "script": "P_01260207233100000251_validate_ci_compatibility.py",
+      "depends_on": ["GATE-001"],
+      "phase": "optional"
+    },
+    {
+      "id": "VAL-GROUND-TRUTH",
+      "name": "Ground Truth Validation",
+      "script": "P_01260207233100000255_validate_ground_truth.py",
+      "depends_on": ["GATE-001"],
+      "phase": "optional"
+    },
+    {
+      "id": "VAL-METRICS",
+      "name": "Metrics Validation",
+      "script": "P_01260207233100000256_validate_metrics.py",
+      "depends_on": ["GATE-001"],
+      "phase": "optional"
+    },
+    {
+      "id": "VAL-SPINE-COVERAGE",
+      "name": "Spine Coverage Map",
+      "script": "P_01260207233100000261_validate_spine_coverage_map.py",
+      "depends_on": ["GATE-001"],
+      "phase": "optional"
+    }
+  ]
+}

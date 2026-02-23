@@ -1,0 +1,22 @@
+{
+  "rewrite_plan_id": "2b54e46ab33eb29d",
+  "target_file_id": null,
+  "target_relpath": "01260207201000001250_REGISTRY\\01260207201000000863_MODIFIED_wobbly-purring-island_REGISTRY_INTEGRATED.md",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "94f8d393ff8fc478ec54b151164f0350f00011f9dca5d519d747b6b5341119e6",
+  "operations": [
+    {
+      "ref_id": "e8c9f2e232e3254d9f0368671f8666fcb997119cafccfe64696eeddd69a3b9d9",
+      "old_value": "REGISTRY/01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+      "location": "line:162"
+    },
+    {
+      "ref_id": "dc265955f94206415c481985282e3d1993123966d8ccc700bc759ed128d8b0bf",
+      "old_value": "C:\\Users\\richg\\Gov_Reg\\REGISTRY\\01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+      "new_value": "C:\\Users\\richg\\Gov_Reg\\01260207201000001250_REGISTRY\\REGISTRY\\01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+      "location": "line:212"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\2b54e46ab33eb29d.diff"
+}

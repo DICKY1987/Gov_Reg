@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://govreg.local/schemas/context_bundle.schema.json",
+  "title": "Context Bundle Schema",
+  "description": "Repository context for grounding plan generation",
+  "type": "object",
+  "required": [
+    "bundle_id",
+    "repo_root",
+    "repo_summary",
+    "recent_changes",
+    "known_templates",
+    "known_gates",
+    "registries",
+    "file_tree_snapshot"
+  ],
+  "properties": {
+    "bundle_id": {
+      "type": "string",
+      "pattern": "^CONTEXT_[0-9]{8}T[0-9]{6}Z_[a-f0-9]{8}$"
+    },
+    "repo_root": {
+      "type": "string"
+    },
+    "repo_summary": {
+      "type": "object",
+      "required": ["name", "purpose", "primary_language"],
+      "properties": {
+        "name": {"type": "string"},
+        "purpose": {"type": "string"},
+        "primary_language": {"type": "string"},
+        "frameworks": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "recent_changes": {
+      "type": "array",
+      "description": "Recent commits or changes",
+      "items": {
+        "type": "object",
+        "required": ["commit_sha", "message", "timestamp"],
+        "properties": {
+          "commit_sha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+          "message": {"type": "string"},
+          "timestamp": {"type": "string", "format": "date-time"},
+          "author": {"type": "string"}
+        }
+      }
+    },
+    "known_templates": {
+      "type": "array",
+      "description": "Available templates in repository",
+      "items": {
+        "type": "object",
+        "required": ["template_id", "path", "version"],
+        "properties": {
+          "template_id": {"type": "string"},
+          "path": {"type": "string"},
+          "version": {"type": "string"},
+          "description": {"type": "string"}
+        }
+      }
+    },
+    "known_gates": {
+      "type": "array",
+      "description": "Existing validation gates",
+      "items": {
+        "type": "object",
+        "required": ["gate_id", "gate_type", "required_evidence", "pass_criteria"],
+        "properties": {
+          "gate_id": {"type": "string", "pattern": "^GATE-[0-9]{3}$"},
+          "gate_type": {"type": "string"},
+          "required_evidence": {"type": "array", "items": {"type": "string"}},
+          "pass_criteria": {"type": "string"}
+        }
+      }
+    },
+    "registries": {
+      "type": "array",
+      "description": "Registry files with governance data",
+      "items": {
+        "type": "object",
+        "required": ["registry_id", "path", "entry_count"],
+        "properties": {
+          "registry_id": {"type": "string"},
+          "path": {"type": "string"},
+          "entry_count": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "file_tree_snapshot": {
+      "type": "object",
+      "description": "Snapshot of repository structure",
+      "properties": {
+        "total_files": {"type": "integer", "minimum": 0},
+        "total_directories": {"type": "integer", "minimum": 0},
+        "key_directories": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

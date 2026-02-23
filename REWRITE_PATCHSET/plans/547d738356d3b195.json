@@ -1,0 +1,28 @@
+{
+  "rewrite_plan_id": "547d738356d3b195",
+  "target_file_id": null,
+  "target_relpath": "01260207201000001250_REGISTRY\\01260207201000001253_BACKUP_FILES\\01260207201000001255_backups\\01260207201000001263_py_columns_20260202_142006\\01260207201000000845_2026012816000001_COLUMN_DICTIONARY.json",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "bfea91df6cea4047347d4bfe81122b17947414e1e2bdaef5acb7606a22fdb40b",
+  "operations": [
+    {
+      "ref_id": "2ae7eee336661db11f65861a98103188a2cb3c567d90b7f7023bd1b023059b28",
+      "old_value": "REGISTRY/01999000042260124503_governance_registry_unified.json",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/01999000042260124503_governance_registry_unified.json",
+      "location": "line:8072"
+    },
+    {
+      "ref_id": "8deaf7ce5fcc3dbd303c3ed5bd15e13700eee9021e51abd087da43e821ec6c29",
+      "old_value": "REGISTRY/01999000042260124503_governance_registry_unified.json",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/01999000042260124503_governance_registry_unified.json",
+      "location": "line:8152"
+    },
+    {
+      "ref_id": "9ccd0f8ba11515bd997f105a8f5523ef0edae727771ca752dcbc35af085c3e4b",
+      "old_value": "REGISTRY/01999000042260124503_governance_registry_unified.json",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/01999000042260124503_governance_registry_unified.json",
+      "location": "line:8205"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\547d738356d3b195.diff"
+}

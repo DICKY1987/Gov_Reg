@@ -1,0 +1,66 @@
+# Write policy for ID Package identity governance
+
+anchor_write_policy:
+  description: >
+    .dir_id anchor files bind a directory to its allocator-issued ID. They may
+    only be created by the DirectoryIdentityResolver when a directory enters
+    governed scope. Subsequent modifications are disallowed except by
+    explicit migration tooling. Deletion is disallowed.
+  allowed_actions:
+    create: true
+    modify: false  # except for migration
+    delete: false
+
+file_prefix_write_policy:
+  description: >
+    File names in the governed zone must conform to the rules defined in
+    PREFIX_POLICY.json. Renaming to apply or restore prefixes is allowed only
+    through the identity resolver. Users must not remove ID prefixes
+    manually.
+  allowed_actions:
+    rename_to_apply_prefix: true
+    rename_to_remove_prefix: false
+
+registry_write_policy:
+  description: >
+    Governance registry mutations must be performed via RFC‑6902 patches
+    produced by the ingest pipeline. Direct rewrites of the registry file
+    are disallowed. New records may be added and existing records may be
+    updated, but immutable fields must never be changed.
+  patch_only: true
+  immutable_fields:
+    - dir_id
+    - file_id
+    - project_root_id
+    - allocated_at_utc
+    - allocator_version
+  mutable_fields:
+    - relative_path
+    - parent_dir_id
+    - owning_dir_id
+    - updated_utc
+    - semantic_key
+    - extra_metadata
+
+file_identity_immutability:
+  description: >
+    Once a file_id has been allocated and a file has been renamed with its
+    prefix, that file_id must never change. If the prefix is removed
+    unintentionally, the system must restore the original filename based on
+    registry state.
+  enforce_restore_on_missing_prefix: true
+
+directory_identity_immutability:
+  description: >
+    Once a dir_id is allocated, it must never change. If a directory is moved
+    or renamed, its .dir_id file must move with it. Regeneration of dir_id
+    for the same directory is disallowed.
+  enforce_anchor_move_with_directory: true
+  allow_regenerate: false
+
+exclusions_policy:
+  description: >
+    Files and directories within excluded patterns remain outside of the
+    governed scope. They must not receive IDs and must not be registered.
+  respect_exclusions: true
+  allow_override: false

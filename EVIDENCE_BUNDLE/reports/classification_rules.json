@@ -1,0 +1,166 @@
+{
+  "version": "1.0.0",
+  "classifier_id": "module_section_classifier_v1",
+  "default_outcome": "UNCLASSIFIED",
+  "outcomes": [
+    "REGISTRY_FILES",
+    "ID_FILES",
+    "TEMPLATE_OPERATIONS",
+    "MULTI_CLI_PLANNING",
+    "AMBIGUOUS",
+    "UNCLASSIFIED",
+    "EXCLUDED"
+  ],
+  "normalization": {
+    "path_separator": "/",
+    "case_sensitive": false,
+    "trim_prefixes": [
+      "./",
+      ".\\"
+    ]
+  },
+  "global_excludes": {
+    "path_globs": [
+      "**/.git/**",
+      "**/.state/**",
+      "**/.venv/**",
+      "**/venv/**",
+      "**/__pycache__/**",
+      "**/*.pyc",
+      "**/*.pyo",
+      "**/*.log",
+      "**/*.tmp",
+      "**/*.bak",
+      "**/*.zip",
+      "**/*.7z"
+    ]
+  },
+  "rules": [
+    {
+      "rule_id": "REG-001",
+      "priority": 1,
+      "section": "REGISTRY_FILES",
+      "match_any": {
+        "path_globs": [
+          "**/REGISTRY/**",
+          "**/*REGISTRY*/**"
+        ],
+        "name_regex": [
+          "(?i)^.*registry.*\\.(json|yaml|yml|jsonl|csv|md)$"
+        ],
+        "content_regex": [
+          "\\\"column_headers\\\"\\s*:",
+          "\\\"files\\\"\\s*:\\s*\\["
+        ]
+      },
+      "exclude_any": {
+        "name_regex": [
+          "(?i)counter_store",
+          "(?i)id_canonicality",
+          "(?i)id_patterns"
+        ]
+      }
+    },
+    {
+      "rule_id": "ID-001",
+      "priority": 2,
+      "section": "ID_FILES",
+      "match_any": {
+        "path_globs": [
+          "**/ID/**",
+          "**/*ID*/**",
+          "**/identity/**",
+          "**/allocat*/**",
+          "**/validators/**id*/**"
+        ],
+        "name_regex": [
+          "(?i)^P_\\d{20}_.*\\.py$",
+          "(?i)^.*(id_allocator|allocate_.*id|id_assign|add_ids|sync_registry_.*|verify_system)\\.py$",
+          "(?i)^.*(ID_CANONICALITY|ID_PATTERNS|COUNTER_STORE).*\\.(json|yaml|yml)$",
+          "(?i)^.*(dir_id|file_id|doc_id).*\\.(md|json|yaml|yml|py)$"
+        ],
+        "content_regex": [
+          "(?i)\\bfile_id\\b",
+          "(?i)\\bdir_id\\b",
+          "(?i)\\bdoc_id\\b",
+          "(?i)\\bCOUNTER_STORE\\b",
+          "(?i)\\bCOUNTER_MAX\\b",
+          "(?i)\\b\\^\\d\\{20\\}\\$\\b"
+        ]
+      }
+    },
+    {
+      "rule_id": "TPL-001",
+      "priority": 3,
+      "section": "TEMPLATE_OPERATIONS",
+      "match_any": {
+        "path_globs": [
+          "**/templates/**",
+          "**/*template*/**",
+          "**/PATCHES/**",
+          "**/*patch*/**",
+          "**/template_ops/**"
+        ],
+        "name_regex": [
+          "(?i)^.*(TEMPLATE|AUTONOMOUS_DELIVERY_TEMPLATE|TEMPLATE_V\\d+).*\\.(json|yaml|yml|md)$",
+          "(?i)^.*\\.patch\\.json$",
+          "(?i)^.*rfc-?6902.*\\.json$",
+          "(?i)^.*(apply_patch|patch_apply|template_expand|template_render|template_validate).*\\.([Pp][Yy]|ps1)$"
+        ],
+        "content_regex": [
+          "(?i)RFC-?6902",
+          "(?i)\\\"op\\\"\\s*:\\s*\\\"(add|remove|replace|move|copy|test)\\\"",
+          "(?i)\\\"path\\\"\\s*:\\s*\\\"/"
+        ]
+      }
+    },
+    {
+      "rule_id": "MCP-001",
+      "priority": 4,
+      "section": "MULTI_CLI_PLANNING",
+      "match_any": {
+        "path_globs": [
+          "**/LP_LONG_PLAN/**",
+          "**/LONG_PLAN/**",
+          "**/MASTER_SPLINTER/**",
+          "**/newPhasePlanProcess/**",
+          "**/phase*/**",
+          "**/sections/**",
+          "**/plans/**"
+        ],
+        "name_regex": [
+          "(?i)^\\d{20}_PH-\\d{3}.*\\.(json|md|yaml|yml)$",
+          "(?i)^.*(phase_contract|phase_plan|execution_plan|plan_process|plan_cli|wiring|orchestrator).*\\.(json|md|py|yaml|yml)$",
+          "(?i)^sec_\\d{3}.*\\.(json|md|yaml|yml)$"
+        ],
+        "content_regex": [
+          "(?i)\\\"phase\\\"\\s*:",
+          "(?i)\\\"tasks\\\"\\s*:",
+          "(?i)\\\"artifacts\\\"\\s*:",
+          "(?i)\\\"validations\\\"\\s*:",
+          "(?i)langgraph",
+          "(?i)langchain",
+          "(?i)multi-?cli",
+          "(?i)conversion",
+          "(?i)bridge",
+          "(?i)envelope_contract"
+        ]
+      }
+    }
+  ],
+  "tie_break": {
+    "enabled": false,
+    "strategy": "FAIL_CLOSED"
+  },
+  "precedence": [
+    "REGISTRY_FILES",
+    "ID_FILES",
+    "TEMPLATE_OPERATIONS",
+    "MULTI_CLI_PLANNING"
+  ],
+  "ambiguity_rules": [
+    "REGISTRY_PATH_AND_ID_FILENAME",
+    "MCP_AND_TEMPLATE_PATH_OR_NAME",
+    "ID_CONTENT_ONLY_WITH_OTHER_PATH_OR_NAME"
+  ]
+}

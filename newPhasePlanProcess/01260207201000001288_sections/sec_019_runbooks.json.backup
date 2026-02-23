@@ -1,0 +1,208 @@
+{
+  "section_id": "sec_019_runbooks",
+  "title": "Operational Runbooks",
+  "required": true,
+  "instructions_file": "sections/sec_019_runbooks.inst.md",
+  "runbooks": {
+    "installation": {
+      "prerequisites": {
+        "os": ["{{Windows|Linux|macOS}}"],
+        "runtime": "{{Python >=3.11, <3.13}}",
+        "tools": ["git >=2.40", "docker >=24 (optional)"]
+      },
+      "steps": [
+        {
+          "step": "1. Clone repository",
+          "command": "git clone {{REPO_URL}} && cd {{REPO_NAME}}"
+        },
+        {
+          "step": "2. Create virtual environment",
+          "command": "python -m venv .venv"
+        },
+        {
+          "step": "3. Activate virtual environment",
+          "command": ".venv\\Scripts\\activate  # Windows PowerShell\nsource .venv/bin/activate  # Linux/macOS"
+        },
+        {
+          "step": "4. Install dependencies",
+          "command": "pip install -r requirements.txt"
+        },
+        {
+          "step": "5. Verify installation",
+          "command": "python scripts/verify_install.py",
+          "expect_exit_code": 0
+        }
+      ],
+      "troubleshooting": [
+        {
+          "issue": "pip install fails with dependency conflict",
+          "solution": "pip install --upgrade pip && pip install -r requirements.txt --force-reinstall"
+        },
+        {
+          "issue": "Virtual environment activation fails",
+          "solution": "Check PowerShell execution policy: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser"
+        }
+      ]
+    },
+    "execution": {
+      "development": [
+        {
+          "step": "1. Run plan generation",
+          "command": "python scripts/generate_plan.py --input {{INPUT}} --output {{OUTPUT}}"
+        },
+        {
+          "step": "2. Validate plan",
+          "command": "python scripts/validate_plan.py {{PLAN_FILE}}",
+          "expect_exit_code": 0
+        },
+        {
+          "step": "3. Execute plan (dry-run)",
+          "command": "python scripts/execute_plan.py {{PLAN_FILE}} --dry-run"
+        },
+        {
+          "step": "4. Execute plan (real)",
+          "command": "python scripts/execute_plan.py {{PLAN_FILE}} --execute"
+        }
+      ],
+      "production": [
+        {
+          "step": "1. Run smoke tests",
+          "command": "python scripts/smoke_tests.py --env production",
+          "expect_exit_code": 0
+        },
+        {
+          "step": "2. Deploy with feature flag",
+          "command": "python scripts/deploy.py --env production --feature-flag {{FLAG_NAME}}=off"
+        },
+        {
+          "step": "3. Monitor metrics",
+          "command": "python scripts/monitor_metrics.py --duration 300"
+        },
+        {
+          "step": "4. Enable feature flag",
+          "command": "python scripts/toggle_feature.py --flag {{FLAG_NAME}} --value on"
+        }
+      ]
+    },
+    "maintenance": {
+      "backup": [
+        {
+          "step": "Backup state database",
+          "command": "sqlite3 .state/pipeline.db '.backup .state/backups/pipeline_$(date +%Y%m%d_%H%M%S).db'"
+        },
+        {
+          "step": "Backup decision ledger",
+          "command": "cp .state/decisions.jsonl .state/backups/decisions_$(date +%Y%m%d_%H%M%S).jsonl"
+        }
+      ],
+      "restore": [
+        {
+          "step": "Restore state database",
+          "command": "sqlite3 .state/pipeline.db '.restore .state/backups/{{BACKUP_FILE}}'"
+        },
+        {
+          "step": "Verify restore",
+          "command": "sqlite3 .state/pipeline.db 'SELECT COUNT(*) FROM phases;'"
+        }
+      ],
+      "upgrade": [
+        {
+          "step": "1. Backup current version",
+          "command": "python scripts/backup_all.py"
+        },
+        {
+          "step": "2. Pull latest changes",
+          "command": "git pull origin main"
+        },
+        {
+          "step": "3. Upgrade dependencies",
+          "command": "pip install -r requirements.txt --upgrade"
+        },
+        {
+          "step": "4. Run migrations",
+          "command": "python scripts/run_migrations.py"
+        },
+        {
+          "step": "5. Verify upgrade",
+          "command": "python scripts/verify_upgrade.py",
+          "expect_exit_code": 0
+        }
+      ]
+    },
+    "rollback": {
+      "default_procedure": [
+        {
+          "step": "1. Revert commits",
+          "command": "git revert {{COMMIT_HASH}}"
+        },
+        {
+          "step": "2. Rerun validations",
+          "command": "pytest tests/ -v",
+          "expect_exit_code": 0
+        },
+        {
+          "step": "3. Verify rollback",
+          "command": "python scripts/verify_rollback.py"
+        }
+      ],
+      "additional_steps": [
+        "{{ADDITIONAL_ROLLBACK_STEP_1}}",
+        "{{ADDITIONAL_ROLLBACK_STEP_2}}"
+      ],
+      "enterprise_mode_specific": [
+        {
+          "step": "1. Disable feature flag",
+          "command": "python scripts/toggle_feature.py --flag {{FLAG_NAME}} --value off"
+        },
+        {
+          "step": "2. Drain traffic",
+          "command": "python scripts/drain_traffic.py --duration 300"
+        },
+        {
+          "step": "3. Revert deployment",
+          "command": "python scripts/rollback_deployment.py --to-version {{PREVIOUS_VERSION}}"
+        },
+        {
+          "step": "4. Verify rollback",
+          "command": "python scripts/smoke_tests.py --env production"
+        }
+      ]
+    },
+    "troubleshooting_guide": {
+      "common_issues": [
+        {
+          "issue": "Phase fails with scope violation",
+          "diagnosis": "File touched outside allowed paths",
+          "resolution": "Review file_scope in phase contract, amend if needed"
+        },
+        {
+          "issue": "Circuit breaker trips",
+          "diagnosis": "Oscillation detected in fix loop",
+          "resolution": "Review fix attempt logs, identify root cause, manual intervention required"
+        },
+        {
+          "issue": "Determinism test fails",
+          "diagnosis": "Non-deterministic behavior (timestamps, random, UUIDs)",
+          "resolution": "Use fixed seeds, mock time sources, use stable IDs"
+        }
+      ],
+      "escalation_paths": [
+        {
+          "level": "L1 - Automated repair",
+          "trigger": "First failure",
+          "action": "Invoke fix pattern from allowed actions"
+        },
+        {
+          "level": "L2 - Human review",
+          "trigger": "Circuit breaker trip",
+          "action": "Create GitHub issue with fix loop logs"
+        },
+        {
+          "level": "L3 - Plan amendment",
+          "trigger": "Unresolvable scope violation",
+          "action": "Update phase contract, re-validate plan"
+        }
+      ]
+    }
+  }
+}

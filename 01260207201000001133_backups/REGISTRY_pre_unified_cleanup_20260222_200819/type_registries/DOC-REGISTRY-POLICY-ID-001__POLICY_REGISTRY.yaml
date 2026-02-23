@@ -1,0 +1,31 @@
+# DOC_LINK: DOC-REGISTRY-POLICY-ID-001
+doc_id: DOC-REGISTRY-POLICY-ID-001
+meta:
+  version: 1.0.1
+  created_utc: '2026-01-04T01:30:27.193576Z'
+  updated_utc: '2026-01-04T02:16:00.000000Z'
+  total_entries: 2
+  owner: Governance Team
+  description: Versioned governance policy identifier
+policy_ids:
+  - id: DOC-CONFIG-DEFINITION-OF-DONE-953
+    name: Definition of Done
+    file: definition_of_done.yaml
+    category: QUALITY
+    status: active
+    created_utc: '2025-12-27T00:00:00Z'
+  - id: DOC-GUIDE-WORK-ID-POLICY-145
+    name: Work ID Policy
+    file: work_id_policy.md
+    category: PROCESS
+    status: active
+    created_utc: '2025-12-27T00:00:00Z'
+categories:
+  SECURITY:
+    description: SECURITY category
+  QUALITY:
+    description: QUALITY category
+  PROCESS:
+    description: PROCESS category
+  COMPLIANCE:
+    description: COMPLIANCE category

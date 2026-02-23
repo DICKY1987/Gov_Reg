@@ -1,0 +1,5 @@
+"""GEU governance tooling (SSOT entries, validators, generators).
+
+FILE_ID: 0199900004226012484
+DOC_ID: DOC-CORE-GEU-GOVERNANCE-INIT-0199900004226012484
+"""

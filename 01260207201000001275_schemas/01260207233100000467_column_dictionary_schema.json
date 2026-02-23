@@ -1,0 +1,342 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://govreg.local/schemas/column_dictionary_schema.json",
+  "title": "Column Dictionary Schema",
+  "description": "JSON schema for validating Gov_Reg column dictionary structure",
+  "type": "object",
+  "required": [
+    "doc_id",
+    "dictionary_version",
+    "schema_version",
+    "generated_utc",
+    "header_count_expected",
+    "headers"
+  ],
+  "properties": {
+    "doc_id": {
+      "type": "string",
+      "pattern": "^[0-9]{16}_COLUMN_DICTIONARY$"
+    },
+    "dictionary_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "generated_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "header_count_expected": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "headers": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z_][a-z0-9_]*$": {
+          "$ref": "#/definitions/header_definition"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "header_definition": {
+      "type": "object",
+      "required": [
+        "value_schema",
+        "scope",
+        "presence",
+        "provenance",
+        "derivation"
+      ],
+      "properties": {
+        "value_schema": {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "string",
+                    "number",
+                    "integer",
+                    "boolean",
+                    "null",
+                    "array",
+                    "object"
+                  ]
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "string",
+                      "number",
+                      "integer",
+                      "boolean",
+                      "null",
+                      "array",
+                      "object"
+                    ]
+                  },
+                  "minItems": 1,
+                  "uniqueItems": true
+                }
+              ]
+            },
+            "format": {
+              "type": "string"
+            },
+            "pattern": {
+              "type": "string"
+            },
+            "enum": {
+              "type": "array"
+            }
+          }
+        },
+        "scope": {
+          "type": "object",
+          "properties": {
+            "record_kinds_in": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "ENTITY",
+                  "EVENT",
+                  "RELATIONSHIP",
+                  "METADATA"
+                ]
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "entity_kinds_in": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "FILE",
+                  "DIRECTORY",
+                  "FUNCTION",
+                  "CLASS",
+                  "MODULE",
+                  "PROJECT",
+                  "REPOSITORY"
+                ]
+              },
+              "uniqueItems": true
+            },
+            "event_kinds_in": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "presence": {
+          "type": "object",
+          "required": [
+            "policy"
+          ],
+          "properties": {
+            "policy": {
+              "type": "string",
+              "enum": [
+                "REQUIRED",
+                "OPTIONAL",
+                "CONDITIONAL",
+                "DEPRECATED"
+              ]
+            },
+            "rules": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "condition": {
+                    "type": "string"
+                  },
+                  "requirement": {
+                    "type": "string",
+                    "enum": [
+                      "REQUIRED",
+                      "FORBIDDEN",
+                      "OPTIONAL"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "normalization": {
+          "type": "object",
+          "properties": {
+            "transforms": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "NORMALIZE_SLASHES",
+                  "UPPERCASE",
+                  "LOWERCASE",
+                  "TRIM",
+                  "STRIP_WHITESPACE",
+                  "NORMALIZE_LINE_ENDINGS",
+                  "RESOLVE_RELATIVE_PATH"
+                ]
+              },
+              "uniqueItems": true
+            }
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "sources"
+          ],
+          "properties": {
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "doc_id",
+                  "path"
+                ],
+                "properties": {
+                  "doc_id": {
+                    "type": "string"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "anchor": {
+                    "type": "string"
+                  },
+                  "section": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        "derivation": {
+          "type": "object",
+          "required": [
+            "mode",
+            "sources"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "LITERAL",
+                "INPUT",
+                "EXTRACTED",
+                "LOOKUP",
+                "DERIVED",
+                "AGGREGATED",
+                "SYSTEM"
+              ],
+              "description": "LITERAL=constant, INPUT=user-provided, EXTRACTED=filesystem/content, LOOKUP=registry query, DERIVED=formula-computed, AGGREGATED=collected from multiple sources, SYSTEM=auto-generated IDs/timestamps"
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "kind"
+                ],
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "FILESYSTEM",
+                      "REGISTRY",
+                      "COLUMN",
+                      "ENV",
+                      "METADATA",
+                      "GIT",
+                      "COMPUTED",
+                      "EXTERNAL"
+                    ],
+                    "description": "FILESYSTEM=file/path data, REGISTRY=registry lookup, COLUMN=derived from another column, ENV=runtime environment, METADATA=file metadata, GIT=git data, COMPUTED=calculated, EXTERNAL=external source"
+                  },
+                  "ref": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 1
+            },
+            "process": {
+              "type": "object",
+              "properties": {
+                "engine": {
+                  "type": "string",
+                  "enum": [
+                    "NONE",
+                    "TASK_OUTPUT",
+                    "LOOKUP_SPEC",
+                    "FORMULA_AST",
+                    "TRANSFORM_CHAIN"
+                  ],
+                  "description": "NONE=no processing, TASK_OUTPUT=tool execution output, LOOKUP_SPEC=registry lookup, FORMULA_AST=safe DSL formula, TRANSFORM_CHAIN=pipeline transforms"
+                },
+                "version": {
+                  "type": "string"
+                },
+                "details": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "validation": {
+          "type": "object",
+          "properties": {
+            "rules": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "examples": {
+          "type": "array"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "file_id": "01260207233100000467"
+}

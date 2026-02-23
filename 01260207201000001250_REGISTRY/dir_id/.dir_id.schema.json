@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Directory ID anchor file (.dir_id)",
+  "type": "object",
+  "required": [
+    "dir_id",
+    "allocated_at_utc",
+    "allocator_version",
+    "project_root_id",
+    "relative_path"
+  ],
+  "properties": {
+    "dir_id": {
+      "type": "string",
+      "pattern": "^\\d{20}$",
+      "description": "20‑digit identifier allocated from the global ID allocator"
+    },
+    "allocated_at_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC timestamp when the directory ID was allocated"
+    },
+    "allocator_version": {
+      "type": "string",
+      "description": "Version of the allocator implementation used to issue the ID"
+    },
+    "project_root_id": {
+      "type": "string",
+      "description": "Stable identifier of the project root at allocation time"
+    },
+    "relative_path": {
+      "type": "string",
+      "description": "Relative path of the directory within the project root at allocation time"
+    },
+    "depth": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Depth of the directory under the project root at allocation time"
+    },
+    "zone": {
+      "type": "string",
+      "enum": ["staging", "governed", "excluded"],
+      "description": "Governance zone at allocation time"
+    },
+    "parent_dir_id": {
+      "type": "string",
+      "pattern": "^\\d{20}$",
+      "description": "Parent directory ID if available"
+    },
+    "created_by": {
+      "type": "string",
+      "description": "Tool or actor that created the anchor"
+    },
+    "canonicality_law_version": {
+      "type": "string",
+      "description": "Canonicality law version applied during creation"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Optional metadata for directory identity context",
+      "additionalProperties": true
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional human notes about this directory allocation"
+    }
+  },
+  "additionalProperties": false
+}

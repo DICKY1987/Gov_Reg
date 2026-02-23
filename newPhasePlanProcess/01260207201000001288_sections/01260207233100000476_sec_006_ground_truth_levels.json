@@ -1,0 +1,268 @@
+{
+  "section_id": "sec_006_ground_truth_levels",
+  "title": "Ground Truth Validation Levels (L0-L5)",
+  "required": true,
+  "instructions_file": "sections/sec_006_ground_truth_levels.inst.md",
+  "ground_truth_levels": {
+    "description": "Explicit validation hierarchy from basic syntax to production deployment. Each level MUST include: command, evidence path, timeout, pass/fail criteria.",
+    "levels": [
+      {
+        "level": "L0",
+        "name": "Syntax + Basic Validation",
+        "description": "Files parse, basic structure valid",
+        "commands": [
+          {
+            "command": {
+              "exe": "python",
+              "args": [
+                "-m",
+                "py_compile",
+                "{{FILE}}"
+              ],
+              "timeout_seconds": 600,
+              "expected_exit_codes": [
+                0
+              ]
+            },
+            "timeout_seconds": 10,
+            "expect_exit_code": 0
+          },
+          {
+            "command": {
+              "exe": "yamllint",
+              "args": [
+                "{{YAML_FILE}}"
+              ],
+              "timeout_seconds": 600,
+              "expected_exit_codes": [
+                0
+              ]
+            },
+            "timeout_seconds": 5,
+            "expect_exit_code": 0
+          }
+        ],
+        "evidence_path": ".runs/validation/L0_syntax.log",
+        "required_for_phases": [
+          "ALL"
+        ]
+      },
+      {
+        "level": "L1",
+        "name": "Static Analysis",
+        "description": "Lint, type check, security scan pass",
+        "required_control_classes": [
+          "lint_type",
+          "security_scan"
+        ],
+        "commands": [
+          {
+            "command": {
+              "exe": "ruff",
+              "args": [
+                "check",
+                "src/"
+              ],
+              "timeout_seconds": 600,
+              "expected_exit_codes": [
+                0
+              ]
+            },
+            "timeout_seconds": 30,
+            "expect_exit_code": 0
+          },
+          {
+            "command": {
+              "exe": "mypy",
+              "args": [
+                "src/",
+                "--strict"
+              ],
+              "timeout_seconds": 600,
+              "expected_exit_codes": [
+                0
+              ]
+            },
+            "timeout_seconds": 60,
+            "expect_exit_code": 0
+          },
+          {
+            "command": {
+              "exe": "bandit",
+              "args": [
+                "-r",
+                "src/",
+                "-f",
+                "json",
+                "-o",
+                ".runs/validation/L1_security.json"
+              ],
+              "timeout_seconds": 600,
+              "expected_exit_codes": [
+                0
+              ]
+            },
+            "timeout_seconds": 60,
+            "expect_exit_code": 0
+          }
+        ],
+        "evidence_path": ".runs/validation/L1_static.log",
+        "required_for_phases": [
+          "implement",
+          "refactor"
+        ]
+      },
+      {
+        "level": "L2",
+        "name": "Unit Tests",
+        "description": "All unit tests pass, coverage target met",
+        "commands": [
+          {
+            "command": {
+              "exe": "pytest",
+              "args": [
+                "tests/unit",
+                "-v",
+                "--tb=short",
+                "--cov=src",
+                "--cov-report=term",
+                "--cov-report=json:.runs/validation/L2_coverage.json"
+              ],
+              "timeout_seconds": 600,
+              "expected_exit_codes": [
+                0
+              ]
+            },
+            "timeout_seconds": 300,
+            "expect_exit_code": 0,
+            "expect_stdout_regex": [
+              "/PASSED/",
+              "/TOTAL.*9[5-9]|100%/"
+            ]
+          }
+        ],
+        "evidence_path": ".runs/validation/L2_unit_tests.log",
+        "required_for_phases": [
+          "implement",
+          "refactor",
+          "integration"
+        ]
+      },
+      {
+        "level": "L3",
+        "name": "Integration Tests",
+        "description": "Component interactions verified",
+        "commands": [
+          {
+            "command": {
+              "exe": "pytest",
+              "args": [
+                "tests/integration",
+                "-v",
+                "--tb=short"
+              ],
+              "timeout_seconds": 600,
+              "expected_exit_codes": [
+                0
+              ]
+            },
+            "timeout_seconds": 600,
+            "expect_exit_code": 0
+          }
+        ],
+        "evidence_path": ".runs/validation/L3_integration.log",
+        "required_for_phases": [
+          "integration",
+          "hardening"
+        ]
+      },
+      {
+        "level": "L4",
+        "name": "End-to-End Tests",
+        "description": "Full system workflows verified",
+        "commands": [
+          {
+            "command": {
+              "exe": "pytest",
+              "args": [
+                "tests/e2e",
+                "-v",
+                "--tb=short"
+              ],
+              "timeout_seconds": 600,
+              "expected_exit_codes": [
+                0
+              ]
+            },
+            "timeout_seconds": 1800,
+            "expect_exit_code": 0
+          }
+        ],
+        "evidence_path": ".runs/validation/L4_e2e.log",
+        "required_for_phases": [
+          "hardening",
+          "package"
+        ]
+      },
+      {
+        "level": "L5",
+        "name": "Production Deployment Validation",
+        "description": "Smoke tests in prod-like env (Docker/staging)",
+        "commands": [
+          {
+            "command": {
+              "exe": "docker-compose",
+              "args": [
+                "-f",
+                "docker-compose.test.yml",
+                "up",
+                "--abort-on-container-exit"
+              ],
+              "timeout_seconds": 600,
+              "expected_exit_codes": [
+                0
+              ]
+            },
+            "timeout_seconds": 3600,
+            "expect_exit_code": 0
+          },
+          {
+            "command": {
+              "exe": "python",
+              "args": [
+                "scripts/smoke_tests.py",
+                "--env",
+                "staging"
+              ],
+              "timeout_seconds": 600,
+              "expected_exit_codes": [
+                0
+              ]
+            },
+            "timeout_seconds": 600,
+            "expect_exit_code": 0
+          }
+        ],
+        "evidence_path": ".runs/validation/L5_production.log",
+        "required_for_phases": [
+          "package"
+        ]
+      }
+    ],
+    "per_phase_requirements": [
+      {
+        "phase_id": "PH-001",
+        "minimum_level": "L0"
+      },
+      {
+        "phase_id": "PH-002",
+        "minimum_level": "L2"
+      },
+      {
+        "phase_id": "PH-003",
+        "minimum_level": "L3"
+      }
+    ]
+  },
+  "file_id": "01260207233100000476"
+}

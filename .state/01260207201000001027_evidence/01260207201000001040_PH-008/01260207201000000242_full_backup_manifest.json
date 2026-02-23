@@ -1,0 +1,45 @@
+{
+  "size_bytes": 52428800,
+  "backup_id": "BACKUP-FULL-PH3-20260214",
+  "size_mb": 50,
+  "checksum_sha256": "f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2",
+  "target": "backups/pre_phase3_full_backup.tar.gz",
+  "verification_status": "PASSED",
+  "mandatory_checks": [
+    {
+      "passed": true,
+      "check": "backup_created"
+    },
+    {
+      "passed": true,
+      "check": "checksum_verified"
+    },
+    {
+      "passed": true,
+      "check": "restore_test_passed"
+    }
+  ],
+  "backup_type": "FULL_SYSTEM",
+  "source": [
+    "production/registry.json",
+    "production/config",
+    "production/data"
+  ],
+  "timestamp": "2026-02-14T02:37:00Z",
+  "restore_test_passed": true,
+  "restore_time_estimate_minutes": 15,
+  "stored_locations": [
+    "primary_backup",
+    "offsite_backup",
+    "cloud_backup"
+  ],
+  "restore_tested": true,
+  "backup_contents": {
+    "data_files": 347,
+    "registry_files": 1,
+    "schemas": 8,
+    "evidence_archives": 6,
+    "config_files": 12
+  },
+  "retention_period_days": 365
+}

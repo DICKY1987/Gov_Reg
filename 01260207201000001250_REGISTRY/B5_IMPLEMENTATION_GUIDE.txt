@@ -1,0 +1,97 @@
+# B5 IMPLEMENTATION GUIDE
+## Fix Scope Issues in COLUMN_DICTIONARY
+
+**Total fields to fix:** 49
+- 9 fields with invalid 'core' value
+- 40 fields with empty scope
+
+### File: 01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json
+
+## Step 1: Replace 'core' with 'entity' (9 fields)
+
+Fields affected: created_by, created_utc, notes, record_id, record_kind, updated_utc, registered_by, registration_time, scan_id
+
+Find and replace:
+`json
+"record_kinds_in": ["core"]
+`
+With:
+`json
+"record_kinds_in": ["entity"]
+`
+
+## Step 2: Assign scopes to empty fields (40 fields)
+
+### Universal fields (all record types):
+`json
+"record_id": {"record_kinds_in": ["entity", "edge", "generator", "metadata"]},
+"created_utc": {"record_kinds_in": ["entity", "edge", "generator", "metadata"]},
+"updated_utc": {"record_kinds_in": ["entity", "edge", "generator", "metadata"]},
+"scan_id": {"record_kinds_in": ["entity", "edge", "generator", "metadata"]}
+`
+
+### Edge-specific fields:
+`json
+"edge_type": {"record_kinds_in": ["edge"]},
+"source_file_id": {"record_kinds_in": ["edge"]},
+"target_file_id": {"record_kinds_in": ["edge"]},
+"source_entity_id": {"record_kinds_in": ["edge"]},
+"target_entity_id": {"record_kinds_in": ["edge"]},
+"directionality": {"record_kinds_in": ["edge"]},
+"rel_type": {"record_kinds_in": ["edge"]},
+"confidence": {"record_kinds_in": ["edge"]}
+`
+
+### Entity-specific fields (files):
+`json
+"file_id": {"record_kinds_in": ["entity"]},
+"sha256": {"record_kinds_in": ["entity"]},
+"size_bytes": {"record_kinds_in": ["entity"]},
+"is_directory": {"record_kinds_in": ["entity"]},
+"filename": {"record_kinds_in": ["entity"]},
+"extension": {"record_kinds_in": ["entity"]},
+"absolute_path": {"record_kinds_in": ["entity"]},
+"relative_path": {"record_kinds_in": ["entity"]},
+"file_type": {"record_kinds_in": ["entity"]},
+"entity_kind": {"record_kinds_in": ["entity"]},
+"artifact_kind": {"record_kinds_in": ["entity"]},
+"canonicality": {"record_kinds_in": ["entity"]},
+"deliverables": {"record_kinds_in": ["entity"]},
+"depends_on_file_ids": {"record_kinds_in": ["entity"]},
+"description": {"record_kinds_in": ["entity"]},
+"one_line_purpose": {"record_kinds_in": ["entity"]},
+"short_description": {"record_kinds_in": ["entity"]},
+"notes": {"record_kinds_in": ["entity"]},
+"status": {"record_kinds_in": ["entity"]},
+"bundle_key": {"record_kinds_in": ["entity"]},
+"bundle_role": {"record_kinds_in": ["entity"]},
+"bundle_version": {"record_kinds_in": ["entity"]},
+"layer": {"record_kinds_in": ["entity"]},
+"module_id": {"record_kinds_in": ["entity"]},
+"superseded_by": {"record_kinds_in": ["entity"]},
+"supersedes_entity_id": {"record_kinds_in": ["entity"]}
+`
+
+### Generator-specific fields:
+`json
+"generator_id": {"record_kinds_in": ["generator"]},
+"generated_files": {"record_kinds_in": ["generator"]}
+`
+
+## Verification
+`python
+import json, re
+
+with open('01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json', 'r', encoding='utf-8') as f:
+    col_dict = json.load(f)
+
+# Check no empty scopes
+empty = [h for h, v in col_dict['headers'].items() if v.get('scope', {}).get('record_kinds_in') == []]
+print(f"Empty scopes: {len(empty)}")  # expect 0
+
+# Check no 'core' values
+with open('01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json', 'r', encoding='utf-8') as f:
+    content = f.read()
+    core_count = len(re.findall(r'"core"', content))
+    print(f"'core' occurrences: {core_count}")  # expect 0
+`

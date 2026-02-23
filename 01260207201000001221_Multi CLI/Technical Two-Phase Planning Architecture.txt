@@ -1,0 +1,429 @@
+Technical Two-Phase Planning Architecture
+
+
+Assumes:
+	•	The repository already contains structured planning artifacts (JSON/YAML)
+	•	Workstreams are compiled into executable bundles
+	•	DAG validation and scope enforcement already exist
+	•	Execution plans are compiled before scheduling  
+
+⸻
+
+Two-Phase Deterministic Planning Architecture
+
+1. Purpose
+
+This architecture introduces a strict, artifact-driven planning pipeline that:
+	1.	Reduces missing components in initial plans.
+	2.	Prevents nondeterministic or ambiguous execution instructions.
+	3.	Produces a validated, execution-ready package compatible with existing workstream bundle validation and orchestration systems.
+	4.	Allows structured incorporation of newly discovered elements without destabilizing execution.
+
+The architecture divides planning into two deterministic phases:
+	•	Phase A — Structural Planning (Completeness & Determinism)
+	•	Phase B — Execution Compilation (Workstream & DAG Ready)
+
+Each phase produces required artifacts. A step is incomplete unless its required artifacts exist and validate.
+
+⸻
+
+High-Level Architecture
+
+User Idea
+   ↓
+Phase A – Structural Planning
+   ↓
+Validated Structural Plan Package
+   ↓
+Phase B – Execution Compilation
+   ↓
+Validated Execution Plan + Workstream Bundles
+   ↓
+Orchestrator / DAG Scheduler
+
+
+⸻
+
+Phase A – Structural Planning
+
+Objective
+
+Transform a rough feature idea into a complete, schema-valid, dependency-safe structural plan.
+
+This phase does NOT generate executable workstreams yet.
+It guarantees completeness and determinism before execution compilation.
+
+⸻
+
+Step A1 — Planning Run Initialization
+
+Purpose
+
+Create a stable planning identity and freeze policies.
+
+Required Files
+
+1. planning_run_manifest.json
+Required fields:
+
+{
+  "planning_run_id": "ULID-or-UUID",
+  "repo_root": "absolute/path",
+  "timestamp_utc": "ISO8601",
+  "planner_version": "string",
+  "policy_version": "string",
+  "context_bundle_hash": "sha256"
+}
+
+Why Required
+	•	Enables reproducibility.
+	•	Prevents silent rule changes mid-run.
+	•	Anchors all later artifacts to a specific planning context.
+
+⸻
+
+2. planning_policy_snapshot.json
+Contains:
+	•	Required section list
+	•	Required artifact checklist
+	•	Defect taxonomy
+	•	Loop limits
+	•	Determinism constraints
+	•	Required gates
+
+Why Required
+Freezes rule set for this planning run.
+Prevents drift if global rules change during iteration.
+
+⸻
+
+Step A2 — Context Bundle Generation (Inventory-First)
+
+Purpose
+
+Eliminate missing components caused by incomplete situational awareness.
+
+Required Files
+
+3. context_bundle.json
+Minimum structure:
+
+{
+  "repo_summary": {
+    "top_level_dirs": [],
+    "languages_detected": [],
+    "build_system": ""
+  },
+  "recent_changes": [],
+  "existing_templates": [],
+  "existing_workstreams": [],
+  "gates_defined": [],
+  "registry_paths": []
+}
+
+4. context_bundle_signature.json
+
+{
+  "repo_commit": "SHA",
+  "file_count": 0,
+  "hash": "sha256",
+  "generated_at": "ISO8601"
+}
+
+Why Required
+	•	Planning must be grounded in actual repo state.
+	•	Prevents hallucinated files, gates, or artifacts.
+	•	Makes context deterministic.
+
+⸻
+
+Step A3 — Plan Skeleton Generation (Structure Only)
+
+Purpose
+
+Force completeness before refinement.
+
+Required File
+
+5. plan_skeleton.json
+Must include:
+
+{
+  "feature_id": "",
+  "objective": "",
+  "constraints": [],
+  "workstreams": [],
+  "global_requirements": {
+    "gates_required": [],
+    "acceptance_criteria_required": true
+  },
+  "risks": [],
+  "deferred_items": []
+}
+
+All required sections must exist, even if values are "TBD".
+
+⸻
+
+6. plan_skeleton_schema_validation.json
+
+{
+  "valid": true,
+  "schema_version": "",
+  "errors": []
+}
+
+Why Required
+Ensures structural completeness before refinement.
+
+⸻
+
+Step A4 — Plan Lint & Determinism Analysis
+
+Purpose
+
+Convert ambiguity into structured defect lists.
+
+Required Files
+
+7. plan_lint_report.json
+Structured defect format:
+
+{
+  "hard_defects": [
+    {
+      "code": "MISSING_COMPONENT",
+      "location": "workstreams[2].acceptance_tests",
+      "description": ""
+    }
+  ],
+  "soft_defects": []
+}
+
+8. plan_dependency_graph.json
+Graph representation of planned dependencies.
+
+9. plan_cycles_report.json
+Cycle detection output.
+
+10. plan_scope_overlap_report.json
+File scope conflict detection.
+
+Why Required
+	•	Enforces no cycles before compilation  
+	•	Prevents overlapping write scopes  
+	•	Makes determinism measurable.
+
+⸻
+
+Step A5 — Planner–Critic Refinement Loop
+
+Purpose
+
+Fix defects until no hard defects remain.
+
+Required Files Per Iteration
+
+11. refinement_round_01.json
+
+{
+  "input_plan_hash": "",
+  "defects": [],
+  "proposed_patch_hash": "",
+  "output_plan_hash": ""
+}
+
+12. plan_delta_patch_01.json
+RFC-6902 style patch:
+
+[
+  { "op": "replace", "path": "/workstreams/1/tasks/0", "value": "..." }
+]
+
+13. refinement_termination_record.json
+
+{
+  "reason": "NO_HARD_DEFECTS",
+  "iterations": 3,
+  "max_allowed": 5
+}
+
+Why Required
+	•	Prevents silent mutation.
+	•	Detects oscillation.
+	•	Provides deterministic convergence proof.
+
+⸻
+
+Phase A Output
+
+Validated Structural Plan Package
+
+Includes:
+	•	plan_skeleton.json
+	•	plan_lint_report.json (no hard defects)
+	•	refinement_termination_record.json
+	•	Dependency graph + scope report (clean)
+
+This package is execution-safe.
+
+⸻
+
+Phase B – Execution Compilation
+
+Objective
+
+Convert validated structural plan into executable workstreams and DAG-ready plan compatible with orchestrator.
+
+⸻
+
+Step B1 — Workstream Bundle Generation
+
+Required Directory
+
+workstreams/
+
+Required Files (per workstream)
+
+14. workstreams/ws-<id>.json
+Must conform to bundle schema:
+
+{
+  "id": "ws-feature-01",
+  "tasks": [],
+  "file_scope": [],
+  "depends_on": [],
+  "acceptance_tests": [],
+  "circuit_breaker": {},
+  "metadata": {}
+}
+
+Validated according to your bundle validation spec  
+
+⸻
+
+Step B2 — Bundle Validation
+
+Required Files
+
+15. bundle_validation_report.json
+Must include:
+	•	schema validation
+	•	unique ID validation
+	•	dependency validation
+	•	cycle detection
+	•	scope overlap detection
+
+⸻
+
+Step B3 — Execution Plan Compilation
+
+Required File
+
+16. execution_plan.json
+Compiled structure:
+
+{
+  "run_id": "",
+  "workstreams": [],
+  "dag": {},
+  "max_concurrency": 3,
+  "globals": {}
+}
+
+Must align with orchestrator loading behavior  
+
+⸻
+
+17. execution_plan_validation_summary.json
+Final preflight gate:
+
+{
+  "schema_valid": true,
+  "no_cycles": true,
+  "no_scope_conflicts": true,
+  "ready_for_dispatch": true
+}
+
+
+⸻
+
+Phase B Output
+
+Execution-ready package:
+	•	workstreams directory
+	•	validated execution_plan.json
+	•	preflight summary
+
+This feeds directly into:
+	•	DAG construction  
+	•	Parallel dispatch & scheduling  
+
+⸻
+
+Handling New Additions During Cycle
+
+New items must enter through structured delta requests:
+
+Required File
+
+18. plan_delta_request.json
+
+{
+  "source_workstream": "",
+  "reason": "",
+  "evidence": "",
+  "proposed_new_nodes": [],
+  "blocking": true
+}
+
+Orchestrator validates:
+	•	no cycle introduced
+	•	no scope violation
+	•	budget and circuit breaker compliance
+
+Only then injected into DAG.
+
+⸻
+
+Data Flow Summary
+
+Phase	Input	Output	Determinism Guarantee
+A1	User idea	planning_run_manifest	Identity anchored
+A2	Repo state	context_bundle	Grounded planning
+A3	Context	plan_skeleton	Structural completeness
+A4	Skeleton	lint reports	No missing components
+A5	Lint defects	refined plan	No hard defects
+B1	Refined plan	workstream bundles	Execution atoms
+B2	Bundles	validation report	No cycles / no overlap
+B3	Bundles	execution_plan	DAG-ready
+
+
+⸻
+
+Adaptation for Existing Systems
+
+Most repositories already contain:
+	•	Workstream JSON files
+	•	Schema files
+	•	Execution plan JSON
+	•	Validation scripts
+
+These can be reused by:
+	•	Adding planning_run_manifest.json
+	•	Adding lint reports
+	•	Adding delta patch artifacts
+	•	Introducing termination record files
+
+No core rewrite required.
+
+⸻
+
+Conclusion
+
+This Two-Phase Planning Architecture:
+	•	Separates structural completeness from execution compilation.
+	•	Forces required artifacts at each step.
+	•	Provides deterministic evidence for completion.
+	•	Integrates directly into DAG + worktree orchestration systems.
+	•	Supports dynamic additions through structured delta admission.

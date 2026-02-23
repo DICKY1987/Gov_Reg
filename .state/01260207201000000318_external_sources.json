@@ -1,0 +1,29 @@
+{
+  "registry_version": "1.0",
+  "last_validated": "2026-02-12T17:11:34.094Z",
+  "external_data_sources": {
+    "github_api": {
+      "url": "https://api.github.com",
+      "purpose": "Code repository metadata",
+      "authentication": "token_based",
+      "validation": {
+        "ssl_verification": true,
+        "rate_limit_monitoring": true,
+        "last_validated": "2026-02-12T17:11:34.094Z",
+        "status": "operational"
+      },
+      "data_classification": "PUBLIC"
+    }
+  },
+  "api_dependencies": [],
+  "validation_policy": {
+    "frequency": "daily",
+    "checks": [
+      "ssl_certificate_valid",
+      "endpoint_reachable",
+      "authentication_valid",
+      "data_integrity"
+    ],
+    "failure_response": "alert_and_fallback"
+  }
+}

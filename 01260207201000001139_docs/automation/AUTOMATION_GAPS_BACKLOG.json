@@ -1,0 +1,1048 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "backlog_id": "01999000042260125103",
+  "title": "ID Lifecycle & Registry Automation Gaps Backlog",
+  "created": "2026-02-15",
+  "version": "1.0.0",
+  "priority_levels": {
+    "P0": "Critical - Blocks operational stability",
+    "P1": "Important - Required for completeness",
+    "P2": "Enhancement - Nice-to-have"
+  },
+  "gaps": [
+    {
+      "gap_id": "GAP-001",
+      "priority": "P0",
+      "title": "Auto-repair invalid .dir_id anchors",
+      "status": "PARTIALLY_IMPLEMENTED",
+      "current_state": {
+        "exists": [
+          "Scanner detects invalid .dir_id (DIR-IDENTITY-005, DIR-IDENTITY-006)",
+          "Scanner repairs missing .dir_id when repair=True",
+          "Validation errors raised via DirectoryIdentityResolver"
+        ],
+        "missing": [
+          "No automatic repair of malformed JSON",
+          "No automatic fix for wrong relative_path",
+          "No automatic fix for wrong project_root_id",
+          "No quarantine mechanism for unrecoverable cases"
+        ]
+      },
+      "function_spec": {
+        "function_name": "fix_invalid_dir_id_anchors",
+        "module_path": "01260207201000001173_govreg_core/P_01999000042260125104_dir_id_auto_repair.py",
+        "signature": {
+          "params": {
+            "directory": {
+              "type": "Path",
+              "description": "Directory containing invalid .dir_id"
+            },
+            "validation_errors": {
+              "type": "List[str]",
+              "description": "List of validation error messages from resolver"
+            },
+            "quarantine": {
+              "type": "bool",
+              "default": true,
+              "description": "If True, quarantine unrecoverable .dir_id before regenerating"
+            }
+          },
+          "returns": {
+            "type": "RepairResult",
+            "fields": {
+              "success": "bool",
+              "action_taken": "Literal['repaired', 'quarantined', 'regenerated', 'failed']",
+              "old_content": "Optional[str]",
+              "new_content": "Optional[str]",
+              "evidence_path": "Path"
+            }
+          }
+        },
+        "repair_logic": [
+          {
+            "error_type": "malformed_json",
+            "action": "Parse error → backup to .dir_id.corrupt.{timestamp} → regenerate valid JSON"
+          },
+          {
+            "error_type": "wrong_relative_path",
+            "action": "Recompute from filesystem → update .dir_id"
+          },
+          {
+            "error_type": "wrong_project_root_id",
+            "action": "Read from config → update .dir_id"
+          },
+          {
+            "error_type": "wrong_digit_count",
+            "action": "Reallocate new ID → update .dir_id"
+          },
+          {
+            "error_type": "unrecoverable",
+            "action": "Quarantine → allocate new ID → create fresh .dir_id"
+          }
+        ]
+      },
+      "integration_points": {
+        "extends": "C:\\Users\\richg\\Gov_Reg\\01260207201000001173_govreg_core\\P_01260207233100000071_scanner_service.py",
+        "hooks_into": "ScannerService.scan() - repair branch at line 312-318",
+        "calls": [
+          "DirectoryIdentityResolver.resolve_identity()",
+          "DirIdManager.write_dir_id()",
+          "atomic_json_write() from shared_utils"
+        ],
+        "emits_evidence": ".state/evidence/dir_id_repairs/{timestamp}_repair_{dir_id}.json"
+      },
+      "defect_codes": {
+        "emitted": [
+          "DIR-IDENTITY-007: Auto-repair successful",
+          "DIR-IDENTITY-008: Quarantined corrupt anchor",
+          "DIR-IDENTITY-009: Auto-repair failed"
+        ],
+        "consumes": [
+          "DIR-IDENTITY-005: Invalid .dir_id format",
+          "DIR-IDENTITY-006: Validation error"
+        ]
+      },
+      "test_requirements": {
+        "unit_tests": [
+          "test_repair_malformed_json",
+          "test_repair_wrong_relative_path",
+          "test_repair_wrong_project_root_id",
+          "test_quarantine_unrecoverable",
+          "test_repair_evidence_emission"
+        ],
+        "integration_tests": [
+          "test_scanner_auto_repair_integration",
+          "test_repair_idempotency"
+        ]
+      },
+      "evidence_artifacts": [
+        ".state/evidence/dir_id_repairs/{timestamp}_repair_{dir_id}.json",
+        ".dir_id.corrupt.{timestamp} (quarantined files)"
+      ]
+    },
+    {
+      "gap_id": "GAP-002",
+      "priority": "P0",
+      "title": "Continuous enforcement via watcher/hook",
+      "status": "MISSING",
+      "current_state": {
+        "exists": [
+          "Batch generator: P_01999000042260125100_generate_dir_ids_gov_reg.py",
+          "Manual scanner with repair mode"
+        ],
+        "missing": [
+          "No filesystem watcher for new directory creation",
+          "No git pre-commit hook to validate .dir_id",
+          "No git pre-push hook to enforce governance"
+        ]
+      },
+      "function_spec": {
+        "function_name": "watch_governed_zones",
+        "module_path": "01260207201000001173_govreg_core/P_01999000042260125105_dir_id_watcher.py",
+        "signature": {
+          "params": {
+            "config_path": {
+              "type": "Path",
+              "description": "Path to IDPKG config"
+            },
+            "on_directory_created": {
+              "type": "Callable[[Path], None]",
+              "description": "Callback when new directory created in governed zone"
+            },
+            "on_directory_deleted": {
+              "type": "Callable[[Path], None]",
+              "description": "Callback when directory deleted"
+            },
+            "daemon": {
+              "type": "bool",
+              "default": false,
+              "description": "If True, run as background daemon"
+            }
+          },
+          "returns": {
+            "type": "WatcherHandle",
+            "fields": {
+              "watcher_id": "str",
+              "pid": "int",
+              "started_at": "str",
+              "stop": "Callable[[], None]"
+            }
+          }
+        },
+        "watch_logic": [
+          {
+            "event": "directory_created",
+            "filter": "zone == 'governed'",
+            "action": "Auto-allocate .dir_id → emit evidence → log to registry"
+          },
+          {
+            "event": "directory_deleted",
+            "filter": "has .dir_id",
+            "action": "Emit orphan warning → update registry status"
+          },
+          {
+            "event": ".dir_id modified",
+            "filter": "not committed to git",
+            "action": "Emit violation warning → validate changes"
+          }
+        ]
+      },
+      "git_hooks": {
+        "pre_commit": {
+          "path": ".git/hooks/pre-commit",
+          "script": "01260207201000001276_scripts/P_01999000042260125106_pre_commit_dir_id_check.py",
+          "checks": [
+            "New governed directories have .dir_id",
+            "Modified .dir_id files are valid",
+            "No duplicate dir_id allocations"
+          ],
+          "exit_code": "Non-zero blocks commit"
+        },
+        "pre_push": {
+          "path": ".git/hooks/pre-push",
+          "script": "01260207201000001276_scripts/P_01999000042260125107_pre_push_governance_check.py",
+          "checks": [
+            "All governed directories have .dir_id",
+            "Registry is in sync with filesystem",
+            "No orphaned .dir_id files"
+          ],
+          "exit_code": "Non-zero blocks push"
+        }
+      },
+      "integration_points": {
+        "uses": [
+          "watchdog library (filesystem monitoring)",
+          "IdpkgEngine for zone classification",
+          "DirectoryIdentityResolver for allocation"
+        ],
+        "emits_evidence": ".state/evidence/watcher_events/{timestamp}_event_{event_type}.json"
+      },
+      "defect_codes": {
+        "emitted": [
+          "DIR-IDENTITY-010: Directory created without .dir_id",
+          "DIR-IDENTITY-011: .dir_id modified (uncommitted)",
+          "DIR-IDENTITY-012: Directory deleted with .dir_id"
+        ]
+      },
+      "test_requirements": {
+        "unit_tests": [
+          "test_watcher_detects_new_directory",
+          "test_watcher_allocates_dir_id",
+          "test_watcher_ignores_excluded_zones",
+          "test_watcher_daemon_mode"
+        ],
+        "integration_tests": [
+          "test_pre_commit_hook_blocks_invalid",
+          "test_pre_push_hook_validates_governance"
+        ]
+      },
+      "evidence_artifacts": [
+        ".state/evidence/watcher_events/{timestamp}_event_{event_type}.json",
+        ".state/evidence/git_hooks/{timestamp}_hook_{hook_name}.json"
+      ]
+    },
+    {
+      "gap_id": "GAP-003",
+      "priority": "P0",
+      "title": "Bidirectional registry ↔ filesystem reconciliation",
+      "status": "MISSING",
+      "current_state": {
+        "exists": [
+          "One-way: FS → Registry (populate_registry_dir_ids.py)",
+          "One-way: PFMS → FS (reconciliation.py for planned vs actual)"
+        ],
+        "missing": [
+          "No check: registry paths exist on disk",
+          "No check: disk files are in registry",
+          "No deduplication: same file_id used by multiple files",
+          "No integrity check: dir_id in registry matches parent .dir_id"
+        ]
+      },
+      "function_spec": {
+        "function_name": "registry_fs_reconcile",
+        "module_path": "01260207201000001173_govreg_core/P_01999000042260125108_registry_fs_reconciler.py",
+        "signature": {
+          "params": {
+            "registry_path": {
+              "type": "Path",
+              "description": "Path to governance registry JSON"
+            },
+            "project_root": {
+              "type": "Path",
+              "description": "Project root directory"
+            },
+            "auto_repair": {
+              "type": "bool",
+              "default": false,
+              "description": "If True, attempt to repair inconsistencies"
+            },
+            "emit_evidence": {
+              "type": "bool",
+              "default": true,
+              "description": "If True, emit evidence artifacts"
+            }
+          },
+          "returns": {
+            "type": "ReconcileReport",
+            "fields": {
+              "reconcile_id": "str",
+              "timestamp": "str",
+              "total_registry_entries": "int",
+              "total_disk_files": "int",
+              "checks_passed": "int",
+              "checks_failed": "int",
+              "defects": "List[Defect]",
+              "repairs_applied": "int",
+              "evidence_path": "Path"
+            }
+          }
+        },
+        "reconciliation_checks": [
+          {
+            "check_id": "RECON-001",
+            "description": "Registry path exists on disk",
+            "query": "SELECT relative_path FROM registry WHERE NOT exists(disk_path)",
+            "defect_code": "RECON-MISSING-DISK-FILE",
+            "auto_repair": "Remove from registry or mark as deleted"
+          },
+          {
+            "check_id": "RECON-002",
+            "description": "Governed disk file is registered",
+            "query": "SELECT disk_path FROM filesystem WHERE zone='governed' AND NOT exists(registry_entry)",
+            "defect_code": "RECON-UNREGISTERED-FILE",
+            "auto_repair": "Add to registry with metadata scan"
+          },
+          {
+            "check_id": "RECON-003",
+            "description": "No duplicate file_id",
+            "query": "SELECT file_id, COUNT(*) FROM registry GROUP BY file_id HAVING COUNT(*) > 1",
+            "defect_code": "RECON-DUPLICATE-FILE-ID",
+            "auto_repair": "Reallocate IDs for duplicates"
+          },
+          {
+            "check_id": "RECON-004",
+            "description": "Registry dir_id matches parent .dir_id",
+            "query": "SELECT relative_path, dir_id FROM registry WHERE dir_id != read_parent_dir_id(disk_path)",
+            "defect_code": "RECON-DIR-ID-MISMATCH",
+            "auto_repair": "Update registry dir_id from filesystem"
+          },
+          {
+            "check_id": "RECON-005",
+            "description": "No orphaned .dir_id (excluded zones)",
+            "query": "SELECT disk_path FROM filesystem WHERE has_dir_id AND zone='excluded'",
+            "defect_code": "RECON-ORPHANED-DIR-ID",
+            "auto_repair": "Quarantine .dir_id file"
+          }
+        ]
+      },
+      "integration_points": {
+        "extends": "C:\\Users\\richg\\Gov_Reg\\01260207201000001173_govreg_core\\P_01260207233100000017_reconciliation.py",
+        "uses": [
+          "IdpkgEngine for filesystem scanning",
+          "DirIdManager for .dir_id reading",
+          "atomic_json_write for registry patches"
+        ],
+        "emits_evidence": ".state/evidence/reconciliation/{timestamp}_reconcile_{reconcile_id}.json"
+      },
+      "defect_codes": {
+        "emitted": [
+          "RECON-MISSING-DISK-FILE: Registry entry without disk file",
+          "RECON-UNREGISTERED-FILE: Disk file not in registry",
+          "RECON-DUPLICATE-FILE-ID: Multiple files with same file_id",
+          "RECON-DIR-ID-MISMATCH: Registry dir_id != parent .dir_id",
+          "RECON-ORPHANED-DIR-ID: .dir_id in excluded zone"
+        ]
+      },
+      "test_requirements": {
+        "unit_tests": [
+          "test_detect_missing_disk_files",
+          "test_detect_unregistered_files",
+          "test_detect_duplicate_file_ids",
+          "test_detect_dir_id_mismatch",
+          "test_detect_orphaned_dir_ids",
+          "test_auto_repair_mode"
+        ],
+        "integration_tests": [
+          "test_full_reconciliation_pipeline",
+          "test_reconcile_idempotency"
+        ]
+      },
+      "evidence_artifacts": [
+        ".state/evidence/reconciliation/{timestamp}_reconcile_{reconcile_id}.json",
+        ".state/evidence/reconciliation/{timestamp}_defects.jsonl",
+        ".state/evidence/reconciliation/{timestamp}_repairs.json"
+      ]
+    },
+    {
+      "gap_id": "GAP-004",
+      "priority": "P1",
+      "title": "Reference rewrites after ID-based renames",
+      "status": "MISSING",
+      "current_state": {
+        "exists": [
+          "ID-based renames via add_file_ids scripts",
+          "Registry path updates tracked via populate_registry_dir_ids.py"
+        ],
+        "missing": [
+          "No automatic rewriting of markdown links",
+          "No automatic rewriting of JSON/YAML path references",
+          "No automatic rewriting of Python imports",
+          "No update of registry-derived artifacts"
+        ]
+      },
+      "function_spec": {
+        "function_name": "rewrite_references_after_rename",
+        "module_path": "01260207201000001173_govreg_core/P_01999000042260125109_reference_rewriter.py",
+        "signature": {
+          "params": {
+            "old_path": {
+              "type": "str",
+              "description": "Original file/directory path (relative to project root)"
+            },
+            "new_path": {
+              "type": "str",
+              "description": "New file/directory path after ID-rename"
+            },
+            "scope": {
+              "type": "List[Path]",
+              "description": "Files to scan and rewrite (default: entire project)"
+            },
+            "dry_run": {
+              "type": "bool",
+              "default": false,
+              "description": "If True, report changes without applying"
+            }
+          },
+          "returns": {
+            "type": "ReferenceRewriteReport",
+            "fields": {
+              "rewrite_id": "str",
+              "timestamp": "str",
+              "files_scanned": "int",
+              "references_found": "int",
+              "references_rewritten": "int",
+              "changes": "List[ChangeRecord]",
+              "evidence_path": "Path"
+            }
+          }
+        },
+        "rewrite_patterns": [
+          {
+            "file_type": "markdown",
+            "pattern": "\\[([^\\]]+)\\]\\(([^)]+)\\)",
+            "match_group": 2,
+            "action": "Replace path in capture group 2"
+          },
+          {
+            "file_type": "json",
+            "pattern": "\"(path|file|relative_path|source|target)\"\\s*:\\s*\"([^\"]+)\"",
+            "match_group": 2,
+            "action": "Replace path in JSON value"
+          },
+          {
+            "file_type": "yaml",
+            "pattern": "(path|file|relative_path|source|target):\\s*([^\\n]+)",
+            "match_group": 2,
+            "action": "Replace path in YAML value"
+          },
+          {
+            "file_type": "python",
+            "pattern": "from\\s+([\\w.]+)\\s+import|import\\s+([\\w.]+)",
+            "match_group": "1|2",
+            "action": "Replace module path (convert path to module notation)"
+          }
+        ]
+      },
+      "integration_points": {
+        "triggered_by": [
+          "ID-based rename scripts",
+          "Directory rename operations",
+          "Registry path updates"
+        ],
+        "uses": [
+          "pathlib for path manipulation",
+          "re for pattern matching",
+          "atomic file rewrites"
+        ],
+        "emits_evidence": ".state/evidence/reference_rewrites/{timestamp}_rewrite_{rewrite_id}.json"
+      },
+      "defect_codes": {
+        "emitted": [
+          "REF-REWRITE-001: Reference rewritten successfully",
+          "REF-REWRITE-002: Reference could not be rewritten",
+          "REF-REWRITE-003: Ambiguous reference (multiple matches)"
+        ]
+      },
+      "test_requirements": {
+        "unit_tests": [
+          "test_rewrite_markdown_links",
+          "test_rewrite_json_paths",
+          "test_rewrite_yaml_paths",
+          "test_rewrite_python_imports",
+          "test_dry_run_mode",
+          "test_ambiguous_reference_detection"
+        ],
+        "integration_tests": [
+          "test_full_rename_pipeline_with_rewrites",
+          "test_rewrite_idempotency"
+        ]
+      },
+      "evidence_artifacts": [
+        ".state/evidence/reference_rewrites/{timestamp}_rewrite_{rewrite_id}.json",
+        ".state/evidence/reference_rewrites/{timestamp}_changes.jsonl"
+      ]
+    },
+    {
+      "gap_id": "GAP-005",
+      "priority": "P1",
+      "title": "Automated coverage completion for dir_id population",
+      "status": "PARTIALLY_IMPLEMENTED",
+      "current_state": {
+        "exists": [
+          "Population script: P_01999000042260125102_populate_registry_dir_ids.py",
+          "Stats reported: dir_id_added, dir_id_missing"
+        ],
+        "missing": [
+          "No explanation of WHY dir_id is null (excluded/missing anchor/stale/out-of-scope)",
+          "No remediation plan generated",
+          "No coverage metrics (% complete by zone)"
+        ]
+      },
+      "function_spec": {
+        "function_name": "populate_registry_dir_ids_full",
+        "module_path": "01260207201000001276_scripts/P_01999000042260125110_populate_registry_dir_ids_enhanced.py",
+        "signature": {
+          "params": {
+            "registry_path": {
+              "type": "Path",
+              "description": "Path to governance registry"
+            },
+            "config_path": {
+              "type": "Path",
+              "description": "Path to IDPKG config"
+            },
+            "explain_nulls": {
+              "type": "bool",
+              "default": true,
+              "description": "Generate explanation for each null dir_id"
+            },
+            "generate_remediation": {
+              "type": "bool",
+              "default": true,
+              "description": "Generate remediation plan for nulls"
+            }
+          },
+          "returns": {
+            "type": "CoverageReport",
+            "fields": {
+              "coverage_id": "str",
+              "timestamp": "str",
+              "total_entries": "int",
+              "dir_id_populated": "int",
+              "dir_id_null": "int",
+              "coverage_percentage": "float",
+              "coverage_by_zone": "Dict[str, float]",
+              "null_explanations": "List[NullExplanation]",
+              "remediation_plan": "List[RemediationAction]",
+              "evidence_path": "Path"
+            }
+          }
+        },
+        "null_explanation_logic": [
+          {
+            "reason": "excluded_zone",
+            "check": "zone_classifier.compute_zone(path) == 'excluded'",
+            "action": "Mark as excluded (expected null)"
+          },
+          {
+            "reason": "missing_dir_id_anchor",
+            "check": "parent directory has no .dir_id file",
+            "action": "Add to remediation: allocate anchor"
+          },
+          {
+            "reason": "path_outside_governed_root",
+            "check": "path not under any governed zone",
+            "action": "Add to remediation: exclude from registry or move"
+          },
+          {
+            "reason": "stale_entry",
+            "check": "file no longer exists on disk",
+            "action": "Add to remediation: purge from registry"
+          }
+        ]
+      },
+      "integration_points": {
+        "extends": "C:\\Users\\richg\\Gov_Reg\\01260207201000001276_scripts\\P_01999000042260125102_populate_registry_dir_ids.py",
+        "uses": [
+          "IdpkgEngine for zone classification",
+          "DirIdManager for .dir_id reading",
+          "ZoneClassifier for zone computation"
+        ],
+        "emits_evidence": ".state/evidence/coverage/{timestamp}_coverage_{coverage_id}.json"
+      },
+      "defect_codes": {
+        "emitted": [
+          "COV-NULL-EXCLUDED: Null dir_id in excluded zone (expected)",
+          "COV-NULL-MISSING-ANCHOR: Null dir_id due to missing parent .dir_id",
+          "COV-NULL-OUT-OF-SCOPE: Null dir_id for path outside governed zones",
+          "COV-NULL-STALE: Null dir_id for stale registry entry"
+        ]
+      },
+      "test_requirements": {
+        "unit_tests": [
+          "test_explain_null_excluded_zone",
+          "test_explain_null_missing_anchor",
+          "test_explain_null_out_of_scope",
+          "test_explain_null_stale_entry",
+          "test_generate_remediation_plan",
+          "test_coverage_by_zone_calculation"
+        ],
+        "integration_tests": [
+          "test_full_coverage_analysis_pipeline"
+        ]
+      },
+      "evidence_artifacts": [
+        ".state/evidence/coverage/{timestamp}_coverage_{coverage_id}.json",
+        ".state/evidence/coverage/{timestamp}_null_explanations.jsonl",
+        ".state/evidence/coverage/{timestamp}_remediation_plan.json"
+      ]
+    },
+    {
+      "gap_id": "GAP-006",
+      "priority": "P1",
+      "title": "Orphan + dead-entry cleanup",
+      "status": "MISSING",
+      "current_state": {
+        "exists": [
+          "Orphan check for planning system: newPhasePlanProcess/.../check_orphans.py"
+        ],
+        "missing": [
+          "No orphan detection for .dir_id files in excluded zones",
+          "No orphan detection for registry entries with missing disk files",
+          "No orphan detection for disk files excluded but still registered"
+        ]
+      },
+      "function_spec": {
+        "function_name": "purge_orphans",
+        "module_path": "01260207201000001173_govreg_core/P_01999000042260125111_orphan_purger.py",
+        "signature": {
+          "params": {
+            "registry_path": {
+              "type": "Path",
+              "description": "Path to governance registry"
+            },
+            "project_root": {
+              "type": "Path",
+              "description": "Project root directory"
+            },
+            "quarantine": {
+              "type": "bool",
+              "default": true,
+              "description": "If True, quarantine orphans before deletion"
+            },
+            "dry_run": {
+              "type": "bool",
+              "default": false,
+              "description": "If True, report orphans without purging"
+            }
+          },
+          "returns": {
+            "type": "OrphanPurgeReport",
+            "fields": {
+              "purge_id": "str",
+              "timestamp": "str",
+              "orphans_detected": "int",
+              "orphans_quarantined": "int",
+              "orphans_purged": "int",
+              "orphan_types": "Dict[str, int]",
+              "quarantine_dir": "Path",
+              "registry_patch": "Optional[Path]",
+              "evidence_path": "Path"
+            }
+          }
+        },
+        "orphan_detection_logic": [
+          {
+            "orphan_type": "dir_id_in_excluded_zone",
+            "detection": ".dir_id exists AND zone='excluded'",
+            "action": "Quarantine .dir_id to .quarantine/{timestamp}/",
+            "defect_code": "ORPHAN-DIR-ID-EXCLUDED"
+          },
+          {
+            "orphan_type": "registry_entry_missing_disk_file",
+            "detection": "registry.relative_path AND NOT exists(disk_file)",
+            "action": "Remove from registry (emit patch)",
+            "defect_code": "ORPHAN-REGISTRY-MISSING-FILE"
+          },
+          {
+            "orphan_type": "disk_file_excluded_but_registered",
+            "detection": "zone='excluded' AND exists(registry_entry)",
+            "action": "Remove from registry (emit patch)",
+            "defect_code": "ORPHAN-REGISTRY-EXCLUDED-FILE"
+          },
+          {
+            "orphan_type": "dir_id_no_parent",
+            "detection": ".dir_id exists AND parent directory deleted",
+            "action": "Quarantine .dir_id",
+            "defect_code": "ORPHAN-DIR-ID-NO-PARENT"
+          }
+        ]
+      },
+      "integration_points": {
+        "uses": [
+          "IdpkgEngine for zone classification",
+          "DirIdManager for .dir_id operations",
+          "atomic_json_write for registry patches"
+        ],
+        "emits_evidence": ".state/evidence/orphan_purges/{timestamp}_purge_{purge_id}.json"
+      },
+      "defect_codes": {
+        "emitted": [
+          "ORPHAN-DIR-ID-EXCLUDED: .dir_id in excluded zone",
+          "ORPHAN-REGISTRY-MISSING-FILE: Registry entry without disk file",
+          "ORPHAN-REGISTRY-EXCLUDED-FILE: Registry entry in excluded zone",
+          "ORPHAN-DIR-ID-NO-PARENT: .dir_id with deleted parent directory"
+        ]
+      },
+      "test_requirements": {
+        "unit_tests": [
+          "test_detect_dir_id_in_excluded_zone",
+          "test_detect_registry_missing_file",
+          "test_detect_registry_excluded_file",
+          "test_detect_dir_id_no_parent",
+          "test_quarantine_mechanism",
+          "test_dry_run_mode"
+        ],
+        "integration_tests": [
+          "test_full_orphan_purge_pipeline",
+          "test_purge_idempotency"
+        ]
+      },
+      "evidence_artifacts": [
+        ".state/evidence/orphan_purges/{timestamp}_purge_{purge_id}.json",
+        ".quarantine/{timestamp}/orphaned_dir_ids/",
+        ".state/evidence/orphan_purges/{timestamp}_registry_patch.json"
+      ]
+    },
+    {
+      "gap_id": "GAP-007",
+      "priority": "P0",
+      "title": "Transactional rollback / atomic multi-step operations",
+      "status": "MISSING",
+      "current_state": {
+        "exists": [
+          "Atomic JSON writes: shared_utils.atomic_json_write",
+          "Atomic .dir_id writes: DirIdManager"
+        ],
+        "missing": [
+          "No transaction coordinator for multi-step operations",
+          "No rollback capability on partial failure",
+          "No transaction log for audit trail"
+        ]
+      },
+      "function_spec": {
+        "function_name": "atomic_rename_and_registry_patch",
+        "module_path": "01260207201000001173_govreg_core/P_01999000042260125112_atomic_transaction.py",
+        "signature": {
+          "params": {
+            "rename_ops": {
+              "type": "List[RenameOp]",
+              "description": "List of file/directory rename operations",
+              "structure": {
+                "old_path": "Path",
+                "new_path": "Path"
+              }
+            },
+            "registry_patch": {
+              "type": "JSONPatch",
+              "description": "RFC 6902 JSON Patch for registry updates"
+            },
+            "reference_rewrites": {
+              "type": "List[RewriteOp]",
+              "description": "List of reference rewrite operations",
+              "structure": {
+                "file_path": "Path",
+                "old_ref": "str",
+                "new_ref": "str"
+              }
+            }
+          },
+          "returns": {
+            "type": "TransactionResult",
+            "fields": {
+              "transaction_id": "str",
+              "timestamp": "str",
+              "success": "bool",
+              "steps_completed": "int",
+              "steps_total": "int",
+              "rollback_applied": "bool",
+              "error": "Optional[str]",
+              "evidence_path": "Path"
+            }
+          }
+        },
+        "transaction_protocol": [
+          {
+            "phase": "1_prepare",
+            "actions": [
+              "Validate all paths exist",
+              "Check write permissions",
+              "Create transaction log",
+              "Snapshot current state"
+            ]
+          },
+          {
+            "phase": "2_execute",
+            "actions": [
+              "Execute rename operations",
+              "Apply registry patch",
+              "Execute reference rewrites",
+              "Log each step completion"
+            ],
+            "on_error": "Proceed to phase 3_rollback"
+          },
+          {
+            "phase": "3_rollback",
+            "actions": [
+              "Reverse rename operations (use snapshot)",
+              "Reverse registry patch",
+              "Reverse reference rewrites",
+              "Emit rollback evidence"
+            ],
+            "trigger": "Any step in phase 2 fails"
+          },
+          {
+            "phase": "4_commit",
+            "actions": [
+              "Delete snapshot",
+              "Emit success evidence",
+              "Close transaction log"
+            ]
+          }
+        ]
+      },
+      "integration_points": {
+        "context_manager": true,
+        "usage_pattern": "with atomic_rename_and_registry_patch(...) as txn: ...",
+        "uses": [
+          "shutil.move for file operations",
+          "atomic_json_write for registry",
+          "reference_rewriter for rewrites"
+        ],
+        "emits_evidence": ".state/evidence/transactions/{timestamp}_txn_{transaction_id}.json"
+      },
+      "defect_codes": {
+        "emitted": [
+          "TXN-SUCCESS: Transaction completed successfully",
+          "TXN-ROLLBACK: Transaction rolled back due to error",
+          "TXN-PARTIAL-FAILURE: Rollback partially failed (manual intervention required)"
+        ]
+      },
+      "test_requirements": {
+        "unit_tests": [
+          "test_transaction_success",
+          "test_transaction_rollback_on_rename_failure",
+          "test_transaction_rollback_on_registry_patch_failure",
+          "test_transaction_rollback_on_rewrite_failure",
+          "test_transaction_snapshot_creation",
+          "test_transaction_log_integrity"
+        ],
+        "integration_tests": [
+          "test_full_transaction_pipeline",
+          "test_transaction_idempotency"
+        ]
+      },
+      "evidence_artifacts": [
+        ".state/evidence/transactions/{timestamp}_txn_{transaction_id}.json",
+        ".state/evidence/transactions/{timestamp}_snapshot.json",
+        ".state/evidence/transactions/{timestamp}_rollback.json"
+      ]
+    },
+    {
+      "gap_id": "GAP-008",
+      "priority": "P2",
+      "title": "Scheduled health checks",
+      "status": "MISSING",
+      "current_state": {
+        "exists": [
+          "Manual validation scripts: validate_dir_ids.py",
+          "Scanner service with repair mode"
+        ],
+        "missing": [
+          "No scheduled health check (nightly cron)",
+          "No CI/CD gate integration",
+          "No fail-closed enforcement on critical violations"
+        ]
+      },
+      "function_spec": {
+        "function_name": "nightly_id_registry_healthcheck",
+        "module_path": "01260207201000001276_scripts/P_01999000042260125113_healthcheck.py",
+        "signature": {
+          "params": {
+            "config_path": {
+              "type": "Path",
+              "description": "Path to IDPKG config"
+            },
+            "fail_on_critical": {
+              "type": "bool",
+              "default": true,
+              "description": "Exit non-zero on critical violations"
+            },
+            "emit_evidence": {
+              "type": "bool",
+              "default": true,
+              "description": "Emit evidence artifacts"
+            }
+          },
+          "returns": {
+            "type": "HealthCheckReport",
+            "fields": {
+              "healthcheck_id": "str",
+              "timestamp": "str",
+              "checks_run": "int",
+              "checks_passed": "int",
+              "checks_failed": "int",
+              "critical_violations": "int",
+              "warnings": "int",
+              "exit_code": "int",
+              "evidence_path": "Path"
+            }
+          }
+        },
+        "health_checks": [
+          {
+            "check_id": "HC-001",
+            "description": "All governed directories have .dir_id",
+            "severity": "CRITICAL",
+            "action": "Run scanner, fail if missing .dir_id detected"
+          },
+          {
+            "check_id": "HC-002",
+            "description": "No invalid .dir_id format",
+            "severity": "CRITICAL",
+            "action": "Run validation, fail if parse errors detected"
+          },
+          {
+            "check_id": "HC-003",
+            "description": "Registry is in sync with filesystem",
+            "severity": "ERROR",
+            "action": "Run bidirectional reconciliation"
+          },
+          {
+            "check_id": "HC-004",
+            "description": "No duplicate file_ids",
+            "severity": "ERROR",
+            "action": "Run deduplication check"
+          },
+          {
+            "check_id": "HC-005",
+            "description": "No orphaned .dir_id files",
+            "severity": "WARNING",
+            "action": "Run orphan detection"
+          }
+        ]
+      },
+      "ci_cd_integration": {
+        "github_actions": {
+          "workflow_path": ".github/workflows/governance_healthcheck.yml",
+          "triggers": [
+            "schedule (cron: 0 0 * * *)",
+            "workflow_dispatch (manual)",
+            "push to main branch"
+          ],
+          "steps": [
+            "Checkout code",
+            "Setup Python",
+            "Run healthcheck script",
+            "Upload evidence artifacts",
+            "Fail job on critical violations"
+          ]
+        }
+      },
+      "integration_points": {
+        "uses": [
+          "IdpkgEngine.scan()",
+          "validate_dir_ids.py",
+          "registry_fs_reconcile()",
+          "purge_orphans()"
+        ],
+        "emits_evidence": ".state/evidence/healthchecks/{timestamp}_healthcheck_{healthcheck_id}.json"
+      },
+      "defect_codes": {
+        "emitted": [
+          "HC-CRITICAL: Critical health check failed",
+          "HC-ERROR: Error health check failed",
+          "HC-WARNING: Warning health check failed",
+          "HC-PASS: All health checks passed"
+        ]
+      },
+      "test_requirements": {
+        "unit_tests": [
+          "test_healthcheck_all_pass",
+          "test_healthcheck_critical_failure",
+          "test_healthcheck_error_warning_distinction",
+          "test_healthcheck_evidence_emission"
+        ],
+        "integration_tests": [
+          "test_ci_cd_workflow_integration"
+        ]
+      },
+      "evidence_artifacts": [
+        ".state/evidence/healthchecks/{timestamp}_healthcheck_{healthcheck_id}.json",
+        ".state/evidence/healthchecks/{timestamp}_violations.jsonl"
+      ]
+    }
+  ],
+  "implementation_order": [
+    {
+      "phase": "Phase 1 - Critical Infrastructure (P0)",
+      "gaps": ["GAP-001", "GAP-003", "GAP-007"],
+      "duration_estimate": "2-3 weeks",
+      "deliverables": [
+        "Auto-repair invalid .dir_id",
+        "Bidirectional reconciliation",
+        "Atomic transactions"
+      ]
+    },
+    {
+      "phase": "Phase 2 - Continuous Enforcement (P0)",
+      "gaps": ["GAP-002"],
+      "duration_estimate": "1-2 weeks",
+      "deliverables": [
+        "Filesystem watcher",
+        "Git pre-commit hook",
+        "Git pre-push hook"
+      ]
+    },
+    {
+      "phase": "Phase 3 - Completeness & Cleanup (P1)",
+      "gaps": ["GAP-004", "GAP-005", "GAP-006"],
+      "duration_estimate": "2-3 weeks",
+      "deliverables": [
+        "Reference rewriter",
+        "Enhanced coverage analysis",
+        "Orphan purger"
+      ]
+    },
+    {
+      "phase": "Phase 4 - Operational Maturity (P2)",
+      "gaps": ["GAP-008"],
+      "duration_estimate": "1 week",
+      "deliverables": [
+        "Health check script",
+        "CI/CD workflow integration"
+      ]
+    }
+  ],
+  "total_estimated_duration": "6-9 weeks",
+  "dependencies": {
+    "GAP-001": [],
+    "GAP-002": ["GAP-001"],
+    "GAP-003": [],
+    "GAP-004": ["GAP-007"],
+    "GAP-005": ["GAP-003"],
+    "GAP-006": ["GAP-003"],
+    "GAP-007": [],
+    "GAP-008": ["GAP-001", "GAP-003", "GAP-006"]
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "input_file": "sections\\sec_021_quality_controls_catalog.json",
+  "schema_file": null,
+  "validations": {
+    "control_id_uniqueness": {
+      "passed": true,
+      "duplicates": []
+    },
+    "required_fields": {
+      "passed": true,
+      "missing": []
+    },
+    "evidence_paths": {
+      "passed": true,
+      "issues": []
+    },
+    "control_mappings": {
+      "passed": false,
+      "issues": [
+        "by_gate.GATE-CONTRACT-001: invalid control_id 'DBG-0019'",
+        "by_gate.GATE-COVERAGE-001: invalid control_id 'DBG-0033'",
+        "by_gate.GATE-SCHEMA-001: invalid control_id 'DBG-0045'",
+        "by_gate.GATE-LOGGING-001: invalid control_id 'DBG-0052'",
+        "by_gate.GATE-ROLLBACK-001: invalid control_id 'DBG-0067'"
+      ]
+    }
+  },
+  "status": "fail",
+  "file_id": "01260207233100000538"
+}

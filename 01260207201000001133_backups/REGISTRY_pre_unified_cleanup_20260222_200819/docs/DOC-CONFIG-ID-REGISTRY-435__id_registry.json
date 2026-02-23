@@ -1,0 +1,392 @@
+{
+  "artifacts": {
+    "WORK-MAPP-PY-001": {
+      "created_utc": "2026-01-07T18:12:44Z",
+      "name": "mapp_py Python Introspection Layer Implementation",
+      "type": "work_item",
+      "status": "in_progress",
+      "phase": "phase_0",
+      "owner": "system",
+      "description": "Build Python AST introspection layer with similarity analysis, component extraction, and evidence-based file comparison for deterministic codebase triage"
+    },
+    "WORK-REGV3-001": {
+      "created_utc": "2025-12-28T05:50:00Z",
+      "name": "Registry V3 Tier 2/3 Automation Pipeline",
+      "type": "work_item",
+      "status": "in_progress"
+    },
+    "A-REGV3-SCHEMA-001": {
+      "created_utc": "2025-12-28T05:50:00Z",
+      "name": "Tier 2 Schema Migration",
+      "type": "artifact",
+      "work_id": "WORK-REGV3-001",
+      "path": "SUB_DOC_ID/migration_v3/schema/migrations/001_add_tier2_tables.sql"
+    },
+    "A-REGV3-EXTRACT-002": {
+      "created_utc": "2025-12-28T05:50:00Z",
+      "name": "Canonical Hash Extractor",
+      "type": "artifact",
+      "work_id": "WORK-REGV3-001",
+      "path": "SUB_DOC_ID/migration_v3/extractors/tier2_canonical_hash.py"
+    },
+    "A-REGV3-EXTRACT-003": {
+      "created_utc": "2025-12-28T05:50:00Z",
+      "name": "Symbols Extractor",
+      "type": "artifact",
+      "work_id": "WORK-REGV3-001",
+      "path": "SUB_DOC_ID/migration_v3/extractors/tier2_symbols.py"
+    },
+    "A-REGV3-EXTRACT-004": {
+      "created_utc": "2025-12-28T05:50:00Z",
+      "name": "Edges Extractor",
+      "type": "artifact",
+      "work_id": "WORK-REGV3-001",
+      "path": "SUB_DOC_ID/migration_v3/extractors/tier2_edges.py"
+    },
+    "A-REGV3-BACKFILL-005": {
+      "created_utc": "2025-12-28T05:50:00Z",
+      "name": "Backfill Runner Tool",
+      "type": "artifact",
+      "work_id": "WORK-REGV3-001",
+      "path": "SUB_DOC_ID/migration_v3/tools/backfill_tier2_tier3.py"
+    },
+    "A-REGV3-AUTOMATE-006": {
+      "created_utc": "2025-12-28T05:50:00Z",
+      "name": "Automation Integration Package",
+      "type": "artifact",
+      "work_id": "WORK-REGV3-001",
+      "paths": [
+        "SUB_DOC_ID/3_AUTOMATION_HOOKS/file_watcher.py",
+        "SUB_DOC_ID/3_AUTOMATION_HOOKS/pre_commit_hook.py",
+        "SUB_DOC_ID/3_AUTOMATION_HOOKS/automation_runner.ps1",
+        "SUB_DOC_ID/3_AUTOMATION_HOOKS/setup_scheduled_tasks.py"
+      ]
+    },
+    "A-REGV3-MONITOR-007": {
+      "created_utc": "2025-12-28T05:50:00Z",
+      "name": "Monitoring & Health Check Tools",
+      "type": "artifact",
+      "work_id": "WORK-REGV3-001",
+      "paths": [
+        "SUB_DOC_ID/migration_v3/tools/v3_dashboard.py",
+        "SUB_DOC_ID/migration_v3/tools/v3_health_check.py"
+      ]
+    },
+    "R-REGV3-SCHEMA-001": {
+      "created_utc": "2025-12-28T05:50:00Z",
+      "name": "Tier 2 Schema Migration Requirement",
+      "type": "requirement",
+      "work_id": "WORK-REGV3-001",
+      "spec": "specs/behaviors/BDD-REGV3-TIER2-SCHEMA-001.yaml"
+    },
+    "R-REGV3-HASH-002": {
+      "created_utc": "2025-12-28T05:50:00Z",
+      "name": "Canonical Hash Extractor Requirement",
+      "type": "requirement",
+      "work_id": "WORK-REGV3-001",
+      "spec": "specs/behaviors/BDD-REGV3-CANONICAL-HASH-002.yaml"
+    },
+    "R-REGV3-SYMBOLS-003": {
+      "created_utc": "2025-12-28T05:50:00Z",
+      "name": "Symbols Extractor Requirement",
+      "type": "requirement",
+      "work_id": "WORK-REGV3-001",
+      "spec": "specs/behaviors/BDD-REGV3-SYMBOLS-003.yaml"
+    },
+    "R-REGV3-EDGES-004": {
+      "created_utc": "2025-12-28T05:50:00Z",
+      "name": "Edges Extractor Requirement",
+      "type": "requirement",
+      "work_id": "WORK-REGV3-001",
+      "spec": "specs/behaviors/BDD-REGV3-EDGES-004.yaml"
+    },
+    "R-REGV3-BACKFILL-005": {
+      "created_utc": "2025-12-28T05:50:00Z",
+      "name": "Backfill Runner Requirement",
+      "type": "requirement",
+      "work_id": "WORK-REGV3-001",
+      "spec": "specs/behaviors/BDD-REGV3-BACKFILL-005.yaml"
+    },
+    "R-REGV3-AUTO-006": {
+      "created_utc": "2025-12-28T05:50:00Z",
+      "name": "Automation Integration Requirement",
+      "type": "requirement",
+      "work_id": "WORK-REGV3-001",
+      "spec": "specs/behaviors/BDD-REGV3-AUTOMATION-006.yaml"
+    },
+    "WORK-REGV3-002": {
+      "created_utc": "2025-12-28T06:11:00Z",
+      "name": "Registry V3 Automation & CI/CD Integration (Phase 3-4)",
+      "type": "work_item",
+      "status": "in_progress",
+      "depends_on": [
+        "WORK-REGV3-001"
+      ]
+    },
+    "A-REGV3-FILEWATCHER-008": {
+      "created_utc": "2025-12-28T06:11:00Z",
+      "name": "File System Watcher Service",
+      "type": "artifact",
+      "work_id": "WORK-REGV3-002",
+      "path": "SUB_DOC_ID/3_AUTOMATION_HOOKS/v3_file_watcher.py"
+    },
+    "A-REGV3-PRECOMMIT-009": {
+      "created_utc": "2025-12-28T06:11:00Z",
+      "name": "Pre-Commit Hook Integration",
+      "type": "artifact",
+      "work_id": "WORK-REGV3-002",
+      "path": "SUB_DOC_ID/3_AUTOMATION_HOOKS/v3_pre_commit.py"
+    },
+    "A-REGV3-SCHEDULER-010": {
+      "created_utc": "2025-12-28T06:11:00Z",
+      "name": "Scheduled Task Configuration",
+      "type": "artifact",
+      "work_id": "WORK-REGV3-002",
+      "path": "SUB_DOC_ID/3_AUTOMATION_HOOKS/install_v3_scheduled_tasks.py"
+    },
+    "A-REGV3-AUTORUNNER-011": {
+      "created_utc": "2025-12-28T06:11:00Z",
+      "name": "Unified Automation Runner",
+      "type": "artifact",
+      "work_id": "WORK-REGV3-002",
+      "path": "SUB_DOC_ID/3_AUTOMATION_HOOKS/v3_automation_runner.py"
+    },
+    "A-REGV3-GHACTIONS-012": {
+      "created_utc": "2025-12-28T06:11:00Z",
+      "name": "GitHub Actions Main Workflow Integration",
+      "type": "artifact",
+      "work_id": "WORK-REGV3-002",
+      "path": ".github/workflows/doc_id_validation.yml"
+    },
+    "A-REGV3-GHACTIONS-013": {
+      "created_utc": "2025-12-28T06:11:00Z",
+      "name": "GitHub Actions V3 Dedicated Workflow",
+      "type": "artifact",
+      "work_id": "WORK-REGV3-002",
+      "path": ".github/workflows/registry_v3_validation.yml"
+    },
+    "R-REGV3-FILEWATCHER-007": {
+      "created_utc": "2025-12-28T06:11:00Z",
+      "name": "File Watcher Requirement",
+      "type": "requirement",
+      "work_id": "WORK-REGV3-002",
+      "spec": "specs/behaviors/BDD-REGV3-FILE-WATCHER-007.yaml"
+    },
+    "R-REGV3-PRECOMMIT-008": {
+      "created_utc": "2025-12-28T06:11:00Z",
+      "name": "Pre-Commit Hook Requirement",
+      "type": "requirement",
+      "work_id": "WORK-REGV3-002",
+      "spec": "specs/behaviors/BDD-REGV3-PRECOMMIT-008.yaml"
+    },
+    "DOC-CONTRACT-IO-ENVELOPE-001": {
+      "type": "document",
+      "name": "Universal I/O Contract Implementation Plan",
+      "work_id": "WORK-IO-CONTRACT-001",
+      "path": "CONTRACTS/UNIVERSAL_IO_CONTRACT_IMPLEMENTATION_PLAN.md",
+      "created_utc": "2026-01-04T03:05:48Z"
+    },
+    "DOC-REGISTRY-PAYLOAD-SCHEMA-001": {
+      "type": "document",
+      "name": "Payload Schema Registry Document",
+      "work_id": "WORK-IO-CONTRACT-001",
+      "path": "data/schemas/PAYLOAD_SCHEMA_REGISTRY.yaml",
+      "created_utc": "2026-01-04T03:05:48Z"
+    },
+    "WORK-IO-CONTRACT-001": {
+      "type": "work_item",
+      "name": "Universal I/O Contract Implementation",
+      "phase": "Phase 1: Schema Foundation",
+      "status": "in_progress",
+      "created_utc": "2026-01-04T03:05:48Z"
+    },
+    "DOC-REGISTRY-MSG-TYPE-001": {
+      "type": "document",
+      "name": "Message Type Registry Document",
+      "work_id": "WORK-IO-CONTRACT-001",
+      "path": "data/schemas/MESSAGE_TYPE_REGISTRY.yaml",
+      "created_utc": "2026-01-04T03:05:48Z"
+    },
+    "A-IO-PAYLOAD-REG-001": {
+      "type": "artifact",
+      "name": "Payload Schema Registry",
+      "work_id": "WORK-IO-CONTRACT-001",
+      "path": "data/schemas/PAYLOAD_SCHEMA_REGISTRY.yaml",
+      "created_utc": "2026-01-04T03:05:48Z"
+    },
+    "A-IO-MSG-TYPE-REG-001": {
+      "type": "artifact",
+      "name": "Message Type Registry",
+      "work_id": "WORK-IO-CONTRACT-001",
+      "path": "data/schemas/MESSAGE_TYPE_REGISTRY.yaml",
+      "created_utc": "2026-01-04T03:05:48Z"
+    },
+    "A-IO-SCHEMA-001": {
+      "type": "artifact",
+      "name": "Universal I/O Contract Envelope Schema",
+      "work_id": "WORK-IO-CONTRACT-001",
+      "path": "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_schemas/io_contract.envelope.v1.schema.json",
+      "created_utc": "2026-01-04T03:05:48Z"
+    },
+    "A-IO-VALIDATOR-RT-001": {
+      "created_utc": "2026-01-04T07:15:00Z",
+      "name": "Runtime Envelope Validator Module",
+      "type": "artifact",
+      "work_id": "WORK-IO-CONTRACT-001",
+      "path": "modules/io_contract/validator.py"
+    },
+    "A-IO-VALIDATOR-003": {
+      "created_utc": "2026-01-04T07:15:00Z",
+      "name": "Payload Schema Validator",
+      "type": "artifact",
+      "work_id": "WORK-IO-CONTRACT-001",
+      "path": "scripts/validators/validate_payload_schema.py"
+    },
+    "A-IO-VALIDATOR-001": {
+      "created_utc": "2026-01-04T07:15:00Z",
+      "name": "Universal Envelope Validator",
+      "type": "artifact",
+      "work_id": "WORK-IO-CONTRACT-001",
+      "path": "scripts/validators/validate_io_envelope.py"
+    },
+    "A-IO-VALIDATOR-002": {
+      "created_utc": "2026-01-04T07:15:00Z",
+      "name": "Message Type Validator",
+      "type": "artifact",
+      "work_id": "WORK-IO-CONTRACT-001",
+      "path": "scripts/validators/validate_message_type.py"
+    },
+    "A-IO-MIGRATION-001": {
+      "name": "Event Migration Tool",
+      "created_utc": "2026-01-04T08:00:00Z",
+      "type": "artifact",
+      "work_id": "WORK-IO-CONTRACT-001",
+      "path": "scripts/migrate_legacy_events.py"
+    },
+    "A-IO-ADAPTER-001": {
+      "name": "Legacy Event Adapter",
+      "created_utc": "2026-01-04T08:00:00Z",
+      "type": "artifact",
+      "work_id": "WORK-IO-CONTRACT-001",
+      "path": "modules/io_contract/adapters/legacy_adapter.py"
+    },
+    "A-IO-DUAL-EMIT-001": {
+      "name": "Dual-Write Emitter",
+      "created_utc": "2026-01-04T08:00:00Z",
+      "type": "artifact",
+      "work_id": "WORK-IO-CONTRACT-001",
+      "path": "modules/io_contract/emitters/dual_emitter.py"
+    },
+    "A-IO-CONTEXT-001": {
+      "name": "I/O Context Propagation Module",
+      "type": "artifact",
+      "created_utc": "2026-01-04T08:15:00Z",
+      "path": "modules/io_contract/context.py",
+      "work_id": "WORK-IO-CONTRACT-001"
+    },
+    "A-IO-EMITTER-001": {
+      "name": "Universal Envelope Emitter",
+      "type": "artifact",
+      "created_utc": "2026-01-04T08:15:00Z",
+      "path": "modules/io_contract/emitters/envelope_emitter.py",
+      "work_id": "WORK-IO-CONTRACT-001"
+    }
+  },
+  "directories": {
+    "DIR-PHASE-0-BOOTSTRAP-9678ee7e": {
+      "created_utc": "2025-12-21T23:16:43Z",
+      "name": "PHASE_0_BOOTSTRAP",
+      "path": "PHASE_0_BOOTSTRAP"
+    },
+    "DIR-PHASE-1-PLANNING-0789e0be": {
+      "created_utc": "2025-12-21T23:16:43Z",
+      "name": "PHASE_1_PLANNING",
+      "path": "PHASE_1_PLANNING"
+    },
+    "DIR-PHASE-5-EXECUTION-77315c3b": {
+      "created_utc": "2025-12-21T23:16:43Z",
+      "name": "PHASE_5_EXECUTION",
+      "path": "PHASE_5_EXECUTION"
+    },
+    "DIR-SCHEMAS-335d6cc7": {
+      "created_utc": "2025-12-21T23:16:43Z",
+      "name": "schemas",
+      "path": "schemas"
+    },
+    "DIR-SSOT-7a5463fb": {
+      "created_utc": "2025-12-21T23:16:43Z",
+      "name": "SSOT",
+      "path": "SSOT"
+    },
+    "DIR-SUB-CLP-87bd7aeb": {
+      "created_utc": "2025-12-21T23:16:43Z",
+      "name": "SUB_CLP",
+      "path": "SUB_CLP"
+    },
+    "DIR-SUB-DOC-ID-4da6cfc1": {
+      "created_utc": "2025-12-21T23:16:43Z",
+      "name": "SUB_DOC_ID",
+      "path": "SUB_DOC_ID"
+    },
+    "DIR-SUB-GITHUB-6005a285": {
+      "created_utc": "2025-12-21T23:16:43Z",
+      "name": "SUB_GITHUB",
+      "path": "SUB_GITHUB"
+    },
+    "DIR-SUB-PATTERNS-a35d840c": {
+      "created_utc": "2025-12-21T23:16:43Z",
+      "name": "SUB_PATTERNS",
+      "path": "SUB_PATTERNS"
+    },
+    "DIR-SUB-TEMPLATES-76bc1d90": {
+      "created_utc": "2025-12-21T23:16:43Z",
+      "name": "SUB_TEMPLATES",
+      "path": "SUB_TEMPLATES"
+    },
+    "DIR-TESTS-8fb6cbb0": {
+      "created_utc": "2025-12-21T23:16:43Z",
+      "name": "tests",
+      "path": "tests"
+    },
+    "DIR-TOOLS-7a8f2987": {
+      "created_utc": "2025-12-21T23:16:43Z",
+      "name": "tools",
+      "path": "tools"
+    }
+  },
+  "index": {
+    "by_id": {
+      "DIR-PHASE-0-BOOTSTRAP-9678ee7e": "dirs/PHASE_0_BOOTSTRAP",
+      "DIR-PHASE-1-PLANNING-0789e0be": "dirs/PHASE_1_PLANNING",
+      "DIR-PHASE-5-EXECUTION-77315c3b": "dirs/PHASE_5_EXECUTION",
+      "DIR-SCHEMAS-335d6cc7": "dirs/schemas",
+      "DIR-SSOT-7a5463fb": "dirs/SSOT",
+      "DIR-SUB-CLP-87bd7aeb": "dirs/SUB_CLP",
+      "DIR-SUB-DOC-ID-4da6cfc1": "dirs/SUB_DOC_ID",
+      "DIR-SUB-GITHUB-6005a285": "dirs/SUB_GITHUB",
+      "DIR-SUB-PATTERNS-a35d840c": "dirs/SUB_PATTERNS",
+      "DIR-SUB-TEMPLATES-76bc1d90": "dirs/SUB_TEMPLATES",
+      "DIR-TESTS-8fb6cbb0": "dirs/tests",
+      "DIR-TOOLS-7a8f2987": "dirs/tools"
+    },
+    "by_path": {
+      "dirs/PHASE_0_BOOTSTRAP": "DIR-PHASE-0-BOOTSTRAP-9678ee7e",
+      "dirs/PHASE_1_PLANNING": "DIR-PHASE-1-PLANNING-0789e0be",
+      "dirs/PHASE_5_EXECUTION": "DIR-PHASE-5-EXECUTION-77315c3b",
+      "dirs/SSOT": "DIR-SSOT-7a5463fb",
+      "dirs/SUB_CLP": "DIR-SUB-CLP-87bd7aeb",
+      "dirs/SUB_DOC_ID": "DIR-SUB-DOC-ID-4da6cfc1",
+      "dirs/SUB_GITHUB": "DIR-SUB-GITHUB-6005a285",
+      "dirs/SUB_PATTERNS": "DIR-SUB-PATTERNS-a35d840c",
+      "dirs/SUB_TEMPLATES": "DIR-SUB-TEMPLATES-76bc1d90",
+      "dirs/schemas": "DIR-SCHEMAS-335d6cc7",
+      "dirs/tests": "DIR-TESTS-8fb6cbb0",
+      "dirs/tools": "DIR-TOOLS-7a8f2987"
+    }
+  },
+  "meta": {
+    "updated_utc": "2025-12-28T05:50:00Z",
+    "version": "1.0.0"
+  },
+  "doc_id": "DOC-CONFIG-ID-REGISTRY-435"
+}

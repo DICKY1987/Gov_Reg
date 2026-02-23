@@ -1,0 +1,23 @@
+{
+  "gate_id": "GATE-006",
+  "gate_name": "Automation specification validation",
+  "validated_at": "2026-02-01T08:20:02.604683Z",
+  "validator_version": "1.0.0",
+  "plan_file": "test_plan.json",
+  "validation_result": {
+    "status": "invalid",
+    "errors_count": 1,
+    "warnings_count": 0,
+    "errors": [
+      {
+        "error_code": "FILE_NOT_FOUND",
+        "error_message": "test_plan.json",
+        "severity": "critical"
+      }
+    ],
+    "warnings": []
+  },
+  "statistics": {
+    "total_commands": 0
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-02-02T23:49:42.379987Z",
+  "gate_id": "GATE-015",
+  "gate_name": "Rollback Completeness Validation",
+  "passed": true,
+  "defect_count": 1,
+  "defects": [
+    {
+      "severity": "info",
+      "category": "other",
+      "location": "/plan/phases",
+      "problem": "Rollback summary: 13 total steps, 13 with outputs, 0 manual rollback, 0 missing verification",
+      "why_it_matters": "Summary statistics for rollback completeness analysis"
+    }
+  ]
+}

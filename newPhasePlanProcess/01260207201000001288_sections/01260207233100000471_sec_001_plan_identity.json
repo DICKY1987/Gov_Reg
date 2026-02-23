@@ -1,0 +1,47 @@
+{
+  "section_id": "sec_001_plan_identity",
+  "title": "Plan Identity + Fixed Assumptions",
+  "required": true,
+  "instructions_file": "sections/sec_001_plan_identity.inst.md",
+  "plan_identity": {
+    "metadata": {
+      "plan_id": "{{PLAN_ID}}",
+      "plan_title": "{{PLAN_TITLE}}",
+      "plan_version": "{{PLAN_VERSION}}",
+      "plan_status": "{{Draft|Review|Approved|In Progress|Blocked|Done}}",
+      "doc_id": "{{DOC_ID}}"
+    },
+    "ownership": {
+      "owner_dri": "{{NAME}}",
+      "reviewers": [
+        "{{NAME1}}",
+        "{{NAME2}}"
+      ]
+    },
+    "timestamps": {
+      "created_date": "{{YYYY-MM-DD}}",
+      "last_updated_date": "{{YYYY-MM-DD}}",
+      "last_synced_at": null
+    },
+    "scope": {
+      "target_environments": [
+        "{{Windows|Linux|Mac|Docker|Cloud}}"
+      ],
+      "execution_surface": "{{repo|service|library|infra|docs|mixed}}",
+      "repo_or_workspace_root": "{{PATH_OR_URL}}",
+      "primary_branch": "{{main|master|develop}}"
+    },
+    "related_documentation": [
+      {
+        "path": "{{PATH_TO_RELATED_DOC}}",
+        "type": "{{spec|design|rfc|runbook}}"
+      }
+    ],
+    "fixed_assumptions": {
+      "team_model": "solo_developer",
+      "time_constraints": "none",
+      "override_policy": "If you include any dates/durations, they must be explicitly marked as **optional planning aids** and must not be used as contractual constraints. Place them in PLAN-SEC-020 Appendix B."
+    }
+  },
+  "file_id": "01260207233100000471"
+}

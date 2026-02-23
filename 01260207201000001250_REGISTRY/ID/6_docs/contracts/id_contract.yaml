@@ -1,0 +1,239 @@
+version: "1.0"
+status: CANONICAL
+purpose: "Single source of truth for ID terminology and validation rules"
+last_updated: "2026-02-22"
+source: "contracts/01260207201000000174_ID_IDENTITY_CONTRACT.md"
+
+definitions:
+  file_id:
+    format: "\\d{20}"
+    regex: "^\\d{20}$"
+    description: "20-digit numeric string, no prefix, no underscore"
+    example: "01999000042260124027"
+    usage: "Unique identifier for any file in the system"
+    storage_type: "string"
+    storage_locations:
+      - "Registry records"
+      - "Database tables"
+      - "Inventory files"
+    
+    valid_examples:
+      - "01999000042260124027"
+      - "01260207201000000122"
+      - "01999000042260125100"
+    
+    invalid_examples:
+      - value: "P_01999000042260124027"
+        reason: "has_prefix"
+        error: "file_id must not have prefix"
+      - value: "01999000042260124027_"
+        reason: "has_underscore"
+        error: "file_id must not have trailing underscore"
+      - value: "0199900004226012402"
+        reason: "wrong_length"
+        error: "file_id must be exactly 20 digits"
+      - value: "019990000422601240270"
+        reason: "wrong_length"
+        error: "file_id must be exactly 20 digits"
+    
+    transformations:
+      to_doc_id: "prepend('P_')"
+      to_filename_prefix_python: "prepend('P_').append('_')"
+      to_filename_prefix_other: "append('_')"
+
+  doc_id:
+    format: "P_\\d{20}"
+    regex: "^P_\\d{20}$"
+    description: "Python/document identifier = P_ + file_id"
+    example: "P_01999000042260124027"
+    usage: "Python module identifiers, documentation artifacts"
+    storage_type: "string"
+    storage_note: "Stored as file_id in registry, rendered with prefix in code/docs"
+    
+    relationship:
+      derives_from: "file_id"
+      transformation: "prepend('P_')"
+      inverse: "removeprefix('P_')"
+    
+    valid_examples:
+      - "P_01999000042260124027"
+      - "P_01260207201000000122"
+    
+    invalid_examples:
+      - value: "01999000042260124027"
+        reason: "missing_prefix"
+        error: "doc_id must start with 'P_'"
+      - value: "P_01999000042260124027_"
+        reason: "has_trailing_underscore"
+        error: "doc_id must not have trailing underscore"
+      - value: "D_01999000042260124027"
+        reason: "wrong_prefix"
+        error: "doc_id must use prefix 'P_' not 'D_'"
+
+  dir_id:
+    format: "\\d{20}"
+    regex: "^\\d{20}$"
+    description: "20-digit directory identifier"
+    example: "01999000042260124550"
+    usage: "Unique identifier for governed directories"
+    storage_type: "JSON object"
+    storage_location: ".dir_id file in directory"
+    schema_ref: "../schemas/.dir_id.schema.json"
+    
+    required_fields:
+      - "dir_id"
+      - "allocated_at_utc"
+      - "allocator_version"
+      - "project_root_id"
+      - "relative_path"
+    
+    optional_fields:
+      - "depth"
+      - "zone"
+      - "parent_dir_id"
+      - "created_by"
+      - "metadata"
+
+  filename_id_prefix:
+    format: "^(?:P_)?\\d{20}_"
+    regex: "^(?:(?P<doc_prefix>P_))?(?P<file_id>\\d{20})_"
+    description: "ID prefix as it appears in filenames with boundary"
+    
+    variants:
+      python_file:
+        format: "P_{file_id}_"
+        example: "P_01999000042260124027_id_allocator.py"
+        pattern: "P_{file_id}_{descriptive_name}.py"
+      
+      other_file:
+        format: "{file_id}_"
+        example: "01999000042260124027_registry.json"
+        pattern: "{file_id}_{descriptive_name}.{ext}"
+    
+    notes:
+      - "The underscore is a boundary marker, not part of the ID"
+      - "Separates ID from descriptive name"
+      - "Must be extracted before using as file_id"
+
+  enhanced_id:
+    format: "\\d{22}"
+    regex: "^\\d{22}$"
+    description: "22-digit identifier from COUNTER_STORE with scope prefix"
+    example: "0199900004226012400001"
+    usage: "Unified allocator with scope/counter segments"
+    structure:
+      prefix: "15 digits (scope)"
+      counter: "5 digits (zero-padded)"
+      format: "{prefix:15}{counter:05d}"
+    
+    notes:
+      - "This is a DIFFERENT identifier type from file_id"
+      - "Do NOT call this file_id (causes confusion)"
+      - "Alternative names: allocation_id, reservation_id, ledger_id"
+    
+    relationship_to_file_id:
+      note: "These are separate ID systems"
+      conversion: "Not directly convertible"
+
+validation_rules:
+  - rule_id: "VR001"
+    field: "file_id"
+    check: "length == 20"
+    regex: "^\\d{20}$"
+    error_message: "file_id must be exactly 20 digits"
+    severity: "ERROR"
+  
+  - rule_id: "VR002"
+    field: "file_id"
+    check: "is_numeric"
+    error_message: "file_id must contain only digits 0-9"
+    severity: "ERROR"
+  
+  - rule_id: "VR003"
+    field: "file_id"
+    check: "no_prefix"
+    error_message: "file_id must not have prefix (use doc_id for P_ prefix)"
+    severity: "ERROR"
+  
+  - rule_id: "VR004"
+    field: "file_id"
+    check: "no_underscore"
+    error_message: "file_id must not contain underscores"
+    severity: "ERROR"
+  
+  - rule_id: "VR005"
+    field: "doc_id"
+    check: "starts_with('P_')"
+    regex: "^P_\\d{20}$"
+    error_message: "doc_id must start with 'P_' prefix"
+    severity: "ERROR"
+  
+  - rule_id: "VR006"
+    field: "doc_id"
+    check: "length == 23"
+    note: "P_ (2) + 20 digits (20) + optional _ (1)"
+    error_message: "doc_id must be P_ + 20 digits"
+    severity: "ERROR"
+  
+  - rule_id: "VR007"
+    field: "dir_id"
+    check: "length == 20"
+    error_message: "dir_id must be exactly 20 digits"
+    severity: "ERROR"
+  
+  - rule_id: "VR008"
+    field: "dir_id"
+    check: "stored_in_dot_dir_id_file"
+    error_message: "dir_id must be stored in .dir_id JSON file"
+    severity: "ERROR"
+
+digit_count_reference:
+  file_id: 20
+  doc_id: 20
+  dir_id: 20
+  enhanced_id: 22
+  
+  prefix_lengths:
+    doc_id_prefix: 2
+    filename_boundary: 1
+
+canonical_patterns:
+  source_module: "1_runtime/validators/P_01999000042260125002_canonical_id_patterns.py"
+  note: "DO NOT redefine these patterns elsewhere - import from canonical source"
+  
+  patterns:
+    FILE_ID_PATTERN: "^\\d{20}$"
+    DOC_ID_PATTERN: "^P_\\d{20}$"
+    FILENAME_PREFIX_PATTERN: "^(?:(?P<doc_prefix>P_))?(?P<file_id>\\d{20})_"
+    ENHANCED_ID_PATTERN: "^\\d{22}$"
+    DIR_ID_PATTERN: "^\\d{20}$"
+
+python_examples:
+  file_id_to_doc_id: |
+    doc_id = f"P_{file_id}"
+  
+  doc_id_to_file_id: |
+    file_id = doc_id.removeprefix("P_")
+  
+  extract_from_filename: |
+    import re
+    match = re.match(r'^(?:P_)?(\d{20})_', filename)
+    if match:
+        file_id = match.group(1)
+  
+  validate_file_id: |
+    import re
+    if not re.match(r'^\d{20}$', file_id):
+        raise ValueError("Invalid file_id format")
+
+enforcement:
+  pre_commit_gate: "1_runtime/validators/P_01999000042260125000_gate_id_canonicality.py"
+  validation_tools:
+    - "1_runtime/validators/P_01999000042260124521_id_format_scanner.py"
+    - "2_cli_tools/dir_id/P_01999000042260125101_validate_dir_ids.py"
+  
+  error_handling:
+    on_violation:
+      - "Log error with rule_id"
+      - "Reject commit/operation"
+      - "Provide correction guidance"

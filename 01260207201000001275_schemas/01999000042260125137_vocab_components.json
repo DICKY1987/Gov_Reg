@@ -1,0 +1,98 @@
+{
+  "version": "1.0.0",
+  "frozen_at": "2026-02-20T08:30:00Z",
+  "description": "Closed-world vocabulary for component IDs - based on REGISTRY_file.json scan",
+  "entries": [
+    {
+      "id": "REGISTRY",
+      "type": "component",
+      "description": "Registry management and SSOT operations"
+    },
+    {
+      "id": "IDS",
+      "type": "component",
+      "description": "File ID allocation and tracking"
+    },
+    {
+      "id": "GOVERNANCE",
+      "type": "component",
+      "description": "Governance gates and policy enforcement"
+    },
+    {
+      "id": "PLANNING",
+      "type": "component",
+      "description": "Planning loop and plan management"
+    },
+    {
+      "id": "TEMPLATE_OPS",
+      "type": "component",
+      "description": "Template operations and generation"
+    },
+    {
+      "id": "EVIDENCE",
+      "type": "component",
+      "description": "Evidence collection and reporting"
+    },
+    {
+      "id": "ARCHIVE",
+      "type": "component",
+      "description": "Archive management"
+    },
+    {
+      "id": "ORCHESTRATION",
+      "type": "component",
+      "description": "Pipeline orchestration"
+    },
+    {
+      "id": "QA",
+      "type": "component",
+      "description": "Quality assurance"
+    },
+    {
+      "id": "CLI",
+      "type": "component",
+      "description": "Command-line interfaces"
+    },
+    {
+      "id": "SCHEMA",
+      "type": "component",
+      "description": "JSON Schema definitions"
+    },
+    {
+      "id": "GATE",
+      "type": "component",
+      "description": "Gate definitions"
+    },
+    {
+      "id": "LIB",
+      "type": "component",
+      "description": "Shared library code"
+    },
+    {
+      "id": "UNMAPPED",
+      "type": "component",
+      "description": "Unmapped files requiring review"
+    },
+    {
+      "id": "GOVREG_CORE",
+      "type": "component",
+      "description": "Core govreg functionality"
+    },
+    {
+      "id": "CAPABILITY_MAPPING",
+      "type": "component",
+      "description": "Capability mapping pipeline"
+    },
+    {
+      "id": "TELEMETRY",
+      "type": "component",
+      "description": "Telemetry and monitoring"
+    },
+    {
+      "id": "VALIDATION",
+      "type": "component",
+      "description": "Validation utilities"
+    }
+  ],
+  "file_id": "01999000042260125137"
+}

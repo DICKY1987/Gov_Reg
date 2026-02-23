@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://govreg.local/schemas/defect_resolution_report.schema.json",
+  "title": "Defect Resolution Report Schema",
+  "description": "Tracking of defect resolution status across iterations",
+  "type": "object",
+  "required": [
+    "defect_id",
+    "touched_by_patch",
+    "status_after_patch",
+    "resolution_notes"
+  ],
+  "properties": {
+    "defect_id": {
+      "type": "string",
+      "description": "Unique defect identifier"
+    },
+    "touched_by_patch": {
+      "type": "boolean",
+      "description": "Whether patch modified the affected area"
+    },
+    "status_after_patch": {
+      "type": "string",
+      "enum": ["RESOLVED", "PERSISTS", "UNKNOWN", "NEW_DEFECT"],
+      "description": "Defect status after patch application"
+    },
+    "resolution_notes": {
+      "type": "string",
+      "description": "Explanation of resolution or persistence"
+    },
+    "json_pointer_affected": {
+      "type": "string",
+      "pattern": "^/.*",
+      "description": "Location in plan that was affected"
+    },
+    "iteration": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

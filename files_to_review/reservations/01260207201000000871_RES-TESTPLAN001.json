@@ -1,0 +1,34 @@
+{
+  "plan_id": "TESTPLAN001",
+  "created_at": "2026-02-12T11:13:06.870928+00:00",
+  "allocated_by": "test_user",
+  "allocation_metadata": {},
+  "total_reservations": 3,
+  "entries": {
+    "01999000042260124001": {
+      "file_id": "01999000042260124001",
+      "relative_path": "config/test1.json",
+      "reservation_timestamp": "2026-02-12T11:13:06.870928+00:00",
+      "state": "COMMITTED",
+      "committed_at": "2026-02-12T11:13:06.925810+00:00",
+      "committed_by_mutation_set_id": "MUT-SET-001"
+    },
+    "01999000042260124002": {
+      "file_id": "01999000042260124002",
+      "relative_path": "data/test2.csv",
+      "reservation_timestamp": "2026-02-12T11:13:06.870928+00:00",
+      "state": "COMMITTED",
+      "committed_at": "2026-02-12T11:13:06.990548+00:00",
+      "committed_by_mutation_set_id": "MUT-SET-001"
+    },
+    "01999000042260124003": {
+      "file_id": "01999000042260124003",
+      "relative_path": "docs/test3.md",
+      "reservation_timestamp": "2026-02-12T11:13:06.870928+00:00",
+      "state": "COMMITTED",
+      "committed_at": "2026-02-12T11:13:07.053619+00:00",
+      "committed_by_mutation_set_id": "MUT-SET-001"
+    }
+  },
+  "updated_at": "2026-02-12T11:13:07.053619+00:00"
+}

@@ -1,0 +1,156 @@
+{
+  "timestamp": "2026-02-02T23:58:15.717298Z",
+  "gate_id": "GATE-017",
+  "gate_name": "Single Source of Truth Validation",
+  "passed": true,
+  "defect_count": 21,
+  "defects": [
+    {
+      "severity": "info",
+      "category": "other",
+      "location": "/plan",
+      "problem": "SSOT summary: 32 path facts (19 duplicated), 2 version facts (1 duplicated)",
+      "why_it_matters": "Summary statistics for SSOT analysis"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/0/steps/0/commands/0/cmd, /plan/phases/0/steps/0/inputs/0/path",
+      "problem": "Path './schemas/01260207233100000674_NEWPHASEPLANPROCESS_plan.schema.v2.4.0.json' appears in 2 locations: ['/plan/phases/0/steps/0/commands/0/cmd', '/plan/phases/0/steps/0/inputs/0/path']",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/0/steps/0/commands/0/cmd, /plan/phases/0/steps/0/inputs/1/path, /plan/phases/0/steps/1/commands/0/cmd",
+      "problem": "Path './deterministic_plan.md' appears in 4 locations: ['/plan/phases/0/steps/0/commands/0/cmd', '/plan/phases/0/steps/0/inputs/1/path', '/plan/phases/0/steps/1/commands/0/cmd']...",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/0/steps/0/commands/0/cmd, /plan/phases/0/steps/0/outputs/0/path, /plan/phases/1/steps/0/commands/0/cmd",
+      "problem": "Path './schemas/01260207233100000675_NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json' appears in 16 locations: ['/plan/phases/0/steps/0/commands/0/cmd', '/plan/phases/0/steps/0/outputs/0/path', '/plan/phases/1/steps/0/commands/0/cmd']...",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/0/steps/1/commands/0/cmd, /plan/phases/0/steps/1/outputs/0/path",
+      "problem": "Path './schemas/01260207233100000673_defect_log.schema.json' appears in 2 locations: ['/plan/phases/0/steps/1/commands/0/cmd', '/plan/phases/0/steps/1/outputs/0/path']",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/0/steps/2/commands/0/cmd, /plan/phases/0/steps/2/inputs/0/path",
+      "problem": "Path './01260207233100000678_gate_dependencies.json' appears in 2 locations: ['/plan/phases/0/steps/2/commands/0/cmd', '/plan/phases/0/steps/2/inputs/0/path']",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/0/steps/2/commands/0/cmd, /plan/phases/0/steps/2/inputs/1/path",
+      "problem": "Path './V2_TO_V3_GAP_ANALYSIS.md' appears in 2 locations: ['/plan/phases/0/steps/2/commands/0/cmd', '/plan/phases/0/steps/2/inputs/1/path']",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/0/steps/2/commands/0/cmd, /plan/phases/0/steps/2/outputs/0/path, /plan/phases/3/steps/2/commands/0/cmd",
+      "problem": "Path './gate_dependencies.v3.json' appears in 6 locations: ['/plan/phases/0/steps/2/commands/0/cmd', '/plan/phases/0/steps/2/outputs/0/path', '/plan/phases/3/steps/2/commands/0/cmd']...",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/1/steps/0/commands/0/cmd, /plan/phases/1/steps/1/commands/0/cmd, /plan/phases/2/steps/0/commands/0/cmd",
+      "problem": "Path '/generate_validator.py' appears in 6 locations: ['/plan/phases/1/steps/0/commands/0/cmd', '/plan/phases/1/steps/1/commands/0/cmd', '/plan/phases/2/steps/0/commands/0/cmd']...",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/1/steps/0/commands/0/cmd, /plan/phases/1/steps/0/outputs/0/path",
+      "problem": "Path './scripts/P_01260207233100000262_validate_step_contracts.py' appears in 2 locations: ['/plan/phases/1/steps/0/commands/0/cmd', '/plan/phases/1/steps/0/outputs/0/path']",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/1/steps/1/commands/0/cmd, /plan/phases/1/steps/1/outputs/0/path",
+      "problem": "Path './scripts/P_01260207233100000248_validate_assumptions.py' appears in 2 locations: ['/plan/phases/1/steps/1/commands/0/cmd', '/plan/phases/1/steps/1/outputs/0/path']",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/1/steps/2/commands/0/cmd, /plan/phases/1/steps/2/outputs/0/path",
+      "problem": "Path './scripts/P_01260207233100000235_evaluate_criteria.py' appears in 2 locations: ['/plan/phases/1/steps/2/commands/0/cmd', '/plan/phases/1/steps/2/outputs/0/path']",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/1/steps/3/commands/0/cmd, /plan/phases/1/steps/3/commands/0/cmd, /plan/phases/1/steps/3/inputs/0/path",
+      "problem": "Path './scripts/P_01260207233100000258_validate_plan_structure.py' appears in 4 locations: ['/plan/phases/1/steps/3/commands/0/cmd', '/plan/phases/1/steps/3/commands/0/cmd', '/plan/phases/1/steps/3/inputs/0/path']...",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/1/steps/3/commands/0/cmd, /plan/phases/1/steps/3/commands/0/cmd",
+      "problem": "Path './scripts/P_01260207233100000258_validate_plan_structure.py.v3' appears in 2 locations: ['/plan/phases/1/steps/3/commands/0/cmd', '/plan/phases/1/steps/3/commands/0/cmd']",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/2/steps/0/commands/0/cmd, /plan/phases/2/steps/0/outputs/0/path",
+      "problem": "Path './scripts/P_01260207233100000246_validate_artifact_closure.py' appears in 2 locations: ['/plan/phases/2/steps/0/commands/0/cmd', '/plan/phases/2/steps/0/outputs/0/path']",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/2/steps/1/commands/0/cmd, /plan/phases/2/steps/1/outputs/0/path",
+      "problem": "Path './scripts/P_01260207233100000259_validate_rollback_completeness.py' appears in 2 locations: ['/plan/phases/2/steps/1/commands/0/cmd', '/plan/phases/2/steps/1/outputs/0/path']",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/2/steps/2/commands/0/cmd, /plan/phases/2/steps/2/outputs/0/path",
+      "problem": "Path './scripts/P_01260207233100000264_validate_verification_completeness.py' appears in 2 locations: ['/plan/phases/2/steps/2/commands/0/cmd', '/plan/phases/2/steps/2/outputs/0/path']",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/3/steps/0/commands/0/cmd, /plan/phases/3/steps/0/outputs/0/path",
+      "problem": "Path './scripts/P_01260207233100000260_validate_single_source_of_truth.py' appears in 2 locations: ['/plan/phases/3/steps/0/commands/0/cmd', '/plan/phases/3/steps/0/outputs/0/path']",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/3/steps/1/commands/0/cmd, /plan/phases/3/steps/1/commands/0/cmd, /plan/phases/3/steps/1/inputs/0/path",
+      "problem": "Path './scripts/P_01260207233100000253_validate_gates.py' appears in 4 locations: ['/plan/phases/3/steps/1/commands/0/cmd', '/plan/phases/3/steps/1/commands/0/cmd', '/plan/phases/3/steps/1/inputs/0/path']...",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/3/steps/1/commands/0/cmd, /plan/phases/3/steps/1/commands/0/cmd",
+      "problem": "Path './scripts/P_01260207233100000253_validate_gates.py.v3' appears in 2 locations: ['/plan/phases/3/steps/1/commands/0/cmd', '/plan/phases/3/steps/1/commands/0/cmd']",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/0/steps/0/commands/0/cmd, /plan/phases/1/steps/0/commands/0/cmd, /plan/phases/1/steps/1/commands/0/cmd",
+      "problem": "Version 'v3.0.0' appears in 8 locations: ['/plan/phases/0/steps/0/commands/0/cmd', '/plan/phases/1/steps/0/commands/0/cmd', '/plan/phases/1/steps/1/commands/0/cmd']...",
+      "why_it_matters": "Version numbers should be defined once (e.g., in plan.meta or plan.environment)"
+    }
+  ]
+}

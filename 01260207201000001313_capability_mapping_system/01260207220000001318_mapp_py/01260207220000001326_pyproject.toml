@@ -1,0 +1,58 @@
+[tool.pytest.ini_options]
+# Pytest configuration for mapp_py
+# Work ID: WORK-MAPP-PY-001
+
+# Test discovery
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+# Coverage settings
+addopts = [
+    "--verbose",
+    "--strict-markers",
+    "--cov=src",
+    "--cov-report=html",
+    "--cov-report=term-missing",
+    "--cov-fail-under=85",
+    "-ra",  # Show summary of all test outcomes
+]
+
+# Markers for test organization
+markers = [
+    "unit: Unit tests (fast, isolated)",
+    "integration: Integration tests (slower, may hit filesystem)",
+    "slow: Slow tests (>1 second)",
+    "ast: AST parsing tests",
+    "similarity: Similarity analysis tests",
+    "component: Component extraction tests",
+    "evidence: Evidence collection tests",
+]
+
+# Coverage options
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "tests/*",
+    "*/test_*.py",
+    "*/__pycache__/*",
+    "*/site-packages/*",
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "@abstract",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"

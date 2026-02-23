@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "components": ["REGISTRY", "IDS", "GOVERNANCE", "PLANNING", "TEMPLATE_OPS", "EVIDENCE", "ARCHIVE", "ORCHESTRATION", "QA"],
+  "capabilities": {
+    "REGISTRY":      ["VALIDATE", "SCAN", "PROMOTE", "PATCH_APPLY", "BUILD_INDEX"],
+    "IDS":           ["ALLOCATE", "SCAN", "RECONCILE", "MIGRATE", "VALIDATE"],
+    "GOVERNANCE":    ["VALIDATE", "EXTRACT_FACTS", "SCAN"],
+    "PLANNING":      ["BUILD_INDEX", "VALIDATE"],
+    "TEMPLATE_OPS":  ["EXTRACT_FACTS", "MIGRATE"],
+    "EVIDENCE":      ["EMIT", "VALIDATE", "BUILD_INDEX"],
+    "ARCHIVE":       ["ARCHIVE_MOVE", "MIGRATE", "SCAN"],
+    "ORCHESTRATION": ["RUN", "VALIDATE"],
+    "QA":            ["VALIDATE", "SCAN"]
+  }
+}

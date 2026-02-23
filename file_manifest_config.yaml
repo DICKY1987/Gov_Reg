@@ -1,0 +1,140 @@
+# File Manifest Generator Configuration
+# Version: 1.0.0
+
+# Output Configuration
+output:
+  format: "json"  # Options: json, yaml, csv
+  location: "file_manifest.json"  # Relative to scan root or absolute path
+  incremental_update: false  # If true, merge with existing manifest instead of regenerating
+  pretty_print: true
+  backup_existing: true
+
+# Scan Configuration
+scan:
+  symlink_handling: "skip"  # Options: skip, follow, record
+  max_file_size_mb: 100  # Files larger than this skip hashing
+  text_file_extensions:
+    - ".py"
+    - ".md"
+    - ".txt"
+    - ".json"
+    - ".yaml"
+    - ".yml"
+    - ".toml"
+    - ".sh"
+    - ".bat"
+    - ".ps1"
+  binary_extensions:
+    - ".exe"
+    - ".dll"
+    - ".so"
+    - ".dylib"
+    - ".bin"
+    - ".zip"
+    - ".tar"
+    - ".gz"
+  
+# Ignore Patterns (gitignore-style)
+ignore_patterns:
+  - ".git"
+  - ".git/**"
+  - "__pycache__"
+  - "__pycache__/**"
+  - "*.pyc"
+  - ".pytest_cache"
+  - ".mypy_cache"
+  - ".ruff_cache"
+  - "node_modules"
+  - "node_modules/**"
+  - ".venv"
+  - "venv"
+  - "*.egg-info"
+  - "dist"
+  - "build"
+  - ".dir_id"  # Gov_Reg specific
+  - ".state"   # Gov_Reg specific
+  - "*.lock"   # Lock files
+  - ".DS_Store"
+  - "Thumbs.db"
+
+# File ID Generation
+file_id:
+  strategy: "prefix_or_path"  # Options: prefix_or_path, content_hash, uuid
+  prefix_pattern: "^(P_[0-9]+|[0-9]{20})_"  # Extract existing ID from filename prefix
+  path_hash_algorithm: "sha256"  # For path-based ID generation
+  collision_handling: "error"  # Options: error, suffix, skip
+  # NOTE: Physical files are NEVER renamed on disk. Collision handling applies
+  # only to file_id values in the manifest (e.g., "P_123_dup2" in manifest only).
+
+# Field Configuration (auto vs curated)
+fields:
+  auto_derived:
+    - "relative_path"
+    - "absolute_path"
+    - "filename"
+    - "file_size_bytes"
+    - "sha256_hash"
+    - "file_type"
+    - "is_text"
+    - "encoding"
+    - "line_count"
+    - "modified_timestamp"
+    - "created_timestamp"
+    - "accessed_timestamp"
+    - "git_info"
+  
+  # These fields are recommended but not schema-enforced. The generator will
+  # auto-populate with "unknown" default if not provided or curated.
+  curated_recommended:
+    - "category"    # Default: "other"
+    - "status"      # Default: "unknown"
+  
+  curated_optional:
+    - "owner"
+    - "version"
+    - "gate_id"
+    - "phase_id"
+    - "dependencies"
+    - "supersedes"
+    - "superseded_by"
+    - "tags"
+    - "description"
+    - "notes"
+
+# Defaults for recommended curated fields (when not manually specified)
+curated_defaults:
+  category: "other"     # If file type cannot be inferred
+  status: "unknown"     # If lifecycle state not specified
+
+# Git Integration
+git:
+  enabled: true
+  extract_author: true
+  extract_commit_message: true
+  check_modified_status: true
+  fallback_if_unavailable: true
+
+# Performance
+performance:
+  parallel_processing: true
+  max_workers: 4
+  chunk_size: 100
+  hash_buffer_size_kb: 8192
+
+# Error Handling
+error_handling:
+  on_file_read_error: "log_and_continue"  # Options: log_and_continue, fail_fast, skip_silently
+  on_encoding_error: "use_binary"  # Options: use_binary, skip, fail
+  on_hash_error: "set_null"  # Options: set_null, skip, fail
+
+# Validation
+validation:
+  # Path relative to repo root; ensure CWD=repo root when running
+  schema_file: "file_manifest_schema_v1.json"
+  validate_on_generate: true
+  strict_mode: false  # If true, fail on any validation warning
+
+# Windows-Specific
+windows:
+  extract_acl: false  # Requires pywin32; leave false for basic os.stat
+  use_long_paths: true  # Support paths >260 chars

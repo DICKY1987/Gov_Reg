@@ -1,0 +1,453 @@
+issues:
+  counter_store_locked:
+    id: "TS001"
+    severity: "HIGH"
+    symptom: "AllocationError: Counter store is locked"
+    
+    common_causes:
+      - "Previous allocation process crashed"
+      - "Lock file not cleaned up"
+      - "Multiple processes accessing counter simultaneously"
+      - "Network/filesystem lag"
+    
+    diagnosis:
+      checks:
+        - check: "Lock file exists"
+          command: "Test-Path '%APPDATA%/GovReg/IdAllocator/COUNTER_STORE.json.lock'"
+          expected: "Returns True if lock exists"
+        
+        - check: "Lock age"
+          command: "Get-Item '%APPDATA%/GovReg/IdAllocator/COUNTER_STORE.json.lock' | Select-Object LastWriteTime"
+          threshold: "> 5 minutes = stale lock"
+        
+        - check: "Hung processes"
+          command: "Get-Process | Where-Object {$_.ProcessName -like '*python*'}"
+          action: "Check for hung Python processes"
+        
+        - check: "Counter store readable"
+          command: "Get-Content '%APPDATA%/GovReg/IdAllocator/COUNTER_STORE.json' | ConvertFrom-Json"
+          expected: "Valid JSON structure"
+    
+    resolution:
+      steps:
+        - step: 1
+          condition: "Lock file older than 5 minutes"
+          action: "Delete stale lock file"
+          command: "Remove-Item '%APPDATA%/GovReg/IdAllocator/COUNTER_STORE.json.lock' -Force"
+          safety: "Backup counter store first"
+        
+        - step: 2
+          condition: "Hung process detected"
+          action: "Kill hung process"
+          command: "Stop-Process -Id <PID> -Force"
+          caution: "Verify it's safe to kill"
+        
+        - step: 3
+          action: "Retry allocation"
+          command: "python 1_runtime/allocators/P_01999000042260124031_unified_id_allocator.py"
+        
+        - step: 4
+          condition: "Still fails"
+          action: "Restore counter store from backup"
+          location: "01260207201000001133_backups/"
+    
+    prevention:
+      - "Set appropriate lock_timeout_ms in config (default: 5000)"
+      - "Monitor for long-running allocation operations"
+      - "Use batch allocation for large sets"
+      - "Implement timeout handling in scripts"
+    
+    related:
+      - "TS005: counter_store_corrupted"
+      - "workflows.yaml#generate_directory_ids"
+
+  malformed_dir_id:
+    id: "TS002"
+    severity: "MEDIUM"
+    symptom: "JSONDecodeError or ValidationError when reading .dir_id"
+    
+    common_causes:
+      - "Manual editing of .dir_id file"
+      - "Interrupted write operation"
+      - "Filesystem corruption"
+      - "Encoding issues"
+    
+    diagnosis:
+      checks:
+        - check: "File exists"
+          path: "{directory}/.dir_id"
+        
+        - check: "Valid JSON"
+          command: "python -m json.tool .dir_id"
+          expected: "No syntax errors"
+        
+        - check: "Schema validation"
+          tool: "2_cli_tools/dir_id/P_01999000042260125101_validate_dir_ids.py"
+          expected: "Passes schema checks"
+        
+        - check: "Required fields present"
+          fields: ["dir_id", "allocated_at_utc", "allocator_version", "project_root_id", "relative_path"]
+    
+    resolution:
+      automatic:
+        - "Run auto-repair"
+        - command: "python 1_runtime/watchers/P_01999000042260125104_dir_id_auto_repair.py"
+        - "Quarantines original, attempts repair"
+      
+      manual:
+        steps:
+          - step: 1
+            action: "Backup corrupted file"
+            command: "Copy-Item .dir_id .dir_id.backup"
+          
+          - step: 2
+            action: "Open in text editor"
+            checks:
+              - "Fix JSON syntax (missing commas, quotes)"
+              - "Verify all required fields present"
+              - "Ensure dir_id is 20 digits"
+          
+          - step: 3
+            action: "Validate fixed file"
+            command: "python 2_cli_tools/dir_id/P_01999000042260125101_validate_dir_ids.py"
+          
+          - step: 4
+            condition: "Still invalid"
+            action: "Regenerate .dir_id"
+            steps:
+              - "Delete corrupted .dir_id"
+              - "Run: python 2_cli_tools/dir_id/P_01999000042260125100_*.py"
+    
+    prevention:
+      - "Never manually edit .dir_id files"
+      - "Use auto-repair on detection"
+      - "Enable filesystem watcher for continuous enforcement"
+    
+    related:
+      - "workflows.yaml#repair_corrupted_dir_ids"
+      - "runtime/watchers.yaml#dir_id_auto_repair"
+
+  commit_blocked_id_violation:
+    id: "TS003"
+    severity: "MEDIUM"
+    symptom: "Pre-commit hook fails with ID canonicality violations"
+    
+    common_causes:
+      - "File added without proper ID prefix"
+      - "Wrong ID format (not 20 digits)"
+      - "Missing underscore boundary"
+      - "Wrong prefix for file type"
+    
+    diagnosis:
+      checks:
+        - check: "Run ID scanner"
+          command: "python 1_runtime/validators/P_01999000042260124521_id_format_scanner.py"
+          output: "List of violations"
+        
+        - check: "Identify problematic files"
+          action: "Review violations list"
+          common_issues:
+            - "missing_file_id: No ID prefix at all"
+            - "invalid_format: ID is not 20 digits"
+            - "wrong_prefix: Python file missing P_"
+            - "no_boundary: Missing underscore after ID"
+    
+    resolution:
+      steps:
+        - step: 1
+          action: "Fix filename format"
+          patterns:
+            python: "bad_file.py → P_{allocate_id}_bad_file.py"
+            other: "data.json → {allocate_id}_data.json"
+        
+        - step: 2
+          action: "Allocate ID if needed"
+          command: "python 1_runtime/allocators/P_01999000042260124031_unified_id_allocator.py"
+          note: "Or use facade: allocate()"
+        
+        - step: 3
+          action: "Rename file"
+          command: "Rename-Item old_name.py P_{file_id}_old_name.py"
+        
+        - step: 4
+          action: "Update imports if Python file"
+          scope: "Search and replace in codebase"
+        
+        - step: 5
+          action: "Re-attempt commit"
+          command: "git commit -m 'message'"
+    
+    exemptions:
+      - "Add to .gitignore if file should be exempt"
+      - "Move to staging zone (depth 0) if temporary"
+      - "Add to exclusions.patterns in config"
+    
+    prevention:
+      - "Use ID-aware file creation scripts"
+      - "Train team on ID naming conventions"
+      - "Run scanner before commits"
+    
+    related:
+      - "runtime/validators.yaml#gate_id_canonicality"
+      - "contracts/id_contract.yaml#validation_rules"
+
+  allocation_failed:
+    id: "TS004"
+    severity: "HIGH"
+    symptom: "allocate_id() raises AllocationError"
+    
+    common_causes:
+      - "Counter store locked (see TS001)"
+      - "Counter store corrupted (see TS005)"
+      - "Disk full"
+      - "Permissions issue"
+    
+    diagnosis:
+      decision_tree:
+        - condition: "Lock file exists"
+          goto: "TS001: counter_store_locked"
+        
+        - condition: "COUNTER_STORE.json malformed"
+          goto: "TS005: counter_store_corrupted"
+        
+        - condition: "Disk space < 100MB"
+          action: "Free up disk space"
+        
+        - condition: "Permission denied"
+          action: "Check %APPDATA% permissions"
+    
+    resolution:
+      - "Follow decision tree above"
+      - "Check specific error message for details"
+      - "Review allocation logs"
+    
+    related:
+      - "TS001: counter_store_locked"
+      - "TS005: counter_store_corrupted"
+
+  counter_store_corrupted:
+    id: "TS005"
+    severity: "CRITICAL"
+    symptom: "COUNTER_STORE.json is malformed or unreadable"
+    
+    diagnosis:
+      checks:
+        - check: "File exists"
+          path: "%APPDATA%/GovReg/IdAllocator/COUNTER_STORE.json"
+        
+        - check: "Valid JSON"
+          command: "python -m json.tool COUNTER_STORE.json"
+        
+        - check: "Required keys present"
+          keys: ["current_counter", "last_updated"]
+    
+    resolution:
+      critical_priority: "This affects all ID allocation"
+      
+      steps:
+        - step: 1
+          action: "Stop all allocation processes"
+          importance: "CRITICAL"
+        
+        - step: 2
+          action: "Backup corrupted file"
+          command: "Copy-Item COUNTER_STORE.json COUNTER_STORE.json.corrupted"
+        
+        - step: 3
+          action: "Restore from backup"
+          location: "01260207201000001133_backups/"
+          command: "Copy-Item backup/COUNTER_STORE.json $env:APPDATA/GovReg/IdAllocator/"
+        
+        - step: 4
+          condition: "No backup available"
+          action: "Reconstruct counter"
+          method:
+            - "Scan all file_ids in system"
+            - "Find highest ID"
+            - "Set counter = highest + 1000 (safety margin)"
+          risk: "Potential ID collisions if concurrent allocations"
+        
+        - step: 5
+          action: "Verify restore"
+          command: "python 1_runtime/allocators/P_01999000042260124031_unified_id_allocator.py --test"
+    
+    prevention:
+      - "Regular backups of COUNTER_STORE.json"
+      - "Use atomic writes (write to temp, then rename)"
+      - "Monitor filesystem health"
+
+  duplicate_ids_detected:
+    id: "TS006"
+    severity: "CRITICAL"
+    symptom: "Multiple files/directories with same ID"
+    
+    diagnosis:
+      detection:
+        - "Pre-commit gate detects duplicates"
+        - "Health check reports duplicates"
+        - command: "python 1_runtime/validators/P_01999000042260124521_id_format_scanner.py --check-duplicates"
+    
+    resolution:
+      investigative_steps:
+        - "Determine which file has legitimate claim to ID"
+        - "Check allocation timestamps"
+        - "Review evidence files"
+      
+      corrective_actions:
+        - step: 1
+          action: "Identify duplicate holders"
+          command: "grep -r '{duplicate_id}' ."
+        
+        - step: 2
+          action: "Determine original owner"
+          method: "Check allocated_at_utc in .dir_id or creation time"
+        
+        - step: 3
+          action: "Allocate new ID for duplicate"
+          command: "python 1_runtime/allocators/P_01999000042260124031_unified_id_allocator.py"
+        
+        - step: 4
+          action: "Rename duplicate file/update .dir_id"
+        
+        - step: 5
+          action: "Update references"
+          scope: "Search codebase for old ID"
+    
+    root_cause_analysis:
+      possible_causes:
+        - "Counter store corruption"
+        - "Concurrent allocation without locks"
+        - "Manual ID assignment"
+        - "Backup restore without counter sync"
+    
+    prevention:
+      - "Never manually assign IDs"
+      - "Always use allocator"
+      - "Enforce locking mechanism"
+      - "Sync counter with backups"
+
+  watcher_not_running:
+    id: "TS007"
+    severity: "LOW"
+    symptom: "New directories don't get .dir_id automatically"
+    
+    diagnosis:
+      checks:
+        - check: "Watcher process running"
+          command: "Get-Process | Where-Object {$_.CommandLine -like '*dir_id_watcher*'}"
+        
+        - check: "Watchdog installed"
+          command: "pip list | grep watchdog"
+        
+        - check: "Configuration valid"
+          file: ".idpkg/config.json"
+    
+    resolution:
+      steps:
+        - step: 1
+          condition: "Watchdog not installed"
+          action: "Install watchdog"
+          command: "pip install watchdog"
+        
+        - step: 2
+          action: "Start watcher"
+          command: "python 1_runtime/watchers/P_01999000042260125105_dir_id_watcher.py --daemon"
+        
+        - step: 3
+          action: "Verify watcher running"
+          test: "Create test directory, check for .dir_id"
+    
+    note: "Watcher is optional - can use manual generation instead"
+
+  wrong_zone_classification:
+    id: "TS008"
+    severity: "MEDIUM"
+    symptom: "Directory classified in wrong governance zone"
+    
+    diagnosis:
+      checks:
+        - check: "Current classification"
+          command: "python 1_runtime/validators/P_01999000042260125067_zone_classifier.py {dir_path}"
+        
+        - check: "Config settings"
+          file: ".idpkg/config.json"
+          keys: ["governance.staging_depth", "governance.governed_min_depth", "exclusions.patterns"]
+    
+    resolution:
+      steps:
+        - step: 1
+          action: "Review config"
+          file: ".idpkg/config.json"
+        
+        - step: 2
+          action: "Adjust settings"
+          options:
+            - "Change staging_depth"
+            - "Add exclusion pattern"
+            - "Modify governed_min_depth"
+        
+        - step: 3
+          action: "Re-classify"
+          command: "python 1_runtime/validators/P_01999000042260125067_zone_classifier.py {dir_path}"
+        
+        - step: 4
+          condition: "Was incorrectly governed"
+          action: "Remove .dir_id file"
+        
+        - step: 5
+          condition: "Should be governed"
+          action: "Generate .dir_id"
+
+quick_reference:
+  "Lock error": "See TS001"
+  "Malformed .dir_id": "See TS002"
+  "Commit blocked": "See TS003"
+  "Allocation fails": "See TS004"
+  "Corrupted counter": "See TS005"
+  "Duplicate IDs": "See TS006"
+  "Watcher not working": "See TS007"
+  "Wrong zone": "See TS008"
+
+emergency_procedures:
+  system_down:
+    scenario: "Complete ID system failure"
+    steps:
+      - "Stop all allocation processes"
+      - "Backup COUNTER_STORE.json"
+      - "Review logs: .state/idpkg/logs/"
+      - "Restore from last known good backup"
+      - "Validate restore"
+      - "Resume operations"
+  
+  data_loss:
+    scenario: "COUNTER_STORE.json lost"
+    steps:
+      - "Scan entire system for highest ID"
+      - "Reconstruct counter with safety margin"
+      - "Validate no ID collisions"
+      - "Resume with caution"
+  
+  mass_corruption:
+    scenario: "Many .dir_id files corrupted"
+    steps:
+      - "Run auto-repair on all directories"
+      - "Quarantine unrepairable files"
+      - "Manual review of quarantine"
+      - "Regenerate if needed"
+
+diagnostic_tools:
+  health_check:
+    command: "python 2_cli_tools/maintenance/P_01999000042260125113_healthcheck.py --full"
+    output: "Comprehensive system status"
+  
+  id_scanner:
+    command: "python 1_runtime/validators/P_01999000042260124521_id_format_scanner.py"
+    output: "File ID violations"
+  
+  dir_id_validator:
+    command: "python 2_cli_tools/dir_id/P_01999000042260125101_validate_dir_ids.py"
+    output: ".dir_id validation results"
+  
+  orphan_scanner:
+    command: "python 1_runtime/watchers/P_01999000042260125111_orphan_purger.py --scan-only"
+    output: "Orphaned registry entries"

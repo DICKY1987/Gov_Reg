@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "COUNTER_STORE.schema.json",
+  "title": "COUNTER_STORE.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "scope", "updated_utc", "counter_key", "key_format", "counters"],
+  "properties": {
+    "schema_version": {"type": "string", "const": "COUNTER-STORE-1.0"},
+    "scope": {"type": "string", "pattern": "^\\d{6}$"},
+    "updated_utc": {"type": "string"},
+    "counter_key": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {"type": "string", "enum": ["TYPE", "NS", "SCOPE"]}
+    },
+    "key_format": {"type": "string", "const": "{SCOPE}:{NS}:{TYPE}"},
+    "counters": {
+      "type": "object",
+      "default": {},
+      "patternProperties": {
+        "^\\d{6}:\\d{3}:\\d{2}$": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 99999
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

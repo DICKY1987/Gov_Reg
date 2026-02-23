@@ -1,0 +1,143 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://govreg.local/schemas/file_facts.v1.json",
+  "title": "File Facts Schema",
+  "description": "Schema for per-file facts artifacts (AST-extracted metadata)",
+  "type": "object",
+  "required": [
+    "file_id",
+    "relative_path",
+    "source_sha256",
+    "facts_schema_version",
+    "extracted_at",
+    "language",
+    "facts",
+    "content_hash"
+  ],
+  "properties": {
+    "file_id": {
+      "type": "string",
+      "description": "20-digit file ID",
+      "pattern": "^[0-9]{20}$"
+    },
+    "relative_path": {
+      "type": "string",
+      "description": "Relative path from repo root"
+    },
+    "source_sha256": {
+      "type": "string",
+      "description": "SHA256 hash of source file content",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "facts_schema_version": {
+      "type": "string",
+      "description": "Facts schema version (semver)",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "examples": ["1.0.0"]
+    },
+    "extracted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when facts were extracted"
+    },
+    "language": {
+      "type": "string",
+      "description": "Detected language",
+      "enum": ["python", "json", "yaml", "markdown", "unknown"]
+    },
+    "facts": {
+      "type": "object",
+      "description": "Extracted facts (language-specific)",
+      "properties": {
+        "imports": {
+          "type": "array",
+          "description": "Import statements",
+          "items": {
+            "type": "object",
+            "properties": {
+              "module": {"type": "string"},
+              "names": {"type": "array", "items": {"type": "string"}},
+              "alias": {"type": ["string", "null"]}
+            }
+          }
+        },
+        "classes": {
+          "type": "array",
+          "description": "Class definitions",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {"type": "string"},
+              "bases": {"type": "array", "items": {"type": "string"}},
+              "methods": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {"type": "string"},
+                    "decorators": {"type": "array", "items": {"type": "string"}}
+                  }
+                }
+              },
+              "decorators": {"type": "array", "items": {"type": "string"}}
+            }
+          }
+        },
+        "functions": {
+          "type": "array",
+          "description": "Function definitions",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {"type": "string"},
+              "args": {"type": "array", "items": {"type": "string"}},
+              "decorators": {"type": "array", "items": {"type": "string"}},
+              "is_async": {"type": "boolean"}
+            }
+          }
+        },
+        "constants": {
+          "type": "array",
+          "description": "Module-level constants",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {"type": "string"},
+              "type": {"type": "string"},
+              "value": {"type": ["string", "number", "boolean", "null"]}
+            }
+          }
+        },
+        "capabilities": {
+          "type": "array",
+          "description": "Inferred capability tags",
+          "items": {"type": "string"}
+        },
+        "entry_points": {
+          "type": "array",
+          "description": "Detected entry points (CLI, main, etc.)",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {"type": "string", "enum": ["cli", "main", "test"]},
+              "name": {"type": "string"}
+            }
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "content_hash": {
+      "type": "string",
+      "description": "SHA256 hash of canonical facts object",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "extraction_errors": {
+      "type": "array",
+      "description": "Optional list of extraction errors",
+      "items": {"type": "string"}
+    }
+  },
+  "additionalProperties": false,
+  "file_id": "01999000042260125144"
+}

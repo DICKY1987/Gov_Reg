@@ -1,0 +1,130 @@
+{
+  "rewrite_plan_id": "50194a2385622bd4",
+  "target_file_id": null,
+  "target_relpath": "REWRITE_PATCHSET\\plans\\a7494e77640063b8.json",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "43a4c9f48e0816b88143e7bdd4c3f965e93d59aac60b6f2a2f9f181acf0b9668",
+  "operations": [
+    {
+      "ref_id": "41913f0791233cb287c0900a1961c73b0159ce3faa75fba13331e5be4f86ed67",
+      "old_value": "scripts/P_01999000042260124027_id_allocator.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124027_id_allocator.py",
+      "location": "line:10"
+    },
+    {
+      "ref_id": "a0573492d972351573788d7fd4dcdd1f7e999c2ec0f20b7c5aadaab6ae784cb6",
+      "old_value": "scripts/P_01999000042260124027_id_allocator.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124027_id_allocator.py",
+      "location": "line:11"
+    },
+    {
+      "ref_id": "6d37b0eaef322f62d533031a965a145633e4ceca73891f91105f872f489ecc1a",
+      "old_value": "scripts/P_01999000042260124028_file_creator.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124028_file_creator.py",
+      "location": "line:16"
+    },
+    {
+      "ref_id": "d304b8cfce9946a14dc6d645882c751da8dcdfca6a208ff7bdd65db63f13a71f",
+      "old_value": "scripts/P_01999000042260124028_file_creator.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124028_file_creator.py",
+      "location": "line:17"
+    },
+    {
+      "ref_id": "2515e714b774c37bab44148982d826de75991df0403b6237d4f5331ee705658b",
+      "old_value": "scripts/P_01999000042260124547_validate_schema.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124547_validate_schema.py",
+      "location": "line:22"
+    },
+    {
+      "ref_id": "e5a7d49c0d03e62b3afad2d2173e5d71691a3d7f1bf98fc7eeacbb023b7e0d7e",
+      "old_value": "scripts/P_01999000042260124547_validate_schema.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124547_validate_schema.py",
+      "location": "line:23"
+    },
+    {
+      "ref_id": "b18677ddbdb9798758514d3c4a2b1391ed01bddee1942811882b62e0f3c6fc49",
+      "old_value": "scripts/P_01999000042260124030_shared_utils.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124030_shared_utils.py",
+      "location": "line:28"
+    },
+    {
+      "ref_id": "26539e3f2990cc2f44a92f399608f10d0c8c14e67fb288bbad3197f0d737bc39",
+      "old_value": "scripts/P_01999000042260124030_shared_utils.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124030_shared_utils.py",
+      "location": "line:29"
+    },
+    {
+      "ref_id": "bd284d2a35bc1b6c183c48c872d0e720ee1b1fb95f3d51df51d57ebd6e1f095a",
+      "old_value": "scripts/P_01999000042260124545_check_bundles.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124545_check_bundles.py",
+      "location": "line:34"
+    },
+    {
+      "ref_id": "1724864ea9e829eba25b512b5ee25b329f37b2e4c91d94e816886f8cc9cd2985",
+      "old_value": "scripts/P_01999000042260124545_check_bundles.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124545_check_bundles.py",
+      "location": "line:35"
+    },
+    {
+      "ref_id": "f3fe67b188296b8e8844da3491bccb11e1995281115421ec15877d447d7d1107",
+      "old_value": "scripts/P_01999000042260124544_bundle_detector_starter.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124544_bundle_detector_starter.py",
+      "location": "line:40"
+    },
+    {
+      "ref_id": "fafcc554772fce6e45f21bb244dd12ed404559a5aebdb4c90ad0cbc7b9a29e1f",
+      "old_value": "scripts/P_01999000042260124544_bundle_detector_starter.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124544_bundle_detector_starter.py",
+      "location": "line:41"
+    },
+    {
+      "ref_id": "d9229e07b5da1fd8fb07cce5ae889687d7dbde86f83c4446059f30f06092176e",
+      "old_value": "scripts/P_01999000042260124546_enhanced_bundle_detector.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124546_enhanced_bundle_detector.py",
+      "location": "line:46"
+    },
+    {
+      "ref_id": "3d9adb4eceae0421545f83a0bd16c45fafc579b96a6dafc9b93135c946d9693d",
+      "old_value": "scripts/P_01999000042260124546_enhanced_bundle_detector.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124546_enhanced_bundle_detector.py",
+      "location": "line:47"
+    },
+    {
+      "ref_id": "64c882375289a197620fe4b6fd75f8f1785e28cff6687d256a37b1327a44d5f0",
+      "old_value": "scripts/P_01999000042260124521_id_format_scanner.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124521_id_format_scanner.py",
+      "location": "line:52"
+    },
+    {
+      "ref_id": "c4ad396f94065921657a3a73d446bafc881f636464a0e0e5a9f2a3532a788f9c",
+      "old_value": "scripts/P_01999000042260124521_id_format_scanner.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124521_id_format_scanner.py",
+      "location": "line:53"
+    },
+    {
+      "ref_id": "d311544148cee680ddbc4f3b2fc4666e949976b114278b019a3601bda63a7f5c",
+      "old_value": "scripts/P_01999000042260124468_run_all.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124468_run_all.py",
+      "location": "line:58"
+    },
+    {
+      "ref_id": "c626a3c31abadc3de3296603ee547fd8bfdd5f2220a620046f93d4913aa9b6c5",
+      "old_value": "scripts/P_01999000042260124468_run_all.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124468_run_all.py",
+      "location": "line:59"
+    },
+    {
+      "ref_id": "db4b11ae02085b0461c522c68d9ebfd62c4afdc29737d82fb79c03adb3d8232d",
+      "old_value": "scripts/P_01999000042260124520_run_all.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124520_run_all.py",
+      "location": "line:64"
+    },
+    {
+      "ref_id": "22decbb05d5b38a62b3999239930c2aafcc51d3b7e1f496869ab0c9d7dd974f7",
+      "old_value": "scripts/P_01999000042260124520_run_all.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124520_run_all.py",
+      "location": "line:65"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\50194a2385622bd4.diff"
+}

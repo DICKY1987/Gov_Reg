@@ -1,0 +1,73 @@
+{
+  "tool": "plan.validate_ssot",
+  "tool_version": "1.0.0",
+  "run_id": "RUN-CAPMAP10",
+  "status": "fail",
+  "exit_code": 1,
+  "summary": "Evidence written to: C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess\\.state\\evidence\\mcp\\RUN-CAPMAP10\\ssot_validation.json\nSSOT summary: 10 path facts (0 duplicated), 0 version facts (0 duplicated)\n\u00e2\u0153\u2014 GATE-017 FAILED: 4 defects found\n  [high] Artifact 'CAPMAP_CAPABILITIES' has inconsistent paths: 'artifact:CAPMAP_CAPABILITIES:S001:output' in S001 vs 'artifact:CAPMAP_CAPABILITIES:S002:input' in S002\n  [high] Artifact 'CAPMAP_CAPABILITIES' has inconsistent paths: 'artifact:CAPMAP_CAPABILITIES:S001:output' in S001 vs 'artifact:CAPMAP_CAPABILITIES:S003:input' in S003\n  [high] Artifact 'CAPMAP_FILE_INVENTORY' has inconsistent paths: 'artifact:CAPMAP_FILE_INVENTORY:S002:output' in S002 vs 'artifact:CAPMAP_FILE_INVENTORY:S003:input' in S003\n  [high] Artifact 'CAPMAP_PURPOSE_REGISTRY' has inconsistent paths: 'artifact:CAPMAP_PURPOSE_REGISTRY:S003:output' in S003 vs 'artifact:CAPMAP_PURPOSE_REGISTRY:S004:input' in S004",
+  "input": {
+    "context": {
+      "repo_root": "C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess",
+      "run_id": "RUN-CAPMAP10",
+      "invoker": "human"
+    },
+    "plan_path": "C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess\\Plans_Instructions\\wobbly-purring-island_registry-integrated.plan.json",
+    "ignore_common_paths": [
+      ".",
+      "..",
+      "/",
+      "scripts",
+      "schemas",
+      ".state"
+    ],
+    "write_evidence": true,
+    "evidence_path": ".state/evidence/mcp/{run_id}/plan_validate_ssot.json",
+    "timeout_s": 300
+  },
+  "defects": [
+    {
+      "severity": "info",
+      "code": "SSOT_CONTRADICTION",
+      "location": "/plan",
+      "message": "SSOT summary: 10 path facts (0 duplicated), 0 version facts (0 duplicated)",
+      "why_it_matters": "Summary statistics for SSOT analysis"
+    },
+    {
+      "severity": "high",
+      "code": "SSOT_CONTRADICTION",
+      "location": "/plan/phases/1/steps/0/inputs",
+      "message": "Artifact 'CAPMAP_CAPABILITIES' has inconsistent paths: 'artifact:CAPMAP_CAPABILITIES:S001:output' in S001 vs 'artifact:CAPMAP_CAPABILITIES:S002:input' in S002",
+      "why_it_matters": "Same artifact must have same path across all references"
+    },
+    {
+      "severity": "high",
+      "code": "SSOT_CONTRADICTION",
+      "location": "/plan/phases/2/steps/0/inputs",
+      "message": "Artifact 'CAPMAP_CAPABILITIES' has inconsistent paths: 'artifact:CAPMAP_CAPABILITIES:S001:output' in S001 vs 'artifact:CAPMAP_CAPABILITIES:S003:input' in S003",
+      "why_it_matters": "Same artifact must have same path across all references"
+    },
+    {
+      "severity": "high",
+      "code": "SSOT_CONTRADICTION",
+      "location": "/plan/phases/2/steps/0/inputs",
+      "message": "Artifact 'CAPMAP_FILE_INVENTORY' has inconsistent paths: 'artifact:CAPMAP_FILE_INVENTORY:S002:output' in S002 vs 'artifact:CAPMAP_FILE_INVENTORY:S003:input' in S003",
+      "why_it_matters": "Same artifact must have same path across all references"
+    },
+    {
+      "severity": "high",
+      "code": "SSOT_CONTRADICTION",
+      "location": "/plan/phases/3/steps/0/inputs",
+      "message": "Artifact 'CAPMAP_PURPOSE_REGISTRY' has inconsistent paths: 'artifact:CAPMAP_PURPOSE_REGISTRY:S003:output' in S003 vs 'artifact:CAPMAP_PURPOSE_REGISTRY:S004:input' in S004",
+      "why_it_matters": "Same artifact must have same path across all references"
+    }
+  ],
+  "hashes": {
+    "ssot_evidence_sha256": "sha256:0071c61c124897db6139b1eeb47a581775d54631ad2fb06f1a47dbe878b05e83"
+  },
+  "artifacts_emitted": [
+    "C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess\\.state\\evidence\\mcp\\RUN-CAPMAP10\\ssot_validation.json"
+  ],
+  "timestamps": {
+    "generated_at": "2026-02-12T00:15:13.333163+00:00"
+  }
+}

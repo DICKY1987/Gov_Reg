@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://govreg.local/schemas/tool_result_envelope.schema.json",
+  "title": "Tool Result Envelope Schema",
+  "description": "Standardized wrapper for tool execution results with evidence",
+  "type": "object",
+  "required": [
+    "call_id",
+    "status",
+    "exit_code",
+    "outputs",
+    "evidence_paths",
+    "duration_ms"
+  ],
+  "properties": {
+    "call_id": {
+      "type": "string",
+      "description": "Reference to tool_call_envelope"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["SUCCESS", "FAILURE", "TIMEOUT", "RETRY"]
+    },
+    "exit_code": {
+      "type": "integer",
+      "description": "Process exit code (0 = success)"
+    },
+    "outputs": {
+      "type": "array",
+      "description": "Output artifacts with hashes",
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": {"type": "string"},
+          "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "size_bytes": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "evidence_paths": {
+      "type": "array",
+      "description": "Paths to evidence artifacts",
+      "items": {"type": "string"}
+    },
+    "error": {
+      "type": "object",
+      "description": "Error details if status is FAILURE",
+      "properties": {
+        "code": {"type": "string"},
+        "fingerprint": {"type": "string"},
+        "classification": {
+          "type": "string",
+          "enum": ["TRANSIENT", "PERMANENT", "CONFIGURATION", "ENVIRONMENTAL"]
+        },
+        "message": {"type": "string"}
+      }
+    },
+    "duration_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

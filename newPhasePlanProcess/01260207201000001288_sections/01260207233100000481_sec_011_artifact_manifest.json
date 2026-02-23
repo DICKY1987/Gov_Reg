@@ -1,0 +1,64 @@
+{
+  "section_id": "sec_011_artifact_manifest",
+  "title": "Cross-Phase Artifact Manifest",
+  "required": true,
+  "instructions_file": "sections/sec_011_artifact_manifest.inst.md",
+  "artifact_manifest": {
+    "description": "Cross-phase 'bill of materials'. Every file/path created/modified/deleted must be represented here. Source of truth for file touches is artifacts[] inside each phase contract.",
+    "manifest_table": {
+      "columns": [
+        "phase_id [2003]",
+        "artifact_id [2005]",
+        "action",
+        "path [2024]",
+        "introduced_in_phase",
+        "purpose",
+        "validation_ids [2006]",
+        "validation_command_hint"
+      ],
+      "entries": [
+        {
+          "phase_id": "PH-001",
+          "artifact_id": "ART-001",
+          "action": "create",
+          "path": "src/pipeline/state.py",
+          "introduced_in_phase": "PH-001",
+          "purpose": "State machine implementation",
+          "validation_ids": [
+            "VAL-001",
+            "VAL-002"
+          ],
+          "validation_command_hint": "pytest tests/test_state.py",
+          "required_by_controls": []
+        }
+      ]
+    },
+    "action_taxonomy": [
+      "read",
+      "create",
+      "modify",
+      "delete"
+    ],
+    "consistency_check": {
+      "command": {
+        "exe": "python",
+        "args": [
+          "scripts/validate_artifact_manifest.py",
+          "{{PLAN_FILE}}"
+        ],
+        "timeout_seconds": 600,
+        "expected_exit_codes": [
+          0
+        ]
+      },
+      "expect_exit_code": 0,
+      "checks": [
+        "All artifact_ids in phase contracts appear in manifest",
+        "All paths are unique within action type",
+        "No artifacts reference non-existent validation_ids",
+        "introduced_in_phase matches first appearance"
+      ]
+    }
+  },
+  "file_id": "01260207233100000481"
+}

@@ -1,0 +1,461 @@
+{
+  "version": "1.0.0",
+  "dictionary_id": "2026012915460001_COLUMN_DICTIONARY",
+  "description": "Unified column dictionary bridging SSOT v2.1 and Governance Registry v3",
+  "authority_refs": {
+    "ssot_authority": {
+      "document_id": "2026012015460001",
+      "path": "docs/2026012015460001_COLUMN_DICTIONARY.md",
+      "description": "SSOT v2.1 Column Dictionary specification"
+    },
+    "governance_authority": {
+      "document_id": "01999000042260124012",
+      "path": "schemas/01999000042260124012_governance_registry_schema.v3.json",
+      "description": "Governance Registry v3 JSON Schema"
+    }
+  },
+  "headers": {
+    "entity_id": {
+      "header_name": "entity_id",
+      "description": "Unique identifier for the entity record",
+      "semantic_type": "identifier",
+      "provenance": {
+        "sources": [
+          {
+            "source_kind": "DOC_MD",
+            "document_id": "2026012015460001",
+            "path": "docs/2026012015460001_COLUMN_DICTIONARY.md",
+            "locator_kind": "MD_HEADING",
+            "locator": "## Column: entity_id"
+          }
+        ]
+      },
+      "default_scope": {
+        "record_kinds_in": [
+          "entity"
+        ],
+        "layers_in": [
+          "CORE",
+          "DEFINITION",
+          "CONFIGURATION",
+          "EXECUTION"
+        ]
+      },
+      "default_presence": "required",
+      "default_value_schema": {
+        "type": "string",
+        "pattern": "^(P_)?[0-9]{20}_[A-Za-z0-9_]+$"
+      },
+      "default_normalization": {
+        "trim": true,
+        "case": "preserve"
+      }
+    },
+    "source_entity_id": {
+      "header_name": "source_entity_id",
+      "description": "Reference to the source entity in an edge relationship",
+      "semantic_type": "reference",
+      "provenance": {
+        "sources": [
+          {
+            "source_kind": "DOC_MD",
+            "document_id": "2026012015460001",
+            "path": "docs/2026012015460001_COLUMN_DICTIONARY.md",
+            "locator_kind": "MD_HEADING",
+            "locator": "## Column: source_entity_id"
+          },
+          {
+            "source_kind": "SCHEMA_JSON",
+            "document_id": "01999000042260124012",
+            "path": "schemas/01999000042260124012_governance_registry_schema.v3.json",
+            "locator_kind": "JSON_POINTER",
+            "locator": "/properties/edges/items/properties/source_entity_id"
+          }
+        ]
+      },
+      "default_value_schema": {
+        "type": "string",
+        "pattern": "^(P_)?[0-9]{20}_[A-Za-z0-9_]+$"
+      },
+      "contexts": [
+        {
+          "context_id": "entity_records",
+          "description": "In entity records, source_entity_id is optional (for self-referential metadata)",
+          "scope": {
+            "record_kinds_in": [
+              "entity"
+            ]
+          },
+          "presence": "optional"
+        },
+        {
+          "context_id": "edge_records",
+          "description": "In edge records, source_entity_id is required (defines the edge source)",
+          "scope": {
+            "record_kinds_in": [
+              "edge"
+            ]
+          },
+          "presence": "required"
+        },
+        {
+          "context_id": "generator_records",
+          "description": "In generator records, source_entity_id is forbidden",
+          "scope": {
+            "record_kinds_in": [
+              "generator"
+            ]
+          },
+          "presence": "forbidden"
+        }
+      ]
+    },
+    "target_entity_id": {
+      "header_name": "target_entity_id",
+      "description": "Reference to the target entity in an edge relationship",
+      "semantic_type": "reference",
+      "provenance": {
+        "sources": [
+          {
+            "source_kind": "DOC_MD",
+            "document_id": "2026012015460001",
+            "path": "docs/2026012015460001_COLUMN_DICTIONARY.md",
+            "locator_kind": "MD_HEADING",
+            "locator": "## Column: target_entity_id"
+          }
+        ]
+      },
+      "default_value_schema": {
+        "type": "string",
+        "pattern": "^(P_)?[0-9]{20}_[A-Za-z0-9_]+$"
+      },
+      "contexts": [
+        {
+          "context_id": "edge_records",
+          "description": "Required in edge records",
+          "scope": {
+            "record_kinds_in": [
+              "edge"
+            ]
+          },
+          "presence": "required"
+        },
+        {
+          "context_id": "non_edge_records",
+          "description": "Forbidden in entity and generator records",
+          "scope": {
+            "record_kinds_in": [
+              "entity",
+              "generator"
+            ]
+          },
+          "presence": "forbidden"
+        }
+      ]
+    },
+    "layer": {
+      "header_name": "layer",
+      "description": "Governance layer classification from Governance Registry v3",
+      "semantic_type": "classification",
+      "provenance": {
+        "sources": [
+          {
+            "source_kind": "SCHEMA_JSON",
+            "document_id": "01999000042260124012",
+            "path": "schemas/01999000042260124012_governance_registry_schema.v3.json",
+            "locator_kind": "JSON_POINTER",
+            "locator": "/$defs/GovLayer"
+          }
+        ]
+      },
+      "default_scope": {
+        "record_kinds_in": [
+          "entity",
+          "edge",
+          "generator"
+        ],
+        "layers_in": [
+          "CORE",
+          "DEFINITION",
+          "CONFIGURATION",
+          "EXECUTION",
+          "VALIDATION",
+          "TEMPLATE",
+          "EXAMPLE",
+          "TRACE",
+          "DAG",
+          "UTIL",
+          "ERROR_HANDLING",
+          "REPORTING",
+          "TESTING",
+          "EVIDENCE",
+          "PERSISTENCE",
+          "GOVERNANCE",
+          "SSOT",
+          "GATES",
+          "EVENTS",
+          "PACKAGE_MARKER",
+          "DOCUMENTATION",
+          "DERIVED"
+        ]
+      },
+      "default_presence": "required",
+      "default_value_schema": {
+        "type": "string",
+        "enum": [
+          "CONFIGURATION",
+          "DEFINITION",
+          "TEMPLATE",
+          "EXAMPLE",
+          "EXECUTION",
+          "VALIDATION",
+          "CORE",
+          "TRACE",
+          "DAG",
+          "UTIL",
+          "ERROR_HANDLING",
+          "REPORTING",
+          "TESTING",
+          "EVIDENCE",
+          "PERSISTENCE",
+          "GOVERNANCE",
+          "SSOT",
+          "GATES",
+          "EVENTS",
+          "PACKAGE_MARKER",
+          "DOCUMENTATION",
+          "DERIVED"
+        ]
+      }
+    },
+    "record_kind": {
+      "header_name": "record_kind",
+      "description": "SSOT v2.1 record kind classification",
+      "semantic_type": "classification",
+      "provenance": {
+        "sources": [
+          {
+            "source_kind": "DOC_MD",
+            "document_id": "2026012015460001",
+            "path": "docs/2026012015460001_COLUMN_DICTIONARY.md",
+            "locator_kind": "MD_HEADING",
+            "locator": "## Column: record_kind"
+          }
+        ]
+      },
+      "default_scope": {
+        "record_kinds_in": [
+          "entity",
+          "edge",
+          "generator"
+        ]
+      },
+      "default_presence": "required",
+      "default_value_schema": {
+        "type": "string",
+        "enum": [
+          "entity",
+          "edge",
+          "generator"
+        ]
+      },
+      "default_normalization": {
+        "case": "lowercase",
+        "trim": true
+      }
+    },
+    "entity_kind": {
+      "header_name": "entity_kind",
+      "description": "SSOT v2.1 entity kind classification",
+      "semantic_type": "classification",
+      "provenance": {
+        "sources": [
+          {
+            "source_kind": "DOC_MD",
+            "document_id": "2026012015460001",
+            "path": "docs/2026012015460001_COLUMN_DICTIONARY.md",
+            "locator_kind": "MD_HEADING",
+            "locator": "## Column: entity_kind"
+          }
+        ]
+      },
+      "default_value_schema": {
+        "type": "string",
+        "enum": [
+          "file",
+          "asset",
+          "transient",
+          "external",
+          "module",
+          "directory",
+          "process",
+          "other"
+        ]
+      },
+      "default_normalization": {
+        "case": "lowercase",
+        "trim": true
+      },
+      "contexts": [
+        {
+          "context_id": "entity_records",
+          "description": "Required for entity records to classify the entity type",
+          "scope": {
+            "record_kinds_in": [
+              "entity"
+            ]
+          },
+          "presence": "required"
+        },
+        {
+          "context_id": "edge_records",
+          "description": "Optional in edge records (can describe source/target kind)",
+          "scope": {
+            "record_kinds_in": [
+              "edge"
+            ]
+          },
+          "presence": "optional"
+        },
+        {
+          "context_id": "generator_records",
+          "description": "Optional in generator records",
+          "scope": {
+            "record_kinds_in": [
+              "generator"
+            ]
+          },
+          "presence": "optional"
+        }
+      ]
+    },
+    "created_at": {
+      "header_name": "created_at",
+      "description": "ISO 8601 timestamp when the record was created",
+      "semantic_type": "timestamp",
+      "provenance": {
+        "sources": [
+          {
+            "source_kind": "DOC_MD",
+            "document_id": "2026012015460001",
+            "path": "docs/2026012015460001_COLUMN_DICTIONARY.md",
+            "locator_kind": "MD_HEADING",
+            "locator": "## Column: created_at"
+          }
+        ]
+      },
+      "default_scope": {
+        "record_kinds_in": [
+          "entity",
+          "edge",
+          "generator"
+        ]
+      },
+      "default_presence": "required",
+      "default_value_schema": {
+        "type": "string",
+        "format": "date-time"
+      }
+    },
+    "file_path": {
+      "header_name": "file_path",
+      "description": "Relative path to the file from repository root",
+      "semantic_type": "path",
+      "aliases": [
+        "path",
+        "relative_path"
+      ],
+      "provenance": {
+        "sources": [
+          {
+            "source_kind": "DOC_MD",
+            "document_id": "2026012015460001",
+            "path": "docs/2026012015460001_COLUMN_DICTIONARY.md",
+            "locator_kind": "MD_HEADING",
+            "locator": "## Column: file_path"
+          }
+        ]
+      },
+      "default_value_schema": {
+        "type": "string",
+        "pattern": "^[^/\\\\].*$",
+        "minLength": 1
+      },
+      "default_normalization": {
+        "trim": true,
+        "case": "preserve"
+      },
+      "contexts": [
+        {
+          "context_id": "file_entities",
+          "description": "Required for file entity records",
+          "scope": {
+            "record_kinds_in": [
+              "entity"
+            ],
+            "entity_kinds_in": [
+              "file"
+            ]
+          },
+          "presence": "required"
+        },
+        {
+          "context_id": "directory_entities",
+          "description": "Required for directory entity records",
+          "scope": {
+            "record_kinds_in": [
+              "entity"
+            ],
+            "entity_kinds_in": [
+              "directory"
+            ]
+          },
+          "presence": "required"
+        },
+        {
+          "context_id": "non_file_entities",
+          "description": "Optional for non-file entities",
+          "scope": {
+            "record_kinds_in": [
+              "entity"
+            ],
+            "entity_kinds_in": [
+              "asset",
+              "transient",
+              "external",
+              "module",
+              "process",
+              "other"
+            ]
+          },
+          "presence": "optional"
+        }
+      ]
+    },
+    "legacy_status": {
+      "header_name": "legacy_status",
+      "description": "DEPRECATED: Use 'status' instead. Legacy status field from v1 schema.",
+      "semantic_type": "classification",
+      "deprecated": true,
+      "deprecated_by": "status",
+      "provenance": {
+        "sources": [
+          {
+            "source_kind": "ADR_MD",
+            "document_id": "2026012915470001",
+            "path": "docs/adr/2026012915470001_ADR_DEPRECATE_LEGACY_STATUS.md",
+            "locator_kind": "MD_HEADING",
+            "locator": "## Decision"
+          }
+        ]
+      },
+      "default_scope": {
+        "record_kinds_in": [
+          "entity"
+        ]
+      },
+      "default_presence": "forbidden"
+    }
+  },
+  "file_id": "01260207233100000582"
+}

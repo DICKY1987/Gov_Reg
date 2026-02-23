@@ -1,0 +1,117 @@
+Determinism is:
+
+captures two important things:
+	•	Constraining outcome space
+	•	Explicit mapping from situation → outcome
+
+Given the same inputs and the same state, the system will always produce the same output.
+
+Determinism means every possible input condition maps to exactly one defined output according to explicit, complete, and mechanically verifiable rules.
+
+In other words:
+	•	No ambiguity
+	•	No hidden state
+	•	No implied behavior
+	•	No stochastic or time-based branching
+	•	No undefined regions of input space
+
+Determinism is the property of a system in which the input domain is fully partitioned by explicit rules such that each input state produces one and only one valid, reproducible output state.
+
+That aligns with:
+	•	Binary gate results
+	•	FailureMode matchers
+	•	HealSequence ordering
+	•	PFMS extraction
+	•	Registry ingest contracts
+	•	Snapshot hashing
+
+In your system terms:
+
+Deterministic =
+	•	Same plan → same mutation set
+	•	Same failure fingerprint → same failure_mode_id
+	•	Same failure_mode_id → same ordered heal sequence
+	•	Same artifacts → same phase transition
+
+No interpretation layer.
+
+A system is deterministic when its transition function is total and single-valued.
+
+Total = defined for every possible valid input.
+Single-valued = produces exactly one result.
+
+
+Below is a canonical definition suitable for insertion into your governance or architecture specification.
+
+⸻
+
+Determinism — Canonical Definition
+
+Determinism is the property of a system in which every valid input state, under a fixed system state, produces exactly one defined and reproducible output state according to explicit, mechanically verifiable rules.
+
+A system is deterministic if and only if:
+	1.	Totality – The transition function is defined for all valid inputs (no undefined regions).
+	2.	Single-Valued Mapping – Each input state maps to one and only one output state.
+	3.	State Transparency – All state influencing the outcome is explicit, versioned, and controlled.
+	4.	No Implied Behavior – No decision depends on unstated heuristics, free-text interpretation, timing variance, or probabilistic branching.
+	5.	Reproducibility – Re-executing the same operation with identical inputs and state produces identical outputs and identical evidence artifacts.
+
+⸻
+
+Deterministic Transition Model
+
+For any system component (gate, phase, registry ingest, healing loop):
+
+Output_State = F(Input_State, System_State)
+
+Where:
+	•	F is fully specified
+	•	Input_State is schema-validated
+	•	System_State is versioned and immutable during execution
+	•	Output_State is uniquely determined
+
+There must never exist:
+
+F(I, S) → {O1, O2}
+
+unless the selection rule between O1 and O2 is itself deterministic and formally encoded.
+
+⸻
+
+Determinism in This Architecture
+
+Within this system, determinism requires:
+	•	Same plan → identical PFMS
+	•	Same PFMS → identical registry patch
+	•	Same failure fingerprint → identical failure_mode_id
+	•	Same failure_mode_id → identical ordered heal sequence
+	•	Same artifact envelope → identical phase transition decision
+	•	Same execution → identical evidence hashes
+
+Any deviation indicates:
+	•	Hidden state
+	•	Incomplete rule coverage
+	•	Non-normalized inputs
+	•	Or policy drift
+
+⸻
+
+Non-Determinism (Explicitly Prohibited)
+
+The following patterns violate determinism:
+	•	Matching on free-text error messages
+	•	Time-dependent branching without normalized counters
+	•	Randomized retry behavior
+	•	Implicit default paths not encoded in schema
+	•	Multiple matching FailureModes without priority resolution
+	•	Hashing that includes non-stable fields (timestamps, absolute paths, etc.)
+
+⸻
+
+Deterministic Guarantee Statement
+
+The system SHALL guarantee that:
+
+For any approved plan, given identical inputs and registry state, execution produces an identical mutation set, identical registry result, identical gate outcomes, and identical evidence artifacts.
+
+⸻

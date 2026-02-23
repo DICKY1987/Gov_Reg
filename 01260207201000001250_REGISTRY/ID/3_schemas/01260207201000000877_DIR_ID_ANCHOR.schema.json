@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/richgong/Gov_Reg/schemas/DIR_ID_ANCHOR.schema.json",
+  "title": "Directory ID Anchor File Schema",
+  "description": "Schema for .dir_id files that anchor directory identity",
+  "type": "object",
+  "required": ["dir_id", "allocator_version", "allocated_at_utc", "project_root_id", "relative_path"],
+  "properties": {
+    "dir_id": {
+      "type": "string",
+      "pattern": "^\\d{20}$",
+      "description": "20-digit unique directory identifier from unified allocator"
+    },
+    "allocator_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Version of allocator that generated this ID (semver)",
+      "examples": ["1.0.0", "1.2.3"]
+    },
+    "allocated_at_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC timestamp when dir_id was allocated (ISO 8601)"
+    },
+    "project_root_id": {
+      "type": "string",
+      "pattern": "^\\d{20}$",
+      "description": "20-digit ID of project root directory"
+    },
+    "relative_path": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Path relative to project root (forward slashes, no leading/trailing slashes)",
+      "pattern": "^[^/].*[^/]$",
+      "examples": ["src", "src/module_a", "tests/integration"]
+    },
+    "depth": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Directory depth in tree (0=root, 1=immediate child, etc.)"
+    },
+    "zone": {
+      "type": "string",
+      "enum": ["staging", "governed", "excluded"],
+      "description": "Governance zone classification"
+    },
+    "parent_dir_id": {
+      "type": ["string", "null"],
+      "pattern": "^\\d{20}$|^$",
+      "description": "dir_id of parent directory (null if root)"
+    },
+    "created_by": {
+      "type": "string",
+      "description": "Process or user that created this .dir_id",
+      "examples": ["scanner", "watcher", "manual", "init_command"]
+    },
+    "canonicality_law_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Version of DIR_ID_CANONICALITY_LAW in effect",
+      "default": "1.0.0"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Optional metadata for extensions",
+      "properties": {
+        "legacy_dir_id": {
+          "type": "string",
+          "description": "Original hash-based DIR-{slug}-{hash} if migrated"
+        },
+        "migration_timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When legacy dir_id was migrated"
+        },
+        "last_validated": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last time scanner validated this .dir_id"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "dir_id": "01999000042260124550",
+      "allocator_version": "1.0.0",
+      "allocated_at_utc": "2026-02-13T14:48:27Z",
+      "project_root_id": "01999000042260124068",
+      "relative_path": "src/module_a",
+      "depth": 2,
+      "zone": "governed",
+      "parent_dir_id": "01999000042260124549",
+      "created_by": "watcher",
+      "canonicality_law_version": "1.0.0"
+    },
+    {
+      "dir_id": "01999000042260124551",
+      "allocator_version": "1.0.0",
+      "allocated_at_utc": "2026-02-13T15:00:00Z",
+      "project_root_id": "01999000042260124068",
+      "relative_path": "src/legacy_module",
+      "depth": 2,
+      "zone": "governed",
+      "parent_dir_id": "01999000042260124549",
+      "created_by": "migrator",
+      "canonicality_law_version": "1.0.0",
+      "metadata": {
+        "legacy_dir_id": "DIR-legacy-module-a3f8b2c9",
+        "migration_timestamp": "2026-02-13T15:00:00Z"
+      }
+    }
+  ]
+}

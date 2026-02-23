@@ -1,0 +1,465 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/column_dictionary.schema.json",
+  "title": "Column Dictionary Schema",
+  "description": "Validates column dictionary definitions bridging SSOT v2.1 and Governance Registry v3",
+  "type": "object",
+  "required": [
+    "version",
+    "dictionary_id",
+    "headers"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Schema version (semver, e.g., '1.0.0')"
+    },
+    "dictionary_id": {
+      "type": "string",
+      "pattern": "^[0-9]{20}_[A-Z_]+$",
+      "description": "Unique dictionary identifier following File ID convention"
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable dictionary description"
+    },
+    "authority_refs": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "References to authoritative source documents",
+      "properties": {
+        "ssot_authority": {
+          "$ref": "#/$defs/AuthorityRef",
+          "description": "SSOT v2.1 authority document"
+        },
+        "governance_authority": {
+          "$ref": "#/$defs/AuthorityRef",
+          "description": "Governance Registry v3 authority document"
+        }
+      }
+    },
+    "headers": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/HeaderDefinition"
+      },
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_]*$",
+        "description": "Header names must be lowercase snake_case"
+      },
+      "description": "Map of header name to header definition"
+    }
+  },
+  "$defs": {
+    "GovLayer": {
+      "type": "string",
+      "enum": [
+        "CONFIGURATION",
+        "DEFINITION",
+        "TEMPLATE",
+        "EXAMPLE",
+        "EXECUTION",
+        "VALIDATION",
+        "CORE",
+        "TRACE",
+        "DAG",
+        "UTIL",
+        "ERROR_HANDLING",
+        "REPORTING",
+        "TESTING",
+        "EVIDENCE",
+        "PERSISTENCE",
+        "GOVERNANCE",
+        "SSOT",
+        "GATES",
+        "EVENTS",
+        "PACKAGE_MARKER",
+        "DOCUMENTATION",
+        "DERIVED"
+      ],
+      "description": "Governance Registry v3 layer classification (22 values)"
+    },
+    "EntityKind": {
+      "type": "string",
+      "enum": [
+        "file",
+        "asset",
+        "transient",
+        "external",
+        "module",
+        "directory",
+        "process",
+        "other"
+      ],
+      "description": "SSOT v2.1 entity kind classification (8 values)"
+    },
+    "RecordKind": {
+      "type": "string",
+      "enum": [
+        "entity",
+        "edge",
+        "generator"
+      ],
+      "description": "SSOT v2.1 record kind (exactly 3 values)"
+    },
+    "SourceKind": {
+      "type": "string",
+      "enum": [
+        "DOC_MD",
+        "SCHEMA_JSON",
+        "REGISTRY_JSON",
+        "ADR_MD"
+      ],
+      "description": "Type of authoritative source document"
+    },
+    "LocatorKind": {
+      "type": "string",
+      "enum": [
+        "MD_HEADING",
+        "JSON_POINTER"
+      ],
+      "description": "How to locate the specific definition within the source"
+    },
+    "Presence": {
+      "type": "string",
+      "enum": [
+        "required",
+        "optional",
+        "conditional",
+        "forbidden"
+      ],
+      "description": "Whether the header is required, optional, conditional, or forbidden"
+    },
+    "AuthorityRef": {
+      "type": "object",
+      "required": [
+        "document_id",
+        "path"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "document_id": {
+          "type": "string",
+          "pattern": "^[0-9]{16,20}$",
+          "description": "Document identifier (16-20 digit identifier)"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Relative path to the authority document"
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of this authority"
+        }
+      }
+    },
+    "ProvenanceSource": {
+      "type": "object",
+      "required": [
+        "source_kind",
+        "document_id",
+        "path",
+        "locator_kind",
+        "locator"
+      ],
+      "additionalProperties": false,
+      "description": "Machine-checkable provenance pointer to authoritative artifact",
+      "properties": {
+        "source_kind": {
+          "$ref": "#/$defs/SourceKind",
+          "description": "Type of source document"
+        },
+        "document_id": {
+          "type": "string",
+          "pattern": "^[0-9]{16,20}$",
+          "description": "Document identifier (16-20 digit identifier)"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Relative path to the source document"
+        },
+        "locator_kind": {
+          "$ref": "#/$defs/LocatorKind",
+          "description": "How to locate the definition"
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1,
+          "description": "MD heading (e.g., '## Column: entity_id') or JSON Pointer (e.g., '/properties/entity_id')"
+        }
+      }
+    },
+    "Provenance": {
+      "type": "object",
+      "required": [
+        "sources"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/ProvenanceSource"
+          },
+          "description": "At least one authoritative source required (no unknown origins)"
+        }
+      }
+    },
+    "ValueSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "JSON Schema fragment for value validation",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "array",
+            "object",
+            "null"
+          ]
+        },
+        "format": {
+          "type": "string",
+          "description": "JSON Schema format (e.g., 'date-time', 'uri', 'uuid')"
+        },
+        "pattern": {
+          "type": "string",
+          "description": "Regex pattern for string validation"
+        },
+        "enum": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Allowed values"
+        },
+        "minimum": {
+          "type": "number"
+        },
+        "maximum": {
+          "type": "number"
+        },
+        "minLength": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxLength": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "items": {
+          "$ref": "#/$defs/ValueSchema",
+          "description": "Schema for array items"
+        },
+        "$ref": {
+          "type": "string",
+          "description": "Reference to another schema definition"
+        }
+      }
+    },
+    "Normalization": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Value normalization rules",
+      "properties": {
+        "case": {
+          "type": "string",
+          "enum": [
+            "lowercase",
+            "uppercase",
+            "preserve"
+          ],
+          "description": "Case normalization"
+        },
+        "trim": {
+          "type": "boolean",
+          "description": "Trim whitespace"
+        },
+        "strip_prefix": {
+          "type": "string",
+          "description": "Prefix to strip if present"
+        },
+        "strip_suffix": {
+          "type": "string",
+          "description": "Suffix to strip if present"
+        },
+        "default_value": {
+          "description": "Default value if missing (when presence=optional)"
+        }
+      }
+    },
+    "Scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Where this header applies",
+      "properties": {
+        "record_kinds_in": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RecordKind"
+          },
+          "uniqueItems": true,
+          "description": "SSOT record kinds this header applies to"
+        },
+        "layers_in": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/GovLayer"
+          },
+          "uniqueItems": true,
+          "description": "Governance layers this header applies to"
+        },
+        "entity_kinds_in": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EntityKind"
+          },
+          "uniqueItems": true,
+          "description": "Entity kinds this header applies to (for entity records)"
+        }
+      }
+    },
+    "HeaderContext": {
+      "type": "object",
+      "required": [
+        "context_id",
+        "scope",
+        "presence"
+      ],
+      "additionalProperties": false,
+      "description": "Context-specific rules for a header (same header, different rules per context)",
+      "properties": {
+        "context_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "Unique identifier for this context (e.g., 'entity_records', 'edge_records')"
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of when this context applies"
+        },
+        "scope": {
+          "$ref": "#/$defs/Scope",
+          "description": "Scope constraints for this context"
+        },
+        "presence": {
+          "$ref": "#/$defs/Presence",
+          "description": "Presence requirement in this context"
+        },
+        "condition": {
+          "type": "string",
+          "description": "Condition expression for conditional presence"
+        },
+        "value_schema": {
+          "$ref": "#/$defs/ValueSchema",
+          "description": "Value schema override for this context"
+        },
+        "normalization": {
+          "$ref": "#/$defs/Normalization",
+          "description": "Normalization override for this context"
+        }
+      }
+    },
+    "HeaderDefinition": {
+      "type": "object",
+      "required": [
+        "header_name",
+        "description",
+        "provenance"
+      ],
+      "additionalProperties": false,
+      "description": "Complete definition of a single header/column",
+      "properties": {
+        "header_name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "Canonical header name (lowercase snake_case)"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable description of the header's purpose"
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+          },
+          "uniqueItems": true,
+          "description": "Alternative names that map to this header"
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance",
+          "description": "Machine-checkable provenance (REQUIRED, min 1 source)"
+        },
+        "default_scope": {
+          "$ref": "#/$defs/Scope",
+          "description": "Default scope (used when no context matches)"
+        },
+        "default_presence": {
+          "$ref": "#/$defs/Presence",
+          "description": "Default presence (used when no context matches)"
+        },
+        "default_value_schema": {
+          "$ref": "#/$defs/ValueSchema",
+          "description": "Default value schema"
+        },
+        "default_normalization": {
+          "$ref": "#/$defs/Normalization",
+          "description": "Default normalization rules"
+        },
+        "contexts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/HeaderContext"
+          },
+          "description": "Context-specific rule overrides (for headers with different rules per record_kind, layer, etc.)"
+        },
+        "deprecated": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether this header is deprecated"
+        },
+        "deprecated_by": {
+          "type": "string",
+          "description": "Header name that replaces this one (if deprecated)"
+        },
+        "semantic_type": {
+          "type": "string",
+          "enum": [
+            "identifier",
+            "reference",
+            "classification",
+            "timestamp",
+            "path",
+            "content",
+            "metadata",
+            "computed"
+          ],
+          "description": "Semantic category of the header"
+        }
+      },
+      "if": {
+        "properties": {
+          "deprecated": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "deprecated_by"
+        ]
+      }
+    }
+  },
+  "file_id": "01260207233100000583"
+}

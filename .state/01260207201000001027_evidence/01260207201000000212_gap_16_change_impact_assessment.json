@@ -1,0 +1,44 @@
+{
+  "gap_id": "GAP-016",
+  "gap_name": "Change Impact Assessment",
+  "verification_timestamp": "2026-02-12T17:19:04.045712+00:00",
+  "status": "VERIFIED",
+  "checks": [
+    {
+      "check_id": "CHECK-016-001",
+      "description": "Impact assessment template with 10 risk dimensions",
+      "status": "PASS",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\templates\\change_impact_assessment.json",
+        "exists": true,
+        "sha256": "74D02733E961094BB911A2F239710F6E68F45349436BF984163136E36E66D70A",
+        "risk_dimensions_count": 10
+      }
+    },
+    {
+      "check_id": "CHECK-016-002",
+      "description": "Impact assessments registry initialized",
+      "status": "PASS",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\.state\\impact_assessments.jsonl",
+        "exists": true,
+        "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+      }
+    },
+    {
+      "check_id": "CHECK-016-003",
+      "description": "Approval registry exists (GAP #15 dependency)",
+      "status": "PASS",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\.state\\approvals.jsonl",
+        "exists": true,
+        "sha256": "B66ECC494C17303A5F6E7F9FDA6A9094431426918E7FAB5E4471536C519A2A17"
+      }
+    }
+  ],
+  "cryptographic_proof": {
+    "algorithm": "SHA256",
+    "hash": "C7F9F658091A66701E49E6D39068196C7163E903B1672700A912A1102C7B909C",
+    "timestamp": "2026-02-12T17:19:04.045712+00:00"
+  }
+}

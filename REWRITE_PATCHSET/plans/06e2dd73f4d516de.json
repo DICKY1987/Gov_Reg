@@ -1,0 +1,70 @@
+{
+  "rewrite_plan_id": "06e2dd73f4d516de",
+  "target_file_id": null,
+  "target_relpath": "01260207201000001250_REGISTRY\\01260202173939000109_CLAUDE.md",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "9b32995997fd4fe030dc3b235db74f6151ce7a9c097bf1d1c4711bc3428ee850",
+  "operations": [
+    {
+      "ref_id": "7b1593de93e9ab49dab0d82a75c07b5d112d9c5622f020dd519c70e964586abe",
+      "old_value": "ID/P_01999000042260126012_validate_no_doc_id.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/ID/P_01999000042260126012_validate_no_doc_id.py",
+      "location": "line:101"
+    },
+    {
+      "ref_id": "bec55b09e4f543d30080d5bd097bb1a081a5b36df2b95cda00645bf059c49db2",
+      "old_value": "REGISTRY/scripts/update_registry_with_real_files.py",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/scripts/update_registry_with_real_files.py",
+      "location": "line:108"
+    },
+    {
+      "ref_id": "b62cfdbe892b7c0bede0fbfd5ad58185927dfd04885140e2f79af3f57d76248f",
+      "old_value": "REGISTRY/01999000042260124503_governance_registry_unified.json",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/01999000042260124503_governance_registry_unified.json",
+      "location": "line:55"
+    },
+    {
+      "ref_id": "cece1c6f749aad20e7bd9dde172bce95ab868181176e2aefdbaf1c638d9d5e52",
+      "old_value": "REGISTRY/UNIFIED_SSOT_REGISTRY_WRITE_POLICY.yaml",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/UNIFIED_SSOT_REGISTRY_WRITE_POLICY.yaml",
+      "location": "line:56"
+    },
+    {
+      "ref_id": "11c44937d1d7fe9fb52ba544bce1f118481c96eef402e0bf32df7b81fb3fb92b",
+      "old_value": "REGISTRY/UNIFIED_SSOT_REGISTRY_DERIVATIONS.yaml",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/UNIFIED_SSOT_REGISTRY_DERIVATIONS.yaml",
+      "location": "line:57"
+    },
+    {
+      "ref_id": "2522ba164a24b23c72bdc61347738230d1997ad0b970068d691a85c8a5006d72",
+      "old_value": "REGISTRY/01999000042260124012_governance_registry_schema.v3.json",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/01999000042260124012_governance_registry_schema.v3.json",
+      "location": "line:58"
+    },
+    {
+      "ref_id": "70f735062b5295193a92a1b3c9e8d75395f95963db694d25b657439ed895b7b6",
+      "old_value": "REGISTRY/2026012816000001_COLUMN_DICTIONARY.json",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/2026012816000001_COLUMN_DICTIONARY.json",
+      "location": "line:59"
+    },
+    {
+      "ref_id": "a862667de0b4816b5cf811c12c1a651ef9b0367c69f6e178e3477a71fff1600f",
+      "old_value": "scripts/P_01999000042260124547_validate_schema.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124547_validate_schema.py",
+      "location": "line:92"
+    },
+    {
+      "ref_id": "6dce1206ab1fdd2f06917f2259463a1e31654c1abcf0b93003bdc2fd281d233f",
+      "old_value": "validators/validate_sec_021.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/validators/validate_sec_021.py",
+      "location": "line:95"
+    },
+    {
+      "ref_id": "cda3135611138b55c6bb200c1770026c0b74a793d191bf106f13df10c581c859",
+      "old_value": "validators/validate_derivation.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/validators/validate_derivation.py",
+      "location": "line:98"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\06e2dd73f4d516de.diff"
+}

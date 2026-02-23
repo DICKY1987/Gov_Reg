@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-01-29T20:48:36.179772Z",
+  "total_vectors": 3,
+  "passed": 3,
+  "failed": 0,
+  "results": [
+    {
+      "vector_id": "VEC-001",
+      "passed": true,
+      "expected": {
+        "status": "active",
+        "validation": "passed"
+      },
+      "conditions_met": true
+    },
+    {
+      "vector_id": "VEC-002",
+      "passed": true,
+      "expected": {
+        "status": "planned",
+        "validation": "blocked",
+        "reason": "validation_passed condition not met"
+      },
+      "conditions_met": false
+    },
+    {
+      "vector_id": "VEC-003",
+      "passed": true,
+      "expected": {
+        "status": "deprecated",
+        "validation": "passed"
+      },
+      "conditions_met": true
+    }
+  ],
+  "file_id": "01260207233100000529"
+}

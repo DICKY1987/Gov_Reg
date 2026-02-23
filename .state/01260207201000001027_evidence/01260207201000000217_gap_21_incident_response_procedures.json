@@ -1,0 +1,52 @@
+{
+  "gap_id": "GAP-021",
+  "gap_name": "Incident Response Procedures",
+  "verification_timestamp": "2026-02-12T17:19:04.572298+00:00",
+  "status": "VERIFIED",
+  "checks": [
+    {
+      "check_id": "CHECK-021-001",
+      "description": "Incidents registry initialized",
+      "status": "PASS",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\.state\\incidents.jsonl",
+        "exists": true,
+        "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+      }
+    },
+    {
+      "check_id": "CHECK-021-002",
+      "description": "Incident response template exists",
+      "status": "PASS",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\templates\\incident_response_record.json",
+        "exists": true,
+        "sha256": "7C31A85552468EF264FB17EA00A150BDA492168FEAE021CCE70428D9453550A5"
+      }
+    },
+    {
+      "check_id": "CHECK-021-003",
+      "description": "Incident runbooks directory exists",
+      "status": "PASS",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\docs\\runbooks\\incidents",
+        "exists": true
+      }
+    },
+    {
+      "check_id": "CHECK-021-004",
+      "description": "Access audit log integration (GAP #17)",
+      "status": "PASS",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\.state\\access_audit.jsonl",
+        "exists": true,
+        "sha256": "D8AA7F5BCBF7B10C944297FDC02FFEC56BA4EBCD1A07E9F740B263388EE9C56A"
+      }
+    }
+  ],
+  "cryptographic_proof": {
+    "algorithm": "SHA256",
+    "hash": "134ACF13CA1E8480A59297DFD129F3D9676E24678E5E1449791A09D6EDDD6E75",
+    "timestamp": "2026-02-12T17:19:04.572298+00:00"
+  }
+}

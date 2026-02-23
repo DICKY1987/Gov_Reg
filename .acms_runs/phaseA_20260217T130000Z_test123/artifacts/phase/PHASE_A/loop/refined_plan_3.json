@@ -1,0 +1,58 @@
+{
+  "$schema": "https://example.com/plan-schema.json",
+  "plan_id": "TEST-PLAN-001",
+  "schema_version": "1.0.0",
+  "workstreams": [
+    {
+      "id": "WS-CLI",
+      "summary": "Implement CLI commands",
+      "tasks": [
+        {
+          "id": "TASK-CLI-1",
+          "summary": "Create CLI entry point",
+          "depends_on": [],
+          "writes_scopes": ["src/cli.py"],
+          "acceptance_tests": [
+            {
+              "command": "python -m pytest tests/test_cli.py",
+              "expected_exit_code": 0
+            }
+          ],
+          "estimated_duration_seconds": 120
+        },
+        {
+          "id": "TASK-CLI-2",
+          "summary": "Add command routing",
+          "depends_on": ["TASK-CLI-1"],
+          "writes_scopes": ["src/commands/__init__.py"],
+          "acceptance_tests": [
+            {
+              "command": "python -m pytest tests/test_routing.py",
+              "expected_exit_code": 0
+            }
+          ],
+          "estimated_duration_seconds": 180
+        }
+      ]
+    },
+    {
+      "id": "WS-DOCS",
+      "summary": "Update documentation",
+      "tasks": [
+        {
+          "id": "TASK-DOC-1",
+          "summary": "Write README",
+          "depends_on": ["TASK-CLI-2"],
+          "writes_scopes": ["README.md"],
+          "acceptance_tests": [
+            {
+              "command": "test -f README.md",
+              "expected_exit_code": 0
+            }
+          ],
+          "estimated_duration_seconds": 60
+        }
+      ]
+    }
+  ]
+}

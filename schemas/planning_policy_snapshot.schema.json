@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://govreg.local/schemas/planning_policy_snapshot.schema.json",
+  "title": "Planning Policy Snapshot Schema",
+  "description": "Immutable policy configuration for a planning run",
+  "type": "object",
+  "required": [
+    "policy_id",
+    "version",
+    "required_plan_sections",
+    "defect_taxonomy",
+    "rule_catalog",
+    "iteration_limits",
+    "critic_mode",
+    "forbidden_patterns",
+    "allowed_patch_operations"
+  ],
+  "properties": {
+    "policy_id": {
+      "type": "string",
+      "pattern": "^POLICY_[0-9]{8}T[0-9]{6}Z_[a-f0-9]{8}$"
+    },
+    "version": {
+      "type": "string",
+      "description": "Policy version"
+    },
+    "required_plan_sections": {
+      "type": "array",
+      "description": "Sections that must be present in all plans",
+      "items": {"type": "string"},
+      "minItems": 1
+    },
+    "defect_taxonomy": {
+      "type": "object",
+      "description": "Classification of defect types",
+      "properties": {
+        "hard_defect_rules": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "soft_defect_rules": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "rule_catalog": {
+      "type": "array",
+      "description": "Validation rules for critic",
+      "items": {
+        "type": "object",
+        "required": [
+          "rule_code",
+          "severity",
+          "description",
+          "detection_method",
+          "remediation_guidance"
+        ],
+        "properties": {
+          "rule_code": {"type": "string", "pattern": "^[A-Z]+-[0-9]{3}$"},
+          "severity": {
+            "type": "string",
+            "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"]
+          },
+          "description": {"type": "string"},
+          "detection_method": {
+            "type": "string",
+            "enum": ["DETERMINISTIC", "LLM", "HYBRID"]
+          },
+          "remediation_guidance": {"type": "string"}
+        }
+      }
+    },
+    "iteration_limits": {
+      "type": "object",
+      "required": ["max_iterations", "hard_defect_timeout", "soft_defect_improvement_threshold"],
+      "properties": {
+        "max_iterations": {"type": "integer", "minimum": 1, "maximum": 10},
+        "hard_defect_timeout": {"type": "integer"},
+        "soft_defect_improvement_threshold": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "critic_mode": {
+      "type": "string",
+      "enum": ["DETERMINISTIC", "LLM", "HYBRID"],
+      "description": "Critic execution mode"
+    },
+    "forbidden_patterns": {
+      "type": "array",
+      "description": "Patterns that must not appear in plans",
+      "items": {
+        "type": "object",
+        "required": ["pattern_id", "regex", "reason"],
+        "properties": {
+          "pattern_id": {"type": "string"},
+          "regex": {"type": "string"},
+          "reason": {"type": "string"}
+        }
+      }
+    },
+    "allowed_patch_operations": {
+      "type": "array",
+      "description": "Permitted RFC-6902 operations",
+      "items": {
+        "type": "string",
+        "enum": ["add", "remove", "replace", "move", "copy", "test"]
+      },
+      "minItems": 1
+    }
+  }
+}

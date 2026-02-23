@@ -1,0 +1,60 @@
+{
+  "gate_id": "GATE-013",
+  "validated_at": "2026-02-01T08:20:06.428858Z",
+  "total_proofs": 13,
+  "passed": 0,
+  "results": {
+    "P_01260207233100000273_audit_failure_modes.py": {
+      "exit_code": 1,
+      "passed": false
+    },
+    "P_01260207233100000274_check_dead_artifacts.py": {
+      "exit_code": 2,
+      "passed": false
+    },
+    "P_01260207233100000275_check_dormant_flows.py": {
+      "exit_code": 2,
+      "passed": false
+    },
+    "P_01260207233100000276_check_missing_producers.py": {
+      "exit_code": 2,
+      "passed": false
+    },
+    "P_01260207233100000277_check_orphans.py": {
+      "exit_code": 2,
+      "passed": false
+    },
+    "P_01260207233100000278_detect_cycles.py": {
+      "exit_code": 2,
+      "passed": false
+    },
+    "P_01260207233100000279_detect_write_conflicts.py": {
+      "exit_code": 2,
+      "passed": false
+    },
+    "P_01260207233100000281_test_idempotency_all.py": {
+      "exit_code": 2,
+      "passed": false
+    },
+    "P_01260207233100000282_validate_detection_gates.py": {
+      "exit_code": 2,
+      "passed": false
+    },
+    "P_01260207233100000283_validate_e2e_proof_linkage.py": {
+      "exit_code": 2,
+      "passed": false
+    },
+    "P_01260207233100000284_validate_evidence_bundles.py": {
+      "exit_code": 2,
+      "passed": false
+    },
+    "P_01260207233100000285_validate_handoffs.py": {
+      "exit_code": 2,
+      "passed": false
+    },
+    "P_01260207233100000286_validate_recovery_policies.py": {
+      "exit_code": 2,
+      "passed": false
+    }
+  }
+}

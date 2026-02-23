@@ -1,0 +1,232 @@
+{
+  "version": "1.0.0",
+  "frozen_at": "2026-02-20T08:30:00Z",
+  "description": "Closed-world vocabulary for capability tags - prevents uncontrolled tag sprawl",
+  "entries": [
+    {
+      "id": "CAP-REGISTRY-VALIDATE",
+      "domain": "registry",
+      "component": "REGISTRY",
+      "capability": "VALIDATE",
+      "description": "Schema and policy validation of registry entries"
+    },
+    {
+      "id": "CAP-REGISTRY-SCAN",
+      "domain": "registry",
+      "component": "REGISTRY",
+      "capability": "SCAN",
+      "description": "Scan files to build registry entries"
+    },
+    {
+      "id": "CAP-REGISTRY-PROMOTE",
+      "domain": "registry",
+      "component": "REGISTRY",
+      "capability": "PROMOTE",
+      "description": "Promote data to SSOT registry"
+    },
+    {
+      "id": "CAP-REGISTRY-PATCH_APPLY",
+      "domain": "registry",
+      "component": "REGISTRY",
+      "capability": "PATCH_APPLY",
+      "description": "Apply RFC-6902 patches to registry"
+    },
+    {
+      "id": "CAP-REGISTRY-BUILD_INDEX",
+      "domain": "registry",
+      "component": "REGISTRY",
+      "capability": "BUILD_INDEX",
+      "description": "Build registry indexes and lookups"
+    },
+    {
+      "id": "CAP-IDS-ALLOCATE",
+      "domain": "ids",
+      "component": "IDS",
+      "capability": "ALLOCATE",
+      "description": "Allocate new file IDs from COUNTER_STORE"
+    },
+    {
+      "id": "CAP-IDS-SCAN",
+      "domain": "ids",
+      "component": "IDS",
+      "capability": "SCAN",
+      "description": "Scan for FILE_ID patterns"
+    },
+    {
+      "id": "CAP-IDS-RECONCILE",
+      "domain": "ids",
+      "component": "IDS",
+      "capability": "RECONCILE",
+      "description": "Reconcile ID conflicts and duplicates"
+    },
+    {
+      "id": "CAP-IDS-MIGRATE",
+      "domain": "ids",
+      "component": "IDS",
+      "capability": "MIGRATE",
+      "description": "Migrate legacy IDs to new format"
+    },
+    {
+      "id": "CAP-IDS-VALIDATE",
+      "domain": "ids",
+      "component": "IDS",
+      "capability": "VALIDATE",
+      "description": "Validate ID format and uniqueness"
+    },
+    {
+      "id": "CAP-GOVERNANCE-VALIDATE",
+      "domain": "governance",
+      "component": "GOVERNANCE",
+      "capability": "VALIDATE",
+      "description": "Governance policy and gate validation"
+    },
+    {
+      "id": "CAP-GOVERNANCE-EXTRACT_FACTS",
+      "domain": "governance",
+      "component": "GOVERNANCE",
+      "capability": "EXTRACT_FACTS",
+      "description": "Extract governance facts from files"
+    },
+    {
+      "id": "CAP-GOVERNANCE-SCAN",
+      "domain": "governance",
+      "component": "GOVERNANCE",
+      "capability": "SCAN",
+      "description": "Scan for governance violations"
+    },
+    {
+      "id": "CAP-PLANNING-BUILD_INDEX",
+      "domain": "planning",
+      "component": "PLANNING",
+      "capability": "BUILD_INDEX",
+      "description": "Build plan indexes and references"
+    },
+    {
+      "id": "CAP-PLANNING-VALIDATE",
+      "domain": "planning",
+      "component": "PLANNING",
+      "capability": "VALIDATE",
+      "description": "Validate plan structure and dependencies"
+    },
+    {
+      "id": "CAP-TEMPLATE_OPS-EXTRACT_FACTS",
+      "domain": "template_ops",
+      "component": "TEMPLATE_OPS",
+      "capability": "EXTRACT_FACTS",
+      "description": "Extract facts from templates"
+    },
+    {
+      "id": "CAP-TEMPLATE_OPS-MIGRATE",
+      "domain": "template_ops",
+      "component": "TEMPLATE_OPS",
+      "capability": "MIGRATE",
+      "description": "Migrate templates to new format"
+    },
+    {
+      "id": "CAP-EVIDENCE-EMIT",
+      "domain": "evidence",
+      "component": "EVIDENCE",
+      "capability": "EMIT",
+      "description": "Emit evidence artifacts and telemetry"
+    },
+    {
+      "id": "CAP-EVIDENCE-VALIDATE",
+      "domain": "evidence",
+      "component": "EVIDENCE",
+      "capability": "VALIDATE",
+      "description": "Validate evidence completeness and format"
+    },
+    {
+      "id": "CAP-EVIDENCE-BUILD_INDEX",
+      "domain": "evidence",
+      "component": "EVIDENCE",
+      "capability": "BUILD_INDEX",
+      "description": "Build evidence indexes"
+    },
+    {
+      "id": "CAP-ARCHIVE-ARCHIVE_MOVE",
+      "domain": "archive",
+      "component": "ARCHIVE",
+      "capability": "ARCHIVE_MOVE",
+      "description": "Move files to archive"
+    },
+    {
+      "id": "CAP-ARCHIVE-MIGRATE",
+      "domain": "archive",
+      "component": "ARCHIVE",
+      "capability": "MIGRATE",
+      "description": "Migrate archived content"
+    },
+    {
+      "id": "CAP-ARCHIVE-SCAN",
+      "domain": "archive",
+      "component": "ARCHIVE",
+      "capability": "SCAN",
+      "description": "Scan archive for content"
+    },
+    {
+      "id": "CAP-ORCHESTRATION-RUN",
+      "domain": "orchestration",
+      "component": "ORCHESTRATION",
+      "capability": "RUN",
+      "description": "Orchestrate pipeline execution"
+    },
+    {
+      "id": "CAP-ORCHESTRATION-VALIDATE",
+      "domain": "orchestration",
+      "component": "ORCHESTRATION",
+      "capability": "VALIDATE",
+      "description": "Validate orchestration configuration"
+    },
+    {
+      "id": "CAP-QA-VALIDATE",
+      "domain": "qa",
+      "component": "QA",
+      "capability": "VALIDATE",
+      "description": "Quality assurance validation"
+    },
+    {
+      "id": "CAP-QA-SCAN",
+      "domain": "qa",
+      "component": "QA",
+      "capability": "SCAN",
+      "description": "Scan for quality issues"
+    },
+    {
+      "id": "CAP-CLI-ARGPARSE",
+      "domain": "cli",
+      "component": "CLI",
+      "capability": "ARGPARSE",
+      "description": "Command-line interface with argparse"
+    },
+    {
+      "id": "CAP-SCHEMA-DEFINITION",
+      "domain": "schema",
+      "component": "SCHEMA",
+      "capability": "DEFINITION",
+      "description": "JSON Schema definition"
+    },
+    {
+      "id": "CAP-GATE-DEFINITION",
+      "domain": "gate",
+      "component": "GATE",
+      "capability": "DEFINITION",
+      "description": "Governance gate definition"
+    },
+    {
+      "id": "CAP-LIB-SHARED_SUPPORT",
+      "domain": "library",
+      "component": "LIB",
+      "capability": "SHARED_SUPPORT",
+      "description": "Shared library support code"
+    },
+    {
+      "id": "CAP-UNMAPPED-REVIEW",
+      "domain": "unmapped",
+      "component": "UNMAPPED",
+      "capability": "REVIEW",
+      "description": "Unmapped file requiring manual review"
+    }
+  ],
+  "file_id": "01999000042260125136"
+}

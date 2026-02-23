@@ -1,0 +1,26 @@
+{
+  "request_id": "REQ-2026-001",
+  "title": "Implement User Authentication System",
+  "description": "Build a secure, scalable authentication system with OAuth2 support, multi-factor authentication, and session management for the web application platform.",
+  "context": {
+    "background": "Current system uses basic authentication which does not meet security requirements. Need to implement industry-standard authentication with support for social login providers.",
+    "constraints": [
+      "Must integrate with existing user database schema",
+      "Cannot introduce breaking changes to existing API endpoints",
+      "Must support at least 10,000 concurrent users",
+      "Implementation timeline is 6 weeks"
+    ],
+    "success_criteria": [
+      "All authentication flows pass security audit",
+      "Response time under 200ms for auth operations",
+      "99.9% uptime during peak hours",
+      "Zero data breaches or security incidents in first 3 months"
+    ],
+    "stakeholders": [
+      "Security Team",
+      "Backend Engineering",
+      "Product Management",
+      "DevOps"
+    ]
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "section_id": "sec_005_phase_dag",
+  "title": "Phase DAG + Parallel Execution",
+  "required": true,
+  "instructions_file": "sections/sec_005_phase_dag.inst.md",
+  "phase_dag": {
+    "phase_index": {
+      "phases": [
+        {
+          "phase_id": "PH-001",
+          "title": "{{PHASE_TITLE}}",
+          "objective": "{{ONE_SENTENCE_OBJECTIVE}}",
+          "status": "{{planned|in_progress|blocked|done}}",
+          "estimate_hours": "{{N}}",
+          "tags": [
+            "{{TAG1}}",
+            "{{TAG2}}"
+          ]
+        }
+      ]
+    },
+    "dag_structure": {
+      "dependencies": [
+        {
+          "phase_id": "PH-002",
+          "depends_on": [
+            "PH-001"
+          ],
+          "may_run_parallel_with": [
+            "PH-010"
+          ],
+          "parallel_group": "{{GROUP_ID}}",
+          "is_critical_path": true
+        }
+      ],
+      "parallel_execution_groups": [
+        {
+          "group_id": "PG-001",
+          "group_name": "{{GROUP_NAME}}",
+          "phases": [
+            "PH-003",
+            "PH-004",
+            "PH-005"
+          ],
+          "concurrency_limit": 3,
+          "conflict_detection": "auto"
+        }
+      ],
+      "sequential_estimate_minutes": "{{TOTAL_SEQ_TIME}}",
+      "parallel_estimate_minutes": "{{TOTAL_PARALLEL_TIME}}",
+      "speedup_percentage": "{{CALCULATED_SPEEDUP}}",
+      "bottlenecks": [
+        {
+          "phase_or_group": "{{ID}}",
+          "duration_minutes": "{{N}}",
+          "reason": "{{WHY_BOTTLENECK}}"
+        }
+      ]
+    },
+    "workstream_bundling": {
+      "workstreams": [
+        {
+          "workstream_id": "WS-001",
+          "workstream_bundle_id": "ws-bundle-01",
+          "title": "{{WORKSTREAM_TITLE}}",
+          "phases": [
+            "PH-001",
+            "PH-002",
+            "PH-003"
+          ],
+          "owner": "{{DRI}}"
+        }
+      ]
+    }
+  },
+  "file_id": "01260207233100000475"
+}

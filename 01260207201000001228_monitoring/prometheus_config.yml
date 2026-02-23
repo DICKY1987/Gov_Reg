@@ -1,0 +1,27 @@
+# Prometheus Configuration for Gov_Reg
+# Generated: 2026-02-28
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'govreg_registry'
+    static_configs:
+      - targets: ['localhost:9090']
+    metrics_path: '/metrics'
+    
+  - job_name: 'govreg_pfms'
+    static_configs:
+      - targets: ['localhost:9091']
+      
+  - job_name: 'govreg_validators'
+    static_configs:
+      - targets: ['localhost:9092']
+
+# Metrics collected:
+# - registry_write_duration_seconds
+# - registry_read_duration_seconds
+# - pfms_generation_duration_seconds
+# - pfms_conflicts_detected_total
+# - govreg_errors_total

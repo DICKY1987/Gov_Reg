@@ -1,0 +1,660 @@
+{
+  "generated_at_utc": "2026-02-18T21:26:46.671143+00:00",
+  "scope_root": "C:\\Users\\richg\\Gov_Reg\\ID",
+  "definition": {
+    "current_id_system": "IDPKG runtime + canonical allocator/patterns + dir_id governance tooling",
+    "system_status_values": {
+      "current": "Active runtime, contracts, and governance tooling",
+      "supporting": "Tests/reports/tools that support current system",
+      "legacy": "Superseded scripts or outdated docs",
+      "reference": "Reference-only docs or artifacts"
+    }
+  },
+  "files": [
+    {
+      "path": "ID\\.dir_id",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "anchor",
+      "responsibility": "ID folder directory identity anchor"
+    },
+    {
+      "path": "ID\\01260202173939000110_FLOW_DIAGRAM_EVIDENCE.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "reference_doc",
+      "responsibility": "Flow Diagram Evidence Package"
+    },
+    {
+      "path": "ID\\01260207201000000122_DIR_ID_SYSTEM_DOCUMENTATION.md",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "contract_doc",
+      "responsibility": "DIR_ID system reference documentation"
+    },
+    {
+      "path": "ID\\01260207201000000123_DOC-CONFIG-1208__ChatGPT-Stable ID Types.json",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "data_config",
+      "responsibility": "Data/config file: 01260207201000000123_DOC-CONFIG-1208__ChatGPT-Stable ID Types.json"
+    },
+    {
+      "path": "ID\\01260207201000000139_ID_ALLOCATOR_OVERLAP_ANALYSIS.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "analysis_doc",
+      "responsibility": "ID Allocator Function Overlap Analysis"
+    },
+    {
+      "path": "ID\\01260207201000000140_ID_ALLOCATOR_QUICKREF.txt",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "reference_doc",
+      "responsibility": "Document: 01260207201000000140_ID_ALLOCATOR_QUICKREF.txt"
+    },
+    {
+      "path": "ID\\01260207201000000144_ID_CANONICALITY_CORRECTIONS_V2.1.1.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "reference_doc",
+      "responsibility": "ID Canonicality - Final Corrections (Blockers Fixed)"
+    },
+    {
+      "path": "ID\\01260207201000000147_ID_CANONICALITY_EXECUTION_BLOCKERS.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "reference_doc",
+      "responsibility": "ID Canonicality - EXECUTION BLOCKERS (v2.1.3  v2.1.3.1)"
+    },
+    {
+      "path": "ID\\01260207201000000166_ID_CANONICALITY_INDEX.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "analysis_doc",
+      "responsibility": "ID Canonicality - Documentation Index"
+    },
+    {
+      "path": "ID\\01260207201000000168_ID_CANONICALITY_MUTATION_SET_V2.1.4.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "reference_doc",
+      "responsibility": "ID Canonicality System - Mutation Set v2.1.4-READY"
+    },
+    {
+      "path": "ID\\01260207201000000173_ID_CRAZY.txt",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "reference_doc",
+      "responsibility": "\"C:\\Users\\richg\\Gov_Reg\\scripts\\P_01999000042260124027_id_allocator.py\""
+    },
+    {
+      "path": "ID\\01260207201000000174_ID_IDENTITY_CONTRACT.md",
+      "system_status": "legacy",
+      "is_current_id_system": false,
+      "category": "contract_doc",
+      "responsibility": "ID Identity Contract - Vocabulary & Rules",
+      "notes": "Superseded by 01260207201000000352_ID_IDENTITY_CONTRACT.md"
+    },
+    {
+      "path": "ID\\01260207201000000175_IDENTITY_CONFIG (1).yaml",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "data_config",
+      "responsibility": "Data/config file: 01260207201000000175_IDENTITY_CONFIG (1).yaml"
+    },
+    {
+      "path": "ID\\01260207201000000346_DIR_ID_CANONICALITY_LAW.json",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "data_config",
+      "responsibility": "Data/config file: 01260207201000000346_DIR_ID_CANONICALITY_LAW.json"
+    },
+    {
+      "path": "ID\\01260207201000000347_DIR_ID_TRANSITION_VECTORS.yaml",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "data_config",
+      "responsibility": "Data/config file: 01260207201000000347_DIR_ID_TRANSITION_VECTORS.yaml"
+    },
+    {
+      "path": "ID\\01260207201000000349_BUNDLE_ID_DEFINITION.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "reference_doc",
+      "responsibility": "Bundle ID Definition"
+    },
+    {
+      "path": "ID\\01260207201000000352_ID_IDENTITY_CONTRACT.md",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "contract_doc",
+      "responsibility": "Canonical ID vocabulary and enforcement rules (v2.1.4)"
+    },
+    {
+      "path": "ID\\01260207201000000371_PRODUCTION_VALIDATION_RESULTS.txt",
+      "system_status": "supporting",
+      "is_current_id_system": false,
+      "category": "report",
+      "responsibility": "Production Deployment Complete - Validation Results"
+    },
+    {
+      "path": "ID\\01260207201000000376_VALIDATION_RESULTS.txt",
+      "system_status": "supporting",
+      "is_current_id_system": false,
+      "category": "report",
+      "responsibility": " Task 3.3 Complete: Validate Test Results"
+    },
+    {
+      "path": "ID\\01260207201000000515_Planning-Time File ID Reservation System.txt",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "reference_doc",
+      "responsibility": "TECHNICAL SPECIFICATION"
+    },
+    {
+      "path": "ID\\01260207201000000516_Planning-Time_File_ID_Reservation_System_UPDATED.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "reference_doc",
+      "responsibility": "TECHNICAL SPECIFICATION (UPDATED)"
+    },
+    {
+      "path": "ID\\01260207201000000558_MULTI_AGENT_CONSOLIDATION_QUICKREF.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "report",
+      "responsibility": "Multi-Agent Workstream Coordination - Quick Reference"
+    },
+    {
+      "path": "ID\\01260207201000000576_DOC_AIDER_CONTRACT.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "contract_doc",
+      "responsibility": "DOC_AIDER_CONTRACT - Aider Tool Integration Contract v1"
+    },
+    {
+      "path": "ID\\01260207201000000609_AI_GUIDANCE (2).md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "reference_doc",
+      "responsibility": "---"
+    },
+    {
+      "path": "ID\\01260207201000000613_DOC_AIDER_CONTRACT (2).md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "contract_doc",
+      "responsibility": "---"
+    },
+    {
+      "path": "ID\\01260207201000000640_AI_DEV_HYGIENE_GUIDELINES.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "guide",
+      "responsibility": "AI Development Hygiene - Quick Reference Guidelines"
+    },
+    {
+      "path": "ID\\01260207201000000647_DOC_AI_DEV_HYGIENE_GUIDELINES.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "guide",
+      "responsibility": "---"
+    },
+    {
+      "path": "ID\\01260207201000000683_AIDER_CONFIG_ANALYSIS.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "analysis_doc",
+      "responsibility": "---"
+    },
+    {
+      "path": "ID\\01260207201000000684_AIDER_FIXES_APPLIED.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "reference_doc",
+      "responsibility": "---"
+    },
+    {
+      "path": "ID\\01260207201000000685_AIDER_GIT_IMP_PROMNT_EXAMPLE.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "reference_doc",
+      "responsibility": "IMP_PLAN_3  Aider-Ready Implementation Plan"
+    },
+    {
+      "path": "ID\\01260207201000000686_AIDER_OLLAMA_DEEP.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "reference_doc",
+      "responsibility": "Windows"
+    },
+    {
+      "path": "ID\\01260207201000000687_AIDER_QUICK_REFERENCE.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "reference_doc",
+      "responsibility": "Aider Quick Reference Card"
+    },
+    {
+      "path": "ID\\01260207201000000688_AIDER_SETUP_README.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "reference_doc",
+      "responsibility": "---"
+    },
+    {
+      "path": "ID\\01260207201000000750_DOC_ID_AUTOMATION_CHAIN_ANALYSIS.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "analysis_doc",
+      "responsibility": "DOC_ID System - Complete Automation Chain Analysis"
+    },
+    {
+      "path": "ID\\01260207201000000753_DOC_ID_REGISTRY_CLI_REVIEW.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "reference_doc",
+      "responsibility": "doc_id Registry CLI Implementation Review"
+    },
+    {
+      "path": "ID\\01260207201000000775_EXECUTION_PATTERN_DATA_FLOW_VALIDATION.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "report",
+      "responsibility": "---"
+    },
+    {
+      "path": "ID\\01260207201000000877_DIR_ID_ANCHOR.schema.json",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "schema",
+      "responsibility": ".dir_id anchor schema"
+    },
+    {
+      "path": "ID\\ChatGPT-Dir ID System Model.json",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "data_config",
+      "responsibility": "Data/config file: ChatGPT-Dir ID System Model.json"
+    },
+    {
+      "path": "ID\\CONSOLIDATION_COMPLETE.md",
+      "system_status": "supporting",
+      "is_current_id_system": false,
+      "category": "report",
+      "responsibility": "Registry Consolidation - Completion Report"
+    },
+    {
+      "path": "ID\\CONSOLIDATION_PLAN.md",
+      "system_status": "supporting",
+      "is_current_id_system": false,
+      "category": "report",
+      "responsibility": "Registry Files Consolidation Plan"
+    },
+    {
+      "path": "ID\\HOW_TO_IDENTIFY_DEPRECATED_FILES.md",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "guide",
+      "responsibility": "How to Identify Deprecated Files - Complete Guide"
+    },
+    {
+      "path": "ID\\ID_AUTOMATION_COMPLETE.md",
+      "system_status": "supporting",
+      "is_current_id_system": false,
+      "category": "report",
+      "responsibility": " ID System Automation - COMPLETE"
+    },
+    {
+      "path": "ID\\IDPKG_CONFIG.schema (1).json",
+      "system_status": "legacy",
+      "is_current_id_system": false,
+      "category": "schema",
+      "responsibility": "Duplicate IDPKG config schema (legacy copy)",
+      "notes": "Duplicate of IDPKG_CONFIG.schema.json"
+    },
+    {
+      "path": "ID\\IDPKG_CONFIG.schema.json",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "schema",
+      "responsibility": "IDPKG config schema (project-level)"
+    },
+    {
+      "path": "ID\\install_automation.py",
+      "system_status": "supporting",
+      "is_current_id_system": false,
+      "category": "support_tool",
+      "responsibility": "Installation script for automation gaps implementation."
+    },
+    {
+      "path": "ID\\P_01260202173939000081_generate_component_id.py",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "reference_script",
+      "responsibility": "Component ID Generator for mapp_py Analysis Pipeline"
+    },
+    {
+      "path": "ID\\P_01260207201000000109_add_file_ids.py",
+      "system_status": "legacy",
+      "is_current_id_system": false,
+      "category": "legacy_script",
+      "responsibility": "Add 20-digit IDs to files in current directory that need them."
+    },
+    {
+      "path": "ID\\P_01260207201000000130_Enhanced File Scanner v2.py",
+      "system_status": "legacy",
+      "is_current_id_system": false,
+      "category": "legacy_script",
+      "responsibility": "Enhanced File Scanner v2.0",
+      "notes": "Legacy scanner (pre-IDPKG)"
+    },
+    {
+      "path": "ID\\P_01260207201000000198_add_ids_recursive.py",
+      "system_status": "legacy",
+      "is_current_id_system": false,
+      "category": "legacy_script",
+      "responsibility": "Add 20-digit IDs to all files recursively that need them."
+    },
+    {
+      "path": "ID\\P_01260207201000000936_strengthen_id_patterns.py",
+      "system_status": "legacy",
+      "is_current_id_system": false,
+      "category": "legacy_script",
+      "responsibility": "Strengthen ID patterns for better validation."
+    },
+    {
+      "path": "ID\\P_01260207201000000989_identity_resolver.py",
+      "system_status": "legacy",
+      "is_current_id_system": false,
+      "category": "legacy_script",
+      "responsibility": "Wrapper for P_01260207233100000323_identity_resolver.py"
+    },
+    {
+      "path": "ID\\P_01260207201000001009_test_directory_identity.py",
+      "system_status": "supporting",
+      "is_current_id_system": false,
+      "category": "test",
+      "responsibility": "Tests for directory identity resolver."
+    },
+    {
+      "path": "ID\\P_01260207233100000033_fix_file_id_pattern.py",
+      "system_status": "legacy",
+      "is_current_id_system": false,
+      "category": "legacy_script",
+      "responsibility": "Fix file_id pattern in Column Dictionary to match COMPLETE_SSOT.json specification."
+    },
+    {
+      "path": "ID\\P_01260207233100000050_test_identity_resolver.py",
+      "system_status": "supporting",
+      "is_current_id_system": false,
+      "category": "test",
+      "responsibility": "Tests for identity_resolver.py - 4-step matching algorithm"
+    },
+    {
+      "path": "ID\\P_01260207233100000064_migrate_remove_doc_id_from_data.py",
+      "system_status": "legacy",
+      "is_current_id_system": false,
+      "category": "legacy_script",
+      "responsibility": "Data migration: remove doc_id from registry records."
+    },
+    {
+      "path": "ID\\P_01260207233100000068_zone_classifier.py",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "tool",
+      "responsibility": "Zone classifier for directory governance system."
+    },
+    {
+      "path": "ID\\P_01260207233100000069_dir_id_handler.py",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "handler",
+      "responsibility": ".dir_id file handler for directory identity anchoring."
+    },
+    {
+      "path": "ID\\P_01260207233100000070_dir_identity_resolver.py",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "resolver",
+      "responsibility": "Directory identity resolution pipeline (S10D-S12D)."
+    },
+    {
+      "path": "ID\\P_01260207233100000154_id_normalizer.py",
+      "system_status": "legacy",
+      "is_current_id_system": false,
+      "category": "legacy_script",
+      "responsibility": "ID Normalizer"
+    },
+    {
+      "path": "ID\\P_01260207233100000287_batch_assign_file_ids.py",
+      "system_status": "legacy",
+      "is_current_id_system": false,
+      "category": "legacy_script",
+      "responsibility": "Batch File ID Assignment - Add file IDs to existing files and register them"
+    },
+    {
+      "path": "ID\\P_01260207233100000288_allocate_ids.py",
+      "system_status": "legacy",
+      "is_current_id_system": false,
+      "category": "legacy_script",
+      "responsibility": "Phase 0.7: Allocate 20-digit IDs for migration files"
+    },
+    {
+      "path": "ID\\P_01260207233100000302_locate_id_counter.py",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "reference_script",
+      "responsibility": "Phase 0.2a: Locate ID Counter"
+    },
+    {
+      "path": "ID\\P_01260207233100000323_identity_resolver.py",
+      "system_status": "legacy",
+      "is_current_id_system": false,
+      "category": "legacy_script",
+      "responsibility": "Identity Resolver - 4-Step Matching Algorithm"
+    },
+    {
+      "path": "ID\\P_01260207233100000333_id_allocator.py",
+      "system_status": "legacy",
+      "is_current_id_system": false,
+      "category": "legacy_script",
+      "responsibility": "Canonical ID Allocator for Registry records.",
+      "notes": "Superseded by P_01999000042260125006_id_allocator_facade.py"
+    },
+    {
+      "path": "ID\\P_01260207233100000342_01999000042260125024_identity_pipeline.py",
+      "system_status": "legacy",
+      "is_current_id_system": false,
+      "category": "legacy_script",
+      "responsibility": "Python module"
+    },
+    {
+      "path": "ID\\P_01999000042260124027_id_allocator.py",
+      "system_status": "legacy",
+      "is_current_id_system": false,
+      "category": "legacy_script",
+      "responsibility": "ID Allocation Module - Proactive ID Assignment.",
+      "notes": "Backend allocator; use facade instead"
+    },
+    {
+      "path": "ID\\P_01999000042260124029_test_id_allocator.py",
+      "system_status": "supporting",
+      "is_current_id_system": false,
+      "category": "test",
+      "responsibility": "Unit tests for ID Allocator module."
+    },
+    {
+      "path": "ID\\P_01999000042260124031_unified_id_allocator.py",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "allocator",
+      "responsibility": "Unified ID allocator consolidating multiple allocation strategies."
+    },
+    {
+      "path": "ID\\P_01999000042260124032_reservation_ledger.py",
+      "system_status": "supporting",
+      "is_current_id_system": false,
+      "category": "supporting_script",
+      "responsibility": "Reservation ledger manager for tracking file ID reservations."
+    },
+    {
+      "path": "ID\\P_01999000042260124040_test_reservation_system.py",
+      "system_status": "supporting",
+      "is_current_id_system": false,
+      "category": "test",
+      "responsibility": "Phase 4 - Comprehensive Test Suite for Reservation System."
+    },
+    {
+      "path": "ID\\P_01999000042260124489_id_scheme.py",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "reference_script",
+      "responsibility": "GEU ID generation scheme."
+    },
+    {
+      "path": "ID\\P_01999000042260124521_id_format_scanner.py",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "tool",
+      "responsibility": "ID Format Scanner - Identify files with missing or incorrect file ID format."
+    },
+    {
+      "path": "ID\\P_01999000042260125000_gate_id_canonicality.py",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "governance_gate",
+      "responsibility": "Pre-commit Gate: ID Canonicality Enforcement"
+    },
+    {
+      "path": "ID\\P_01999000042260125002_canonical_id_patterns.py",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "tool",
+      "responsibility": "Canonical ID Pattern Definitions"
+    },
+    {
+      "path": "ID\\P_01999000042260125006_id_allocator_facade.py",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "allocator",
+      "responsibility": "ID Allocator Facade"
+    },
+    {
+      "path": "ID\\P_01999000042260125067_zone_classifier.py",
+      "system_status": "legacy",
+      "is_current_id_system": false,
+      "category": "legacy_script",
+      "responsibility": "Zone Classifier Module - Directory ID Package v1.0",
+      "notes": "Superseded by P_01260207233100000068_zone_classifier.py"
+    },
+    {
+      "path": "ID\\P_01999000042260125068_dir_id_handler.py",
+      "system_status": "legacy",
+      "is_current_id_system": false,
+      "category": "legacy_script",
+      "responsibility": "Directory ID Handler - Directory ID Package v1.0",
+      "notes": "Superseded by P_01260207233100000069_dir_id_handler.py"
+    },
+    {
+      "path": "ID\\P_01999000042260125100_generate_dir_ids_gov_reg.py",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "tool",
+      "responsibility": "Generate .dir_id files for governed directories using IDPKG config."
+    },
+    {
+      "path": "ID\\P_01999000042260125101_validate_dir_ids.py",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "tool",
+      "responsibility": "Validate .dir_id files for governed directories using IDPKG config."
+    },
+    {
+      "path": "ID\\P_01999000042260125103_rename_dirs_with_id.py",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "tool",
+      "responsibility": "Rename directories to include dir_id prefix."
+    },
+    {
+      "path": "ID\\P_01999000042260125104_dir_id_auto_repair.py",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "tool",
+      "responsibility": "Auto-repair invalid .dir_id anchors (GAP-001)."
+    },
+    {
+      "path": "ID\\P_01999000042260125105_dir_id_watcher.py",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "watcher",
+      "responsibility": "Continuous enforcement via filesystem watcher (GAP-002)."
+    },
+    {
+      "path": "ID\\P_01999000042260125106_pre_commit_dir_id_check.py",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "governance_gate",
+      "responsibility": "Pre-commit hook for .dir_id validation (GAP-002)."
+    },
+    {
+      "path": "ID\\P_01999000042260125107_pre_push_governance_check.py",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "governance_gate",
+      "responsibility": "Pre-push hook for governance validation (GAP-002)."
+    },
+    {
+      "path": "ID\\P_01999000042260125111_orphan_purger.py",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "tool",
+      "responsibility": "Orphan and dead-entry cleanup (GAP-006)."
+    },
+    {
+      "path": "ID\\P_01999000042260125113_healthcheck.py",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "tool",
+      "responsibility": "Nightly ID and registry health check (GAP-008)."
+    },
+    {
+      "path": "ID\\P_01999000042260126000__idpkg_runtime.py",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "runtime",
+      "responsibility": "IDPKG Runtime - Unified File+Directory ID Package"
+    },
+    {
+      "path": "ID\\P_01999000042260126012_validate_no_doc_id.py",
+      "system_status": "legacy",
+      "is_current_id_system": false,
+      "category": "legacy_script",
+      "responsibility": "Validator: Ensure no doc_id in registry records",
+      "notes": "Renumbered from P_01999000042260126012_validate_no_doc_id.py to resolve duplicate file_id"
+    },
+    {
+      "path": "ID\\README_CONSOLIDATION.md",
+      "system_status": "supporting",
+      "is_current_id_system": false,
+      "category": "report",
+      "responsibility": "Registry Scripts Consolidation - Complete"
+    },
+    {
+      "path": "ID\\Unified File+Directory ID Package v1.0",
+      "system_status": "reference",
+      "is_current_id_system": false,
+      "category": "other",
+      "responsibility": "Legacy design spec for unified ID package"
+    },
+    {
+      "path": "ID\\WRITE_POLICY_IDPKG.yaml",
+      "system_status": "current",
+      "is_current_id_system": true,
+      "category": "policy",
+      "responsibility": "IDPKG registry write policy"
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://newphaseplanprocess.schemas/purpose_mapping/CAPABILITIES.schema.v1.json",
+  "title": "Purpose Mapping - CAPABILITIES.json Schema v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "generated_at",
+    "repo_root",
+    "precedence_rule",
+    "capabilities",
+    "capability_conflicts",
+    "warnings"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "repo_root": { "type": "string", "minLength": 1 },
+    "precedence_rule": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": ["code", "schemas", "template_specs", "docs"]
+      },
+      "uniqueItems": true
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/capability" }
+    },
+    "capability_conflicts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/capability_conflict" }
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/warning" }
+    }
+  },
+  "$defs": {
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capability_id",
+        "name",
+        "domain",
+        "status",
+        "source_evidence",
+        "expected_artifacts",
+        "candidate_files"
+      ],
+      "properties": {
+        "capability_id": {
+          "type": "string",
+          "pattern": "^CAP-[A-Z0-9]+(?:-[A-Z0-9]+)*$",
+          "minLength": 6,
+          "maxLength": 120
+        },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "domain": {
+          "type": "string",
+          "enum": [
+            "cli",
+            "gate",
+            "schema",
+            "workflow",
+            "registry",
+            "worktree",
+            "self_healing",
+            "converter",
+            "other"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["implemented", "declared_not_implemented", "unknown"]
+        },
+        "source_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/source_evidence" }
+        },
+        "expected_artifacts": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/expected_artifact" }
+        },
+        "candidate_files": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/repo_path" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "source_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "evidence_type", "detail"],
+      "properties": {
+        "path": { "$ref": "#/$defs/repo_path" },
+        "evidence_type": {
+          "type": "string",
+          "enum": [
+            "string_match",
+            "ast",
+            "docstring",
+            "json_field",
+            "yaml_field",
+            "other"
+          ]
+        },
+        "detail": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "line_range": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["start", "end"],
+          "properties": {
+            "start": { "type": "integer", "minimum": 1 },
+            "end": { "type": "integer", "minimum": 1 }
+          }
+        }
+      }
+    },
+    "expected_artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "path_pattern", "required"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["evidence", "schema", "output", "log", "report", "other"]
+        },
+        "path_pattern": { "type": "string", "minLength": 1, "maxLength": 400 },
+        "required": { "type": "boolean" }
+      }
+    },
+    "capability_conflict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capability_id",
+        "sources",
+        "winner_source",
+        "resolution_reason"
+      ],
+      "properties": {
+        "capability_id": {
+          "type": "string",
+          "pattern": "^CAP-[A-Z0-9]+(?:-[A-Z0-9]+)*$"
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "claim"],
+            "properties": {
+              "path": { "$ref": "#/$defs/repo_path" },
+              "claim": { "type": "string", "minLength": 1, "maxLength": 4000 }
+            }
+          }
+        },
+        "winner_source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path"],
+          "properties": {
+            "path": { "$ref": "#/$defs/repo_path" }
+          }
+        },
+        "resolution_reason": {
+          "type": "string",
+          "enum": [
+            "precedence_rule_applied",
+            "manual_override",
+            "merged_equivalent",
+            "other"
+          ]
+        }
+      }
+    },
+    "warning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message"],
+      "properties": {
+        "code": { "type": "string", "pattern": "^[A-Z0-9_]{3,50}$" },
+        "message": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "path": { "$ref": "#/$defs/repo_path" }
+      }
+    },
+    "repo_path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 600,
+      "pattern": "^(?!/)(?!.*\\.{2})(?!.*\\\\\\\\)(?!.*//)[^\\0]+$"
+    }
+  }
+}

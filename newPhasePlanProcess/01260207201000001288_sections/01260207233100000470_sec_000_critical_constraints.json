@@ -1,0 +1,41 @@
+{
+  "section_id": "sec_000_critical_constraints",
+  "title": "CRITICAL: NO IMPLIED BEHAVIOR CONSTRAINT",
+  "required": true,
+  "instructions_file": "sections/sec_000_critical_constraints.inst.md",
+  "critical_constraints": {
+    "no_implied_behavior": {
+      "enforcement": "MANDATORY",
+      "description": "Every rule, gate, and contract in plans generated from this template MUST be expressible as:\n1. A config entry\n2. An executable command\n3. An evidence artifact path\n4. A pass/fail condition (regex or exit code)",
+      "marking_requirement": [
+        "Items that cannot be expressed this way MUST be marked [NOT_AUTOMATABLE]",
+        "Manual steps MUST be escalated with explicit human approval gates"
+      ],
+      "forbidden": [
+        "Vague success criteria (e.g., 'works well', 'good enough')",
+        "Subjective pass/fail (e.g., 'looks correct', 'seems fine')",
+        "Open-ended 'fix it' actions",
+        "Skeleton/placeholder code in final output",
+        "TODOs or TBDs in deliverables"
+      ],
+      "validation_command": "python scripts/validate_no_implied_behavior.py {{PLAN_FILE}}",
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "/all_rules_explicit: true/"
+      ]
+    },
+    "determinism_constraint": {
+      "target_reproducibility": 0.95,
+      "description": "Plans must produce identical results across runs given identical inputs",
+      "requirements": [
+        "Decision ledger: ALL decisions logged with rationale",
+        "Assumption ledger: ALL assumptions tracked with validation methods",
+        "File scope enforcement: Hard boundaries per phase",
+        "Ground truth levels: Mechanical pass/fail (no human judgment)",
+        "Parallel execution: DAG-scheduled (deterministic ordering)",
+        "Self-healing: Bounded retries with convergence detection"
+      ]
+    }
+  },
+  "file_id": "01260207233100000470"
+}

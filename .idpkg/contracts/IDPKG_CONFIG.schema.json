@@ -1,0 +1,98 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ID Package Config",
+  "type": "object",
+  "required": [
+    "project_root_id",
+    "project_root_path",
+    "governance",
+    "naming",
+    "registry",
+    "allocator"
+  ],
+  "properties": {
+    "project_root_id": {
+      "type": "string",
+      "description": "Stable identifier for the project root"
+    },
+    "project_root_path": {
+      "type": "string",
+      "description": "Absolute path to the project root"
+    },
+    "governance": {
+      "type": "object",
+      "required": ["staging_depth", "governed_min_depth"],
+      "properties": {
+        "staging_depth": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Depth at which the staging zone ends"
+        },
+        "governed_min_depth": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Minimum depth at which files/directories become governed"
+        }
+      },
+      "additionalProperties": false
+    },
+    "exclusions": {
+      "type": "object",
+      "properties": {
+        "patterns": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Glob patterns for excluded paths relative to the project root"
+        }
+      },
+      "additionalProperties": false
+    },
+    "naming": {
+      "type": "object",
+      "required": ["separator", "python_prefix"],
+      "properties": {
+        "separator": {
+          "type": "string",
+          "description": "Separator between the ID and the original filename"
+        },
+        "python_prefix": {
+          "type": "string",
+          "description": "Prefix applied to Python files before the file ID"
+        }
+      },
+      "additionalProperties": false
+    },
+    "registry": {
+      "type": "object",
+      "required": ["registry_path", "patch_output_dir"],
+      "properties": {
+        "registry_path": {
+          "type": "string",
+          "description": "Path to unified registry file for governance records"
+        },
+        "patch_output_dir": {
+          "type": "string",
+          "description": "Directory where registry patch files are written"
+        }
+      },
+      "additionalProperties": false
+    },
+    "allocator": {
+      "type": "object",
+      "required": ["allocator_store_path", "lock_timeout_ms"],
+      "properties": {
+        "allocator_store_path": {
+          "type": "string",
+          "description": "Location of persistent allocator store outside the project root"
+        },
+        "lock_timeout_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Timeout in milliseconds for acquiring the allocator lock"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://govreg.local/schemas/tool_call_envelope.schema.json",
+  "title": "Tool Call Envelope Schema",
+  "description": "Standardized wrapper for all tool invocations with evidence tracking",
+  "type": "object",
+  "required": [
+    "run_id",
+    "node_id",
+    "tool_name",
+    "attempt",
+    "inputs",
+    "params",
+    "timestamp"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "Planning run identifier"
+    },
+    "node_id": {
+      "type": "string",
+      "description": "LangGraph node identifier"
+    },
+    "tool_name": {
+      "type": "string",
+      "description": "Name of tool being invoked"
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Retry attempt number"
+    },
+    "inputs": {
+      "type": "array",
+      "description": "Input artifacts with hashes",
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": {"type": "string"},
+          "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        }
+      }
+    },
+    "params": {
+      "type": "object",
+      "description": "Tool-specific parameters"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

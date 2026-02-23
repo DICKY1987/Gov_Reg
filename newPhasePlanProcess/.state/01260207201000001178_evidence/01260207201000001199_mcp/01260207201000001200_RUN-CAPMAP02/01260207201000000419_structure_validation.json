@@ -1,0 +1,24 @@
+{
+  "gate_id": "GATE-001",
+  "gate_name": "Plan structure validation",
+  "validated_at": "2026-02-11T21:43:24.095696Z",
+  "validator_version": "1.0.0",
+  "plan_file": "C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess\\Plans_Instructions\\wobbly-purring-island_registry-integrated.plan.json",
+  "validation_result": {
+    "status": "valid",
+    "errors_count": 0,
+    "warnings_count": 1,
+    "errors": [],
+    "warnings": [
+      {
+        "warning_code": "EMPTY_GATES",
+        "warning_message": "No gates defined",
+        "location": "plan.gates_by_id"
+      }
+    ]
+  },
+  "statistics": {
+    "phases_count": 4,
+    "gates_count": 0
+  }
+}

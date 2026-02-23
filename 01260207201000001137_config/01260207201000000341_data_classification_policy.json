@@ -1,0 +1,45 @@
+{
+  "classification_levels": {
+    "PUBLIC": {
+      "level": 0,
+      "description": "Information intended for public disclosure",
+      "handling": "No restrictions",
+      "examples": ["Marketing materials", "Public documentation"]
+    },
+    "INTERNAL": {
+      "level": 1,
+      "description": "Information for internal use only",
+      "handling": "Restrict to organization members",
+      "examples": ["Internal procedures", "Planning documents"]
+    },
+    "CONFIDENTIAL": {
+      "level": 2,
+      "description": "Sensitive business information",
+      "handling": "Need-to-know basis, encryption required",
+      "examples": ["Financial data", "Strategic plans", "Customer data"]
+    },
+    "RESTRICTED": {
+      "level": 3,
+      "description": "Highly sensitive regulated data",
+      "handling": "Strict access controls, encryption at rest and in transit",
+      "examples": ["PII", "PHI", "PCI data", "Authentication credentials"]
+    },
+    "TOP_SECRET": {
+      "level": 4,
+      "description": "Critical security and legal data",
+      "handling": "Highest security controls, audit all access",
+      "examples": ["Cryptographic keys", "Legal privileged", "Security incidents"]
+    }
+  },
+  "pii_categories": [
+    "name", "email", "phone", "address", "ssn", "dob",
+    "financial_account", "medical_record", "biometric"
+  ],
+  "retention_requirements": {
+    "PUBLIC": "No specific requirement",
+    "INTERNAL": "7 years",
+    "CONFIDENTIAL": "7 years",
+    "RESTRICTED": "7 years minimum (regulatory dependent)",
+    "TOP_SECRET": "Permanent retention with secure deletion protocol"
+  }
+}

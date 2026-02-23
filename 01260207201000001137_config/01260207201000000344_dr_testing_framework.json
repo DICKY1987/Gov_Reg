@@ -1,0 +1,26 @@
+{
+  "dr_test_framework": {
+    "rto_targets": {
+      "CRITICAL": "< 4 hours",
+      "HIGH": "< 24 hours",
+      "MEDIUM": "< 72 hours"
+    },
+    "rpo_targets": {
+      "CRITICAL": "< 1 hour",
+      "HIGH": "< 4 hours",
+      "MEDIUM": "< 24 hours"
+    },
+    "test_frequency": {
+      "CRITICAL": "quarterly",
+      "HIGH": "semi-annually",
+      "MEDIUM": "annually"
+    },
+    "test_scenarios": [
+      "database_failure",
+      "primary_datacenter_outage",
+      "ransomware_attack",
+      "key_personnel_unavailable",
+      "third_party_service_outage"
+    ]
+  }
+}

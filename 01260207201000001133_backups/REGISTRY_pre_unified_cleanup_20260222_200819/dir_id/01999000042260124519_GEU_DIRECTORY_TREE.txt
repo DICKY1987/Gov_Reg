@@ -1,0 +1,103 @@
+Folder PATH listing
+Volume serial number is A430-D8A0
+C:.
+|   .coverage
+|   .pre-commit-config.yaml
+|   01999000042260124008_governance_registry.json
+|   01999000042260124012_governance_registry_schema.v3.json
+|   01999000042260124016_IMPLEMENTATION_SUMMARY.md
+|   01999000042260124017_QUICK_START.md
+|   01999000042260124018_README.md
+|   01999000042260124019_repo_roots.json
+|   01999000042260124020_TEST_REPORT.md
+|   10 GEU-sized.txt
+|   ai-prod-pipeline_UPDATED.with_new_files.txt
+|   AI_PROD_PIPELINE_DETAILED_SUBSYSTEM_MAP.md
+|   Detailed File Functions and Deliver_UPDATED.with_new_files.txt
+|   Files Involved in the Governance Enforcement Chain.docx.md
+|   GEU_DIRECTORY_TREE.txt
+|   GEU_DOCUMENTATION.md
+|   GEU_IMPLEMENTATION_COMPLETE.md
+|   governance_registry.json
+|   govregimpplan.txt
+|   GOV_REG_FILE_list.txt
+|   PROACTIVE_ID_SOLUTION_FILE_LIST.md
+|   P_01999000042260124015_govreg.py
+|   requirements-geu.txt
+|   run_all.py
+|   
++---.benchmarks
++---.github
+|   \---workflows
+|           geu-registry.yml
+|           
++---evidence
+|       geu_validation_report.json
+|       geu_validation_report.md
+|       
++---governance
+|   |   file_registry.geu_overlay.json
+|   |   
+|   \---geu-registry
+|       |   DECISIONS.md
+|       |   geu_edges.jsonl
+|       |   geu_index.json
+|       |   README.md
+|       |   
+|       +---entries
+|       |       9901113568390001.json
+|       |       9902167207410001.json
+|       |       seed_report.json
+|       |       
+|       +---schema
+|       |       geu_edge.schema.json
+|       |       geu_entry.schema.json
+|       |       
+|       \---ssot
+|               geu_type_codes.json
+|               role_slots.json
+|               slot_matrix.json
+|               
++---govreg_core
+|       P_01999000042260124021_config.py
+|       P_01999000042260124022_reporter.py
+|       P_01999000042260124023_scanner.py
+|       P_01999000042260124024_validator.py
+|       P_01999000042260124025___init__.py
+|       
++---htmlcov
+|       .gitignore
+|       class_index.html
+|       coverage_html_cb_513c77fd.js
+|       favicon_32_cb_58284776.png
+|       function_index.html
+|       index.html
+|       keybd_closed_cb_ce680311.png
+|       P_01999000042260124015_govreg_py.html
+|       run_all_py.html
+|       status.json
+|       style_cb_ed8d5379.css
+|       z_a44f0ac069e85531_test_validate_geu_registry_py.html
+|       z_b26f93df7514f579_constants_py.html
+|       z_b26f93df7514f579_io_utils_py.html
+|       z_b26f93df7514f579_validation_py.html
+|       z_b26f93df7514f579___init___py.html
+|       
++---scripts
+|       seed_geu_entries_from_subsystem_map.py
+|       
++---src
+|   \---geu_governance
+|           cli.py
+|           constants.py
+|           generate.py
+|           id_scheme.py
+|           io_utils.py
+|           report.py
+|           validation.py
+|           __init__.py
+|           __main__.py
+|           
+\---tests
+        test_validate_geu_registry.py
+        

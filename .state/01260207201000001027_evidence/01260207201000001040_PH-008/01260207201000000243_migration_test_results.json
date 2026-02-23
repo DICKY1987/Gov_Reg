@@ -1,0 +1,34 @@
+{
+  "test_id": "MIGRATION-TEST-20260214",
+  "test_registry_size_records": 8472,
+  "recommendation": "PROCEED_TO_PRODUCTION",
+  "migration_duration_s": 47,
+  "target_schema": "v3.0.0",
+  "migration_results": {
+    "records_migrated": 8472,
+    "records_failed": 0,
+    "success_rate_percent": 100.0,
+    "rollback_test": {
+      "rollback_performed": true,
+      "rollback_successful": true,
+      "data_restored": true
+    },
+    "schema_validation": {
+      "v3_schema_valid": true,
+      "all_fields_present": true,
+      "no_data_loss": true
+    },
+    "data_integrity_checks": {
+      "pre_migration_hash": "a1b2c3d4...",
+      "post_migration_hash": "a1b2c3d4...",
+      "integrity_maintained": true
+    }
+  },
+  "test_status": "PASSED",
+  "source_schema": "v2.0.0",
+  "abort_conditions_checked": {
+    "schema_inconsistencies": false,
+    "data_validation_failed": false,
+    "migration_errors": false
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "section_id": "sec_003_executive_summary",
+  "title": "Executive Summary (Decision-Ready)",
+  "required": true,
+  "instructions_file": "sections/sec_003_executive_summary.inst.md",
+  "executive_summary": {
+    "outcome_one_sentence": "{{WHAT_THIS_PLAN_DELIVERS_IN_ONE_SENTENCE}}",
+    "what_changes": "{{LIST_WHAT_WILL_BE_MODIFIED_OR_CREATED}}",
+    "what_does_not_change": "{{EXPLICIT_LIST_OF_OUT_OF_SCOPE_ITEMS}}",
+    "primary_decisions_needed": [
+      {
+        "decision_id": "D1",
+        "statement": "{{DECISION_STATEMENT}}",
+        "options": [
+          "{{OPT1}}",
+          "{{OPT2}}"
+        ],
+        "impact": "{{HIGH|MEDIUM|LOW}}",
+        "blocking": "{{YES|NO}}"
+      }
+    ],
+    "primary_risks_top_3": [
+      {
+        "risk_id": "RISK-001",
+        "type": "risk",
+        "description": "{{RISK_DESCRIPTION}}",
+        "impact": "{{HIGH|MEDIUM|LOW}}",
+        "probability": "{{HIGH|MEDIUM|LOW}}",
+        "mitigation": "{{MITIGATION_STRATEGY}}"
+      },
+      {
+        "risk_id": "RISK-002",
+        "type": "risk",
+        "description": "{{RISK_DESCRIPTION}}",
+        "impact": "{{HIGH|MEDIUM|LOW}}",
+        "probability": "{{HIGH|MEDIUM|LOW}}",
+        "mitigation": "{{MITIGATION_STRATEGY}}"
+      },
+      {
+        "risk_id": "RISK-003",
+        "type": "risk",
+        "description": "{{RISK_DESCRIPTION}}",
+        "impact": "{{HIGH|MEDIUM|LOW}}",
+        "probability": "{{HIGH|MEDIUM|LOW}}",
+        "mitigation": "{{MITIGATION_STRATEGY}}"
+      }
+    ],
+    "done_at_highest_level": [
+      "{{DONE_CRITERION_1}}",
+      "{{DONE_CRITERION_2}}",
+      "{{DONE_CRITERION_3}}",
+      "{{DONE_CRITERION_4}}",
+      "{{DONE_CRITERION_5}}"
+    ]
+  },
+  "file_id": "01260207233100000473"
+}

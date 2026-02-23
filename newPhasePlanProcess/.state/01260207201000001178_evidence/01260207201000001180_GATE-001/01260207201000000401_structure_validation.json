@@ -1,0 +1,31 @@
+{
+  "gate_id": "GATE-001",
+  "gate_name": "Plan structure validation",
+  "validated_at": "2026-02-01T08:20:55.435983Z",
+  "validator_version": "1.0.0",
+  "plan_file": "registry_transition_phase_plan_v2.json",
+  "validation_result": {
+    "status": "invalid",
+    "errors_count": 2,
+    "warnings_count": 0,
+    "errors": [
+      {
+        "error_code": "MISSING_SECTION",
+        "error_message": "Required section missing: meta",
+        "location": "root",
+        "severity": "critical"
+      },
+      {
+        "error_code": "MISSING_SECTION",
+        "error_message": "Required section missing: plan",
+        "location": "root",
+        "severity": "critical"
+      }
+    ],
+    "warnings": []
+  },
+  "statistics": {
+    "phases_count": 0,
+    "gates_count": 0
+  }
+}

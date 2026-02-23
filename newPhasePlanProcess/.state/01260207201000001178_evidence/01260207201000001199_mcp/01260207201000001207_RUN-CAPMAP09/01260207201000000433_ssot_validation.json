@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-02-12T00:14:52.738680Z",
+  "gate_id": "GATE-017",
+  "gate_name": "Single Source of Truth Validation",
+  "passed": true,
+  "defect_count": 4,
+  "defects": [
+    {
+      "severity": "info",
+      "category": "other",
+      "location": "/plan",
+      "problem": "SSOT summary: 6 path facts (3 duplicated), 0 version facts (0 duplicated)",
+      "why_it_matters": "Summary statistics for SSOT analysis"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/0/steps/0/outputs/0/path, /plan/phases/1/steps/0/inputs/0/path, /plan/phases/2/steps/0/inputs/0/path",
+      "problem": "Path '{{CAPABILITIES_JSON}}' appears in 3 locations: ['/plan/phases/0/steps/0/outputs/0/path', '/plan/phases/1/steps/0/inputs/0/path', '/plan/phases/2/steps/0/inputs/0/path']",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/1/steps/0/outputs/0/path, /plan/phases/2/steps/0/inputs/1/path",
+      "problem": "Path '{{FILE_INVENTORY_JSONL}}' appears in 2 locations: ['/plan/phases/1/steps/0/outputs/0/path', '/plan/phases/2/steps/0/inputs/1/path']",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "category": "other",
+      "location": "/plan/phases/2/steps/0/outputs/0/path, /plan/phases/3/steps/0/inputs/0/path",
+      "problem": "Path '{{FILE_PURPOSE_REGISTRY_JSON}}' appears in 2 locations: ['/plan/phases/2/steps/0/outputs/0/path', '/plan/phases/3/steps/0/inputs/0/path']",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    }
+  ]
+}

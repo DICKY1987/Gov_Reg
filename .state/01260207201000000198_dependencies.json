@@ -1,0 +1,36 @@
+{
+  "registry_version": "1.0",
+  "last_scanned": "2026-02-12T17:11:34.094Z",
+  "python_dependencies": {
+    "source": "requirements.txt",
+    "packages": [],
+    "vulnerability_scan": {
+      "tool": "safety",
+      "last_run": "2026-02-12T17:11:34.094Z",
+      "findings": []
+    }
+  },
+  "npm_dependencies": {
+    "source": "package.json",
+    "packages": [],
+    "vulnerability_scan": {
+      "tool": "npm audit",
+      "last_run": "2026-02-12T17:11:34.094Z",
+      "findings": []
+    }
+  },
+  "licensing": {
+    "policy": "Approve OSI-approved licenses only",
+    "approved_licenses": [
+      "MIT", "Apache-2.0", "BSD-3-Clause", "BSD-2-Clause", "ISC"
+    ],
+    "restricted_licenses": [
+      "GPL-3.0", "AGPL-3.0", "SSPL"
+    ]
+  },
+  "update_policy": {
+    "security_patches": "immediate",
+    "minor_updates": "monthly_review",
+    "major_updates": "quarterly_review"
+  }
+}

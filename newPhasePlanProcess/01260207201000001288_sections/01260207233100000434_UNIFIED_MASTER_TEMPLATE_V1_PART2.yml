@@ -1,0 +1,1338 @@
+# UNIFIED MASTER TEMPLATE V1.0 - PART 2
+# Sections SEC-010 through SEC-020
+
+---
+
+## SEC-010: PHASE CONTRACTS (MACHINE-CHECKABLE)
+
+```yaml
+phase_contracts:
+  contract_specification:
+    phase_contract_version: "1.0"
+    description: |
+      Each phase is represented as a Phase Contract JSON object.
+      No free text in the plan may imply file touches.
+      All file touches live in artifacts[].
+  
+  phase_contract_schema:
+    required_fields:
+      - "phase_contract_version"
+      - "phase"
+      - "dependencies"
+      - "scope"
+      - "tasks"
+      - "artifacts"
+      - "validations"
+      - "completion_gate"
+      - "extensions"
+    
+    stable_id_anchors:
+      - "phase.phase_id [2003]"
+      - "tasks[].task_id [2004]"
+      - "artifacts[].artifact_id [2005]"
+      - "validations[].validation_id [2006]"
+      - "scope.path_policy.allowed[].rule_id [2007]"
+      - "scope.path_policy.forbidden[].rule_id [2008]"
+      - "dependencies.depends_on_phase_ids [2025]"
+      - "completion_gate.rules [2026]"
+  
+  non_negotiable_rules:
+    - "Each phase must be a Phase Contract JSON object"
+    - "No free text may imply file touches"
+    - "Every task references only existing artifact_ids_touched and validation_ids"
+    - "scope.path_policy includes >=1 allowed rule AND >=1 forbidden rule"
+    - "completion_gate.rules exists and is fully specified"
+    - "Entry criteria via dependencies.depends_on_phase_ids OR extensions.optional.entry_criteria"
+    - "Phase risks/unknowns captured in extensions.optional.risks_delta[]"
+    - "Generator phases: core/generated/** in allowed[], NOT in forbidden[]"
+    - "Non-generator phases: core/generated/** in forbidden[] for create/modify"
+  
+  phase_contract_template:
+    phase_contract_version: "1.0"
+    
+    phase:
+      phase_id: "PH-XXX"  # [2003]
+      workstream_id: "WS-XXX"
+      title: "{{SHORT_HUMAN_READABLE_NAME}}"
+      summary: "{{SINGLE_PARAGRAPH_OUTCOME_SUMMARY}}"
+      objective: "{{DEFINITION_OF_DONE_IN_ONE_SENTENCE}}"
+      phase_type: "{{implementation|documentation|refactor|integration|testing|ops|generator}}"
+      status: "{{planned|in_progress|blocked|done|abandoned}}"
+      tags: ["{{TAG1}}", "{{TAG2}}"]
+      gh_item_id: null  # Filled by GitHub sync
+      estimate_hours: 0  # Optional planning aid
+    
+    dependencies:
+      depends_on_phase_ids: ["PH-001", "PH-002"]  # [2025] HARD dependencies
+      may_run_parallel_with: ["PH-010"]
+      parallel_group: "{{GROUP_ID}}"
+      workstream_bundle_id: "{{ws-bundle-xx}}"
+      is_critical_path: true
+    
+    scope:
+      intent:
+        in_scope:
+          - "{{IN_SCOPE_ITEM_1}}"
+          - "{{IN_SCOPE_ITEM_2}}"
+          # Cap at ~10 bullets
+        
+        out_of_scope:
+          - "{{EXPLICIT_EXCLUSION_1}}"
+          - "{{EXPLICIT_EXCLUSION_2}}"
+      
+      path_policy:
+        allowed:
+          - rule_id: "PATH-ALLOW-001"  # [2007]
+            globs: ["src/{{module}}/**/*.py"]
+            modes: ["read", "create", "modify"]
+          
+          - rule_id: "PATH-ALLOW-002"
+            globs: ["tests/{{module}}/**/*.py"]
+            modes: ["read", "create", "modify"]
+        
+        forbidden:
+          - rule_id: "PATH-DENY-001"  # [2008]
+            globs: [".git/**", ".venv/**"]
+            modes: ["create", "modify", "delete"]
+          
+          - rule_id: "PATH-DENY-002"
+            globs: ["core/generated/**"]
+            modes: ["create", "modify"]  # Unless phase_type = "generator"
+      
+      modules:
+        - module_id: "mod.{{NAME}}"
+          description: "{{MODULE_DESCRIPTION}}"
+    
+    tasks:
+      - task_id: "TASK-001"  # [2004]
+        title: "{{ATOMIC_TASK_TITLE}}"
+        description: "{{WHAT_IS_DONE_INTENT_LEVEL}}"
+        acceptance_criteria:
+          - "{{CONCRETE_CONDITION_TRUE_AFTER_COMPLETION}}"
+          - "{{CONCRETE_CONDITION_TRUE_AFTER_COMPLETION}}"
+        artifact_ids_touched: ["ART-001", "ART-002"]
+        validation_ids: ["VAL-001"]
+      
+      # Add all tasks
+    
+    artifacts:
+      - artifact_id: "ART-001"  # [2005]
+        path: "{{relative/path/to/file.ext}}"  # [2024]
+        action: "{{read|create|modify|delete}}"
+        classification: "{{source|test|config|schema|doc|generated|other}}"
+        owner:
+          phase_id: "PH-XXX"
+          task_id: "TASK-001"
+        notes: "{{WHY_IT_EXISTS_OR_CHANGES}}"
+        must_exist_after_phase: true
+        introduced_in_phase: "PH-XXX"
+      
+      # Add all artifacts
+    
+    validations:
+      - validation_id: "VAL-001"  # [2006]
+        kind: "command"  # command | schema | manual
+        description: "{{WHAT_THIS_PROVES}}"
+        command: "{{EXECUTABLE_COMMAND}}"
+        timeout_seconds: 60
+        success_criteria:
+          exit_code: 0
+          stdout_patterns_any: ["{{OPTIONAL_REGEX}}"]
+          stdout_patterns_all: []
+          forbid_stdout_patterns: ["ERROR", "FAILED"]
+        evidence_output:
+          log_path: "{{.runs/PH-XXX/val_001.log}}"
+        must_pass: true
+      
+      # Add all validations
+    
+    completion_gate:
+      rules:  # [2026]
+        dependencies_satisfied: true
+        all_required_artifacts_present: true
+        no_scope_violations: true
+        all_must_pass_validations_passed: true
+        pre_flight_checks_passed: true  # If applicable
+        acceptance_tests_passed: true  # If applicable
+        circuit_breakers_not_tripped: true
+      
+      waivers:
+        allowed: false
+        waiver_process_ref: null
+    
+    execution_profile:
+      prompt_template_id: "{{EXECUTION_PROMPT_TEMPLATE_V2_DAG}}"
+      run_mode: "{{plan_only|dry_run|execute}}"
+      max_runtime_minutes: 60
+      concurrency:
+        allowed_for_phase: true
+        max_parallel_steps: 1
+      retry_policy:
+        default_max_attempts: 1
+    
+    pre_flight_checks:
+      checks:
+        - id: "pf-git-clean"
+          description: "Repo has no uncommitted changes in target paths"
+          when: "always"
+          command:
+            tool_id: "powershell-script"
+            args: ["git status --porcelain"]
+          success_pattern: "^$"  # Empty output = clean
+          on_fail: "abort"  # abort | attempt_repair | mark_blocked
+        
+        # Add all pre-flight checks
+    
+    execution_plan:
+      steps:
+        - id: "step-01-analyze-context"
+          name: "{{STEP_NAME}}"
+          operation_kind: "OP-ANALYZE-CONTEXT"  # See operation taxonomy
+          pattern_ids: ["PAT-ANALYZE-REPO-001"]
+          description: "{{WHAT_THIS_STEP_DOES}}"
+          tool_id: "{{TOOL_ID}}"
+          inputs:
+            repo_paths: ["src/{{module}}/**"]
+            constraints:
+              respect_file_scope: true
+            execution_templates: []  # Optional: WT-EXEC-xxx
+          expected_outputs:
+            - "{{OUTPUT_DESCRIPTION}}"
+          requires_human_confirmation: false
+        
+        # Add all execution steps
+    
+    expected_artifacts:
+      patches:
+        - path: ".ledger/patches/${phase_id}_${workstream_id}.patch"
+          must_exist: true
+      
+      logs:
+        - path: ".runs/${workstream_id}/${phase_id}/static_checks.log"
+          must_exist: true
+        - path: ".runs/${workstream_id}/${phase_id}/runtime_tests.log"
+          must_exist: true
+      
+      docs:
+        - path: "docs/{{TOPIC}}/{{FILE}}.md"
+          must_exist: true
+      
+      db:
+        migrations_applied:
+          - "schema/migrations/{{ID}}_{{NAME}}.sql"
+    
+    acceptance_tests:
+      tests:
+        - id: "acc-01-{{NAME}}"
+          description: "{{WHAT_THIS_ACCEPTANCE_TEST_VERIFIES}}"
+          command:
+            tool_id: "{{TOOL_ID}}"
+            args: ["{{COMMAND_ARGS}}"]
+          success_pattern: "{{REGEX_PATTERN}}"
+          must_pass: true
+        
+        # Add all acceptance tests
+    
+    extensions:
+      optional:
+        entry_criteria:
+          required_artifacts:
+            - entry_artifact_id: "ENTRY-ART-001"  # [2039]
+              path: "{{PATH_TO_REQUIRED_INPUT}}"
+              must_exist: true
+          
+          prerequisites:
+            - criterion_id: "ENTRY-PREREQ-001"  # [2040]
+              description: "{{PREREQUISITE_DESCRIPTION}}"
+              validation_command: "{{COMMAND}}"
+              expect_exit_code: 0
+        
+        risks_delta:
+          - risk_delta_id: "RD-001"  # [2037]
+            risk_id: "RISK-005"  # [2010] Link to plan risk register
+            phase_specific_impact: "{{HOW_THIS_PHASE_AFFECTED}}"
+            mitigation: "{{PHASE_SPECIFIC_MITIGATION}}"
+        
+        open_questions_delta:
+          - question_id: "Q-PH-001"  # [2038]
+            question: "{{QUESTION_TEXT}}"
+            why_it_matters: "{{IMPACT}}"
+            resolution_step: "{{HOW_TO_RESOLVE}}"
+            blocking: "{{YES|NO}}"
+      
+      custom_fields: {}
+
+  operation_kind_taxonomy:
+    analysis:
+      - "OP-ANALYZE-CONTEXT"
+      - "OP-ANALYZE-DEPENDENCIES"
+      - "OP-ANALYZE-IMPACT"
+    
+    editing:
+      - "OP-EDIT-IMPLEMENT"
+      - "OP-EDIT-REFACTOR"
+      - "OP-EDIT-FIX"
+    
+    validation:
+      - "OP-VALIDATE-STATIC"
+      - "OP-VALIDATE-RUNTIME"
+      - "OP-VALIDATE-INTEGRATION"
+      - "OP-VALIDATE-SCHEMA"
+    
+    orchestration:
+      - "OP-ORCHESTRATE-PARALLEL"
+      - "OP-ORCHESTRATE-MERGE"
+      - "OP-ORCHESTRATE-ROLLBACK"
+
+  generator_phase_note: |
+    If phase.phase_type is "generator", move core/generated/** out of
+    scope.path_policy.forbidden[].globs and into scope.path_policy.allowed[].globs
+    (with create/modify modes).
+```
+
+---
+
+## SEC-011: CROSS-PHASE ARTIFACT MANIFEST
+
+```yaml
+artifact_manifest:
+  description: |
+    Cross-phase "bill of materials". Every file/path created/modified/deleted
+    must be represented here. Source of truth for file touches is artifacts[]
+    inside each phase contract.
+  
+  manifest_table:
+    columns:
+      - "phase_id [2003]"
+      - "artifact_id [2005]"
+      - "action"
+      - "path [2024]"
+      - "introduced_in_phase"
+      - "purpose"
+      - "validation_ids [2006]"
+      - "validation_command_hint"
+    
+    entries:
+      - phase_id: "PH-001"
+        artifact_id: "ART-001"
+        action: "create"
+        path: "src/pipeline/state.py"
+        introduced_in_phase: "PH-001"
+        purpose: "State machine implementation"
+        validation_ids: ["VAL-001", "VAL-002"]
+        validation_command_hint: "pytest tests/test_state.py"
+      
+      # Add ALL artifacts from ALL phases
+  
+  action_taxonomy:
+    - "read"      # Artifact is consumed but not modified
+    - "create"    # Artifact is created in this phase
+    - "modify"    # Artifact is modified in this phase
+    - "delete"    # Artifact is deleted (only if governance allows)
+  
+  consistency_check:
+    command: "python scripts/validate_artifact_manifest.py {{PLAN_FILE}}"
+    expect_exit_code: 0
+    checks:
+      - "All artifact_ids in phase contracts appear in manifest"
+      - "All paths are unique within action type"
+      - "No artifacts reference non-existent validation_ids"
+      - "introduced_in_phase matches first appearance"
+```
+
+---
+
+## SEC-012: GLOBAL VALIDATION GATES
+
+```yaml
+validation_gates:
+  description: |
+    Global gates that apply across phases. Phase-specific validations
+    are in phase contracts.
+  
+  gates:
+    - gate_id: "GATE-STRUCTURE-001"
+      name: "Directory Structure Validation"
+      description: "Required directories exist"
+      command: "python scripts/validate_structure.py --schema schemas/dir_structure.json"
+      timeout_seconds: 10
+      success_criteria:
+        exit_code: 0
+        expect_stdout_regex: ["/all_required_dirs_present: true/"]
+        forbid_stdout_regex: ["missing_dir"]
+      evidence_path: ".runs/global_gates/structure.log"
+      must_pass: true
+      run_after_phase: null  # Runs after every phase
+    
+    - gate_id: "GATE-COVERAGE-001"
+      name: "Global Coverage Threshold"
+      description: "Minimum coverage across all modules"
+      command: "pytest --cov=src --cov-report=term | grep TOTAL"
+      timeout_seconds: 300
+      success_criteria:
+        exit_code: 0
+        expect_stdout_regex: ["/TOTAL.*9[5-9]|100%/"]
+      evidence_path: ".runs/global_gates/coverage.log"
+      must_pass: true
+      run_after_phase: "PH-IMPLEMENT"
+    
+    - gate_id: "GATE-SECURITY-001"
+      name: "Security Scan"
+      description: "No high/critical vulnerabilities"
+      command: "bandit -r src/ -f json -o .runs/global_gates/security.json -ll"
+      timeout_seconds: 120
+      success_criteria:
+        exit_code: 0
+        file_content_assertions:
+          - path: ".runs/global_gates/security.json"
+            json_path: "$.results"
+            expect_value: "[]"  # Empty array = no issues
+      evidence_path: ".runs/global_gates/security.log"
+      must_pass: true
+      run_after_phase: "PH-HARDENING"
+    
+    - gate_id: "GATE-DETERMINISM-001"
+      name: "Determinism Verification"
+      description: "Outputs stable across 3 runs"
+      command: "python scripts/test_determinism.py --runs 3 --compare-outputs"
+      timeout_seconds: 600
+      success_criteria:
+        exit_code: 0
+        expect_stdout_regex: ["/determinism_score: (0\\.[9][5-9]|1\\.0)/"]
+      evidence_path: ".runs/global_gates/determinism.log"
+      must_pass: true
+      run_after_phase: "PH-PACKAGE"
+  
+  gate_execution_policy:
+    run_all_after_each_phase: false
+    run_specific_after_phases: true  # Use run_after_phase field
+    fail_fast: true  # Stop on first gate failure
+    parallel_execution: false
+```
+
+---
+
+## SEC-013: RISK + UNKNOWN MANAGEMENT
+
+```yaml
+risk_unknown_management:
+  risk_register:
+    description: "Centralized risk tracking across all phases"
+    
+    risks:
+      - risk_id: "RISK-001"  # [2010]
+        type: "risk"  # risk | assumption | constraint
+        category: "{{technical|process|resource|external}}"
+        description: "{{RISK_DESCRIPTION}}"
+        impact: "{{HIGH|MEDIUM|LOW}}"
+        probability: "{{HIGH|MEDIUM|LOW}}"
+        risk_score: "{{1-10}}"  # impact × probability
+        mitigation: "{{MITIGATION_STRATEGY}}"
+        fallback: "{{FALLBACK_PLAN}}"
+        detection_signal: "{{WHAT_WOULD_YOU_OBSERVE}}"
+        owner: "{{DRI}}"
+        status: "{{open|mitigated|closed|accepted}}"
+      
+      # Add all risks (top 10-20)
+  
+  unknown_register:
+    description: "Explicit tracking of uncertainty"
+    
+    unknowns:
+      - unknown_id: "UNK-001"  # [2012]
+        type: "unknown"
+        category: "{{technical|requirements|data|integration}}"
+        description: "{{WHAT_IS_UNKNOWN}}"
+        impact: "{{HIGH|MEDIUM|LOW}}"
+        investigation_plan: "{{HOW_TO_LEARN_MORE}}"
+        investigation_budget: "{{HOURS_OR_DAYS}}"
+        fallback: "{{IF_REMAINS_UNKNOWN}}"
+        detection_signal: "{{WHAT_WOULD_YOU_OBSERVE}}"
+        owner: "{{DRI}}"
+        status: "{{open|investigating|resolved|accepted}}"
+      
+      # Add all unknowns
+  
+  open_questions:
+    questions:
+      - question_id: "Q-001"  # [2013]
+        question: "{{QUESTION_TEXT}}"
+        why_it_matters: "{{IMPACT_ON_PLAN}}"
+        options: ["{{OPTION1}}", "{{OPTION2}}"]
+        resolution_step: "{{HOW_TO_ANSWER}}"
+        blocking: "{{YES|NO}}"
+        owner: "{{DRI}}"
+        status: "{{open|answered|deferred}}"
+      
+      # Add all open questions (or explicitly state NONE)
+  
+  phase_specific_deltas:
+    description: |
+      Phases can add phase-specific risks/unknowns via
+      extensions.optional.risks_delta[] in phase contract
+    
+    aggregation_command: "python scripts/aggregate_phase_risks.py {{PLAN_FILE}}"
+    expect_exit_code: 0
+```
+
+---
+
+## SEC-014: DECISION LEDGER
+
+```yaml
+decision_ledger:
+  description: |
+    Append-only log of all decisions made during planning and execution.
+    Every decision must have: context, options, selected, rationale.
+  
+  storage:
+    format: "jsonl"
+    path: ".state/decisions.jsonl"
+    rotation_policy: "append_only"
+  
+  decisions:
+    - decision_id: "DEC-{{PROJECT}}-001"  # [2009]
+      category: "{{classification|architecture|tooling|process|technical}}"
+      timestamp: "{{ISO8601_TIMESTAMP}}"
+      context:
+        # Structured data about the decision context
+        key: "value"
+      options: ["{{OPTION1}}", "{{OPTION2}}", "{{OPTION3}}"]
+      selected_option: "{{SELECTED}}"
+      rationale: "{{WHY_THIS_CHOICE}}"
+      owner: "{{DRI}}"
+      impact: "{{HIGH|MEDIUM|LOW}}"
+      reversible: "{{YES|NO}}"
+      
+      validation:
+        command: "{{COMMAND_TO_VERIFY_DECISION}}"
+        expect_exit_code: 0
+    
+    # Add ALL decisions made during planning
+  
+  decision_categories:
+    - "classification"      # Project complexity level
+    - "architecture"        # System design choices
+    - "tooling"            # Tool selections
+    - "process"            # Workflow decisions
+    - "technical"          # Implementation choices
+    - "scope"              # In/out of scope decisions
+    - "quality"            # Quality gate selections
+  
+  ledger_validation:
+    command: "python scripts/validate_decision_ledger.py .state/decisions.jsonl"
+    expect_exit_code: 0
+    checks:
+      - "All decisions have rationale"
+      - "All decisions have timestamp"
+      - "All decisions have owner"
+      - "No duplicate decision_ids"
+```
+
+---
+
+## SEC-015: METRICS + OBSERVABILITY
+
+```yaml
+metrics_observability:
+  metrics_tracking:
+    enabled: true
+    description: "Quantified progress measurement with targets"
+    
+    storage:
+      format: "jsonl"
+      path: ".state/metrics.jsonl"
+      rotation_policy: "size_based"
+      max_size_mb: 100
+      keep_files: 10
+    
+    tracked_metrics:
+      - metric_id: "MET-001"  # [2014]
+        metric_name: "test_coverage_percentage"
+        target_value: 95
+        target_operator: ">="
+        current_value: null  # Filled during execution
+        unit: "percent"
+        collection_command: "pytest --cov=src --cov-report=json:.runs/coverage.json && jq '.totals.percent_covered' .runs/coverage.json"
+      
+      - metric_id: "MET-002"
+        metric_name: "lint_errors"
+        target_value: 0
+        target_operator: "=="
+        current_value: null
+        unit: "count"
+        collection_command: "ruff check src/ --output-format json | jq 'length'"
+      
+      - metric_id: "MET-003"
+        metric_name: "type_coverage_percentage"
+        target_value: 90
+        target_operator: ">="
+        current_value: null
+        unit: "percent"
+        collection_command: "mypy src/ --txt-report .runs/mypy-report && grep 'success' .runs/mypy-report/index.txt | awk '{print $2}'"
+      
+      - metric_id: "MET-004"
+        metric_name: "build_time_seconds"
+        target_value: 60
+        target_operator: "<="
+        current_value: null
+        unit: "seconds"
+        collection_command: "time python -m build | grep 'real' | awk '{print $2}'"
+      
+      - metric_id: "MET-005"
+        metric_name: "test_execution_time_seconds"
+        target_value: 300
+        target_operator: "<="
+        current_value: null
+        unit: "seconds"
+        collection_command: "pytest --durations=0 -q | grep 'seconds' | awk '{print $1}'"
+      
+      - metric_id: "MET-006"
+        metric_name: "security_issues_high_critical"
+        target_value: 0
+        target_operator: "=="
+        current_value: null
+        unit: "count"
+        collection_command: "bandit -r src/ -f json | jq '[.results[] | select(.issue_severity | IN(\"HIGH\", \"CRITICAL\"))] | length'"
+      
+      - metric_id: "MET-007"
+        metric_name: "documentation_coverage_percentage"
+        target_value: 80
+        target_operator: ">="
+        current_value: null
+        unit: "percent"
+        collection_command: "python scripts/check_doc_coverage.py src/"
+      
+      - metric_id: "MET-008"
+        metric_name: "determinism_score"
+        target_value: 0.95
+        target_operator: ">="
+        current_value: null
+        unit: "ratio"
+        collection_command: "python scripts/test_determinism.py --runs 3"
+    
+    per_phase_summaries:
+      required: true
+      summary_command: "python scripts/generate_phase_metrics_summary.py {{PHASE_ID}}"
+      output_path: ".runs/{{PHASE_ID}}/metrics_summary.json"
+  
+  observability:
+    event_logging:
+      enabled: true
+      format: "jsonl"
+      path: ".state/events.jsonl"
+      
+      event_tags:
+        - "phase:${phase_id}"
+        - "workstream:${workstream_id}"
+        - "phase_type:${phase_type}"
+        - "environment:${target_os}"
+    
+    record_settings:
+      record_durations: true
+      record_attempt_counts: true
+      record_fix_loop_stats: true
+      record_validation_results: true
+    
+    telemetry:
+      enabled: false  # Enterprise mode only
+      endpoint: null
+      api_key_env_var: null
+  
+  validation_summary_command:
+    command: "python scripts/validate_metrics.py .state/metrics.jsonl"
+    expect_exit_code: 0
+    expect_stdout_regex: ["/all_targets_met: true/"]
+```
+
+---
+
+## SEC-016: TESTING STRATEGY
+
+```yaml
+testing_strategy:
+  test_first_development:
+    enabled: true
+    description: "Write tests alongside code (TDD)"
+    requirement: "Tests must pass 100% (or explicit exception with mitigation)"
+  
+  test_layers:
+    unit:
+      description: "Test individual functions/classes in isolation"
+      coverage_target: "{{70|80|90|95}}%"  # Based on classification
+      location: "tests/unit/**"
+      run_command: "pytest tests/unit -v --tb=short --cov=src --cov-report=term"
+      timeout_seconds: 300
+      
+      quality_gates:
+        - "0 failures"
+        - "Coverage >= target"
+        - "No skipped tests without justification"
+    
+    integration:
+      description: "Test component interactions"
+      coverage_target: "{{70|80|90}}%"
+      location: "tests/integration/**"
+      run_command: "pytest tests/integration -v --tb=short"
+      timeout_seconds: 600
+      
+      quality_gates:
+        - "0 failures"
+        - "All critical paths tested"
+        - "External dependencies mocked appropriately"
+    
+    e2e:
+      description: "Test complete workflows end-to-end"
+      coverage_target: "{{50|70|80}}%"
+      location: "tests/e2e/**"
+      run_command: "pytest tests/e2e -v --tb=short"
+      timeout_seconds: 1800
+      
+      quality_gates:
+        - "0 failures"
+        - "All user stories covered"
+        - "Performance targets met"
+    
+    determinism:
+      description: "Verify outputs are stable across runs"
+      location: "tests/determinism/**"
+      run_command: "python scripts/test_determinism.py --runs 3 --compare-outputs"
+      timeout_seconds: 600
+      
+      quality_gates:
+        - "Determinism score >= 0.95"
+        - "All idempotency tests pass"
+  
+  test_fixtures:
+    valid_inputs:
+      location: "tests/fixtures/valid/**"
+      description: "Sample valid input data"
+      count: "{{N}}"
+    
+    invalid_inputs:
+      location: "tests/fixtures/invalid/**"
+      description: "Sample invalid input data with expected errors"
+      count: "{{N}}"
+    
+    expected_outputs:
+      location: "tests/fixtures/expected/**"
+      description: "Expected outputs for each input"
+      format: "{{json|yaml|csv|text}}"
+    
+    mock_objects:
+      location: "tests/mocks/**"
+      description: "Mock external dependencies"
+      dependencies_mocked: ["{{DEPENDENCY1}}", "{{DEPENDENCY2}}"]
+  
+  test_implementation_examples:
+    unit_test:
+      file: "tests/unit/test_example.py"
+      content: |
+        import pytest
+        from src.example import function_to_test
+        
+        def test_function_basic():
+            result = function_to_test(input_value)
+            assert result == expected_value
+        
+        def test_function_edge_case():
+            with pytest.raises(ValueError):
+                function_to_test(invalid_input)
+    
+    integration_test:
+      file: "tests/integration/test_example_integration.py"
+      content: |
+        import pytest
+        from src.component_a import ComponentA
+        from src.component_b import ComponentB
+        
+        @pytest.fixture
+        def setup_components():
+            a = ComponentA()
+            b = ComponentB()
+            return a, b
+        
+        def test_component_interaction(setup_components):
+            a, b = setup_components
+            result = a.call(b.process())
+            assert result.status == "success"
+    
+    determinism_test:
+      file: "tests/determinism/test_determinism.py"
+      content: |
+        import pytest
+        from src.main import main_function
+        
+        def test_determinism():
+            results = []
+            for _ in range(3):
+                result = main_function(same_input)
+                results.append(result)
+            
+            assert results[0] == results[1] == results[2]
+  
+  quality_gates_summary:
+    run_all_tests_command: "pytest tests/ -v --tb=short --cov=src --cov-report=term --cov-report=html:.runs/coverage_html"
+    expect_exit_code: 0
+    
+    gates:
+      - "100% of tests pass"
+      - "Coverage >= classification-based target"
+      - "Determinism score >= 0.95"
+      - "0 high/critical security issues in test code"
+```
+
+---
+
+## SEC-017: GOVERNANCE + ANTI-PATTERNS
+
+```yaml
+governance:
+  anti_patterns_blocked:
+    - pattern_id: "ANTI-GIANT-REFACTOR-001"
+      description: "Massive refactors without incremental validation"
+      detection: "Diff size > 2000 lines in single PR"
+      mitigation: "Break into smaller phases with validation gates"
+    
+    - pattern_id: "ANTI-EDIT-OUTSIDE-SCOPE-001"
+      description: "Editing files outside declared file_scope"
+      detection: "File touch not in allowed paths"
+      mitigation: "Abort phase, require scope amendment"
+    
+    - pattern_id: "ANTI-SKIP-TESTS-001"
+      description: "Skipping tests without justification"
+      detection: "pytest.mark.skip without reason"
+      mitigation: "Require waiver with tracking issue"
+    
+    - pattern_id: "ANTI-HARDCODED-SECRETS-001"
+      description: "Hardcoded credentials or API keys"
+      detection: "Secrets scanner finds matches"
+      mitigation: "Use environment variables or secret store"
+    
+    - pattern_id: "ANTI-NO-ERROR-HANDLING-001"
+      description: "Missing try/except in critical paths"
+      detection: "Static analysis finds uncaught exceptions"
+      mitigation: "Add error handling with logging"
+  
+  notes_for_operators:
+    - "Never modify files outside declared file_scope"
+    - "Always trust git/tests/filesystem over conversational summaries"
+    - "If tools under-deliver, repair or escalate—do not silently accept"
+    - "Use decision ledger for all non-trivial choices"
+    - "Mark [NOT_AUTOMATABLE] when truly cannot automate"
+    - "Bounded retries only—no infinite loops"
+  
+  manual_override_policy:
+    allowed: false  # Set to true for emergency situations
+    justification_required: true
+    approval_required_from: "{{DRI|TECH_LEAD|MANAGER}}"
+    documentation_required: true
+    documentation_path: ".state/manual_overrides.jsonl"
+  
+  waiver_process:
+    allowed: true
+    process_ref: "docs/governance/waiver_process.md"
+    
+    waiver_criteria:
+      - "Must have technical justification"
+      - "Must have tracking issue"
+      - "Must have mitigation plan"
+      - "Must have approval from DRI"
+    
+    waiver_documentation:
+      path: ".state/waivers.jsonl"
+      schema: "schemas/waiver.schema.json"
+  
+  quality_enforcement:
+    description: "Mechanical enforcement via linters and gates"
+    
+    enforcement_tools:
+      - tool: "ruff"
+        config: "ruff.toml"
+        purpose: "Linting and formatting"
+      
+      - tool: "mypy"
+        config: "mypy.ini"
+        purpose: "Type checking"
+      
+      - tool: "bandit"
+        config: ".bandit"
+        purpose: "Security scanning"
+      
+      - tool: "pytest"
+        config: "pytest.ini"
+        purpose: "Test execution"
+  
+  no_skeleton_code:
+    enforcement: "MANDATORY"
+    description: "Final deliverables must be complete and runnable"
+    
+    forbidden:
+      - "TODO comments in production code"
+      - "pass statements in function bodies"
+      - "NotImplementedError without clear timeline"
+      - "Placeholder functions"
+      - "Empty test files"
+    
+    validation_command: "python scripts/check_no_skeletons.py src/ tests/"
+    expect_exit_code: 0
+```
+
+---
+
+## SEC-018: GITHUB INTEGRATION (OPTIONAL)
+
+```yaml
+github_integration:
+  enabled: "{{true|false}}"
+  
+  repository:
+    owner: "{{GITHUB_USERNAME_OR_ORG}}"
+    name: "{{REPO_NAME}}"
+    default_branch: "{{main|master|develop}}"
+    visibility: "{{public|private}}"
+  
+  issue_management:
+    mode: "one-per-phase"  # one-per-phase | none | reuse
+    
+    issue_config:
+      number: null  # Filled once created
+      title_template: "[{phase_id}] {title}"
+      body_template_path: "templates/github_issue.md"
+      
+      labels:
+        - "phase-plan"
+        - "ai-generated"
+        - "{{CUSTOM_LABEL}}"
+      
+      assignees:
+        - "{{GITHUB_USERNAME}}"
+      
+      milestone: "{{MILESTONE_TITLE}}"
+  
+  project_management:
+    # GitHub Projects v2
+    url: "{{https://github.com/orgs/ORG/projects/N}}"
+    owner: "{{ORG_OR_USER}}"
+    project_number: "{{N}}"
+    item_id: null  # Filled by automation
+    
+    field_mappings:
+      phase_id_field: "Phase ID"
+      workstream_field: "Workstream"
+      status_field: "Status"
+      risk_field: "Risk"
+      target_date_field: "Target date"
+      doc_id_field: "doc_id"
+      story_points_field: null
+      owner_field: null
+    
+    status_mappings:
+      # SPLINTER status -> GitHub Projects status
+      planned: "Todo"
+      in_progress: "In Progress"
+      blocked: "Blocked"
+      done: "Done"
+      abandoned: "Abandoned"
+  
+  automation:
+    allow_issue_create: true
+    allow_issue_update: true
+    allow_project_item_create: true
+    allow_project_item_update: true
+    
+    sync_direction: "yaml->github"  # yaml->github | bidirectional
+    
+    on_phase_status_change_update_project: true
+    on_project_status_change_update_phase: false
+    
+    last_synced_at: null  # Filled by automation
+    last_synced_by: null  # e.g., "github-actions[bot]"
+  
+  sync_script:
+    command: "python scripts/sync_github.py {{PLAN_FILE}}"
+    expect_exit_code: 0
+```
+
+---
+
+## SEC-019: OPERATIONAL RUNBOOKS
+
+```yaml
+runbooks:
+  installation:
+    prerequisites:
+      os: ["{{Windows|Linux|macOS}}"]
+      runtime: "{{Python >=3.11, <3.13}}"
+      tools: ["git >=2.40", "docker >=24 (optional)"]
+    
+    steps:
+      - step: "1. Clone repository"
+        command: "git clone {{REPO_URL}} && cd {{REPO_NAME}}"
+      
+      - step: "2. Create virtual environment"
+        command: "python -m venv .venv"
+      
+      - step: "3. Activate virtual environment"
+        command: ".venv\\Scripts\\activate  # Windows PowerShell\nsource .venv/bin/activate  # Linux/macOS"
+      
+      - step: "4. Install dependencies"
+        command: "pip install -r requirements.txt"
+      
+      - step: "5. Verify installation"
+        command: "python scripts/verify_install.py"
+        expect_exit_code: 0
+    
+    troubleshooting:
+      - issue: "pip install fails with dependency conflict"
+        solution: "pip install --upgrade pip && pip install -r requirements.txt --force-reinstall"
+      
+      - issue: "Virtual environment activation fails"
+        solution: "Check PowerShell execution policy: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser"
+  
+  execution:
+    development:
+      - step: "1. Run plan generation"
+        command: "python scripts/generate_plan.py --input {{INPUT}} --output {{OUTPUT}}"
+      
+      - step: "2. Validate plan"
+        command: "python scripts/validate_plan.py {{PLAN_FILE}}"
+        expect_exit_code: 0
+      
+      - step: "3. Execute plan (dry-run)"
+        command: "python scripts/execute_plan.py {{PLAN_FILE}} --dry-run"
+      
+      - step: "4. Execute plan (real)"
+        command: "python scripts/execute_plan.py {{PLAN_FILE}} --execute"
+    
+    production:
+      - step: "1. Run smoke tests"
+        command: "python scripts/smoke_tests.py --env production"
+        expect_exit_code: 0
+      
+      - step: "2. Deploy with feature flag"
+        command: "python scripts/deploy.py --env production --feature-flag {{FLAG_NAME}}=off"
+      
+      - step: "3. Monitor metrics"
+        command: "python scripts/monitor_metrics.py --duration 300"
+      
+      - step: "4. Enable feature flag"
+        command: "python scripts/toggle_feature.py --flag {{FLAG_NAME}} --value on"
+  
+  maintenance:
+    backup:
+      - step: "Backup state database"
+        command: "sqlite3 .state/pipeline.db '.backup .state/backups/pipeline_$(date +%Y%m%d_%H%M%S).db'"
+      
+      - step: "Backup decision ledger"
+        command: "cp .state/decisions.jsonl .state/backups/decisions_$(date +%Y%m%d_%H%M%S).jsonl"
+    
+    restore:
+      - step: "Restore state database"
+        command: "sqlite3 .state/pipeline.db '.restore .state/backups/{{BACKUP_FILE}}'"
+      
+      - step: "Verify restore"
+        command: "sqlite3 .state/pipeline.db 'SELECT COUNT(*) FROM phases;'"
+    
+    upgrade:
+      - step: "1. Backup current version"
+        command: "python scripts/backup_all.py"
+      
+      - step: "2. Pull latest changes"
+        command: "git pull origin main"
+      
+      - step: "3. Upgrade dependencies"
+        command: "pip install -r requirements.txt --upgrade"
+      
+      - step: "4. Run migrations"
+        command: "python scripts/run_migrations.py"
+      
+      - step: "5. Verify upgrade"
+        command: "python scripts/verify_upgrade.py"
+        expect_exit_code: 0
+  
+  rollback:
+    default_procedure:
+      - step: "1. Revert commits"
+        command: "git revert {{COMMIT_HASH}}"
+      
+      - step: "2. Rerun validations"
+        command: "pytest tests/ -v"
+        expect_exit_code: 0
+      
+      - step: "3. Verify rollback"
+        command: "python scripts/verify_rollback.py"
+    
+    additional_steps:
+      - "{{ADDITIONAL_ROLLBACK_STEP_1}}"
+      - "{{ADDITIONAL_ROLLBACK_STEP_2}}"
+    
+    enterprise_mode_specific:
+      - step: "1. Disable feature flag"
+        command: "python scripts/toggle_feature.py --flag {{FLAG_NAME}} --value off"
+      
+      - step: "2. Drain traffic"
+        command: "python scripts/drain_traffic.py --duration 300"
+      
+      - step: "3. Revert deployment"
+        command: "python scripts/rollback_deployment.py --to-version {{PREVIOUS_VERSION}}"
+      
+      - step: "4. Verify rollback"
+        command: "python scripts/smoke_tests.py --env production"
+  
+  troubleshooting_guide:
+    common_issues:
+      - issue: "Phase fails with scope violation"
+        diagnosis: "File touched outside allowed paths"
+        resolution: "Review file_scope in phase contract, amend if needed"
+      
+      - issue: "Circuit breaker trips"
+        diagnosis: "Oscillation detected in fix loop"
+        resolution: "Review fix attempt logs, identify root cause, manual intervention required"
+      
+      - issue: "Determinism test fails"
+        diagnosis: "Non-deterministic behavior (timestamps, random, UUIDs)"
+        resolution: "Use fixed seeds, mock time sources, use stable IDs"
+    
+    escalation_paths:
+      - level: "L1 - Automated repair"
+        trigger: "First failure"
+        action: "Invoke fix pattern from allowed actions"
+      
+      - level: "L2 - Human review"
+        trigger: "Circuit breaker trip"
+        action: "Create GitHub issue with fix loop logs"
+      
+      - level: "L3 - Plan amendment"
+        trigger: "Unresolvable scope violation"
+        action: "Update phase contract, re-validate plan"
+```
+
+---
+
+## SEC-020: FINAL SUMMARY + COMPLETION CHECKLIST
+
+```yaml
+final_summary:
+  what_was_delivered:
+    description: |
+      Phase Plan {{VERSION}} with ALL Deterministic Enhancements:
+    
+    features_delivered:
+      - feature: "Self-healing rules (bounded + auditable)"
+        details: "{{N}} failure types with explicit action allowlists, max retry budgets, abort conditions"
+      
+      - feature: "Worktree isolation (merge-safe)"
+        details: "Base ref: {{BRANCH}}, concurrency limit: {{N}} workers, {{MERGE_STRATEGY}} strategy"
+      
+      - feature: "Ground truth validation levels (explicit)"
+        details: "{{N}} levels (L0-L5) with commands + evidence, per-phase requirements"
+      
+      - feature: "Phase contracts (machine-checkable)"
+        details: "{{N}} phases with inputs/outputs/invariants, pre/postconditions, failure modes"
+      
+      - feature: "Enhanced validation gates (regex patterns)"
+        details: "{{N}} gates with expect/forbid patterns, file content assertions, timeout/retry"
+      
+      - feature: "Metrics tracking (measurable progress)"
+        details: "{{N}} tracked metrics with quantified targets, JSONL sink, per-phase summaries"
+      
+      - feature: "Infrastructure requirements (reproducible env)"
+        details: "{{OS}}/{{LANGUAGE}}/{{TOOLS}} requirements, resource minimums, CI parity"
+      
+      - feature: "NO IMPLIED BEHAVIOR constraint (enforced)"
+        details: "All rules expressible as config + command + evidence + pass/fail"
+      
+      - feature: "Decision ledger (full rationale)"
+        details: "{{N}} decisions logged with context, options, rationale, validation"
+      
+      - feature: "Risk/Unknown registers (comprehensive)"
+        details: "{{N}} risks with mitigation/fallback/detection, {{N}} unknowns tracked"
+  
+  determinism_score:
+    target: "0.95"  # 95%+
+    estimated_achieved: "{{PERCENTAGE}}"
+    
+    factors:
+      - "Decision ledger: {{N}} decisions logged with rationale"
+      - "Assumption ledger: {{N}} assumptions tracked with validation"
+      - "File scope enforcement: Hard boundaries per phase"
+      - "Ground truth levels: Mechanical pass/fail (no human judgment)"
+      - "Parallel execution: DAG-scheduled (deterministic ordering)"
+      - "Self-healing: Bounded retries with convergence detection"
+      - "Metrics: All targets quantified"
+  
+  time_analysis:
+    sequential_estimate_minutes: "{{N}}"
+    parallel_estimate_minutes: "{{N}}"
+    speedup_percentage: "{{CALCULATED}}"
+    
+    bottlenecks:
+      - phase_or_group: "{{ID}}"
+        duration_minutes: "{{N}}"
+        reason: "{{WHY_BOTTLENECK}}"
+  
+  quality_gates_summary:
+    total_gates: "{{N}}"
+    passed: 0  # Execution not started
+    failed: 0
+    pending: "{{N}}"
+    
+    all_gates_have:
+      - "Executable commands: YES"
+      - "Expected output patterns (regex): YES"
+      - "Evidence artifact paths: YES"
+      - "Pass/fail conditions: YES"
+  
+  next_steps:
+    - step: "Execute {{FIRST_PHASE}}"
+      command: "{{COMMAND}}"
+    
+    - step: "Validate high-impact assumptions"
+      command: "python scripts/validate_assumptions.py .state/assumptions.jsonl --impact-min=7"
+    
+    - step: "Start parallel execution group {{N}}"
+      command: "{{COMMAND}}"
+    
+    - step: "Monitor metrics"
+      command: "python scripts/monitor_metrics.py --follow"
+  
+  known_limitations:
+    - limitation: "{{LIMITATION_1}}"
+      description: "{{DESCRIPTION}}"
+      workaround: "{{WORKAROUND_OR_FUTURE_WORK}}"
+    
+    # List 3-5 known limitations
+  
+  completion_checklist:
+    pre_execution:
+      - item: "All required sections completed"
+        status: "{{PENDING|DONE}}"
+      
+      - item: "All phases have phase contracts"
+        status: "{{PENDING|DONE}}"
+      
+      - item: "All validations have commands + regex"
+        status: "{{PENDING|DONE}}"
+      
+      - item: "All assumptions have validation methods"
+        status: "{{PENDING|DONE}}"
+      
+      - item: "Decision ledger has >=5 entries"
+        status: "{{PENDING|DONE}}"
+      
+      - item: "Risk register has >=3 entries"
+        status: "{{PENDING|DONE}}"
+      
+      - item: "Artifact manifest matches phase contracts"
+        status: "{{PENDING|DONE}}"
+      
+      - item: "No [NOT_AUTOMATABLE] without justification"
+        status: "{{PENDING|DONE}}"
+    
+    post_execution:
+      - item: "All phases marked DONE"
+        status: "{{PENDING|DONE}}"
+      
+      - item: "All must-pass validations passed"
+        status: "{{PENDING|DONE}}"
+      
+      - item: "All artifacts present at declared locations"
+        status: "{{PENDING|DONE}}"
+      
+      - item: "Global DoD criteria met"
+        status: "{{PENDING|DONE}}"
+      
+      - item: "Determinism score >= 0.95"
+        status: "{{PENDING|DONE}}"
+      
+      - item: "All metrics targets met"
+        status: "{{PENDING|DONE}}"
+      
+      - item: "Evidence logs exist for all validations"
+        status: "{{PENDING|DONE}}"
+
+  appendix:
+    a_large_snippets:
+      description: "Large code blocks, configs, commands"
+      items: []
+    
+    b_optional_timeline:
+      description: "Non-binding timeline (if dates included)"
+      warning: "These are PLANNING AIDS ONLY, not contractual constraints"
+      items: []
+    
+    c_mechanical_enforcement:
+      description: "Schema definitions for automated validation"
+      
+      plan_schema_path: "schemas/plan.schema.json"
+      phase_contract_schema_path: "schemas/phase_contract.schema.json"
+      
+      validation_command: "jsonschema -i {{PLAN_FILE}} schemas/plan.schema.json"
+      expect_exit_code: 0
+```
+
+---
+
+## TEMPLATE QUALITY GATE (Pre-Share Checklist)
+
+```yaml
+quality_gate:
+  pre_share_checklist:
+    metadata:
+      - "Metadata + fixed assumptions complete (solo dev, no time constraints)"
+      - "Template version specified"
+      - "Doc ID assigned"
+    
+    core_sections:
+      - "Executive Summary is decision-ready"
+      - "Goals are measurable (>=2) and Non-goals are explicit"
+      - "Scope includes In/Out/Assumptions/Constraints"
+      - "Global DoD exists and is measurable"
+    
+    artifacts_validation:
+      - "Artifact Touch Summary table exists and matches phase contracts"
+      - "Every artifact has artifact_id, action, path, owner"
+    
+    risk_decision_management:
+      - "Risks/Unknowns include mitigation + fallback + detection signals"
+      - "Open Questions table exists (or explicitly NONE)"
+      - "Decision ledger has >=5 entries with rationale"
+    
+    phase_planning:
+      - "Phase index exists and matches phase contracts"
+      - "Every phase has a Phase Contract JSON object (version 1.0)"
+      - "Every Phase Contract includes: phase, dependencies, scope, tasks, artifacts, validations, completion_gate, extensions"
+    
+    validation:
+      - "'Validated/production-ready' claims include command + success criteria + evidence log path"
+      - "All gates have executable commands"
+      - "All gates have regex patterns or exit code checks"
+    
+    documentation:
+      - "No giant inline code blocks in main body (move to Appendix A)"
+      - "Runbook includes setup, run, troubleshoot, rollback"
+    
+    automation:
+      - "NO IMPLIED BEHAVIOR constraint verified"
+      - "[NOT_AUTOMATABLE] marked where appropriate"
+      - "All metrics have quantified targets"
+
+validation_command: "python scripts/validate_template_compliance.py {{PLAN_FILE}}"
+expect_exit_code: 0
+```
+
+---
+
+**UNIFIED MASTER TEMPLATE V1.0 - COMPLETE**
+
+**Status:** ✓ ALL SECTIONS COMPLETE  
+**Total Sections:** 20  
+**Stable ID Anchors:** [2001] through [2041]  
+**Features Integrated:** 167+ unique features from 5 source templates  
+**Determinism Level:** 98% achievable with proper application  
+**Ready for AI Execution:** YES  
+
+---
+
+## END OF TEMPLATE

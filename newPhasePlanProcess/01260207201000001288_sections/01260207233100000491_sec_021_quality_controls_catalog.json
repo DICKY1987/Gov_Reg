@@ -1,0 +1,336 @@
+{
+  "section_id": "sec_021_quality_controls_catalog",
+  "title": "Quality Controls Catalog (SSOT)",
+  "required": true,
+  "instructions_file": "sections/sec_021_quality_controls_catalog.inst.md",
+  "quality_controls_catalog": {
+    "version": "1.0.0",
+    "description": "Single source of truth for proactive quality controls derived from DBG debugging topics. Controls are enforced at planning time via G-CTRL-001 gate.",
+    "control_classes": {
+      "enum": [
+        "security",
+        "testing",
+        "validation",
+        "architecture",
+        "observability",
+        "deployment",
+        "documentation"
+      ],
+      "description": "Control classification categories mapped from DBG topic areas"
+    },
+    "controls": [
+      {
+        "control_id": "CTRL-SEC-001",
+        "class": "security",
+        "name": "Input Validation Required",
+        "description": "All external inputs must be validated before processing",
+        "derived_from_dbg": null,
+        "enforcement": {
+          "gate_id": "G-INPUT-VAL",
+          "validation_command": {
+            "exe": "python",
+            "args": [
+              "validators/validate_input_handling.py",
+              "--scan-dir",
+              "{{SOURCE_DIR}}"
+            ]
+          },
+          "expect_exit_code": 0,
+          "expect_stdout_regex": [
+            "/no_unvalidated_inputs: true/"
+          ]
+        },
+        "evidence_requirements": {
+          "artifacts": [
+            ".state/evidence/{{PHASE}}/controls/CTRL-SEC-001/scan_report.json"
+          ],
+          "path_formula": ".state/evidence/{{PHASE}}/controls/{{CONTROL_ID}}/{{ARTIFACT_NAME}}"
+        },
+        "severity": "critical",
+        "auto_remediable": false
+      },
+      {
+        "control_id": "CTRL-SEC-002",
+        "class": "security",
+        "name": "No Hardcoded Secrets",
+        "description": "Secrets must not be hardcoded in source files",
+        "derived_from_dbg": null,
+        "enforcement": {
+          "gate_id": "G-SECRETS-SCAN",
+          "validation_command": {
+            "exe": "python",
+            "args": [
+              "validators/validate_no_secrets.py",
+              "--scan-dir",
+              "{{SOURCE_DIR}}"
+            ]
+          },
+          "expect_exit_code": 0,
+          "expect_stdout_regex": [
+            "/no_secrets_found: true/"
+          ]
+        },
+        "evidence_requirements": {
+          "artifacts": [
+            ".state/evidence/{{PHASE}}/controls/CTRL-SEC-002/secrets_scan.json"
+          ],
+          "path_formula": ".state/evidence/{{PHASE}}/controls/{{CONTROL_ID}}/{{ARTIFACT_NAME}}"
+        },
+        "severity": "critical",
+        "auto_remediable": false
+      },
+      {
+        "control_id": "CTRL-TST-001",
+        "class": "testing",
+        "name": "Minimum Test Coverage",
+        "description": "Code changes must maintain minimum test coverage threshold",
+        "derived_from_dbg": null,
+        "enforcement": {
+          "gate_id": "G-TEST-COV",
+          "validation_command": {
+            "exe": "pytest",
+            "args": [
+              "--cov={{SOURCE_DIR}}",
+              "--cov-report=json:.state/evidence/{{PHASE}}/coverage.json",
+              "--cov-fail-under=90"
+            ]
+          },
+          "expect_exit_code": 0,
+          "expect_stdout_regex": [
+            "/TOTAL.*9[0-9]%|100%/"
+          ]
+        },
+        "evidence_requirements": {
+          "artifacts": [
+            ".state/evidence/{{PHASE}}/controls/CTRL-TST-001/coverage.json"
+          ],
+          "path_formula": ".state/evidence/{{PHASE}}/controls/{{CONTROL_ID}}/{{ARTIFACT_NAME}}"
+        },
+        "severity": "high",
+        "auto_remediable": false
+      },
+      {
+        "control_id": "CTRL-VAL-001",
+        "class": "validation",
+        "name": "Schema Compliance",
+        "description": "All JSON artifacts must validate against their schemas",
+        "derived_from_dbg": null,
+        "enforcement": {
+          "gate_id": "G-SCHEMA-VAL",
+          "validation_command": {
+            "exe": "python",
+            "args": [
+              "validators/validate_all_schemas.py",
+              "--artifacts-dir",
+              "{{ARTIFACTS_DIR}}"
+            ]
+          },
+          "expect_exit_code": 0,
+          "expect_stdout_regex": [
+            "/all_schemas_valid: true/"
+          ]
+        },
+        "evidence_requirements": {
+          "artifacts": [
+            ".state/evidence/{{PHASE}}/controls/CTRL-VAL-001/schema_validation.json"
+          ],
+          "path_formula": ".state/evidence/{{PHASE}}/controls/{{CONTROL_ID}}/{{ARTIFACT_NAME}}"
+        },
+        "severity": "high",
+        "auto_remediable": false
+      },
+      {
+        "control_id": "CTRL-ARC-001",
+        "class": "architecture",
+        "name": "No Circular Dependencies",
+        "description": "Module dependencies must form a DAG (no cycles)",
+        "derived_from_dbg": null,
+        "enforcement": {
+          "gate_id": "G-DEP-DAG",
+          "validation_command": {
+            "exe": "python",
+            "args": [
+              "validators/validate_dependency_graph.py",
+              "--module-dir",
+              "{{SOURCE_DIR}}"
+            ]
+          },
+          "expect_exit_code": 0,
+          "expect_stdout_regex": [
+            "/no_cycles_detected: true/"
+          ]
+        },
+        "evidence_requirements": {
+          "artifacts": [
+            ".state/evidence/{{PHASE}}/controls/CTRL-ARC-001/dependency_graph.json"
+          ],
+          "path_formula": ".state/evidence/{{PHASE}}/controls/{{CONTROL_ID}}/{{ARTIFACT_NAME}}"
+        },
+        "severity": "medium",
+        "auto_remediable": false
+      }
+    ],
+    "control_mappings": {
+      "description": "Maps controls to gates, phases, and test suites",
+      "by_phase": {
+        "PH-DESIGN": [
+          "CTRL-ARC-001"
+        ],
+        "PH-IMPLEMENT": [
+          "CTRL-SEC-001",
+          "CTRL-SEC-002",
+          "CTRL-TST-001",
+          "CTRL-VAL-001"
+        ],
+        "PH-HARDENING": [
+          "CTRL-SEC-001",
+          "CTRL-SEC-002"
+        ],
+        "PH-PACKAGE": [
+          "CTRL-VAL-001"
+        ]
+      },
+      "by_gate": {
+        "G-INPUT-VAL": [
+          "CTRL-SEC-001"
+        ],
+        "G-SECRETS-SCAN": [
+          "CTRL-SEC-002"
+        ],
+        "G-TEST-COV": [
+          "CTRL-TST-001"
+        ],
+        "G-SCHEMA-VAL": [
+          "CTRL-VAL-001"
+        ],
+        "G-DEP-DAG": [
+          "CTRL-ARC-001"
+        ],
+        "GATE-CONTRACT-001": [
+          "DBG-0019"
+        ],
+        "GATE-COVERAGE-001": [
+          "DBG-0033"
+        ],
+        "GATE-SCHEMA-001": [
+          "DBG-0045"
+        ],
+        "GATE-LOGGING-001": [
+          "DBG-0052"
+        ],
+        "GATE-ROLLBACK-001": [
+          "DBG-0067"
+        ]
+      }
+    },
+    "additional_controls": [
+      {
+        "control_id": "DBG-0019",
+        "title": "API Contract Consistency",
+        "control_class": "architecture",
+        "required": true,
+        "intent": "Prevent API drift between spec and implementation",
+        "required_gates": [
+          "GATE-CONTRACT-001"
+        ],
+        "evidence_requirements": {},
+        "required_artifacts": [],
+        "test_requirements": {},
+        "tools": [
+          "python"
+        ]
+      },
+      {
+        "control_id": "DBG-0033",
+        "title": "Test Coverage Minimum",
+        "control_class": "testing",
+        "required": true,
+        "intent": "Ensure adequate test coverage before deployment",
+        "required_gates": [
+          "GATE-COVERAGE-001"
+        ],
+        "evidence_requirements": {},
+        "required_artifacts": [],
+        "test_requirements": {},
+        "tools": [
+          "pytest"
+        ]
+      },
+      {
+        "control_id": "DBG-0045",
+        "title": "Schema Validation on Input",
+        "control_class": "validation",
+        "required": true,
+        "intent": "Prevent malformed input from causing runtime errors",
+        "required_gates": [
+          "GATE-SCHEMA-001"
+        ],
+        "evidence_requirements": {},
+        "required_artifacts": [],
+        "test_requirements": {},
+        "tools": [
+          "python"
+        ]
+      },
+      {
+        "control_id": "DBG-0052",
+        "title": "Logging Consistency",
+        "control_class": "observability",
+        "required": false,
+        "intent": "Enable effective debugging through consistent log format",
+        "required_gates": [
+          "GATE-LOGGING-001"
+        ],
+        "evidence_requirements": {},
+        "required_artifacts": [],
+        "test_requirements": {},
+        "tools": [
+          "python"
+        ]
+      },
+      {
+        "control_id": "DBG-0067",
+        "title": "Deployment Rollback Tested",
+        "control_class": "deployment",
+        "required": true,
+        "intent": "Ensure ability to recover from failed deployments",
+        "required_gates": [
+          "GATE-ROLLBACK-001"
+        ],
+        "evidence_requirements": {},
+        "required_artifacts": [],
+        "test_requirements": {},
+        "tools": [
+          "python",
+          "pytest"
+        ]
+      }
+    ],
+    "enforcement_policy": {
+      "gate_id": "G-CTRL-001",
+      "description": "Control coverage gate validates all required controls are satisfied",
+      "algorithm": "For each control required by current phase, verify a satisfying gate exists and has passed",
+      "error_codes": {
+        "CTRL001_MISSING_SATISFYING_GATE": "Control requires a gate but none found in plan",
+        "CTRL001_MISSING_EVIDENCE_MAPPING": "Control requires evidence but path not defined",
+        "CTRL001_UNSATISFIED_CONTROL": "Control gate did not pass",
+        "CTRL001_INVALID_CONTROL_ID": "Referenced control_id not found in catalog"
+      },
+      "validation_command": {
+        "exe": "python",
+        "args": [
+          "validators/validate_control_coverage.py",
+          "--plan",
+          "{{PLAN_FILE}}",
+          "--catalog",
+          "sections/sec_021_quality_controls_catalog.json"
+        ]
+      },
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "/all_required_controls_satisfied: true/"
+      ]
+    }
+  },
+  "file_id": "01260207233100000491"
+}

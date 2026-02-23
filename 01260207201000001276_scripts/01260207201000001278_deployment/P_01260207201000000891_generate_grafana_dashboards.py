@@ -1,0 +1,196 @@
+#!/usr/bin/env python3
+"""Generate Grafana dashboards for monitoring."""
+
+import sys
+import json
+from pathlib import Path
+from datetime import datetime
+
+
+MAIN_DASHBOARD = {
+    "dashboard": {
+        "title": "Gov_Reg Main Dashboard",
+        "uid": "govreg-main",
+        "version": 1,
+        "timezone": "utc",
+        "panels": [
+            {
+                "id": 1,
+                "title": "System Status",
+                "type": "stat",
+                "targets": [{"expr": "up{job='govreg-app'}"}]
+            },
+            {
+                "id": 2,
+                "title": "Request Rate",
+                "type": "graph",
+                "targets": [{"expr": "rate(http_requests_total[5m])"}]
+            },
+            {
+                "id": 3,
+                "title": "Response Time (p95)",
+                "type": "graph",
+                "targets": [{"expr": "histogram_quantile(0.95, http_request_duration_seconds_bucket)"}]
+            },
+            {
+                "id": 4,
+                "title": "Error Rate",
+                "type": "graph",
+                "targets": [{"expr": "rate(http_requests_errors_total[5m])"}]
+            }
+        ]
+    }
+}
+
+PERFORMANCE_DASHBOARD = {
+    "dashboard": {
+        "title": "Gov_Reg Performance",
+        "uid": "govreg-performance",
+        "version": 1,
+        "timezone": "utc",
+        "panels": [
+            {
+                "id": 1,
+                "title": "CPU Usage",
+                "type": "graph",
+                "targets": [{"expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode='idle'}[5m])) * 100)"}]
+            },
+            {
+                "id": 2,
+                "title": "Memory Usage",
+                "type": "graph",
+                "targets": [{"expr": "100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)"}]
+            },
+            {
+                "id": 3,
+                "title": "Disk I/O",
+                "type": "graph",
+                "targets": [{"expr": "rate(node_disk_io_time_seconds_total[5m])"}]
+            },
+            {
+                "id": 4,
+                "title": "Network Traffic",
+                "type": "graph",
+                "targets": [{"expr": "rate(node_network_receive_bytes_total[5m])"}]
+            }
+        ]
+    }
+}
+
+REGISTRY_DASHBOARD = {
+    "dashboard": {
+        "title": "Gov_Reg Registry",
+        "uid": "govreg-registry",
+        "version": 1,
+        "timezone": "utc",
+        "panels": [
+            {
+                "id": 1,
+                "title": "Registry Operations",
+                "type": "graph",
+                "targets": [{"expr": "rate(registry_operations_total[5m])"}]
+            },
+            {
+                "id": 2,
+                "title": "Registry Size",
+                "type": "stat",
+                "targets": [{"expr": "registry_artifacts_total"}]
+            },
+            {
+                "id": 3,
+                "title": "Lock Wait Time",
+                "type": "graph",
+                "targets": [{"expr": "histogram_quantile(0.95, registry_lock_wait_seconds_bucket)"}]
+            },
+            {
+                "id": 4,
+                "title": "Validation Failures",
+                "type": "graph",
+                "targets": [{"expr": "rate(registry_validation_failures_total[5m])"}]
+            }
+        ]
+    }
+}
+
+
+def generate_grafana_dashboards(output_dir):
+    """Generate Grafana dashboard configurations."""
+    print(f"Generating Grafana Dashboards")
+    print("=" * 70)
+    
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+    
+    dashboards = [
+        ('main.json', MAIN_DASHBOARD, 'Main Dashboard'),
+        ('performance.json', PERFORMANCE_DASHBOARD, 'Performance Dashboard'),
+        ('registry.json', REGISTRY_DASHBOARD, 'Registry Dashboard')
+    ]
+    
+    for filename, dashboard, name in dashboards:
+        dashboard_path = output_path / filename
+        with open(dashboard_path, 'w', encoding='utf-8') as f:
+            json.dump(dashboard, f, indent=2)
+        print(f"  ✓ {name}: {filename}")
+    
+    # Generate README
+    readme_content = f"""# Grafana Dashboards
+
+**Generated:** {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}
+
+## Available Dashboards
+
+1. **Main Dashboard** (`main.json`)
+   - System status
+   - Request rate
+   - Response time (p95)
+   - Error rate
+
+2. **Performance Dashboard** (`performance.json`)
+   - CPU usage
+   - Memory usage
+   - Disk I/O
+   - Network traffic
+
+3. **Registry Dashboard** (`registry.json`)
+   - Registry operations
+   - Registry size
+   - Lock wait time
+   - Validation failures
+
+## Import Instructions
+
+1. Open Grafana web interface
+2. Navigate to Dashboards > Import
+3. Upload each JSON file
+4. Select Prometheus data source
+5. Click Import
+
+---
+*Dashboards generated by generate_grafana_dashboards.py*
+"""
+    
+    readme_path = output_path / 'README.md'
+    with open(readme_path, 'w', encoding='utf-8') as f:
+        f.write(readme_content)
+    
+    print(f"\n✓ README generated: README.md")
+    print("=" * 70)
+    print(f"✓ GRAFANA DASHBOARDS GENERATED")
+    print(f"  {len(dashboards)} dashboards created in {output_dir}")
+    
+    return 0
+
+
+if __name__ == '__main__':
+    output = None
+    
+    for i, arg in enumerate(sys.argv):
+        if arg == '--output' and i + 1 < len(sys.argv):
+            output = sys.argv[i + 1]
+    
+    if not output:
+        print("Usage: python generate_grafana_dashboards.py --output <output_dir>")
+        sys.exit(1)
+    
+    sys.exit(generate_grafana_dashboards(output))

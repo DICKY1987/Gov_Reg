@@ -1,0 +1,21 @@
+{
+  "description": "Prefix policy for file IDs under the ID Package: applies only in governed zone",
+  "version": "1.0.0",
+  "default_prefix": "",
+  "rules": [
+    {
+      "match_extension": "py",
+      "prefix": "P_",
+      "entity_kind": "file",
+      "zone": "governed",
+      "note": "Python files must have P_ prefix before their numeric file ID."
+    },
+    {
+      "match_extension": "*",
+      "prefix": "",
+      "entity_kind": "file",
+      "zone": "governed",
+      "note": "Other file types have no letter prefix; only the numeric file ID is used."
+    }
+  ]
+}

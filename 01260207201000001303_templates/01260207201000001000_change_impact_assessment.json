@@ -1,0 +1,70 @@
+{
+  "assessment_id": "{{UUID}}",
+  "timestamp": "{{ISO8601_UTC}}",
+  "change_id": "{{CHANGE_ID}}",
+  "change_description": "{{DESCRIPTION}}",
+  "change_type": "{{TYPE}}",
+  "risk_dimensions": {
+    "technical_risk": {
+      "score": 0,
+      "rationale": "Assess complexity, architectural impact, technical debt"
+    },
+    "operational_impact": {
+      "score": 0,
+      "rationale": "Assess deployment complexity, downtime, operational procedures"
+    },
+    "data_integrity": {
+      "score": 0,
+      "rationale": "Assess data migration risks, integrity constraints, backup requirements"
+    },
+    "performance_impact": {
+      "score": 0,
+      "rationale": "Assess performance degradation, resource consumption, scalability"
+    },
+    "security_implications": {
+      "score": 0,
+      "rationale": "Assess attack surface, authentication, authorization, encryption"
+    },
+    "compliance_requirements": {
+      "score": 0,
+      "rationale": "Assess regulatory impact (SOX, GDPR, ISO), audit requirements"
+    },
+    "rollback_complexity": {
+      "score": 0,
+      "rationale": "Assess rollback feasibility, data reversibility, recovery time"
+    },
+    "user_experience": {
+      "score": 0,
+      "rationale": "Assess UI changes, workflow disruption, user training needs"
+    },
+    "training_requirements": {
+      "score": 0,
+      "rationale": "Assess documentation updates, training materials, support readiness"
+    },
+    "third_party_dependencies": {
+      "score": 0,
+      "rationale": "Assess external service dependencies, API changes, vendor reliability"
+    }
+  },
+  "overall_risk_score": 0.0,
+  "risk_level": "NEGLIGIBLE",
+  "risk_level_mapping": {
+    "NEGLIGIBLE": "0.0-1.0",
+    "LOW": "1.1-2.0",
+    "MEDIUM": "2.1-3.0",
+    "HIGH": "3.1-4.0",
+    "CRITICAL": "4.1-5.0"
+  },
+  "mitigation_plan": "{{MITIGATION_PLAN}}",
+  "approval_level_required": "L1_ROUTINE",
+  "approval_level_mapping": {
+    "L1_ROUTINE": "Risk score 0.0-2.0 (NEGLIGIBLE, LOW)",
+    "L2_SIGNIFICANT": "Risk score 2.1-3.5 (MEDIUM, HIGH)",
+    "L3_CRITICAL": "Risk score 3.6-5.0 (HIGH, CRITICAL)"
+  },
+  "assessor": {
+    "name": "{{ASSESSOR_NAME}}",
+    "role": "{{ASSESSOR_ROLE}}",
+    "timestamp": "{{ISO8601_UTC}}"
+  }
+}

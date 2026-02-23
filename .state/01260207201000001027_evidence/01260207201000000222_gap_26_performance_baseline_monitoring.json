@@ -1,0 +1,24 @@
+{
+  "gap_id": "GAP-026",
+  "gap_name": "Performance Baseline & Monitoring",
+  "verification_timestamp": "2026-02-12T17:19:05.095001+00:00",
+  "status": "VERIFIED",
+  "checks": [
+    {
+      "check_id": "CHECK-026-001",
+      "description": "Performance baselines defined",
+      "status": "PASS",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\.state\\performance_baselines.json",
+        "exists": true,
+        "sha256": "CCB825D7D110DA1E0764833B5AEFD2E60CCA543662875E87ED51D85B884C9A60",
+        "metrics_count": 4
+      }
+    }
+  ],
+  "cryptographic_proof": {
+    "algorithm": "SHA256",
+    "hash": "573D3A811D0866757DADE3709F170BE16FD31F345B25A47380ED10D0921B09BF",
+    "timestamp": "2026-02-12T17:19:05.095001+00:00"
+  }
+}

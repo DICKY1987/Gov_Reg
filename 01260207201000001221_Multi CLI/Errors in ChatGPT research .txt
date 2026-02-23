@@ -1,0 +1,83 @@
+Errors in ChatGPT research 
+
+
+
+
+Confirmed Code Errors
+1. Python attribute name syntax errors (all scripts)
+Argparse maps --out-envelope → args.out_envelope (hyphens become underscores). Every script uses hyphens in attribute access instead, which Python parses as subtraction and will raise AttributeError or silent wrong behavior at runtime:
+
+
+
+|Script      |Broken usage                                         |Correct                                              |
+|------------|-----------------------------------------------------|-----------------------------------------------------|
+|`planner.py`|`args.out-envelope`                                  |`args.out_envelope`                                  |
+|`critic.py` |`args.log-stdout`, `args.log-stderr`                 |`args.log_stdout`, `args.log_stderr`                 |
+|`refiner.py`|`args.out-plan`, `args.log-stdout`, `args.log-stderr`|`args.out_plan`, `args.log_stdout`, `args.log_stderr`|
+
+These appear in every single invocation path, meaning all three wrapper scripts will fail at runtime.
+2. uuid.uuid-4() in critic.py
+The fallback block calls uuid.uuid-4(), which is invalid Python. It should be uuid.uuid4(). The hyphen is again parsed as subtraction, causing a NameError at the exact moment the fallback path is needed.
+3. Broken run_loop.sh inline Python heredoc
+The convergence check passes file paths after the heredoc closing tag, but they are never received as arguments:
+
+PASSED="$(python - <<'PY'
+import json,sys
+gate=json.load(open(sys.argv[1]))  # sys.argv[1] does not exist
+...
+PY
+"$ITER_DIR/plan_quality_gate_report.json" "$ITER_DIR/critique_report.json")"
+
+
+The strings after PY are treated as a separate command invocation, not as arguments to the Python script. sys.argv will only contain the script name (-), so sys.argv[1] raises IndexError on every iteration. The paths need to be injected differently — e.g., via environment variables, or by replacing the heredoc with a -c string that interpolates shell variables.
+4. --stream off in critic.py
+The Copilot CLI invocation uses "--stream", "off" as two separate arguments. The documented flag is --stream (a standalone flag, not a value-bearing option). Passing "off" as a positional argument will likely be interpreted as the prompt or cause a parse error. This needs to be removed or replaced with --no-stream if that variant exists, or simply omitted.
+5. npm package name in install command
+The install block uses:
+
+npm install -g @github/copilot
+
+
+The document’s own references and primary source links consistently name the tool “GitHub Copilot CLI” and reference installation via a different package path. The package name @github/copilot is unverified and likely incorrect — the document never resolves this against a canonical package registry entry.
+
+Logic / Design Errors
+6. Critic is only called when the gate passes — never after refinement
+The Mermaid diagram shows:
+
+C -->|pass| D[Critic]
+C -->|fail| F[Refiner]
+F --> C
+
+
+This means the Critic is never invoked after a refinement cycle. The loop goes Gate → Refiner → Gate → Refiner indefinitely, with the Critic only seeing the very first gate-passing draft. The self-healing value of the Critic is lost unless the gate happens to pass on a refined iteration. The loop should route Refiner output through the Critic as well.
+7. No rate-limit or backoff logic in run_loop.sh
+RATE_LIMITED is a documented defect code in the taxonomy with heal template backoff_and_retry, but the shell script has no sleep/backoff between iterations and no detection of rate-limit responses from either CLI. The table says “handled by wrapper logic” but no wrapper implements it.
+8. Test plan in test_quality_gate.py violates the schema it references
+The inline plan object has "description": "d" (1 character) on the deliverable, but draft_plan.schema.json requires minLength: 10. The test comment acknowledges it skips schema validation, but if schema validation were ever enabled (the stated goal), this test would produce a false negative. The fixture is misleading.
+
+Missing Information
+9. schemas/planning_request.schema.json is listed in the artifact table but never defined
+The artifact table lists it as the schema for the immutable input document, but no schema body is provided anywhere in the document. The planner script reads this file without validating it.
+10. schemas/run_meta.schema.json is listed but never defined
+Same issue — referenced in the artifact table, never specified.
+11. No inputs/planning_request.json example
+The run_loop.sh script defaults to this path, the planner reads it, and tests reference it — but no example or minimal valid instance is provided. Without it the system cannot be run end-to-end.
+12. --output-schema behavior on schema violation is undocumented
+The document relies on codex exec --output-schema to guarantee schema-valid output from the Planner and Refiner, but never addresses what exit code is returned or what happens to --output-last-message when Codex’s response fails schema validation. This is a critical gap for the self-healing logic to work correctly.
+13. ACP migration path is mentioned but not specified
+The document flags ACP NDJSON as the correct long-term approach for the Critic but provides no concrete migration path, no ACP client code stub, and no schema mapping between ACP event objects and critique_report.schema.json.
+14. No auth validation / fail-fast guard in the orchestrator
+AUTH_MISSING is a documented defect code, but run_loop.sh never checks for GH_TOKEN or CODEX_API_KEY before running. A missing token causes the first CLI invocation to fail with an opaque error rather than the documented fail_fast_auth behavior.
+
+Summary
+
+
+
+|Category                           |Count|
+|-----------------------------------|-----|
+|Runtime-breaking code bugs         |4    |
+|Logic/design errors                |3    |
+|Missing schema/artifact definitions|4    |
+|Missing operational behavior       |3    |
+
+The most critical issues are the argparse attribute hyphen bugs (items 1–2), which make every script non-functional, and the heredoc argument-passing failure (item 3), which breaks the convergence detection entirely. These must be fixed before any other testing is possible.​​​​​​​​​​​​​​​​

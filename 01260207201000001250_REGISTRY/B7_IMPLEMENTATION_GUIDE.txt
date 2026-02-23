@@ -1,0 +1,120 @@
+# B7 IMPLEMENTATION GUIDE
+## Document Path Precedence and Add path_aliases Derivation
+
+### File: 01260207201000000192_UNIFIED_SSOT_REGISTRY_DERIVATIONS.yaml
+
+⚠️ IMPORTANT: Check if validator supports '_metadata' key first!
+
+Test with a small YAML validator:
+`python
+import yaml
+test = '''
+_metadata:
+  test: value
+field1:
+  type: string
+'''
+print(yaml.safe_load(test))
+`
+
+### OPTION A: If _metadata is supported
+
+Add at top of file (combine with B9 test coverage precedence):
+
+`yaml
+# Metadata: Field Precedence Rules
+# This section documents field precedence rules but is not processed as field definitions
+_metadata:
+  path_field_precedence:
+    # When multiple path fields are present, use this order to determine canonical path:
+    # 1. absolute_path (highest precedence - full filesystem path)
+    # 2. relative_path (project-relative)
+    # 3. canonical_path (normalized/simplified)
+    # 4. directory_path (parent directory)
+    # 5. filename (basename only)
+    # 6. path_aliases (alternate names/symlinks)
+    order: [absolute_path, relative_path, canonical_path, directory_path, filename, path_aliases]
+  
+  test_coverage_field_precedence:
+    # For Python files where py_analysis_success=true:
+    # Python-specific fields are authoritative over general fields
+    python_specific:
+      precedence_group: test_coverage_python
+      authoritative_for: ["*.py"]
+      fields: [py_tests_executed, py_pytest_exit_code, py_coverage_percent]
+    general:
+      precedence_group: test_coverage_general
+      fields: [has_tests, test_status, coverage_status]
+`
+
+### OPTION B: If _metadata NOT supported (use comment block)
+
+Add at top of file:
+
+`yaml
+# =============================================================================
+# FIELD PRECEDENCE RULES (Documentation Only - Not Processed)
+# =============================================================================
+#
+# Path Field Precedence:
+#   When multiple path fields are present, use this order to determine canonical path:
+#   1. absolute_path (highest precedence - full filesystem path)
+#   2. relative_path (project-relative)
+#   3. canonical_path (normalized/simplified)
+#   4. directory_path (parent directory)
+#   5. filename (basename only)
+#   6. path_aliases (alternate names/symlinks)
+#
+# Test Coverage Field Precedence:
+#   For Python files where py_analysis_success=true:
+#   Python-specific fields (py_tests_executed, py_pytest_exit_code, py_coverage_percent)
+#   are authoritative over general fields (has_tests, test_status, coverage_status)
+#
+# =============================================================================
+`
+
+### Add path_aliases derivation
+
+In the field definitions section:
+
+`yaml
+  path_aliases:
+    depends_on: []
+    error_policy: set_null
+    type: array
+    trigger: manual_patch_only
+    null_behavior: set_empty_array
+    formula: COALESCE(INPUT.path_aliases, [])
+    rationale: Alternate file paths or symlinks; manually maintained
+`
+
+### File: 01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json
+
+Ensure all 6 path fields have entity scope:
+
+`json
+"absolute_path": {
+  "scope": {"record_kinds_in": ["entity"]},
+  ...
+},
+"relative_path": {
+  "scope": {"record_kinds_in": ["entity"]},
+  ...
+},
+"canonical_path": {
+  "scope": {"record_kinds_in": ["entity"]},
+  ...
+},
+"directory_path": {
+  "scope": {"record_kinds_in": ["entity"]},
+  ...
+},
+"filename": {
+  "scope": {"record_kinds_in": ["entity"]},
+  ...
+},
+"path_aliases": {
+  "scope": {"record_kinds_in": ["entity"]},
+  ...
+}
+`

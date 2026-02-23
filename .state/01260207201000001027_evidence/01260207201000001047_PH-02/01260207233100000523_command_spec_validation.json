@@ -1,0 +1,411 @@
+{
+  "all_commands_structured": false,
+  "files_checked": 22,
+  "files_with_violations": 10,
+  "total_violations": 56,
+  "violations": [
+    {
+      "path": "ground_truth_levels.levels[0].commands[0].command",
+      "type": "free_form_command",
+      "value": "python -m py_compile {{FILE}}",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_006_ground_truth_levels.json"
+    },
+    {
+      "path": "ground_truth_levels.levels[0].commands[1].command",
+      "type": "free_form_command",
+      "value": "yamllint {{YAML_FILE}}",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_006_ground_truth_levels.json"
+    },
+    {
+      "path": "ground_truth_levels.levels[1].commands[0].command",
+      "type": "free_form_command",
+      "value": "ruff check src/",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_006_ground_truth_levels.json"
+    },
+    {
+      "path": "ground_truth_levels.levels[1].commands[1].command",
+      "type": "free_form_command",
+      "value": "mypy src/ --strict",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_006_ground_truth_levels.json"
+    },
+    {
+      "path": "ground_truth_levels.levels[1].commands[2].command",
+      "type": "free_form_command",
+      "value": "bandit -r src/ -f json -o .runs/validation/L1_security.json",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_006_ground_truth_levels.json"
+    },
+    {
+      "path": "ground_truth_levels.levels[2].commands[0].command",
+      "type": "free_form_command",
+      "value": "pytest tests/unit -v --tb=short --cov=src --cov-report=term --cov-report=json:.runs/validation/L2_co...",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_006_ground_truth_levels.json"
+    },
+    {
+      "path": "ground_truth_levels.levels[3].commands[0].command",
+      "type": "free_form_command",
+      "value": "pytest tests/integration -v --tb=short",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_006_ground_truth_levels.json"
+    },
+    {
+      "path": "ground_truth_levels.levels[4].commands[0].command",
+      "type": "free_form_command",
+      "value": "pytest tests/e2e -v --tb=short",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_006_ground_truth_levels.json"
+    },
+    {
+      "path": "ground_truth_levels.levels[5].commands[0].command",
+      "type": "free_form_command",
+      "value": "docker-compose -f docker-compose.test.yml up --abort-on-container-exit",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_006_ground_truth_levels.json"
+    },
+    {
+      "path": "ground_truth_levels.levels[5].commands[1].command",
+      "type": "free_form_command",
+      "value": "python scripts/smoke_tests.py --env staging",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_006_ground_truth_levels.json"
+    },
+    {
+      "path": "environment_tools.dependencies.validation.command",
+      "type": "free_form_command",
+      "value": "pip check && python scripts/validate_dependencies.py requirements.txt",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_009_environment_tools.json"
+    },
+    {
+      "path": "phase_contracts.phase_contract_template.acceptance_tests.tests[0].command",
+      "type": "incomplete_command_spec",
+      "value": {
+        "tool_id": "{{TOOL_ID}}",
+        "args": [
+          "{{COMMAND_ARGS}}"
+        ]
+      },
+      "expected": "Must have 'exe' and 'args' fields",
+      "file": "sec_010_phase_contracts.json"
+    },
+    {
+      "path": "phase_contracts.phase_contract_template.pre_flight_checks.checks[0].command",
+      "type": "incomplete_command_spec",
+      "value": {
+        "tool_id": "powershell-script",
+        "args": [
+          "git status --porcelain"
+        ]
+      },
+      "expected": "Must have 'exe' and 'args' fields",
+      "file": "sec_010_phase_contracts.json"
+    },
+    {
+      "path": "phase_contracts.phase_contract_template.validations[0].command",
+      "type": "free_form_command",
+      "value": "{{EXECUTABLE_COMMAND}}",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_010_phase_contracts.json"
+    },
+    {
+      "path": "artifact_manifest.consistency_check.command",
+      "type": "free_form_command",
+      "value": "python scripts/validate_artifact_manifest.py {{PLAN_FILE}}",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_011_artifact_manifest.json"
+    },
+    {
+      "path": "validation_gates.gates[0].command",
+      "type": "free_form_command",
+      "value": "python scripts/validate_structure.py --schema schemas/dir_structure.json",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_012_validation_gates.json"
+    },
+    {
+      "path": "validation_gates.gates[1].command",
+      "type": "free_form_command",
+      "value": "pytest --cov=src --cov-report=term | grep TOTAL",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_012_validation_gates.json"
+    },
+    {
+      "path": "validation_gates.gates[2].command",
+      "type": "free_form_command",
+      "value": "bandit -r src/ -f json -o .runs/global_gates/security.json -ll",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_012_validation_gates.json"
+    },
+    {
+      "path": "validation_gates.gates[3].command",
+      "type": "free_form_command",
+      "value": "python scripts/test_determinism.py --runs 3 --compare-outputs",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_012_validation_gates.json"
+    },
+    {
+      "path": "decision_ledger.decisions[0].validation.command",
+      "type": "free_form_command",
+      "value": "{{COMMAND_TO_VERIFY_DECISION}}",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_014_decision_ledger.json"
+    },
+    {
+      "path": "decision_ledger.ledger_validation.command",
+      "type": "free_form_command",
+      "value": "python scripts/validate_decision_ledger.py .state/decisions.jsonl",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_014_decision_ledger.json"
+    },
+    {
+      "path": "metrics_observability.validation_summary_command.command",
+      "type": "free_form_command",
+      "value": "python scripts/validate_metrics.py .state/metrics.jsonl",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_015_metrics_observability.json"
+    },
+    {
+      "path": "github_integration.sync_script.command",
+      "type": "free_form_command",
+      "value": "python scripts/sync_github.py {{PLAN_FILE}}",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_018_github_integration.json"
+    },
+    {
+      "path": "runbooks.execution.development[0].command",
+      "type": "free_form_command",
+      "value": "python scripts/generate_plan.py --input {{INPUT}} --output {{OUTPUT}}",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.execution.development[1].command",
+      "type": "free_form_command",
+      "value": "python scripts/validate_plan.py {{PLAN_FILE}}",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.execution.development[2].command",
+      "type": "free_form_command",
+      "value": "python scripts/execute_plan.py {{PLAN_FILE}} --dry-run",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.execution.development[3].command",
+      "type": "free_form_command",
+      "value": "python scripts/execute_plan.py {{PLAN_FILE}} --execute",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.execution.production[0].command",
+      "type": "free_form_command",
+      "value": "python scripts/smoke_tests.py --env production",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.execution.production[1].command",
+      "type": "free_form_command",
+      "value": "python scripts/deploy.py --env production --feature-flag {{FLAG_NAME}}=off",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.execution.production[2].command",
+      "type": "free_form_command",
+      "value": "python scripts/monitor_metrics.py --duration 300",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.execution.production[3].command",
+      "type": "free_form_command",
+      "value": "python scripts/toggle_feature.py --flag {{FLAG_NAME}} --value on",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.installation.steps[0].command",
+      "type": "free_form_command",
+      "value": "git clone {{REPO_URL}} && cd {{REPO_NAME}}",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.installation.steps[1].command",
+      "type": "free_form_command",
+      "value": "python -m venv .venv",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.installation.steps[2].command",
+      "type": "free_form_command",
+      "value": ".venv\\Scripts\\activate  # Windows PowerShell\nsource .venv/bin/activate  # Linux/macOS",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.installation.steps[3].command",
+      "type": "free_form_command",
+      "value": "pip install -r requirements.txt",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.installation.steps[4].command",
+      "type": "free_form_command",
+      "value": "python scripts/verify_install.py",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.maintenance.backup[0].command",
+      "type": "free_form_command",
+      "value": "sqlite3 .state/pipeline.db '.backup .state/backups/pipeline_$(date +%Y%m%d_%H%M%S).db'",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.maintenance.backup[1].command",
+      "type": "free_form_command",
+      "value": "cp .state/decisions.jsonl .state/backups/decisions_$(date +%Y%m%d_%H%M%S).jsonl",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.maintenance.restore[0].command",
+      "type": "free_form_command",
+      "value": "sqlite3 .state/pipeline.db '.restore .state/backups/{{BACKUP_FILE}}'",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.maintenance.restore[1].command",
+      "type": "free_form_command",
+      "value": "sqlite3 .state/pipeline.db 'SELECT COUNT(*) FROM phases;'",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.maintenance.upgrade[0].command",
+      "type": "free_form_command",
+      "value": "python scripts/backup_all.py",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.maintenance.upgrade[1].command",
+      "type": "free_form_command",
+      "value": "git pull origin main",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.maintenance.upgrade[2].command",
+      "type": "free_form_command",
+      "value": "pip install -r requirements.txt --upgrade",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.maintenance.upgrade[3].command",
+      "type": "free_form_command",
+      "value": "python scripts/run_migrations.py",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.maintenance.upgrade[4].command",
+      "type": "free_form_command",
+      "value": "python scripts/verify_upgrade.py",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.rollback.default_procedure[0].command",
+      "type": "free_form_command",
+      "value": "git revert {{COMMIT_HASH}}",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.rollback.default_procedure[1].command",
+      "type": "free_form_command",
+      "value": "pytest tests/ -v",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.rollback.default_procedure[2].command",
+      "type": "free_form_command",
+      "value": "python scripts/verify_rollback.py",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.rollback.enterprise_mode_specific[0].command",
+      "type": "free_form_command",
+      "value": "python scripts/toggle_feature.py --flag {{FLAG_NAME}} --value off",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.rollback.enterprise_mode_specific[1].command",
+      "type": "free_form_command",
+      "value": "python scripts/drain_traffic.py --duration 300",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.rollback.enterprise_mode_specific[2].command",
+      "type": "free_form_command",
+      "value": "python scripts/rollback_deployment.py --to-version {{PREVIOUS_VERSION}}",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "runbooks.rollback.enterprise_mode_specific[3].command",
+      "type": "free_form_command",
+      "value": "python scripts/smoke_tests.py --env production",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_019_runbooks.json"
+    },
+    {
+      "path": "final_summary.next_steps[0].command",
+      "type": "free_form_command",
+      "value": "{{COMMAND}}",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_020_final_summary.json"
+    },
+    {
+      "path": "final_summary.next_steps[1].command",
+      "type": "free_form_command",
+      "value": "python scripts/validate_assumptions.py .state/assumptions.jsonl --impact-min=7",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_020_final_summary.json"
+    },
+    {
+      "path": "final_summary.next_steps[2].command",
+      "type": "free_form_command",
+      "value": "{{COMMAND}}",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_020_final_summary.json"
+    },
+    {
+      "path": "final_summary.next_steps[3].command",
+      "type": "free_form_command",
+      "value": "python scripts/monitor_metrics.py --follow",
+      "expected": "Structured command object with 'exe' and 'args' fields",
+      "file": "sec_020_final_summary.json"
+    }
+  ],
+  "file_id": "01260207233100000523"
+}

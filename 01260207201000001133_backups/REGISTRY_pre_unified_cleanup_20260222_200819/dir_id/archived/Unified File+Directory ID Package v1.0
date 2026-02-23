@@ -1,0 +1,585 @@
+# Unified File+Directory ID Package v1.0
+
+## Fully automated, end-to-end implementation plan (compatible with current File ID system)
+
+This document describes how to build a **single, portable ID subsystem** that governs **both files and directories** under a user-specified `project_root`, while preserving your current File ID ingest behavior (20-digit prefixes, allocator, registry ingestion, deterministic derivations) and extending it to directories using `.dir_id` anchors and the **same global allocator**.
+
+---
+
+## 1) Compatibility constraints (non-negotiable)
+
+### 1.1 Must remain compatible with current File ID runtime
+
+Your current system already supports:
+
+* ingest of observed filesystem items into a registry using a **contract-driven header selection** pipeline
+* **ID-prefixed vs unprefixed** file handling
+* an **allocator with locking** and controlled fallback
+* deterministic derivations + patch-only registry mutation
+
+**We do not replace this.** We extend it to directories by:
+
+* adding `entity_kind=directory` support to the same ingest envelope
+* adding a directory identity resolution step using `.dir_id`
+* using the **same global allocator** sequence for `dir_id` and `file_id`
+
+### 1.2 Directory identity must be allocator-issued (not hash-derived)
+
+You currently have a DIR_ID guide that describes hash-derived `DIR-{slug}-{hash}`. That conflicts with your “one counter for files+dirs” requirement.
+
+**Decision for this implementation:** directories use allocator-issued IDs stored in `.dir_id`.
+Hash-derived validation gates are replaced with presence/format/uniqueness gates.
+
+### 1.3 Governance boundary rule (staging vs governed)
+
+* `depth = 0` (project root): **staging** (IDs optional; registry skipped by default)
+* `depth >= 1`: **governed** (dir IDs mandatory; file IDs mandatory)
+
+This is the lever that prevents “temporary file clutter” from entering SSOT.
+
+---
+
+## 2) System architecture
+
+### 2.1 Components
+
+1. **Global Allocator Store** (portable across projects)
+2. **Watcher + Scanner** (detect events + reconcile drift)
+3. **Unified Ingest Engine** (contract-driven; supports file + directory)
+4. **Identity Resolvers**
+
+   * File resolver: parse prefix or allocate; rename
+   * Dir resolver: read `.dir_id` or allocate; write `.dir_id`
+5. **Registry Writer** (patch-only; same for both)
+6. **Gate Runner** (same framework; adds directory gates)
+7. **Evidence Writer** (same envelope; directory-specific evidence kinds)
+8. **Migration Tooling** (optional, for converting legacy hash-derived `.dir_id`)
+
+### 2.2 Data flow (single runtime)
+
+**Trigger** → **Ingest Envelope** → **Zone Routing** → **Identity Resolution** → **Populate (contracts)** → **Gates** → **Patch Commit** → **Verify**
+
+`entity_kind` and `zone` control behavior; there is no separate dir system.
+
+---
+
+## 3) Files and directories: identity artifacts
+
+### 3.1 File identity (unchanged, extended for governed enforcement)
+
+* A governed file must have a **20-digit ID** in its filename prefix.
+* If it is `.py`, filename must include **`P_` immediately before the 20-digit ID**.
+* If a governed file is unprefixed, the system allocates an ID and renames it.
+
+**Canonical filename pattern**
+
+* Python: `P_<FILE_ID>__<human_name>.py`
+* Other: `<FILE_ID>__<human_name>.<ext>`
+
+### 3.2 Directory identity (new behavior)
+
+* Every governed directory must contain a `.dir_id` file.
+* `.dir_id` stores allocator-issued `dir_id` plus metadata.
+
+**`.dir_id` file format (recommended JSON)**
+
+```json
+{
+  "dir_id": "01999000042260124550",
+  "allocator_version": "1.0.0",
+  "allocated_at_utc": "2026-02-13T06:12:00Z",
+  "project_root_id": "ROOT-<stable>",
+  "relative_path": "src/module_a"
+}
+```
+
+Notes:
+
+* `dir_id` is a 20-digit ID from the same allocator sequence as files.
+* `relative_path` is informational; **dir_id does not change** on move/rename.
+
+---
+
+## 4) Global allocator store (the key to cross-project uniqueness)
+
+### 4.1 Storage location requirement
+
+Allocator state **must live outside the project root** so copying/moving projects does not reset IDs.
+
+Recommended default:
+
+* Windows: `%APPDATA%\GovReg\IdAllocator\`
+* Cross-platform: `~/.gov_reg/id_allocator/`
+
+### 4.2 Required files in allocator store
+
+* `allocator_state.json`
+  Holds: `last_issued_id`, `allocator_version`, `counter_max`, etc.
+* `allocation_log.ndjson` (append-only)
+  Every allocation event appended as immutable record.
+* `allocator.lock` (or OS-native lock primitive)
+
+### 4.3 Atomic allocation contract
+
+Allocator must guarantee:
+
+* exclusive lock acquisition
+* no duplicate issuance under concurrency
+* crash-safe state update (write temp + atomic rename)
+
+### 4.4 Allocation log record (minimum)
+
+```json
+{
+  "issued_id": "01999000042260124550",
+  "issued_at_utc": "2026-02-13T06:12:00Z",
+  "entity_kind": "directory",
+  "project_root_id": "ROOT-<stable>",
+  "relative_path_at_allocation": "src/module_a",
+  "reason": "mkdir_governed",
+  "tool_version": "idpkg/1.0.0"
+}
+```
+
+### 4.5 Fallback policy
+
+If you currently allow `max_id_seen + 1` fallback, keep it **off by default** and require:
+
+* explicit enable flag
+* explicit evidence record
+* pinned behavior version (so results are reproducible)
+
+---
+
+## 5) Project root configuration (portable “drop-in package”)
+
+### 5.1 Required project-local config
+
+In the project root, create `.idpkg/config.json`:
+
+```json
+{
+  "project_root_id": "ROOT-<stable>",
+  "project_root_path": "C:\\path\\to\\project",
+  "governance": {
+    "staging_depth": 0,
+    "governed_min_depth": 1
+  },
+  "exclusions": {
+    "patterns": [
+      ".git/**",
+      ".venv/**",
+      "**/__pycache__/**",
+      "build/**",
+      "dist/**"
+    ]
+  },
+  "naming": {
+    "separator": "__",
+    "python_prefix": "P_"
+  },
+  "registry": {
+    "registry_path": "REGISTRY/governance_registry_unified.json",
+    "patch_output_dir": "REGISTRY/patches"
+  },
+  "allocator": {
+    "allocator_store_path": "%APPDATA%\\GovReg\\IdAllocator",
+    "lock_timeout_ms": 5000
+  }
+}
+```
+
+### 5.2 How `project_root_id` is created
+
+Choose a deterministic method:
+
+* Option A (recommended): allocate a one-time `project_root_id` and store it forever in config.
+* Option B: derive from absolute path (not recommended; breaks if root moves).
+
+---
+
+## 6) Unified ingest envelope (the “one system” interface)
+
+Every trigger becomes one JSON event envelope:
+
+```json
+{
+  "trigger_event_kind": "DIR_CREATED",
+  "entity_kind": "directory",
+  "observed_at_utc": "2026-02-13T06:11:55Z",
+  "project_root_id": "ROOT-<stable>",
+  "project_root_path": "C:\\path\\to\\project",
+  "relative_path": "src/module_a",
+  "depth": 1,
+  "zone": "governed",
+  "desired_action": "register"
+}
+```
+
+### 6.1 Zone routing rules (hard)
+
+* `zone=staging` → ignore by default (no IDs, no registry)
+* `zone=governed` → enforce identity + registry
+* `zone=excluded` → ignore (unless override mode)
+
+---
+
+## 7) Unified ingest pipeline (compatible extension)
+
+You already have an ingest spec that resolves file identity and then derives fields. Extend it as follows:
+
+### 7.1 Extend `SEC_05_IDENTITY` into “entity identity”
+
+Add a **forked identity step** based on `entity_kind`:
+
+* If `entity_kind=file`:
+
+  * run existing `S10_DETECT_PREFIX → S11_VALIDATE_PREFIX → S12_ALLOCATE_FILE_ID`
+  * add governed enforcement: if governed and prefix missing, allocate and rename
+* If `entity_kind=directory`:
+
+  * new `S10D_DETECT_DIR_ANCHOR → S11D_VALIDATE_DIR_ANCHOR → S12D_ALLOCATE_DIR_ID`
+
+#### Directory identity steps (exact behaviors)
+
+**S10D_DETECT_DIR_ANCHOR**
+
+* input: directory path
+* action: check for `.dir_id`
+* output: `has_dir_id_anchor`, `dir_id_anchor_path`
+
+**S11D_VALIDATE_DIR_ANCHOR**
+
+* if anchor exists:
+
+  * parse JSON
+  * validate `dir_id` matches 20-digit pattern
+  * check registry uniqueness (dir_id not used by another dir record)
+* output: `id_resolution_mode=use_anchor|allocate`
+
+**S12D_ALLOCATE_DIR_ID**
+
+* if `allocate`:
+
+  * lock allocator
+  * allocate next ID
+  * write `.dir_id` (atomic write)
+  * append allocation log record
+* output: `dir_id_resolved`
+
+### 7.2 Header selection and derivations stay contract-driven
+
+You must not hardcode “directory columns.” Instead:
+
+* update your Column Dictionary to include directory-required fields
+* update schema/derivations to support these fields
+* allow required_when predicates like:
+
+  * `entity_kind == "directory" && zone == "governed"`
+
+---
+
+## 8) Registry model updates
+
+### 8.1 Schema changes
+
+Ensure your registry schema supports:
+
+* `entity_kind: "directory"`
+* `dir_id` field (20-digit)
+* directory-specific fields (relative_path, parent_dir_id, etc.)
+* if you restrict additionalProperties, add the fields explicitly
+
+### 8.2 Column Dictionary changes (minimum set)
+
+Add columns (or confirm already present) with clear required_when rules:
+
+**Directory identity + path**
+
+* `entity_kind` (required always)
+* `dir_id` (required_when: entity_kind=directory AND zone=governed)
+* `project_root_id` (required for both)
+* `relative_path` (required for both)
+* `depth` / `zone` (optional but very useful)
+
+**Directory hierarchy**
+
+* `parent_dir_id` (required_when: entity_kind=directory AND depth>=2)
+* `dir_anchor_present` (derived boolean)
+* `dir_anchor_path` (derived)
+
+**File mapping**
+
+* `file_id` (already)
+* `owning_dir_id` (required_when: entity_kind=file AND zone=governed)
+
+### 8.3 Derivation rules (minimum)
+
+* `depth` derived from relative_path
+* `zone` derived from depth + exclusions
+* `owning_dir_id` derived by walking parents until `.dir_id` found (in governed zone)
+* `parent_dir_id` derived similarly for directories
+
+---
+
+## 9) Deterministic renaming policy (files)
+
+### 9.1 When renaming is allowed
+
+Only allowed when:
+
+* file is in governed zone
+* file lacks valid prefix OR violates python prefix policy
+* file is not excluded
+* file is not already registered with a conflicting ID
+
+### 9.2 Rename algorithm
+
+Given `original_filename`:
+
+1. Determine prefix:
+
+   * `.py` → `P_`
+   * else → empty
+2. Construct new name:
+
+   * `prefix + file_id + "__" + original_filename_without_existing_id_prefix`
+3. Perform atomic rename:
+
+   * verify target doesn’t exist
+   * rename
+   * record evidence
+
+### 9.3 Repair if user strips prefix
+
+If governed file loses prefix:
+
+* gate fails
+* repair action restores prefix using registry `file_id`
+* repair produces evidence artifact
+
+---
+
+## 10) Automation: watcher + scanner (must both exist)
+
+### 10.1 Watcher responsibilities (real-time)
+
+* subscribe to filesystem events under project root
+* normalize events into ingest envelopes
+* call ingest engine
+* debounce event storms (especially for directory creation cascades)
+
+Events to handle:
+
+* create/move/delete for files and dirs
+* modify for files (optional; identity not impacted but metadata may be)
+
+### 10.2 Scanner responsibilities (reconciliation)
+
+Watchers miss events; scanners ensure correctness.
+Scanner should:
+
+* enumerate all directories/files
+* compute zone for each
+* for governed dirs: ensure `.dir_id` exists
+* for governed files: ensure ID prefix exists
+* reconcile registry: missing entries, stale paths, drift
+
+Run modes:
+
+* `scan --fix` (enforce + write)
+* `scan --report` (no writes; produces evidence report)
+
+---
+
+## 11) Gates (blocking enforcement)
+
+### 11.1 Directory gates (governed)
+
+* `.dir_id` exists for all governed directories
+* `.dir_id` parses and contains exactly one valid 20-digit `dir_id`
+* uniqueness of `dir_id` in registry
+* directory record exists in registry for each governed directory
+
+### 11.2 File gates (governed)
+
+* every governed file has valid 20-digit prefix
+* `.py` files must have `P_` prefix
+* uniqueness of `file_id`
+* file record exists in registry
+* owning_dir_id is present and matches containing directory
+
+### 11.3 Cross-cutting gates
+
+* allocator reachable + lockable
+* patch-only registry mutation enforced
+* staging zone not auto-registered by default
+
+---
+
+## 12) Evidence (mandatory for automation-grade traceability)
+
+Create an evidence root per run:
+`evidence/idpkg/<run_id>/`
+
+Write:
+
+* `ingest_event.json` (the envelope)
+* `allocator_allocation.json` (if allocation occurred)
+* `dir_anchor_write.json` (if `.dir_id` written)
+* `rename_action.json` (if file renamed)
+* `registry_patch.json` (patch applied)
+* `gate_report.json` (pass/fail, defect codes)
+* `snapshot.json` (counts, coverage, drift metrics)
+
+---
+
+## 13) Migration from legacy hash-derived `.dir_id` (optional but recommended)
+
+### 13.1 Detection
+
+If `.dir_id` contains a `DIR-...hash` format or any non-20-digit ID:
+
+* treat as legacy
+
+### 13.2 Migration rule (default)
+
+For governed directories:
+
+1. allocate new 20-digit `dir_id`
+2. rewrite `.dir_id` to new JSON format
+3. store legacy value in registry field `prior_ids[]` or `dir_id_legacy`
+4. emit migration evidence
+5. update any references (parent_dir_id / owning_dir_id computations)
+
+During migration window, resolver may accept legacy `.dir_id` for lookup but must write only new format.
+
+---
+
+## 14) Implementation plan (build order that yields a working system fastest)
+
+### Step 1 — Add `zone` routing + depth computation
+
+* implement `compute_depth(relative_path)`
+* implement `compute_zone(depth, exclusion_patterns)`
+
+### Step 2 — Implement allocator store + lock + audit log
+
+* atomic update of `allocator_state.json`
+* append-only allocation log
+* cross-process lock
+
+### Step 3 — Extend ingest engine to support `entity_kind=directory`
+
+* add `.dir_id` resolver steps
+* integrate with same contract loader and header selection
+
+### Step 4 — Implement file rename enforcer (governed only)
+
+* prefix detection
+* python `P_` rule
+* atomic rename + evidence
+
+### Step 5 — Implement scanner reconciliation
+
+* enumerate governed subtree
+* enforce `.dir_id` and prefixes
+* create missing registry entries
+* update moved paths
+
+### Step 6 — Gates + CI integration
+
+* add directory gates into the existing gate runner
+* add cross-cutting gates
+* add “scan --report” in CI and “scan --fix” locally
+
+### Step 7 — Migration tooling (if needed)
+
+* convert legacy `.dir_id`
+* preserve provenance in registry
+
+---
+
+## 15) Testing (must prove “100% functioning”)
+
+### 15.1 Deterministic test suite (minimum)
+
+1. **Allocator uniqueness** across two “projects”
+2. **Governed boundary**: root staging creates no IDs; depth=1 creates IDs
+3. **Directory creation cascade**: `mkdir -p src/a/b` results in `.dir_id` at each governed dir
+4. **File add under governed**: unprefixed file renamed + registered
+5. **Python file rule**: `.py` renamed with `P_`
+6. **Move directory**: `.dir_id` preserved; registry path updates
+7. **Prefix stripped**: gate fails; repair restores
+8. **Excluded subtree**: no IDs, no registry entries
+9. **Crash safety**: allocator locked / partial write recovery
+
+### 15.2 Golden evidence checks
+
+Tests should assert evidence artifacts exist and match expected structure.
+
+---
+
+## 16) Deliverables (what must exist when you’re done)
+
+### Global
+
+* allocator store directory with:
+
+  * `allocator_state.json`
+  * `allocation_log.ndjson`
+  * lock file/primitive
+
+### Per project root
+
+* `.idpkg/config.json`
+* `.idpkg/exclusion_policy.json` (optional split)
+* updated registry contracts:
+
+  * column dictionary updates
+  * schema updates
+  * derivations updates
+  * write policy updates (dir identity + anchor write permissions)
+* tools/commands:
+
+  * `idpkg watch --root <path>`
+  * `idpkg scan --root <path> [--fix|--report]`
+  * `idpkg promote <path>`
+  * `idpkg migrate-dirid --root <path>` (optional)
+
+---
+
+## 17) Operational rules (so it stays automated)
+
+* Users and AI can create anything in root (staging) without overhead.
+* To make it “real project content,” place it under depth>=1 or run `promote`.
+* The system keeps governed subtree compliant continuously via watcher+scanner.
+* Registry stays clean because staging is excluded by default.
+
+---
+
+## 18) What must be changed in your current DIR_ID documentation to remain compatible
+
+Replace every “hash-derived dir_id” rule with:
+
+* **allocator-issued 20-digit dir_id**
+* `.dir_id` required for governed directories
+* gates check presence/format/uniqueness, not “hash matches path”
+
+Keep:
+
+* the motivation
+* the integration points
+* the CI gate wiring concept
+* semantic key concept (optional enhancement)
+
+---
+
+If you want the “fully compatible with current id system” guarantee to be enforceable, the next output to produce is a **strict JSON contract set** for:
+
+1. `IDPKG_CONFIG.schema.json`
+2. `DIR_ID_ANCHOR.schema.json`
+3. `UNIFIED_INGEST_ENVELOPE.schema.json`
+4. `PREFIX_POLICY.json`
+5. `GATE_CATALOG.json` (directory + file + cross-cutting)
+

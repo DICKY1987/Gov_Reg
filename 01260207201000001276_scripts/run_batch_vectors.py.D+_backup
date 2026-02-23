@@ -1,0 +1,82 @@
+import sys
+import yaml
+import json
+from datetime import datetime
+
+def run_batch_vectors(bundle_path, vectors_path):
+    # Load contract bundle
+    with open(bundle_path, 'r', encoding='utf-8') as f:
+        contract = yaml.safe_load(f)
+    
+    # Load test vectors
+    with open(vectors_path, 'r', encoding='utf-8') as f:
+        vectors = yaml.safe_load(f)
+    
+    results = []
+    passed = 0
+    failed = 0
+    
+    for vector in vectors.get('test_vectors', []):
+        vector_id = vector.get('vector_id')
+        initial = vector.get('initial_state', {})
+        transition = vector.get('transition')
+        expected = vector.get('expected', {})
+        
+        # Simulate transition logic
+        transition_def = contract.get('transitions', {}).get(transition, {})
+        conditions = transition_def.get('conditions', [])
+        
+        # Check conditions
+        conditions_met = True
+        for cond in conditions:
+            field = cond.get('field')
+            value = cond.get('value')
+            if initial.get(field) != value:
+                conditions_met = False
+                break
+        
+        if conditions_met:
+            actual_status = transition_def.get('effects', [{}])[0].get('value', 'unknown')
+            test_passed = (actual_status == expected.get('status'))
+        else:
+            test_passed = (expected.get('validation') == 'blocked')
+        
+        if test_passed:
+            passed += 1
+        else:
+            failed += 1
+        
+        results.append({
+            'vector_id': vector_id,
+            'passed': test_passed,
+            'expected': expected,
+            'conditions_met': conditions_met
+        })
+    
+    summary = {
+        'timestamp': datetime.utcnow().isoformat() + 'Z',
+        'total_vectors': len(results),
+        'passed': passed,
+        'failed': failed,
+        'results': results
+    }
+    
+    # Save results
+    with open('.state/evidence/PH-03A/vector_results.json', 'w', encoding='utf-8') as f:
+        json.dump(summary, f, indent=2)
+    
+    print(f"{passed} passed, {failed} failed")
+    return 0 if failed == 0 else 1
+
+if __name__ == '__main__':
+    if '--bundle' not in sys.argv or '--vectors' not in sys.argv:
+        print('Usage: python run_batch_vectors.py --bundle <bundle.yaml> --vectors <vectors.yaml>')
+        sys.exit(1)
+    
+    bundle_idx = sys.argv.index('--bundle') + 1
+    vectors_idx = sys.argv.index('--vectors') + 1
+    
+    bundle_path = sys.argv[bundle_idx]
+    vectors_path = sys.argv[vectors_idx]
+    
+    sys.exit(run_batch_vectors(bundle_path, vectors_path))

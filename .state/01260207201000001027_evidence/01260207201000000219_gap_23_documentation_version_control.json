@@ -1,0 +1,44 @@
+{
+  "gap_id": "GAP-023",
+  "gap_name": "Documentation Version Control",
+  "verification_timestamp": "2026-02-12T17:19:04.789426+00:00",
+  "status": "VERIFIED",
+  "checks": [
+    {
+      "check_id": "CHECK-023-001",
+      "description": "Documentation versions registry initialized",
+      "status": "PASS",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\.state\\doc_versions.jsonl",
+        "exists": true,
+        "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+      }
+    },
+    {
+      "check_id": "CHECK-023-002",
+      "description": "Documentation version control policy exists",
+      "status": "PASS",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\config\\documentation_version_control.json",
+        "exists": true,
+        "sha256": "EEA980ECDEAA13762675888896430797DD3296B614E9F2D24D1744B979CC2DC7",
+        "drift_detection_enabled": true
+      }
+    },
+    {
+      "check_id": "CHECK-023-003",
+      "description": "Approval framework integration (GAP #15)",
+      "status": "PASS",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\.state\\approvals.jsonl",
+        "exists": true,
+        "sha256": "B66ECC494C17303A5F6E7F9FDA6A9094431426918E7FAB5E4471536C519A2A17"
+      }
+    }
+  ],
+  "cryptographic_proof": {
+    "algorithm": "SHA256",
+    "hash": "E5644364B225421926D400B24DDF5A665675B0EB7388F7FD5D2CBB86C98F3D2C",
+    "timestamp": "2026-02-12T17:19:04.791981+00:00"
+  }
+}

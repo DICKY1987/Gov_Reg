@@ -1,0 +1,23 @@
+{
+  "gate_id": "FILE_MANIFEST_VALIDATION",
+  "validated_at": "2026-02-01T08:20:02.997463Z",
+  "validator_version": "1.0.0",
+  "plan_file": "test_plan.json",
+  "validation_result": {
+    "status": "invalid",
+    "errors_count": 1,
+    "warnings_count": 0,
+    "errors": [
+      {
+        "error_code": "FILE_NOT_FOUND",
+        "error_message": "Plan not found: test_plan.json",
+        "severity": "critical"
+      }
+    ],
+    "warnings": []
+  },
+  "statistics": {
+    "total_files": 0,
+    "files_by_type": {}
+  }
+}

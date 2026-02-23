@@ -1,0 +1,475 @@
+{
+  "doc_meta": {
+    "doc_type": "technical_design",
+    "title": "Programmable Python Script Comparison + Analyzer System",
+    "version": "1.0.0",
+    "created_date": "2026-02-02",
+    "primary_goal": "Deterministically compare and analyze Python scripts to detect redundancy, measure similarity, extract component signatures, and produce evidence suitable for rule-based decisions and canonical selection.",
+    "core_philosophy": {
+      "deterministic_layer": "Produces evidence and enforces hard stops for state changes (e.g., quarantine eligibility). No heuristic output may override this layer.",
+      "heuristic_layer": "Produces hypotheses and ranking signals to reduce human review load; must be convertible into requests for deterministic evidence; cannot directly mark code obsolete or force quarantine."
+    }
+  },
+  "source_files": [
+    {
+      "filename": "PROV-SOL_Deterministic Codebase Triage & De-Noise System.md",
+      "role_in_system": "Defines the governing separation of deterministic vs heuristic layers, and enumerates safe heuristic capabilities (scouting signals) that must feed deterministic evidence collection.",
+      "key_takeaways_used": [
+        "Deterministic layer decides state, enforces hard stops, controls quarantine eligibility; cannot be overridden.",
+        "Heuristic layer generates hypotheses and ranking; cannot force quarantine or override reachability; must drive evidence collection."
+      ]
+    },
+    {
+      "filename": "MAPP_Project goal identification from files.md",
+      "role_in_system": "Defines the critical gap (Python Introspection Layer) and the success criteria required to unlock rule execution and canonical selection.",
+      "key_takeaways_used": [
+        "Introspection must support structural + semantic similarity, dependency overlap, I/O surface detection, capability fingerprinting, and an orchestration comparison engine.",
+        "Must feed evidence paths required by rules."
+      ]
+    },
+    {
+      "filename": "DOC-CONFIG-PY-IDENTIFY-SOLUTION-001__MAPP_py_identify_soultion.yml",
+      "role_in_system": "Rule configuration that consumes analyzer evidence (similarity scores, dependency overlap, I/O surface, reachability, etc.) to produce decisions (ACTIVE, OBSOLETE_CANDIDATE, DUPLICATE_SET_CANDIDATE) and rankings (CANONICAL_PREFERENCE).",
+      "key_takeaways_used": [
+        "Similarity thresholds for redundancy detection and gating.",
+        "Weighted canonical preference scoring formula with disqualifying gates (syntax/lint failures).",
+        "Broader rule-sets that require analyzer evidence channels (dependency hygiene, dead code, safety harness, etc.)."
+      ]
+    },
+    {
+      "filename": "DOC-SCRIPT-0998__MAPP_ChatGPT-Extract 1.json",
+      "role_in_system": "Research-derived deterministic rubric patterns for selecting a canonical file among duplicates (multi-signal scoring + deterministic tie-breakers) and for producing auditable JSONL outputs.",
+      "key_takeaways_used": [
+        "Multi-signal scoring (e.g., recency, completeness, naming intent, validity) with deterministic tie-breakers.",
+        "Strict audit logging outputs (JSONL + trace logs) and self-healing iteration caps (bounded)."
+      ]
+    },
+    {
+      "filename": "DOC-SPEC-MAPP-004__R-MAPP-PY-004_structural_similarity.yaml",
+      "role_in_system": "Specification for AST-based structural similarity measurement and acceptance criteria."
+    },
+    {
+      "filename": "DOC-SPEC-MAPP-005__R-MAPP-PY-005_semantic_similarity.yaml",
+      "role_in_system": "Specification for semantic similarity measurement (behavioral intent approximation) and acceptance criteria."
+    },
+    {
+      "filename": "DOC-SPEC-MAPP-006__R-MAPP-PY-006_dependency_analysis.yaml",
+      "role_in_system": "Specification for extracting import dependencies and computing dependency overlap for similarity and impact analysis."
+    },
+    {
+      "filename": "DOC-SPEC-MAPP-007__R-MAPP-PY-007_io_surface_analysis.yaml",
+      "role_in_system": "Specification for extracting I/O surface signatures (args/env/files/network) and computing overlap for redundancy confirmation and behavior-delta estimation."
+    },
+    {
+      "filename": "DOC-SPEC-MAPP-008__R-MAPP-PY-008_file_comparison.yaml",
+      "role_in_system": "Orchestration spec for comparing two files (or sets), combining analyzers, producing a unified similarity report, and supporting downstream ranking/decisions."
+    }
+  ],
+  "system_objectives": {
+    "must_do": [
+      "Compute structural similarity (AST-based) and semantic similarity scores for Python files.",
+      "Extract dependency profiles and compute overlap (e.g., Jaccard).",
+      "Extract I/O surface profiles and compute overlap.",
+      "Extract component signatures and stable component IDs suitable for registry/evidence linkage.",
+      "Produce an evidence bundle that can feed rule evaluation (including redundancy detection and canonical preference ranking).",
+      "Generate deterministic, auditable outputs (JSON/JSONL) with reproducible scoring and tie-breakers."
+    ],
+    "must_not_do": [
+      "Heuristic outputs must not directly change state (e.g., cannot quarantine/retire code by themselves).",
+      "Never emit non-reproducible scores without pinned versions, fixed preprocessing, and explicit config."
+    ]
+  },
+  "architecture": {
+    "top_level_pipeline": [
+      {
+        "stage_id": "S0_INGEST",
+        "name": "Ingest + Identity",
+        "inputs": ["paths_or_repo_roots"],
+        "outputs": ["file_inventory"],
+        "determinism_controls": [
+          "stable file identifiers (absolute_path hash + size + mtime snapshot)",
+          "content hash (sha256) for immutable identity"
+        ]
+      },
+      {
+        "stage_id": "S1_NORMALIZE",
+        "name": "Normalization",
+        "inputs": ["file_content"],
+        "outputs": ["normalized_text"],
+        "determinism_controls": [
+          "fixed newline normalization",
+          "strip BOM",
+          "normalize encoding to UTF-8 with strict error policy",
+          "canonicalize indentation only for analysis (never rewrite source)"
+        ]
+      },
+      {
+        "stage_id": "S2_PARSE",
+        "name": "Parsing + Indexing",
+        "inputs": ["normalized_text"],
+        "outputs": ["ast", "symbol_index", "token_stats"],
+        "preferred_parsers": [
+          "python built-in ast (baseline)",
+          "tree-sitter-python (optional for error-tolerant parsing; must pin grammar version)"
+        ],
+        "determinism_controls": [
+          "pin parser versions",
+          "record parse warnings/errors as evidence"
+        ]
+      },
+      {
+        "stage_id": "S3_ANALYZERS",
+        "name": "Feature Extractors (Deterministic Evidence)",
+        "inputs": ["ast", "symbol_index", "normalized_text"],
+        "outputs": [
+          "structural_fingerprint",
+          "semantic_embedding",
+          "dependency_profile",
+          "io_surface_profile",
+          "capability_fingerprint",
+          "component_signatures"
+        ],
+        "analyzers": [
+          {
+            "analyzer_id": "A_STRUCTURAL",
+            "spec_file": "DOC-SPEC-MAPP-004__R-MAPP-PY-004_structural_similarity.yaml",
+            "methods": [
+              "AST node-type multiset + weighted counts",
+              "AST path n-grams (bounded length)",
+              "function/class signature sketches (names optional; arity and decorator sets preferred)",
+              "optional tree-edit-distance approximation (bounded runtime)"
+            ],
+            "outputs": ["evidence.similarity.structural"]
+          },
+          {
+            "analyzer_id": "A_SEMANTIC",
+            "spec_file": "DOC-SPEC-MAPP-005__R-MAPP-PY-005_semantic_similarity.yaml",
+            "methods": [
+              "embedding of normalized code (with comments/docstrings policy explicit)",
+              "embedding of extracted API surface summary (exports + docstrings)",
+              "optional: embedding of CFG/callgraph summary if available"
+            ],
+            "determinism_controls": [
+              "pin embedding model/version",
+              "fixed chunking strategy",
+              "fixed pooling strategy",
+              "cache embeddings by sha256"
+            ],
+            "outputs": ["evidence.similarity.semantic"]
+          },
+          {
+            "analyzer_id": "A_DEPENDENCY",
+            "spec_file": "DOC-SPEC-MAPP-006__R-MAPP-PY-006_dependency_analysis.yaml",
+            "methods": [
+              "extract import statements (stdlib vs third-party vs local)",
+              "compute dependency overlap (Jaccard)",
+              "detect circular/unused imports (optional evidence channels)"
+            ],
+            "outputs": ["evidence.context.dependency_overlap.jaccard", "evidence.deps.*"]
+          },
+          {
+            "analyzer_id": "A_IO_SURFACE",
+            "spec_file": "DOC-SPEC-MAPP-007__R-MAPP-PY-007_io_surface_analysis.yaml",
+            "methods": [
+              "detect argparse/click/typer usage",
+              "extract CLI args/options (best-effort, static)",
+              "extract env var reads (os.environ / getenv patterns)",
+              "extract file read/write paths (static patterns + pathlib/open usage)",
+              "flag network calls (requests/httpx/socket) as signals"
+            ],
+            "outputs": ["evidence.io.surface_overlap.*", "evidence.io.*"]
+          },
+          {
+            "analyzer_id": "A_CAPABILITY",
+            "methods": [
+              "semgrep-based capability fingerprints (rule-pack driven)",
+              "framework markers (fastapi/django/pytest/sqlalchemy/etc.)",
+              "domain tags and risk/security tags as evidence channels"
+            ],
+            "outputs": ["evidence.semgrep.matches.*", "evidence.capability.*"]
+          },
+          {
+            "analyzer_id": "A_COMPONENTS",
+            "methods": [
+              "component segmentation: module-level, class-level, function-level",
+              "stable component IDs: hash of normalized AST subtree + signature sketch",
+              "component signature record: inputs/outputs (where extractable), deps, io surface touches"
+            ],
+            "outputs": ["evidence.component.*"]
+          }
+        ]
+      },
+      {
+        "stage_id": "S4_COMPARE_ENGINE",
+        "name": "Comparison Engine (Orchestration)",
+        "spec_file": "DOC-SPEC-MAPP-008__R-MAPP-PY-008_file_comparison.yaml",
+        "inputs": ["file_A_evidence", "file_B_evidence", "optional_context_graph"],
+        "outputs": ["comparison_report", "best_match_record", "duplicate_set_candidates"],
+        "combination_strategy": {
+          "composite_similarity": {
+            "formula": "weighted_sum",
+            "default_weights": {
+              "structural": 0.45,
+              "semantic": 0.35,
+              "dependency_overlap": 0.10,
+              "io_surface_overlap": 0.10
+            },
+            "tie_breakers": [
+              "syntax_validity",
+              "lint_pass",
+              "dependency_overlap",
+              "io_surface_overlap"
+            ]
+          }
+        }
+      },
+      {
+        "stage_id": "S5_RULE_EVAL",
+        "name": "Rule Evaluation + Decisions",
+        "rule_config_file": "DOC-CONFIG-PY-IDENTIFY-SOLUTION-001__MAPP_py_identify_soultion.yml",
+        "inputs": ["comparison_report", "global_evidence (reachability/provenance/etc.)"],
+        "outputs": ["decisions", "rankings", "required_next_evidence_requests"],
+        "rule_sets_expected": [
+          "RS_REDUNDANCY_DETECTION_V1",
+          "RS_ACTIVE_DETERMINATION_V1",
+          "RS_OBSOLETE_CANDIDATE_GATING_V1",
+          "RS_DEPENDENCY_HYGIENE_SIGNALS_V1",
+          "RS_SAFE_EXECUTION_HARNESS_V1",
+          "RS_SEMGREP_CAPABILITY_FINGERPRINTS_V1"
+        ]
+      },
+      {
+        "stage_id": "S6_OUTPUTS",
+        "name": "Auditable Outputs",
+        "outputs": [
+          "out/comparison_report.json",
+          "out/duplicate_sets.jsonl",
+          "out/canonical_rankings.json",
+          "out/evidence_bundle.jsonl",
+          "out/trace_yyyymmdd_hhmmss.log"
+        ],
+        "audit_requirements": {
+          "every_score_must_include": [
+            "inputs (file ids + sha256)",
+            "config versions",
+            "tool versions",
+            "per-signal scores",
+            "composite score",
+            "tie-breaker rule if used",
+            "confidence"
+          ],
+          "bounded_reflection": {
+            "enabled": true,
+            "max_iterations": 3,
+            "allowed_adjustments": [
+              "recompute missing deterministic evidence",
+              "re-run parsing with error-tolerant parser",
+              "re-run embedding with cached/pinned model"
+            ],
+            "forbidden_adjustments": [
+              "changing thresholds without recording config diff",
+              "state changes based on heuristic-only signals"
+            ]
+          }
+        }
+      }
+    ],
+    "integration_with_triage": {
+      "concept_source": "PROV-SOL_Deterministic Codebase Triage & De-Noise System.md",
+      "required_contract": [
+        "Analyzer emits deterministic evidence.",
+        "Heuristic signals are stored as ranking-only fields.",
+        "Triage engine consumes rule decisions; heuristics only influence what evidence to collect next."
+      ]
+    }
+  },
+  "evidence_schema_contract": {
+    "minimum_required_paths_for_redundancy": [
+      "evidence.similarity.structural",
+      "evidence.similarity.semantic",
+      "evidence.context.dependency_overlap.jaccard",
+      "evidence.io.surface_overlap.*"
+    ],
+    "example_rule_bindings": {
+      "R_RED_001_DUPLICATE_SET_CANDIDATE": {
+        "requires_all": [
+          "evidence.similarity.structural >= 0.92",
+          "evidence.similarity.semantic >= 0.85",
+          "evidence.context.dependency_overlap.jaccard >= 0.60"
+        ]
+      },
+      "R_RED_002_CANONICAL_PREFERENCE": {
+        "type": "ranking",
+        "formula": "weighted_sum",
+        "weights_source": "DOC-CONFIG-PY-IDENTIFY-SOLUTION-001__MAPP_py_identify_soultion.yml",
+        "disqualifiers": ["evidence.syntax.invalid == true", "evidence.lint.fails == true"]
+      }
+    }
+  },
+  "data_model": {
+    "FileRecord": {
+      "file_id": "string",
+      "path": "string",
+      "sha256": "string",
+      "size_bytes": "int",
+      "mtime": "string(iso8601)",
+      "content_type": "python",
+      "parse_status": "ok|error",
+      "errors": "array[string]"
+    },
+    "AnalyzerEvidence": {
+      "file_id": "string",
+      "sha256": "string",
+      "evidence": {
+        "similarity": {
+          "structural": "float(0..1)",
+          "semantic": "float(0..1)"
+        },
+        "context": {
+          "dependency_overlap": {
+            "jaccard": "float(0..1)",
+            "imports_stdlib": "array[string]",
+            "imports_third_party": "array[string]",
+            "imports_local": "array[string]"
+          }
+        },
+        "io": {
+          "argparse": { "detected": "bool", "confidence": "float" },
+          "click": { "detected": "bool", "confidence": "float" },
+          "envvars": { "keys": "array[string]" },
+          "file_reads": { "paths": "array[string]" },
+          "file_writes": { "paths": "array[string]" },
+          "network_calls": { "detected": "bool", "libraries": "array[string]" },
+          "surface_overlap": { "with_file_id": "string", "score": "float(0..1)" }
+        },
+        "component": {
+          "components": "array[{component_id, kind, signature, hash}]"
+        },
+        "capability": {
+          "tags": "array[string]",
+          "semgrep": { "rule_hits": "array[{rule_id, count}]" }
+        }
+      },
+      "toolchain": {
+        "python_version": "string",
+        "parser": "string",
+        "parser_version": "string",
+        "embedding_model": "string",
+        "embedding_model_version": "string"
+      }
+    },
+    "ComparisonReport": {
+      "file_a": "file_id",
+      "file_b": "file_id",
+      "scores": {
+        "structural": "float(0..1)",
+        "semantic": "float(0..1)",
+        "dependency_overlap_jaccard": "float(0..1)",
+        "io_surface_overlap": "float(0..1)",
+        "composite_similarity": "float(0..1)"
+      },
+      "deltas": {
+        "added_imports": "array[string]",
+        "removed_imports": "array[string]",
+        "io_surface_differences": "array[string]",
+        "component_delta_summary": "string"
+      },
+      "confidence": "float(0..1)",
+      "tie_breaker_applied": "string|null"
+    }
+  },
+  "recommended_storage": {
+    "sqlite_index": {
+      "purpose": "Fast lookup + caching of derived analyzers keyed by sha256; supports incremental runs.",
+      "tables": [
+        "files(file_id, path, sha256, size, mtime, parse_status)",
+        "imports(file_id, import_name, kind)",
+        "io_features(file_id, feature_type, value)",
+        "components(file_id, component_id, kind, signature_hash)",
+        "embeddings(file_id, model_version, vector_blob)",
+        "pair_scores(file_a, file_b, structural, semantic, dep_jaccard, io_overlap, composite)"
+      ]
+    },
+    "jsonl_outputs": {
+      "purpose": "Append-only auditable logs for downstream tooling and evidence bundles."
+    }
+  },
+  "cli_surface": {
+    "commands": [
+      {
+        "name": "index",
+        "args": ["--roots", "--out_db", "--cache_dir"],
+        "does": "Build/refresh the SQLite index, parse files, and compute per-file evidence."
+      },
+      {
+        "name": "compare",
+        "args": ["--file_a", "--file_b", "--out_json"],
+        "does": "Run all analyzers and emit a ComparisonReport."
+      },
+      {
+        "name": "find-duplicates",
+        "args": ["--roots", "--min_similarity", "--out_jsonl"],
+        "does": "Find duplicate sets using rule thresholds + composite similarity."
+      },
+      {
+        "name": "rank-canonical",
+        "args": ["--duplicate_set_json", "--rule_config", "--out_json"],
+        "does": "Apply canonical preference scoring for each duplicate set."
+      }
+    ]
+  },
+  "implementation_sequence": [
+    {
+      "step": 1,
+      "deliverable": "Index + Parse Layer",
+      "details": [
+        "File inventory + sha256 hashing",
+        "AST parsing + symbol index",
+        "Deterministic normalization and tool/version capture"
+      ]
+    },
+    {
+      "step": 2,
+      "deliverable": "Analyzer Modules",
+      "details": [
+        "Structural similarity analyzer",
+        "Semantic similarity analyzer (pinned model)",
+        "Dependency analyzer (imports + Jaccard)",
+        "I/O surface analyzer (CLI/env/files/network)",
+        "Component extractor + stable component IDs"
+      ]
+    },
+    {
+      "step": 3,
+      "deliverable": "Comparison Engine",
+      "details": [
+        "Composite similarity computation + tie-breakers",
+        "Delta summaries (imports/io/components)",
+        "Confidence scoring and audit trace"
+      ]
+    },
+    {
+      "step": 4,
+      "deliverable": "Rule Integration",
+      "details": [
+        "Map analyzer outputs into evidence paths required by DOC-CONFIG-PY-IDENTIFY-SOLUTION-001__MAPP_py_identify_soultion.yml",
+        "Implement RS_REDUNDANCY_DETECTION_V1 + canonical ranking interface"
+      ]
+    },
+    {
+      "step": 5,
+      "deliverable": "Auditable Outputs + Gates",
+      "details": [
+        "JSON/JSONL outputs with schema checks",
+        "Trace logs for every decision and tie-breaker",
+        "Bounded reflection loop (max 3) for resolving missing deterministic evidence"
+      ]
+    }
+  ],
+  "success_criteria": [
+    "Produces structural + semantic similarity scores, dependency overlap, and I/O overlap deterministically for any parseable Python file.",
+    "Can identify duplicate sets and produce canonical rankings that satisfy configured thresholds and disqualifiers.",
+    "Outputs are reproducible: same inputs + same toolchain + same config => identical results.",
+    "Heuristic signals never directly trigger state changes; they only prioritize evidence collection and ranking."
+  ]
+}

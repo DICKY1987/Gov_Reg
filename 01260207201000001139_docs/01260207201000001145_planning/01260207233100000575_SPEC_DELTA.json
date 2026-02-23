@@ -1,0 +1,63 @@
+{
+  "baseline_requirements": [
+    "Unified registry JSON should be validated by a published schema",
+    "doc_id is deprecated in favor of file_id",
+    "Write policy must map to derivation rules",
+    "Bundle roles should be documented and enforced"
+  ],
+  "clarified_requirements": [
+    "Schema v4 must validate the current unified registry data shape",
+    "doc_id references are allowed only in explicit legacy sections",
+    "Every auto-updated field must have a derivation or be manual-only",
+    "Role taxonomy includes RULE and SHARED_LIB if used in data",
+    "CI must enforce schema validation and no-doc-id checks"
+  ],
+  "changes": [
+    {
+      "change_id": "CH-001",
+      "req_id": "REQ-SCHEMA-001",
+      "change_type": "clarify",
+      "before": "Unified registry JSON should be validated by a published schema.",
+      "after": "Schema v4 must validate the current unified registry data shape.",
+      "rationale": "Audit shows schema v3 mismatch with data version.",
+      "reviewer_focus": "Confirm schema v4 aligns with registry JSON fields."
+    },
+    {
+      "change_id": "CH-002",
+      "req_id": "REQ-DOCID-001",
+      "change_type": "tighten",
+      "before": "doc_id is deprecated in favor of file_id.",
+      "after": "doc_id references are allowed only in explicit legacy sections.",
+      "rationale": "Reduce ambiguity while preserving historical context.",
+      "reviewer_focus": "Check docs for clear legacy labeling and no doc_id in live specs."
+    },
+    {
+      "change_id": "CH-003",
+      "req_id": "REQ-POLICY-001",
+      "change_type": "clarify",
+      "before": "Write policy must map to derivation rules.",
+      "after": "Every auto-updated field must have a derivation or be manual-only.",
+      "rationale": "Audit found fields marked auto-updated without formulas.",
+      "reviewer_focus": "Verify policy/derivation alignment for all columns."
+    },
+    {
+      "change_id": "CH-004",
+      "req_id": "REQ-ROLE-001",
+      "change_type": "expand",
+      "before": "Bundle roles should be documented and enforced.",
+      "after": "Role taxonomy includes RULE and SHARED_LIB if used in data.",
+      "rationale": "Data contains roles not documented in current taxonomy.",
+      "reviewer_focus": "Confirm role enums and docs match actual usage."
+    },
+    {
+      "change_id": "CH-005",
+      "req_id": "REQ-CI-001",
+      "change_type": "add",
+      "before": "CI should run tests.",
+      "after": "CI must enforce schema validation and no-doc-id checks.",
+      "rationale": "Audit identified missing CI gates for critical validations.",
+      "reviewer_focus": "Check workflow steps and required scripts."
+    }
+  ],
+  "file_id": "01260207233100000575"
+}

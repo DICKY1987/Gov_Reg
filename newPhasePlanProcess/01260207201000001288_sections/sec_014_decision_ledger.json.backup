@@ -1,0 +1,53 @@
+{
+  "section_id": "sec_014_decision_ledger",
+  "title": "Decision Ledger",
+  "required": true,
+  "instructions_file": "sections/sec_014_decision_ledger.inst.md",
+  "decision_ledger": {
+    "description": "Append-only log of all decisions made during planning and execution. Every decision must have: context, options, selected, rationale.",
+    "storage": {
+      "format": "jsonl",
+      "path": ".state/decisions.jsonl",
+      "rotation_policy": "append_only"
+    },
+    "decisions": [
+      {
+        "decision_id": "DEC-{{PROJECT}}-001",
+        "category": "{{classification|architecture|tooling|process|technical}}",
+        "timestamp": "{{ISO8601_TIMESTAMP}}",
+        "context": {
+          "key": "value"
+        },
+        "options": ["{{OPTION1}}", "{{OPTION2}}", "{{OPTION3}}"],
+        "selected_option": "{{SELECTED}}",
+        "rationale": "{{WHY_THIS_CHOICE}}",
+        "owner": "{{DRI}}",
+        "impact": "{{HIGH|MEDIUM|LOW}}",
+        "reversible": "{{YES|NO}}",
+        "validation": {
+          "command": "{{COMMAND_TO_VERIFY_DECISION}}",
+          "expect_exit_code": 0
+        }
+      }
+    ],
+    "decision_categories": [
+      "classification",
+      "architecture",
+      "tooling",
+      "process",
+      "technical",
+      "scope",
+      "quality"
+    ],
+    "ledger_validation": {
+      "command": "python scripts/validate_decision_ledger.py .state/decisions.jsonl",
+      "expect_exit_code": 0,
+      "checks": [
+        "All decisions have rationale",
+        "All decisions have timestamp",
+        "All decisions have owner",
+        "No duplicate decision_ids"
+      ]
+    }
+  }
+}

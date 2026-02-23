@@ -1,0 +1,210 @@
+{
+  "section_id": "sec_009_environment_tools",
+  "title": "Environment + Tool Configuration",
+  "required": true,
+  "instructions_file": "sections/sec_009_environment_tools.inst.md",
+  "environment_tools": {
+    "target_os": ["windows", "linux", "macos"],
+    "default_shell": "powershell",
+    "primary_language": "python",
+    "language_config": {
+      "python": {
+        "version_constraint": ">=3.11,<3.13",
+        "venv_path": ".venv",
+        "package_manager": "pip"
+      }
+    },
+    "required_services": [
+      {
+        "name": "sqlite_db",
+        "type": "file",
+        "path": ".state/pipeline.db",
+        "must_exist_before_phase": false,
+        "validation_command": "sqlite3 .state/pipeline.db 'SELECT 1;'",
+        "expect_exit_code": 0
+      }
+    ],
+    "config_files": [
+      {
+        "path": "config/tool_profiles.json",
+        "must_exist": true,
+        "schema": "schemas/tool_profiles.schema.json"
+      },
+      {
+        "path": "config/circuit_breakers.yaml",
+        "must_exist": true,
+        "schema": "schemas/circuit_breakers.schema.yaml"
+      }
+    ],
+    "ai_operators": {
+      "primary_agent": "claude-code",
+      "secondary_agents": ["aider", "codex"],
+      "agent_config": [
+        {
+          "agent_id": "claude-code",
+          "capabilities": ["analyze", "edit", "refactor", "test"],
+          "limitations": ["no_direct_git_ops", "no_file_deletion"]
+        },
+        {
+          "agent_id": "aider",
+          "capabilities": ["edit", "fix", "refactor"],
+          "limitations": ["requires_explicit_file_list"]
+        }
+      ]
+    },
+    "tool_profiles": {
+      "preferred_ids": [
+        "pytest",
+        "ruff",
+        "mypy",
+        "black",
+        "powershell-script",
+        "aider-edit",
+        "aider-fix"
+      ],
+      "tool_definitions": [
+        {
+          "tool_id": "pytest",
+          "executable": "pytest",
+          "version_constraint": ">=7.4",
+          "purpose": "unit/integration testing"
+        },
+        {
+          "tool_id": "ruff",
+          "executable": "ruff",
+          "version_constraint": ">=0.3",
+          "purpose": "linting and formatting"
+        },
+        {
+          "tool_id": "bandit",
+          "executable": "bandit",
+          "version_constraint": ">=1.7",
+          "purpose": "security scanning for Python code",
+          "install_command": "pip install bandit>=1.7",
+          "evidence_outputs": [".state/evidence/security_scan/"]
+        },
+        {
+          "tool_id": "mypy",
+          "executable": "mypy",
+          "version_constraint": ">=1.8",
+          "purpose": "static type checking",
+          "install_command": "pip install mypy>=1.8",
+          "evidence_outputs": [".state/evidence/type_check/"]
+        },
+        {
+          "tool_id": "semgrep",
+          "executable": "semgrep",
+          "version_constraint": ">=1.50",
+          "purpose": "static analysis for security and code quality",
+          "install_command": "pip install semgrep>=1.50",
+          "evidence_outputs": [".state/evidence/semgrep/"]
+        }
+      ]
+    },
+    "resource_requirements": {
+      "minimum": {
+        "ram_gb": 8,
+        "disk_gb": 10,
+        "cpu_cores": 2
+      },
+      "recommended": {
+        "ram_gb": 16,
+        "disk_gb": 50,
+        "cpu_cores": 4
+      }
+    },
+    "dependencies": {
+      "python_packages": [
+        {
+          "name": "pytest",
+          "version": ">=7.4",
+          "purpose": "unit/integration testing",
+          "dev_only": true
+        },
+        {
+          "name": "pytest-cov",
+          "version": ">=4.1",
+          "purpose": "coverage reporting",
+          "dev_only": true
+        },
+        {
+          "name": "ruff",
+          "version": ">=0.3",
+          "purpose": "linting and formatting",
+          "dev_only": true
+        },
+        {
+          "name": "mypy",
+          "version": ">=1.8",
+          "purpose": "type checking",
+          "dev_only": true
+        },
+        {
+          "name": "pyyaml",
+          "version": ">=6.0",
+          "purpose": "YAML parsing",
+          "dev_only": false
+        },
+        {
+          "name": "jsonschema",
+          "version": ">=4.21",
+          "purpose": "schema validation",
+          "dev_only": false
+        },
+        {
+          "name": "click",
+          "version": ">=8.1",
+          "purpose": "CLI utilities",
+          "dev_only": false
+        },
+        {
+          "name": "requests",
+          "version": ">=2.31",
+          "purpose": "HTTP requests for integrations",
+          "dev_only": false
+        },
+        {
+          "name": "psutil",
+          "version": ">=5.9",
+          "purpose": "resource metrics collection",
+          "dev_only": false
+        },
+        {
+          "name": "rich",
+          "version": ">=13.7",
+          "purpose": "structured console output",
+          "dev_only": false
+        }
+      ],
+      "validation": {
+        "command": "pip check && python scripts/validate_dependencies.py requirements.txt",
+        "expect_exit_code": 0
+      }
+    },
+    "ci_parity": {
+      "required": true,
+      "notes": "All commands must run in CI without interactive prompts",
+      "validation_command": "python scripts/validate_ci_compatibility.py",
+      "expect_exit_code": 0,
+      "requirements": [
+        "No TTY-dependent operations",
+        "All inputs via config files or env vars",
+        "Timeouts on all blocking operations"
+      ]
+    },
+    "secrets_management": {
+      "allowed_sources": [
+        "environment variables",
+        ".env file (must be in .gitignore)",
+        "CI secret store"
+      ],
+      "forbidden": [
+        "hardcoded in source",
+        "committed plaintext"
+      ],
+      "validation_command": "python scripts/check_secrets.py src/",
+      "expect_exit_code": 0,
+      "expect_stdout_regex": ["/no_secrets_found: true/"]
+    }
+  }
+}

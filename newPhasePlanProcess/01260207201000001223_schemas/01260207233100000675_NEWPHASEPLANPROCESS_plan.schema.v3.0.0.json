@@ -1,0 +1,907 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://autonomy.dev/schemas/plan/v3.0.0",
+  "title": "Autonomous Delivery Plan v3.0.0 - Hybrid",
+  "description": "Hybrid schema combining draft step-level contracts with v2.4.0 operational features. Guarantees: same input → same plan hash → byte-identical output (except timestamps).",
+
+  "type": "object",
+  "required": ["meta", "plan", "navigation"],
+  "additionalProperties": false,
+
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["template_version", "plan_id", "created_at"],
+      "additionalProperties": false,
+      "properties": {
+        "template_version": {
+          "type": "string",
+          "const": "3.0.0",
+          "description": "Template version - v3.0.0 hybrid schema"
+        },
+        "plan_id": {
+          "type": "string",
+          "pattern": "^PLAN-[A-Z0-9]{8,16}$",
+          "description": "Unique plan identifier (v2.4.0 pattern)"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of plan creation"
+        },
+        "project_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      }
+    },
+
+    "plan": {
+      "type": "object",
+      "required": [
+        "plan_id",
+        "plan_version",
+        "owner",
+        "objective",
+        "scope",
+        "environment",
+        "artifacts",
+        "assumptions",
+        "unknowns",
+        "classification",
+        "phases",
+        "gates",
+        "commands",
+        "metrics",
+        "parallel_execution",
+        "self_healing",
+        "determinism"
+      ],
+      "additionalProperties": false,
+      "description": "Executable plan with step-level contracts and operational features",
+
+      "properties": {
+        "plan_id": {
+          "type": "string",
+          "pattern": "^PLAN-[A-Z0-9]{8,16}$",
+          "description": "Plan identifier (duplicated from meta for v3.0.0)"
+        },
+        "plan_version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Semantic version of plan schema"
+        },
+        "owner": {
+          "$ref": "#/$defs/owner"
+        },
+        "objective": {
+          "type": "string",
+          "minLength": 1,
+          "description": "High-level objective of the plan"
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        },
+        "environment": {
+          "$ref": "#/$defs/environment"
+        },
+        "artifacts": {
+          "$ref": "#/$defs/artifacts_config"
+        },
+        "assumptions": {
+          "type": "array",
+          "minItems": 0,
+          "description": "Explicit assumptions with risk assessment",
+          "items": {
+            "$ref": "#/$defs/assumption"
+          }
+        },
+        "unknowns": {
+          "type": "array",
+          "minItems": 0,
+          "description": "Known unknowns with resolution methods",
+          "items": {
+            "$ref": "#/$defs/unknown"
+          }
+        },
+        "classification": {
+          "$ref": "#/$defs/classification"
+        },
+        "phases": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Ordered array of phases with steps",
+          "items": {
+            "$ref": "#/$defs/phase"
+          }
+        },
+        "gates": {
+          "type": "array",
+          "description": "Ordered array of validation gates",
+          "items": {
+            "$ref": "#/$defs/gate"
+          }
+        },
+        "commands": {
+          "$ref": "#/$defs/commands"
+        },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/metric"
+          },
+          "description": "Metrics keyed by metric name"
+        },
+        "parallel_execution": {
+          "$ref": "#/$defs/parallel_execution"
+        },
+        "self_healing": {
+          "$ref": "#/$defs/self_healing"
+        },
+        "worktree_isolation": {
+          "$ref": "#/$defs/worktree_isolation"
+        },
+        "infrastructure": {
+          "$ref": "#/$defs/infrastructure"
+        },
+        "determinism": {
+          "$ref": "#/$defs/determinism_config"
+        }
+      }
+    },
+
+    "navigation": {
+      "type": "object",
+      "description": "Auto-generated navigation DAG",
+      "properties": {
+        "dag": {
+          "type": "object",
+          "properties": {
+            "phases": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "dependencies": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "$defs": {
+    "owner": {
+      "type": "object",
+      "required": ["name", "role"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contact": {
+          "type": "string"
+        }
+      }
+    },
+
+    "scope": {
+      "type": "object",
+      "required": ["in_scope", "out_of_scope"],
+      "additionalProperties": false,
+      "properties": {
+        "in_scope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "out_of_scope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+
+    "environment": {
+      "type": "object",
+      "required": ["os", "shell", "python", "cwd", "tooling"],
+      "additionalProperties": false,
+      "properties": {
+        "os": {
+          "type": "string",
+          "minLength": 1
+        },
+        "shell": {
+          "type": "string",
+          "minLength": 1
+        },
+        "python": {
+          "type": "object",
+          "required": ["version", "venv"],
+          "additionalProperties": false,
+          "properties": {
+            "version": {
+              "type": "string",
+              "minLength": 1
+            },
+            "venv": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "cwd": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tooling": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "git_required": {
+              "type": "boolean"
+            },
+            "jq_required": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+
+    "artifacts_config": {
+      "type": "object",
+      "required": ["registry", "paths", "evidence_root"],
+      "additionalProperties": false,
+      "properties": {
+        "registry": {
+          "type": "object",
+          "required": ["type", "path"],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["json", "sqlite", "other"]
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "paths": {
+          "type": "object",
+          "required": [
+            "source_roots",
+            "staging_root",
+            "destination_root",
+            "backup_root"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "source_roots": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            },
+            "staging_root": {
+              "type": "string",
+              "minLength": 1
+            },
+            "destination_root": {
+              "type": "string",
+              "minLength": 1
+            },
+            "backup_root": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "evidence_root": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+
+    "assumption": {
+      "type": "object",
+      "required": ["assumption_id", "statement", "risk_if_false"],
+      "additionalProperties": false,
+      "properties": {
+        "assumption_id": {
+          "type": "string",
+          "pattern": "^A\\d{3}$",
+          "description": "Assumption ID (A001-A999)"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "risk_if_false": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+
+    "unknown": {
+      "type": "object",
+      "required": ["unknown_id", "question", "blocking", "resolution_method"],
+      "additionalProperties": false,
+      "properties": {
+        "unknown_id": {
+          "type": "string",
+          "pattern": "^U\\d{3}$",
+          "description": "Unknown ID (U001-U999)"
+        },
+        "question": {
+          "type": "string",
+          "minLength": 1
+        },
+        "blocking": {
+          "type": "boolean",
+          "description": "If true, plan cannot execute until resolved"
+        },
+        "resolution_method": {
+          "type": "string",
+          "enum": ["inspect_files", "run_command", "ask_owner", "other"]
+        }
+      }
+    },
+
+    "classification": {
+      "type": "object",
+      "properties": {
+        "complexity": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        },
+        "criticality": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        }
+      }
+    },
+
+    "phase": {
+      "type": "object",
+      "required": ["phase_id", "name", "gates", "steps"],
+      "additionalProperties": false,
+      "properties": {
+        "phase_id": {
+          "type": "string",
+          "pattern": "^P\\d{2}$",
+          "description": "Phase ID (P01-P99)"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "gates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Gate IDs that apply to this phase"
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/step"
+          }
+        }
+      }
+    },
+
+    "step": {
+      "type": "object",
+      "required": [
+        "step_id",
+        "title",
+        "intent",
+        "inputs",
+        "outputs",
+        "preconditions",
+        "commands",
+        "postconditions",
+        "rollback",
+        "evidence",
+        "idempotency"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "step_id": {
+          "type": "string",
+          "pattern": "^S\\d{3}$",
+          "description": "Step ID (S001-S999)"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "intent": {
+          "type": "string",
+          "minLength": 1,
+          "description": "What this step accomplishes"
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/artifact_ref"
+          }
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/artifact_ref"
+          }
+        },
+        "preconditions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/criteria"
+          }
+        },
+        "commands": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/command"
+          }
+        },
+        "postconditions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/criteria"
+          }
+        },
+        "rollback": {
+          "$ref": "#/$defs/rollback"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "idempotency": {
+          "$ref": "#/$defs/idempotency"
+        },
+        "risk": {
+          "$ref": "#/$defs/risk"
+        },
+        "file_operations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["operation_id", "mutation_type"],
+            "properties": {
+              "operation_id": {
+                "type": "string",
+                "pattern": "^[A-Z0-9_\\-]{3,30}$"
+              },
+              "mutation_type": {
+                "type": "string",
+                "enum": ["create", "modify", "delete", "move"]
+              },
+              "target_path": {
+                "type": "string"
+              },
+              "execution_method": {
+                "type": "string",
+                "enum": ["FULL_REWRITE", "UNIFIED_DIFF_APPLY", "AST_TRANSFORM"]
+              },
+              "method_payload": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "artifact_ref": {
+      "type": "object",
+      "required": ["artifact_id", "path", "kind"],
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^[A-Z0-9_\\-\\.]{6,80}$"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["file", "directory", "report", "registry_entry", "backup"]
+        },
+        "hash": {
+          "type": "string"
+        }
+      }
+    },
+
+    "command": {
+      "type": "object",
+      "required": ["cmd", "cwd", "timeout_s", "expect_exit_codes"],
+      "additionalProperties": false,
+      "properties": {
+        "cmd": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cwd": {
+          "type": "string",
+          "minLength": 1
+        },
+        "timeout_s": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 86400
+        },
+        "expect_exit_codes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255
+          }
+        },
+        "stdout_path": {
+          "type": "string"
+        },
+        "stderr_path": {
+          "type": "string"
+        }
+      }
+    },
+
+    "criteria": {
+      "type": "object",
+      "required": ["type", "statement"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "exists",
+            "not_exists",
+            "json_valid",
+            "schema_valid",
+            "hash_equals",
+            "diff_empty",
+            "contains",
+            "custom"
+          ]
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_path": {
+          "type": "string"
+        }
+      }
+    },
+
+    "rollback": {
+      "type": "object",
+      "required": ["strategy", "commands", "verification"],
+      "additionalProperties": false,
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "enum": ["undo", "restore_backup", "compensate", "manual"]
+        },
+        "commands": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/command"
+          }
+        },
+        "verification": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/criteria"
+          }
+        }
+      }
+    },
+
+    "evidence": {
+      "type": "object",
+      "required": ["paths", "summary_path"],
+      "additionalProperties": false,
+      "properties": {
+        "paths": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "summary_path": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+
+    "idempotency": {
+      "type": "object",
+      "required": ["rerun_safe", "locking"],
+      "additionalProperties": false,
+      "properties": {
+        "rerun_safe": {
+          "type": "boolean"
+        },
+        "locking": {
+          "type": "object",
+          "required": ["required", "mechanism", "scope"],
+          "additionalProperties": false,
+          "properties": {
+            "required": {
+              "type": "boolean"
+            },
+            "mechanism": {
+              "type": "string",
+              "enum": ["lockfile", "sqlite_txn", "os_mutex", "none"]
+            },
+            "scope": {
+              "type": "string",
+              "enum": ["global", "phase", "step", "resource"]
+            },
+            "lock_path": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "severity": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "critical"]
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+
+    "gate": {
+      "type": "object",
+      "required": ["gate_id", "name", "scope", "commands", "pass_criteria", "evidence"],
+      "additionalProperties": false,
+      "properties": {
+        "gate_id": {
+          "type": "string",
+          "pattern": "^GATE-\\d{3}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "type": "string",
+          "enum": ["plan", "phase", "step"]
+        },
+        "commands": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/command"
+          }
+        },
+        "pass_criteria": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/criteria"
+          }
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "fail_closed": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+
+    "commands": {
+      "type": "object",
+      "properties": {
+        "standard": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "cmd": {
+                "type": "string"
+              },
+              "timeout_s": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "custom": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object"
+          }
+        }
+      }
+    },
+
+    "metric": {
+      "type": "object",
+      "properties": {
+        "formula": {
+          "type": "string"
+        },
+        "threshold": {
+          "type": "number"
+        }
+      }
+    },
+
+    "parallel_execution": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "max_concurrent_phases": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+
+    "self_healing": {
+      "type": "object",
+      "properties": {
+        "retry_policy": {
+          "type": "object",
+          "properties": {
+            "max_attempts": {
+              "type": "integer"
+            },
+            "backoff_strategy": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+
+    "worktree_isolation": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      }
+    },
+
+    "infrastructure": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+
+    "determinism_config": {
+      "type": "object",
+      "properties": {
+        "reproducibility_guarantee": {
+          "type": "string"
+        }
+      }
+    },
+
+    "lifecycle_state": {
+      "type": "string",
+      "enum": [
+        "PLANNED",
+        "IN_PROGRESS",
+        "COMPLETED",
+        "FAILED"
+      ],
+      "description": "Current execution state of a step or phase"
+    },
+
+    "execution_baseline": {
+      "type": "object",
+      "properties": {
+        "registry_hash": {
+          "type": "string",
+          "description": "Hash of registry state at execution start"
+        },
+        "filesystem_snapshot_hash": {
+          "type": "string",
+          "description": "Hash of filesystem state for CAS validation"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Baseline capture timestamp"
+        }
+      },
+      "description": "Baseline state for deterministic CAS validation"
+    },
+
+    "ssot_field": {
+      "type": "object",
+      "properties": {
+        "readOnly": {
+          "type": "boolean",
+          "description": "If true, field is derived and should not be manually edited"
+        },
+        "derivedFrom": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Source fields or registry paths this field is derived from"
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of field purpose"
+        }
+      },
+      "description": "Single source of truth field annotations for authored vs derived fields"
+    },
+
+    "merge_policy": {
+      "type": "object",
+      "properties": {
+        "conflict_policy": {
+          "type": "string",
+          "enum": [
+            "REGISTRY_WINS",
+            "PLAN_WINS",
+            "UNION",
+            "ABORT_ON_CONFLICT"
+          ],
+          "description": "Conflict resolution strategy: REGISTRY_WINS=registry state takes precedence, PLAN_WINS=plan state takes precedence, UNION=merge both states, ABORT_ON_CONFLICT=fail on conflict"
+        }
+      },
+      "description": "Conflict resolution strategy for concurrent modifications during parallel workstream merges"
+    }
+  }
+}

@@ -1,0 +1,331 @@
+{
+  "section_id": "sec_010_phase_contracts",
+  "title": "Phase Contracts (Machine-Checkable)",
+  "required": true,
+  "instructions_file": "sections/sec_010_phase_contracts.inst.md",
+  "phase_contracts": {
+    "contract_specification": {
+      "phase_contract_version": "1.0",
+      "description": "Each phase is represented as a Phase Contract JSON object. No free text in the plan may imply file touches. All file touches live in artifacts[]."
+    },
+    "phase_contract_schema": {
+      "required_fields": [
+        "phase_contract_version",
+        "phase",
+        "dependencies",
+        "scope",
+        "tasks",
+        "artifacts",
+        "validations",
+        "completion_gate",
+        "extensions"
+      ],
+      "stable_id_anchors": [
+        "phase.phase_id [2003]",
+        "tasks[].task_id [2004]",
+        "artifacts[].artifact_id [2005]",
+        "validations[].validation_id [2006]",
+        "scope.path_policy.allowed[].rule_id [2007]",
+        "scope.path_policy.forbidden[].rule_id [2008]",
+        "dependencies.depends_on_phase_ids [2025]",
+        "completion_gate.rules [2026]"
+      ]
+    },
+    "non_negotiable_rules": [
+      "Each phase must be a Phase Contract JSON object",
+      "No free text may imply file touches",
+      "Every task references only existing artifact_ids_touched and validation_ids",
+      "scope.path_policy includes >=1 allowed rule AND >=1 forbidden rule",
+      "completion_gate.rules exists and is fully specified",
+      "Entry criteria via dependencies.depends_on_phase_ids OR extensions.optional.entry_criteria",
+      "Phase risks/unknowns captured in extensions.optional.risks_delta[]",
+      "Generator phases: core/generated/** in allowed[], NOT in forbidden[]",
+      "Non-generator phases: core/generated/** in forbidden[] for create/modify"
+    ],
+    "phase_contract_template": {
+      "phase_contract_version": "1.0",
+      "phase": {
+        "phase_id": "PH-XXX",
+        "workstream_id": "WS-XXX",
+        "title": "{{SHORT_HUMAN_READABLE_NAME}}",
+        "summary": "{{SINGLE_PARAGRAPH_OUTCOME_SUMMARY}}",
+        "objective": "{{DEFINITION_OF_DONE_IN_ONE_SENTENCE}}",
+        "phase_type": "{{implementation|documentation|refactor|integration|testing|ops|generator}}",
+        "status": "{{planned|in_progress|blocked|done|abandoned}}",
+        "tags": ["{{TAG1}}", "{{TAG2}}"],
+        "gh_item_id": null,
+        "estimate_hours": 0
+      },
+      "dependencies": {
+        "depends_on_phase_ids": ["PH-001", "PH-002"],
+        "may_run_parallel_with": ["PH-010"],
+        "parallel_group": "{{GROUP_ID}}",
+        "workstream_bundle_id": "{{ws-bundle-xx}}",
+        "is_critical_path": true
+      },
+      "scope": {
+        "intent": {
+          "in_scope": [
+            "{{IN_SCOPE_ITEM_1}}",
+            "{{IN_SCOPE_ITEM_2}}"
+          ],
+          "out_of_scope": [
+            "{{EXPLICIT_EXCLUSION_1}}",
+            "{{EXPLICIT_EXCLUSION_2}}"
+          ]
+        },
+        "path_policy": {
+          "allowed": [
+            {
+              "rule_id": "PATH-ALLOW-001",
+              "globs": ["src/{{module}}/**/*.py"],
+              "modes": ["read", "create", "modify"]
+            },
+            {
+              "rule_id": "PATH-ALLOW-002",
+              "globs": ["tests/{{module}}/**/*.py"],
+              "modes": ["read", "create", "modify"]
+            }
+          ],
+          "forbidden": [
+            {
+              "rule_id": "PATH-DENY-001",
+              "globs": [".git/**", ".venv/**"],
+              "modes": ["create", "modify", "delete"]
+            },
+            {
+              "rule_id": "PATH-DENY-002",
+              "globs": ["core/generated/**"],
+              "modes": ["create", "modify"]
+            }
+          ]
+        },
+        "modules": [
+          {
+            "module_id": "mod.{{NAME}}",
+            "description": "{{MODULE_DESCRIPTION}}"
+          }
+        ]
+      },
+      "tasks": [
+        {
+          "task_id": "TASK-001",
+          "title": "{{ATOMIC_TASK_TITLE}}",
+          "description": "{{WHAT_IS_DONE_INTENT_LEVEL}}",
+          "acceptance_criteria": [
+            "{{CONCRETE_CONDITION_TRUE_AFTER_COMPLETION}}",
+            "{{CONCRETE_CONDITION_TRUE_AFTER_COMPLETION}}"
+          ],
+          "artifact_ids_touched": ["ART-001", "ART-002"],
+          "validation_ids": ["VAL-001"],
+          "controls": []
+        }
+      ],
+      "artifacts": [
+        {
+          "artifact_id": "ART-001",
+          "path": "{{relative/path/to/file.ext}}",
+          "action": "{{read|create|modify|delete}}",
+          "classification": "{{source|test|config|schema|doc|generated|other}}",
+          "owner": {
+            "phase_id": "PH-XXX",
+            "task_id": "TASK-001"
+          },
+          "notes": "{{WHY_IT_EXISTS_OR_CHANGES}}",
+          "must_exist_after_phase": true,
+          "introduced_in_phase": "PH-XXX"
+        }
+      ],
+      "validations": [
+        {
+          "validation_id": "VAL-001",
+          "kind": "command",
+          "description": "{{WHAT_THIS_PROVES}}",
+          "command": "{{EXECUTABLE_COMMAND}}",
+          "timeout_seconds": 60,
+          "success_criteria": {
+            "exit_code": 0,
+            "stdout_patterns_any": ["{{OPTIONAL_REGEX}}"],
+            "stdout_patterns_all": [],
+            "forbid_stdout_patterns": ["ERROR", "FAILED"]
+          },
+          "evidence_output": {
+            "log_path": "{{.runs/PH-XXX/val_001.log}}"
+          },
+          "must_pass": true
+        }
+      ],
+      "completion_gate": {
+        "rules": {
+          "dependencies_satisfied": true,
+          "all_required_artifacts_present": true,
+          "no_scope_violations": true,
+          "all_must_pass_validations_passed": true,
+          "pre_flight_checks_passed": true,
+          "acceptance_tests_passed": true,
+          "circuit_breakers_not_tripped": true
+        },
+        "waivers": {
+          "allowed": false,
+          "waiver_process_ref": null
+        }
+      },
+      "execution_profile": {
+        "prompt_template_id": "{{EXECUTION_PROMPT_TEMPLATE_V2_DAG}}",
+        "run_mode": "{{plan_only|dry_run|execute}}",
+        "max_runtime_minutes": 60,
+        "concurrency": {
+          "allowed_for_phase": true,
+          "max_parallel_steps": 1
+        },
+        "retry_policy": {
+          "default_max_attempts": 1
+        }
+      },
+      "pre_flight_checks": {
+        "checks": [
+          {
+            "id": "pf-git-clean",
+            "description": "Repo has no uncommitted changes in target paths",
+            "when": "always",
+            "command": {
+              "tool_id": "powershell-script",
+              "args": ["git status --porcelain"]
+            },
+            "success_pattern": "^$",
+            "on_fail": "abort"
+          }
+        ]
+      },
+      "execution_plan": {
+        "steps": [
+          {
+            "id": "step-01-analyze-context",
+            "name": "{{STEP_NAME}}",
+            "operation_kind": "OP-ANALYZE-CONTEXT",
+            "pattern_ids": ["PAT-ANALYZE-REPO-001"],
+            "description": "{{WHAT_THIS_STEP_DOES}}",
+            "tool_id": "{{TOOL_ID}}",
+            "inputs": {
+              "repo_paths": ["src/{{module}}/**"],
+              "constraints": {
+                "respect_file_scope": true
+              },
+              "execution_templates": []
+            },
+            "expected_outputs": [
+              "{{OUTPUT_DESCRIPTION}}"
+            ],
+            "requires_human_confirmation": false
+          }
+        ]
+      },
+      "expected_artifacts": {
+        "patches": [
+          {
+            "path": ".ledger/patches/${phase_id}_${workstream_id}.patch",
+            "must_exist": true
+          }
+        ],
+        "logs": [
+          {
+            "path": ".runs/${workstream_id}/${phase_id}/static_checks.log",
+            "must_exist": true
+          },
+          {
+            "path": ".runs/${workstream_id}/${phase_id}/runtime_tests.log",
+            "must_exist": true
+          }
+        ],
+        "docs": [
+          {
+            "path": "docs/{{TOPIC}}/{{FILE}}.md",
+            "must_exist": true
+          }
+        ],
+        "db": {
+          "migrations_applied": [
+            "schema/migrations/{{ID}}_{{NAME}}.sql"
+          ]
+        }
+      },
+      "acceptance_tests": {
+        "tests": [
+          {
+            "id": "acc-01-{{NAME}}",
+            "description": "{{WHAT_THIS_ACCEPTANCE_TEST_VERIFIES}}",
+            "command": {
+              "tool_id": "{{TOOL_ID}}",
+              "args": ["{{COMMAND_ARGS}}"]
+            },
+            "success_pattern": "{{REGEX_PATTERN}}",
+            "must_pass": true
+          }
+        ]
+      },
+      "extensions": {
+        "optional": {
+          "entry_criteria": {
+            "required_artifacts": [
+              {
+                "entry_artifact_id": "ENTRY-ART-001",
+                "path": "{{PATH_TO_REQUIRED_INPUT}}",
+                "must_exist": true
+              }
+            ],
+            "prerequisites": [
+              {
+                "criterion_id": "ENTRY-PREREQ-001",
+                "description": "{{PREREQUISITE_DESCRIPTION}}",
+                "validation_command": "{{COMMAND}}",
+                "expect_exit_code": 0
+              }
+            ]
+          },
+          "risks_delta": [
+            {
+              "risk_delta_id": "RD-001",
+              "risk_id": "RISK-005",
+              "phase_specific_impact": "{{HOW_THIS_PHASE_AFFECTED}}",
+              "mitigation": "{{PHASE_SPECIFIC_MITIGATION}}"
+            }
+          ],
+          "open_questions_delta": [
+            {
+              "question_id": "Q-PH-001",
+              "question": "{{QUESTION_TEXT}}",
+              "why_it_matters": "{{IMPACT}}",
+              "resolution_step": "{{HOW_TO_RESOLVE}}",
+              "blocking": "{{YES|NO}}"
+            }
+          ]
+        },
+        "custom_fields": {}
+      }
+    },
+    "operation_kind_taxonomy": {
+      "analysis": [
+        "OP-ANALYZE-CONTEXT",
+        "OP-ANALYZE-DEPENDENCIES",
+        "OP-ANALYZE-IMPACT"
+      ],
+      "editing": [
+        "OP-EDIT-IMPLEMENT",
+        "OP-EDIT-REFACTOR",
+        "OP-EDIT-FIX"
+      ],
+      "validation": [
+        "OP-VALIDATE-STATIC",
+        "OP-VALIDATE-RUNTIME",
+        "OP-VALIDATE-INTEGRATION",
+        "OP-VALIDATE-SCHEMA"
+      ],
+      "orchestration": [
+        "OP-ORCHESTRATE-PARALLEL",
+        "OP-ORCHESTRATE-MERGE",
+        "OP-ORCHESTRATE-ROLLBACK"
+      ]
+    },
+    "generator_phase_note": "If phase.phase_type is 'generator', move core/generated/** out of scope.path_policy.forbidden[].globs and into scope.path_policy.allowed[].globs (with create/modify modes)."
+  }
+}

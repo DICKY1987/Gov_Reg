@@ -1,0 +1,440 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://newphaseplanprocess.schemas/01260207233100000676_parquet_schema_v1.json",
+  "title": "Parquet File Schema v1",
+  "description": "Schema for Parquet columnar storage files used in data storage and exchange. Defines column types, compression, partitioning, and metadata for efficient analytics.",
+  "version": "1.0.0",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "parquet_metadata",
+    "column_schema"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Version of this Parquet schema definition",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "const": "1.0.0"
+    },
+    "parquet_metadata": {
+      "type": "object",
+      "description": "Parquet file-level metadata",
+      "required": ["parquet_version", "created_by"],
+      "properties": {
+        "parquet_version": {
+          "type": "string",
+          "description": "Apache Parquet format version",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "examples": ["1.0.0", "2.0.0"]
+        },
+        "created_by": {
+          "type": "string",
+          "description": "Tool/library that created the Parquet file",
+          "examples": ["pyarrow-15.0.0", "spark-3.5.0"]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        },
+        "file_purpose": {
+          "type": "string",
+          "description": "Purpose of this Parquet file",
+          "examples": [
+            "phase_plan_archive",
+            "metrics_data",
+            "coverage_history",
+            "artifact_registry"
+          ]
+        },
+        "data_source": {
+          "type": "string",
+          "description": "Source of data in this file"
+        },
+        "row_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of rows in file"
+        },
+        "file_size_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total file size in bytes"
+        }
+      }
+    },
+    "column_schema": {
+      "type": "array",
+      "description": "Column definitions for the Parquet file",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["column_name", "data_type"],
+        "properties": {
+          "column_name": {
+            "type": "string",
+            "description": "Name of the column",
+            "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+          },
+          "data_type": {
+            "type": "string",
+            "enum": [
+              "BOOLEAN",
+              "INT32",
+              "INT64",
+              "INT96",
+              "FLOAT",
+              "DOUBLE",
+              "BYTE_ARRAY",
+              "FIXED_LEN_BYTE_ARRAY",
+              "STRING",
+              "TIMESTAMP",
+              "DATE",
+              "TIME",
+              "DECIMAL",
+              "UUID",
+              "JSON",
+              "BSON",
+              "LIST",
+              "MAP",
+              "STRUCT"
+            ],
+            "description": "Parquet physical data type"
+          },
+          "logical_type": {
+            "type": "string",
+            "enum": [
+              "STRING",
+              "ENUM",
+              "DECIMAL",
+              "DATE",
+              "TIME_MILLIS",
+              "TIME_MICROS",
+              "TIMESTAMP_MILLIS",
+              "TIMESTAMP_MICROS",
+              "INT_8",
+              "INT_16",
+              "INT_32",
+              "INT_64",
+              "UINT_8",
+              "UINT_16",
+              "UINT_32",
+              "UINT_64",
+              "JSON",
+              "BSON",
+              "UUID"
+            ],
+            "description": "Logical type interpretation"
+          },
+          "nullable": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether column can contain null values"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable column description"
+          },
+          "precision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 38,
+            "description": "Decimal precision (for DECIMAL type)"
+          },
+          "scale": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Decimal scale (for DECIMAL type)"
+          },
+          "length": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Fixed length (for FIXED_LEN_BYTE_ARRAY)"
+          },
+          "nested_schema": {
+            "type": "object",
+            "description": "Nested schema for complex types (LIST, MAP, STRUCT)",
+            "properties": {
+              "element_type": {
+                "type": "string",
+                "description": "Element type for LIST"
+              },
+              "key_type": {
+                "type": "string",
+                "description": "Key type for MAP"
+              },
+              "value_type": {
+                "type": "string",
+                "description": "Value type for MAP"
+              },
+              "fields": {
+                "type": "array",
+                "description": "Fields for STRUCT type",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "field_name": {
+                      "type": "string"
+                    },
+                    "field_type": {
+                      "type": "string"
+                    },
+                    "nullable": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "encoding": {
+            "type": "string",
+            "enum": [
+              "PLAIN",
+              "RLE",
+              "BIT_PACKED",
+              "PLAIN_DICTIONARY",
+              "RLE_DICTIONARY",
+              "DELTA_BINARY_PACKED",
+              "DELTA_LENGTH_BYTE_ARRAY",
+              "DELTA_BYTE_ARRAY"
+            ],
+            "description": "Column encoding type"
+          },
+          "compression": {
+            "type": "string",
+            "enum": [
+              "UNCOMPRESSED",
+              "SNAPPY",
+              "GZIP",
+              "LZO",
+              "BROTLI",
+              "LZ4",
+              "ZSTD"
+            ],
+            "description": "Column-level compression codec"
+          },
+          "statistics_enabled": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether to collect column statistics"
+          },
+          "bloom_filter_enabled": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to create bloom filter for column"
+          },
+          "is_partition_column": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether column is used for partitioning"
+          },
+          "is_sort_column": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether column is used for sorting"
+          }
+        }
+      }
+    },
+    "compression_settings": {
+      "type": "object",
+      "description": "File-level compression settings",
+      "properties": {
+        "default_compression": {
+          "type": "string",
+          "enum": [
+            "UNCOMPRESSED",
+            "SNAPPY",
+            "GZIP",
+            "LZO",
+            "BROTLI",
+            "LZ4",
+            "ZSTD"
+          ],
+          "default": "SNAPPY",
+          "description": "Default compression codec"
+        },
+        "compression_level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9,
+          "description": "Compression level (for codecs that support it)"
+        },
+        "dictionary_encoding": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable dictionary encoding"
+        },
+        "dictionary_page_size": {
+          "type": "integer",
+          "minimum": 1024,
+          "description": "Dictionary page size in bytes"
+        }
+      }
+    },
+    "partitioning": {
+      "type": "object",
+      "description": "Partitioning strategy",
+      "properties": {
+        "partitioning_enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether file is partitioned"
+        },
+        "partition_columns": {
+          "type": "array",
+          "description": "Columns used for partitioning",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "partition_type": {
+          "type": "string",
+          "enum": ["hive", "directory", "custom"],
+          "description": "Partitioning scheme"
+        },
+        "partition_path_template": {
+          "type": "string",
+          "description": "Template for partition paths",
+          "examples": [
+            "year={year}/month={month}/day={day}",
+            "phase_id={phase_id}",
+            "date={date}/hour={hour}"
+          ]
+        }
+      }
+    },
+    "row_group_settings": {
+      "type": "object",
+      "description": "Row group configuration",
+      "properties": {
+        "row_group_size": {
+          "type": "integer",
+          "minimum": 1024,
+          "default": 134217728,
+          "description": "Target row group size in bytes (default 128MB)"
+        },
+        "row_group_rows": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Maximum rows per row group"
+        },
+        "page_size": {
+          "type": "integer",
+          "minimum": 1024,
+          "default": 1048576,
+          "description": "Page size in bytes (default 1MB)"
+        }
+      }
+    },
+    "statistics": {
+      "type": "object",
+      "description": "Statistics collection settings",
+      "properties": {
+        "collect_statistics": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable statistics collection"
+        },
+        "statistics_types": {
+          "type": "array",
+          "description": "Types of statistics to collect",
+          "items": {
+            "type": "string",
+            "enum": ["min", "max", "null_count", "distinct_count"]
+          }
+        },
+        "truncate_strings_to": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Truncate string statistics to N characters (0 = no truncation)"
+        }
+      }
+    },
+    "metadata_fields": {
+      "type": "object",
+      "description": "Custom metadata fields",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "properties": {
+        "plan_id": {
+          "type": "string",
+          "description": "Plan ID this data belongs to"
+        },
+        "phase_id": {
+          "type": "string",
+          "description": "Phase ID this data belongs to"
+        },
+        "gate_id": {
+          "type": "string",
+          "description": "Gate ID this data validates"
+        },
+        "data_classification": {
+          "type": "string",
+          "enum": ["public", "internal", "confidential", "restricted"]
+        },
+        "retention_days": {
+          "type": "string",
+          "pattern": "^\\d+$",
+          "description": "Data retention period in days"
+        },
+        "owner": {
+          "type": "string",
+          "description": "Data owner/team"
+        }
+      }
+    },
+    "optimization": {
+      "type": "object",
+      "description": "Performance optimization settings",
+      "properties": {
+        "enable_predicate_pushdown": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable predicate pushdown for queries"
+        },
+        "enable_projection_pushdown": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable projection pushdown for queries"
+        },
+        "enable_column_pruning": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable column pruning during reads"
+        },
+        "cache_metadata": {
+          "type": "boolean",
+          "default": true,
+          "description": "Cache metadata for faster subsequent reads"
+        }
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "description": "Compatibility settings",
+      "properties": {
+        "writer_version": {
+          "type": "string",
+          "enum": ["PARQUET_1_0", "PARQUET_2_0"],
+          "default": "PARQUET_2_0",
+          "description": "Parquet writer version"
+        },
+        "backward_compatible": {
+          "type": "boolean",
+          "default": true,
+          "description": "Ensure backward compatibility"
+        },
+        "use_deprecated_int96_timestamps": {
+          "type": "boolean",
+          "default": false,
+          "description": "Use deprecated INT96 for timestamps (for legacy compatibility)"
+        }
+      }
+    }
+  }
+}

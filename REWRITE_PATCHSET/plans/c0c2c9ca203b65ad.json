@@ -1,0 +1,28 @@
+{
+  "rewrite_plan_id": "c0c2c9ca203b65ad",
+  "target_file_id": null,
+  "target_relpath": "01260207201000001148_evidence\\01260207201000001150_historical\\01999000042260124500_AI_PROD_PIPELINE_DETAILED_SUBSYSTEM_MAP.md",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "6e6f94c3ae8680b1e4d9beb28203357a486b2b848e19aa5b133a6da826ae9f0e",
+  "operations": [
+    {
+      "ref_id": "40cecae87af129c4843fba82e14a8e88df651e2a2e704845c9375ddaf03b112d",
+      "old_value": "LP_LONG_PLAN\\event_emitter.py",
+      "new_value": "01260207201000001221_Multi CLI\\LP_LONG_PLAN\\event_emitter.py",
+      "location": "line:61"
+    },
+    {
+      "ref_id": "725ecaaec0e80dc358b0231c24ab3dc8250fd3de14d9c887529ce5c7dd8c6eff",
+      "old_value": "LP_LONG_PLAN\\event_router.py",
+      "new_value": "01260207201000001221_Multi CLI\\LP_LONG_PLAN\\event_router.py",
+      "location": "line:62"
+    },
+    {
+      "ref_id": "1ee6f880095f1ffe93a11c3cb92480e6fd7b1d25d6fdc5041004ed0c7f8af3ec",
+      "old_value": "LP_LONG_PLAN\\event_sinks.py",
+      "new_value": "01260207201000001221_Multi CLI\\LP_LONG_PLAN\\event_sinks.py",
+      "location": "line:63"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\c0c2c9ca203b65ad.diff"
+}

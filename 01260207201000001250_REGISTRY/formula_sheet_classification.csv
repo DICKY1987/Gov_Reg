@@ -1,0 +1,217 @@
+
+column_name,update_policy,writable_by,dict_mode,has_derivation,trigger,depends_on,formula,classification,notes
+absolute_path,recompute_on_scan,tool_only,EXTRACTED,True,recompute_on_scan,[],NORMALIZE_PATH(INPUT.observed_absolute_path),fully specified,
+allocated_at,immutable,tool_only,SYSTEM,True,on_create_only,[],NOW_UTC(),fully specified,
+anchor_file_id,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,['relative_path'],"LOOKUP_REGISTRY('anchor_file_for', relative_path)",fully specified,
+artifact_kind,manual_or_automated,both,INPUT,True,recompute_on_scan,"['extension', 'relative_path']","INFER_ARTIFACT_KIND(extension, relative_path)",fully specified,
+asset_family,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+asset_id,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,"['relative_path', 'artifact_kind']","LOOKUP_REGISTRY('asset_by_path', relative_path)",fully specified,
+asset_version,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+build_report_entity_id,recompute_on_build,tool_only,LOOKUP,True,recompute_on_build,['file_id'],"LOOKUP_REGISTRY('build_report_for', file_id)",fully specified,
+canonical_path,recompute_on_scan,tool_only,EXTRACTED,True,recompute_on_scan,['relative_path'],LOWER(NORMALIZE_PATH(relative_path)),fully specified,
+canonicality,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+collected_by,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,[],INPUT.collector_id,fully specified,
+column_headers,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,"['extension', 'relative_path']","IF(
+  OR(EQUALS(extension, '.csv'), EQUALS(extension, '.tsv')),
+  EXTRACT_HEADERS(absolute_path),
+  NULL
+)
+",fully specified,
+confidence,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,"['artifact_kind', 'layer', 'governance_domain']","IF(
+  AND(NOT(IS_NULL(artifact_kind)), NOT(IS_NULL(layer))),
+  1.0,
+  IF(NOT(IS_NULL(artifact_kind)), 0.7, 0.3)
+)
+",fully specified,
+content_type,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,"['extension', 'filename']","LOOKUP_CONFIG('mime_types', COALESCE(extension, filename))",fully specified,
+contracts_consumed,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,"['file_id', 'relative_path']","LOOKUP_REGISTRY('contracts_consumed_by', file_id)",fully specified,
+contracts_produced,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,"['file_id', 'relative_path']","LOOKUP_REGISTRY('contracts_produced_by', file_id)",fully specified,
+coverage_status,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,"['test_file_ids', 'has_tests']","IF(
+  has_tests,
+  IF(COUNT(test_file_ids) > 2, 'well_covered', 'covered'),
+  'uncovered'
+)
+",fully specified,
+created_by,immutable,tool_only,INPUT,False,,,,inconsistent,immutable but no derivation
+created_utc,immutable,tool_only,INPUT,True,on_create_only,[],NOW_UTC(),fully specified,
+data_transformation,recompute_on_scan,tool_only,DERIVED,True,recompute_on_scan,"['relative_path', 'extension']","IF(
+  OR(
+    CONTAINS(relative_path, '/transforms/'),
+    ENDS_WITH(filename, '_transform.py'),
+    ENDS_WITH(filename, '_converter.py')
+  ),
+  'transform_pipeline',
+  NULL
+)
+",fully specified,
+declared_dependencies,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+deliverables,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+depends_on_file_ids,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,"['file_id', 'absolute_path']","LOOKUP_REGISTRY('dependencies_of', file_id)",fully specified,
+description,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+directionality,immutable,tool_only,INPUT,False,,,,inconsistent,immutable but no derivation
+directory_path,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,['relative_path'],DIRNAME(relative_path),fully specified,
+edge_flags,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+edge_id,immutable,tool_only,SYSTEM,True,on_create_only,['record_kind'],"IF(EQUALS(record_kind, 'relationship'), GENERATE_ID('edge'), NULL)",fully specified,
+edge_type,immutable,tool_only,INPUT,False,,,,inconsistent,immutable but no derivation
+edges,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,"['file_id', 'entity_id']","LOOKUP_REGISTRY('edges_for', COALESCE(file_id, entity_id))",fully specified,
+enforced_by,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,['file_id'],"LOOKUP_REGISTRY('enforcer_of', file_id)",fully specified,
+enforced_by_file_ids,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,['file_id'],"LOOKUP_REGISTRY('enforcers_of', file_id)",fully specified,
+enforces,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,"['file_id', 'artifact_kind']","LOOKUP_REGISTRY('enforced_by', file_id)",fully specified,
+enforces_rule_ids,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,"['file_id', 'artifact_kind']","LOOKUP_REGISTRY('rules_enforced_by', file_id)",fully specified,
+entries,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+entity_id,immutable,tool_only,SYSTEM,True,on_create_only,['record_kind'],"IF(NOT(EQUALS(record_kind, 'file')), GENERATE_ID('entity'), NULL)",fully specified,
+entity_kind,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+entrypoint_flag,recompute_on_scan,tool_only,DERIVED,True,recompute_on_scan,"['filename', 'relative_path']","OR(
+  EQUALS(filename, '__main__.py'),
+  EQUALS(filename, 'main.py'),
+  EQUALS(filename, 'index.js'),
+  EQUALS(filename, 'index.ts'),
+  MATCH(relative_path, '^(bin|scripts)/[^/]+$')
+)
+",fully specified,
+evidence,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,"['file_id', 'scan_id']","LOOKUP_REGISTRY('evidence_for', file_id, scan_id)",fully specified,
+evidence_locator,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,"['file_id', 'evidence']","IF(NOT(IS_NULL(evidence)), LOOKUP_COLUMN(evidence, 'locator'), NULL)",fully specified,
+evidence_method,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,['evidence'],"IF(NOT(IS_NULL(evidence)), LOOKUP_COLUMN(evidence, 'method'), NULL)",fully specified,
+evidence_only,recompute_on_scan,tool_only,DERIVED,True,recompute_on_scan,['relative_path'],"STARTS_WITH(relative_path, '.state/evidence/')",fully specified,
+evidence_outputs,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,"['file_id', 'evidence']","IF(NOT(IS_NULL(evidence)), LOOKUP_COLUMN(evidence, 'outputs'), [])",fully specified,
+evidence_snippet,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,['evidence'],"IF(NOT(IS_NULL(evidence)), LOOKUP_COLUMN(evidence, 'snippet'), NULL)",fully specified,
+evidence_type,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,['evidence'],"IF(NOT(IS_NULL(evidence)), LOOKUP_COLUMN(evidence, 'type'), NULL)",fully specified,
+expires_utc,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+extension,recompute_on_scan,tool_only,EXTRACTED,True,recompute_on_scan,['filename'],LOWER(EXTENSION(filename)),fully specified,
+external_ref,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+external_system,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+extract,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,"['absolute_path', 'extension']","IF(
+  OR(EQUALS(extension, '.md'), EQUALS(extension, '.txt')),
+  SUBSTRING(READ_BYTES(absolute_path), 0, 1000),
+  NULL
+)
+",fully specified,
+file_id,immutable,tool_only,SYSTEM,True,on_create_only,[],ALLOCATE_FILE_ID(),fully specified,
+filename,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,['relative_path'],BASENAME(relative_path),fully specified,
+files,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+first_seen_utc,immutable,tool_only,INPUT,True,on_create_only,[],NOW_UTC(),fully specified,
+function_code_1,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+function_code_2,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+function_code_3,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+generated,recompute_on_build,tool_only,DERIVED,True,recompute_on_build,"['generator_id', 'generated_by_file_id']","OR(NOT(IS_NULL(generator_id)), NOT(IS_NULL(generated_by_file_id)))",fully specified,
+generated_at,recompute_on_build,tool_only,INPUT,True,recompute_on_build,['is_generated'],"IF(is_generated, NOW_UTC(), NULL)",fully specified,
+generated_by_file_id,recompute_on_build,tool_only,LOOKUP,True,recompute_on_build,['relative_path'],"LOOKUP_REGISTRY('generator_source_for', relative_path)",fully specified,
+generator_id,recompute_on_build,tool_only,LOOKUP,True,recompute_on_build,['generated_by_file_id'],"IF(NOT(IS_NULL(generated_by_file_id)), LOOKUP_REGISTRY('generator_by_file', generated_by_file_id), NULL)",fully specified,
+generator_name,recompute_on_build,tool_only,INPUT,True,recompute_on_build,['generator_id'],"IF(NOT(IS_NULL(generator_id)), LOOKUP_REGISTRY('generator_name', generator_id), NULL)",fully specified,
+generator_version,recompute_on_build,tool_only,INPUT,True,recompute_on_build,['generator_id'],"IF(NOT(IS_NULL(generator_id)), LOOKUP_REGISTRY('generator_version', generator_id), NULL)",fully specified,
+geu_ids,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,"['primary_geu_id', 'owner_geu_id']","UNIQUE(FILTER([primary_geu_id, owner_geu_id], NOT(IS_NULL(item))))",fully specified,
+geu_role,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,"['artifact_kind', 'relative_path']","LOOKUP_CONFIG('geu_roles', artifact_kind, relative_path)",fully specified,
+geu_role_definitions,recompute_on_build,tool_only,LOOKUP,True,recompute_on_build,['geu_role'],"IF(NOT(IS_NULL(geu_role)), LOOKUP_CONFIG('geu_role_definitions', geu_role), NULL)",fully specified,
+geu_type_slot_matrix,recompute_on_build,tool_only,LOOKUP,True,recompute_on_build,['geu_ids'],"LOOKUP_CONFIG('geu_type_slot_matrix', geu_ids)",fully specified,
+governance_domain,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,"['relative_path', 'artifact_kind']","INFER_GOVERNANCE_DOMAIN(relative_path, artifact_kind)",fully specified,
+has_tests,recompute_on_scan,tool_only,DERIVED,True,recompute_on_scan,['test_file_ids'],COUNT(test_file_ids) > 0,fully specified,
+input_filters,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+inputs,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+is_directory,recompute_on_scan,tool_only,DERIVED,True,recompute_on_scan,['absolute_path'],IS_DIRECTORY(absolute_path),fully specified,
+is_generated,recompute_on_scan,tool_only,DERIVED,True,recompute_on_scan,"['relative_path', 'generator_id']","OR(
+  NOT(IS_NULL(generator_id)),
+  MATCH(relative_path, '^(build|dist|out|generated|\.state)/'),
+  ENDS_WITH(relative_path, '.generated.json')
+)
+",fully specified,
+is_shared,recompute_on_scan,tool_only,DERIVED,True,recompute_on_scan,"['relative_path', 'geu_ids']","OR(
+  CONTAINS(relative_path, '/shared/'),
+  CONTAINS(relative_path, '/common/'),
+  COUNT(geu_ids) > 1
+)
+",fully specified,
+last_build_utc,recompute_on_build,tool_only,INPUT,True,recompute_on_build,[],NOW_UTC(),fully specified,
+last_seen_utc,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,[],NOW_UTC(),fully specified,
+layer,manual_or_automated,both,INPUT,True,recompute_on_scan,"['relative_path', 'artifact_kind']","INFER_LAYER(relative_path, artifact_kind)",fully specified,
+metadata,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+module_id,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,"['relative_path', 'module_id_override']","COALESCE(module_id_override, INFER_MODULE(relative_path))",fully specified,
+module_id_override,manual_patch_only,user_only,LOOKUP,False,,,,manual,"manual_patch_only, no derivation"
+module_id_source,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,"['module_id_override', 'module_id']","IF(
+  NOT(IS_NULL(module_id_override)),
+  'override',
+  IF(NOT(IS_NULL(module_id)), 'inferred', NULL)
+)
+",fully specified,
+mtime_utc,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,['absolute_path'],FORMAT_ISO8601(FILE_MTIME(absolute_path)),fully specified,
+notes,manual_patch_only,user_only,INPUT,False,,,,manual,"manual_patch_only, no derivation"
+ns_code,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+observed_utc,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,[],"COALESCE(INPUT.event_timestamp, NOW_UTC())",fully specified,
+one_line_purpose,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+optional_roles,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+output_hash,recompute_on_build,tool_only,INPUT,True,recompute_on_build,['output_path'],"IF(NOT(IS_NULL(output_path)), SHA256_BYTES(READ_BYTES(output_path)), NULL)",fully specified,
+output_kind,recompute_on_build,tool_only,INPUT,True,recompute_on_build,"['output_path', 'extension']","IF(NOT(IS_NULL(output_path)), INFER_ARTIFACT_KIND(EXTENSION(output_path), output_path), NULL)",fully specified,
+output_path,recompute_on_build,tool_only,INPUT,True,recompute_on_build,"['generator_id', 'output_path_pattern']","IF(NOT(IS_NULL(output_path_pattern)), REPLACE(output_path_pattern, '{{file_id}}', file_id), NULL)",fully specified,
+output_path_pattern,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+outputs,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+owner_geu_id,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,"['primary_geu_id', 'relative_path']","COALESCE(primary_geu_id, LOOKUP_CONFIG('default_geu_by_path', relative_path))",fully specified,
+path_aliases,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+primary_geu_id,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,['module_id'],"LOOKUP_REGISTRY('geu_by_module', module_id)",fully specified,
+process_id,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,['relative_path'],"LOOKUP_CONFIG('process_by_path', relative_path)",fully specified,
+process_step_id,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,"['relative_path', 'process_id']","LOOKUP_CONFIG('step_by_path', relative_path, process_id)",fully specified,
+process_step_role,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,"['process_step_id', 'artifact_kind']","LOOKUP_CONFIG('step_roles', process_step_id, artifact_kind)",fully specified,
+record_id,immutable,tool_only,SYSTEM,True,on_create_only,"['file_id', 'entity_id', 'edge_id', 'record_kind']","COALESCE(file_id, entity_id, edge_id, GENERATE_ID('record'))",fully specified,
+record_kind,immutable,tool_only,INPUT,False,,,,inconsistent,immutable but no derivation
+rel_type,immutable,tool_only,INPUT,False,,,,inconsistent,immutable but no derivation
+relative_path,recompute_on_scan,tool_only,EXTRACTED,True,recompute_on_scan,"['absolute_path', 'repo_root_id']","RELATIVE_TO(absolute_path, LOOKUP_CONFIG('repo_roots', repo_root_id))",fully specified,
+repo_root_id,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,['absolute_path'],MATCH_REPO_ROOT(absolute_path),fully specified,
+report_outputs,recompute_on_build,tool_only,INPUT,True,recompute_on_build,['file_id'],"LOOKUP_REGISTRY('reports_from', file_id)",fully specified,
+required_roles,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+required_suite_key,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,"['artifact_kind', 'governance_domain']","LOOKUP_CONFIG('required_test_suites', artifact_kind, governance_domain)",fully specified,
+resolver_hint,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+role,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+role_code,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+rule_based,recompute_on_scan,tool_only,DERIVED,True,recompute_on_scan,['enforces_rule_ids'],COUNT(enforces_rule_ids) > 0,fully specified,
+runner_based,recompute_on_scan,tool_only,DERIVED,True,recompute_on_scan,"['filename', 'relative_path']","OR(
+  STARTS_WITH(filename, 'test_'),
+  ENDS_WITH(filename, '_test.py'),
+  CONTAINS(relative_path, '/tests/'),
+  ENDS_WITH(filename, '.test.js'),
+  ENDS_WITH(filename, '.spec.ts')
+)
+",fully specified,
+scan_id,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,[],INPUT.current_scan_id,fully specified,
+schema_based,recompute_on_scan,tool_only,DERIVED,True,recompute_on_scan,"['extension', 'relative_path']","OR(
+  ENDS_WITH(relative_path, '.schema.json'),
+  ENDS_WITH(relative_path, '.schema.yaml'),
+  CONTAINS(relative_path, '/schemas/')
+)
+",fully specified,
+schema_version,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,[],INPUT.schema_version,fully specified,
+scope,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+sha256,recompute_on_scan,tool_only,EXTRACTED,True,recompute_on_scan,"['absolute_path', 'is_directory']","IF(is_directory, NULL, SHA256_BYTES(READ_BYTES(absolute_path)))",fully specified,
+short_description,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+size_bytes,recompute_on_scan,tool_only,EXTRACTED,True,recompute_on_scan,"['absolute_path', 'is_directory']","IF(is_directory, NULL, FILE_SIZE(absolute_path))",fully specified,
+sort_keys,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,"['artifact_kind', 'layer', 'relative_path']","[artifact_kind, layer, DIRNAME(relative_path), BASENAME(relative_path)]",fully specified,
+sort_rule_id,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,"['artifact_kind', 'extension']","LOOKUP_CONFIG('sort_rules', artifact_kind, extension)",fully specified,
+source_entity_id,immutable,tool_only,LOOKUP,False,,,,inconsistent,immutable but no derivation
+source_file_id,immutable,tool_only,LOOKUP,False,,,,inconsistent,immutable but no derivation
+source_registry_hash,recompute_on_build,tool_only,INPUT,True,recompute_on_build,[],INPUT.registry_hash_at_build,fully specified,
+source_registry_scan_id,recompute_on_build,tool_only,LOOKUP,True,recompute_on_build,[],INPUT.source_scan_id,fully specified,
+status,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+step_refs,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+superseded_by,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+supersedes_entity_id,manual_or_automated,tool_only,LOOKUP,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+tags,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+target_entity_id,immutable,tool_only,LOOKUP,False,,,,inconsistent,immutable but no derivation
+target_file_id,immutable,tool_only,LOOKUP,False,,,,inconsistent,immutable but no derivation
+target_schema_id,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,"['extension', 'relative_path']","LOOKUP_CONFIG('schemas_by_extension', extension)",fully specified,
+template_ref_entity_id,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,['relative_path'],"LOOKUP_REGISTRY('template_for', relative_path)",fully specified,
+test_file_ids,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,"['file_id', 'relative_path']","LOOKUP_REGISTRY('tests_for', file_id, relative_path)",fully specified,
+tool_version,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,[],INPUT.tool_version,fully specified,
+transient_id,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,['transient_type'],"IF(NOT(IS_NULL(transient_type)), GENERATE_ID('transient'), NULL)",fully specified,
+transient_type,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,['relative_path'],"IF(
+  STARTS_WITH(relative_path, '.state/transient/'),
+  EXTRACT(relative_path, '.state/transient/([^/]+)/'),
+  NULL
+)
+",fully specified,
+ttl_seconds,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+type_code,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+updated_by,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,[],INPUT.updater_id,fully specified,
+updated_utc,recompute_on_scan,tool_only,INPUT,True,recompute_on_scan,[],NOW_UTC(),fully specified,
+validation_rules,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+validator_id,recompute_on_scan,tool_only,LOOKUP,True,recompute_on_scan,"['extension', 'artifact_kind']","LOOKUP_CONFIG('validators', extension, artifact_kind)",fully specified,
+bundle_id,immutable,tool_only,SYSTEM,True,on_create_only,['bundle_key'],"IF(NOT(IS_NULL(bundle_key)), GENERATE_ID('bundle'), NULL)",fully specified,
+bundle_key,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+bundle_role,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found
+bundle_version,manual_or_automated,both,INPUT,False,,,,inconsistent,update_policy manual_or_automated requires derivation but none found

@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://govreg.local/schemas/PATCH.schema.json",
+  "title": "RFC-6902 JSON Patch with Metadata",
+  "description": "JSON Patch operations with tracking metadata for plan refinement",
+  "type": "object",
+  "required": [
+    "patch_id",
+    "created_by",
+    "target_plan_hash",
+    "justification",
+    "operations"
+  ],
+  "properties": {
+    "patch_id": {
+      "type": "string",
+      "pattern": "^PATCH_[0-9]{8}T[0-9]{6}Z_[a-f0-9]{8}$"
+    },
+    "created_by": {
+      "type": "string",
+      "enum": ["PLANNER_AGENT", "CRITIC_AGENT", "HUMAN"]
+    },
+    "target_plan_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA256 hash of plan this patch applies to"
+    },
+    "justification": {
+      "type": "array",
+      "description": "Defect IDs or reasons for this patch",
+      "items": {"type": "string"},
+      "minItems": 1
+    },
+    "operations": {
+      "type": "array",
+      "description": "RFC-6902 patch operations",
+      "items": {
+        "type": "object",
+        "required": ["op", "path"],
+        "properties": {
+          "op": {
+            "type": "string",
+            "enum": ["add", "remove", "replace", "move", "copy", "test"]
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^/.*"
+          },
+          "value": {
+            "description": "Value for add/replace/test operations"
+          },
+          "from": {
+            "type": "string",
+            "pattern": "^/.*",
+            "description": "Source path for move/copy operations"
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "created_at": {"type": "string", "format": "date-time"},
+        "iteration": {"type": "integer", "minimum": 0},
+        "defects_targeted": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    }
+  }
+}

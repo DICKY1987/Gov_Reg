@@ -1,0 +1,10 @@
+{
+  "heal_plan_schema": "Rewrite the plan to conform EXACTLY to the provided JSON Schema. Output JSON only.",
+  "add_acceptance_criteria": "For each deliverable, add concrete acceptance criteria as testable statements. Output JSON only.",
+  "strengthen_gates": "For each quality gate, add objective criteria and explicit evidence artifact paths. Output JSON only.",
+  "add_risks": "Add a risk register with probability/impact and mitigation for each. Output JSON only.",
+  "critic_json_retry": "Return ONLY valid JSON matching the critique schema. No markdown, no prose outside JSON.",
+  "critic_schema_retry": "Fix the JSON to match the critique schema exactly. Keep existing content but repair structure.",
+  "backoff_and_retry": "This is handled by wrapper logic (exponential backoff).",
+  "fail_fast_auth": "Stop and print missing auth variables with remediation steps."
+}

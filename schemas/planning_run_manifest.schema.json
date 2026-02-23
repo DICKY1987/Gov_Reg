@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://govreg.local/schemas/planning_run_manifest.schema.json",
+  "title": "Planning Run Manifest Schema",
+  "description": "Metadata for a planning loop execution run",
+  "type": "object",
+  "required": [
+    "planning_run_id",
+    "repo_root",
+    "policy_version",
+    "context_bundle_hash",
+    "prompt_hashes",
+    "created_at",
+    "max_iterations",
+    "critic_contract_hash"
+  ],
+  "properties": {
+    "planning_run_id": {
+      "type": "string",
+      "pattern": "^planning_[0-9]{8}T[0-9]{6}Z_[a-f0-9]{8}$"
+    },
+    "repo_root": {
+      "type": "string",
+      "description": "Absolute path to repository root"
+    },
+    "policy_version": {
+      "type": "string",
+      "description": "Policy snapshot version used for this run"
+    },
+    "context_bundle_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA256 hash of context bundle"
+    },
+    "prompt_hashes": {
+      "type": "object",
+      "description": "Hashes of all prompts used",
+      "properties": {
+        "planner_skeleton": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "planner_refine": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "critic_llm": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "max_iterations": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "critic_contract_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA256 hash of critic contract"
+    },
+    "llm_config": {
+      "type": "object",
+      "properties": {
+        "model": {"type": "string"},
+        "temperature": {"type": "number"},
+        "max_tokens": {"type": "integer"}
+      }
+    },
+    "run_mode": {
+      "type": "string",
+      "enum": ["DETERMINISTIC", "LLM", "HYBRID"]
+    }
+  }
+}

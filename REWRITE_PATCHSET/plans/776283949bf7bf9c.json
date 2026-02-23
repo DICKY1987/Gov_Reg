@@ -1,0 +1,28 @@
+{
+  "rewrite_plan_id": "776283949bf7bf9c",
+  "target_file_id": null,
+  "target_relpath": "01260207201000001288_sections\\01260207233100000492_UNIFIED_ALL_SECTIONS.json",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "cfd8c7a040277eb745c9fb2740b299e6dc55c54bc3f53cf3f54e8888b0e035d7",
+  "operations": [
+    {
+      "ref_id": "c4b86c287429c5c921eb9bd585b31413a91af2ec75b1f61f968f9ae8b623da87",
+      "old_value": "validators/validate_control_coverage.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/validators/validate_control_coverage.py",
+      "location": "line:1724"
+    },
+    {
+      "ref_id": "c519ceb53e120dccc29f59896209fbd8baadd5f98117c59367ab9f58ccf4b849",
+      "old_value": "validators/validate_control_coverage.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/validators/validate_control_coverage.py",
+      "location": "line:3416"
+    },
+    {
+      "ref_id": "e8f07a9877bc4ffe08c73dc03cf67df5bd7fa4ba4406e12935f6316ad9ae8443",
+      "old_value": "sections/sec_021_quality_controls_catalog.json",
+      "new_value": "01260207201000001221_Multi CLI/sections/sec_021_quality_controls_catalog.json",
+      "location": "line:3420"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\776283949bf7bf9c.diff"
+}

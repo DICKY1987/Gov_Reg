@@ -1,0 +1,26 @@
+# mapp_py Requirements
+# Work ID: WORK-MAPP-PY-001
+# Phase 0 - Dependencies for Phase 1+ implementation
+
+# Core dependencies
+astroid==3.0.2  # AST parsing and manipulation
+scikit-learn==1.4.0  # TF-IDF vectorization and similarity
+numpy>=1.24.0  # Numerical operations
+pyyaml>=6.0  # YAML parsing for configs and schemas
+
+# Testing dependencies
+pytest==7.4.3  # Test framework
+pytest-cov==4.1.0  # Coverage reporting
+pytest-benchmark==4.0.0  # Performance benchmarking
+
+# Code quality
+ruff==0.1.9  # Fast linting
+mypy==1.7.1  # Type checking
+
+# Optional: For semantic similarity (Phase 2)
+# sentence-transformers==2.2.2  # BERT embeddings (large dependency)
+# torch>=2.0.0  # Required by sentence-transformers
+
+# Optional: For advanced metrics (Phase 2+)
+# radon==6.0.1  # Complexity metrics
+# lizard==1.17.10  # Code complexity analyzer

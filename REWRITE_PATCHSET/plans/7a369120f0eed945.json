@@ -1,0 +1,196 @@
+{
+  "rewrite_plan_id": "7a369120f0eed945",
+  "target_file_id": null,
+  "target_relpath": "01260207201000001250_REGISTRY\\01260207201000001253_BACKUP_FILES\\01260207201000001255_backups\\01260207201000001256_file_id_correction_20260202_134132\\01999000042260124503_governance_registry_unified.json",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "1031c743335a6c24377b2f7e2482581d0b7a166b0141bd4a66206929f848dc02",
+  "operations": [
+    {
+      "ref_id": "287b2df231a8cc81ecf438afd200d5a57b6b82a052719dfcb47cd91500d8b452",
+      "old_value": "src/P_01999000042260124484_geu_governance/P_01999000042260124489_id_scheme.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/src/P_01999000042260124484_geu_governance/P_01999000042260124489_id_scheme.py",
+      "location": "line:1028"
+    },
+    {
+      "ref_id": "cc731520d4e2388e8f1a2dd675b6539d4f18ff0b52a918ab2a5955ca3fcc5992",
+      "old_value": "src/P_01999000042260124484_geu_governance/P_01999000042260124490_io_utils.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/src/P_01999000042260124484_geu_governance/P_01999000042260124490_io_utils.py",
+      "location": "line:1057"
+    },
+    {
+      "ref_id": "d8f21b6c68e5c3445ba71a665d83a7695e64e3320796a834a104428b9f964c1d",
+      "old_value": "src/P_01999000042260124484_geu_governance/P_01999000042260124491_report.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/src/P_01999000042260124484_geu_governance/P_01999000042260124491_report.py",
+      "location": "line:1086"
+    },
+    {
+      "ref_id": "e336c281d0893bf4f119c051e1e04e7c313bae7256f787c9b3dba5e3360c8bd9",
+      "old_value": "src/P_01999000042260124484_geu_governance/P_01999000042260124492_validation.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/src/P_01999000042260124484_geu_governance/P_01999000042260124492_validation.py",
+      "location": "line:1115"
+    },
+    {
+      "ref_id": "dd99ecfec7db8dce860f472376d368a4dda505e0f1655cb985485e6d3c8fc2ff",
+      "old_value": ".github/workflows/DOC-WORKFLOW-GEU-REGISTRY-0199900004226012494__geu-registry.yml",
+      "new_value": "01260207201000001250_REGISTRY/.github/workflows/DOC-WORKFLOW-GEU-REGISTRY-0199900004226012494__geu-registry.yml",
+      "location": "line:1173"
+    },
+    {
+      "ref_id": "dc7d88ebce0b976fc07292db766ad18cc3ff752147bad3775572f399101881bf",
+      "old_value": "docs/governance/01999000042260125067_TEMPLATE_REGISTRY_README.md",
+      "new_value": "01260207201000001250_REGISTRY/docs/governance/01999000042260125067_TEMPLATE_REGISTRY_README.md",
+      "location": "line:2035"
+    },
+    {
+      "ref_id": "7ad77d85e3ae6ef672e7a05f681419c517b4c49c0ff4b21ceb5f1c7e410db12f",
+      "old_value": "docs/governance/01999000042260125068_TEMPLATE_REGISTRY_RUNBOOK.md",
+      "new_value": "01260207201000001250_REGISTRY/docs/governance/01999000042260125068_TEMPLATE_REGISTRY_RUNBOOK.md",
+      "location": "line:2047"
+    },
+    {
+      "ref_id": "32a6c252254316542666d851abcc6503b5fbb0f2ba3ae9cc660f75032239d080",
+      "old_value": "docs/governance/01999000042260125069_TEMPLATE_REGISTRY_USAGE.md",
+      "new_value": "01260207201000001250_REGISTRY/docs/governance/01999000042260125069_TEMPLATE_REGISTRY_USAGE.md",
+      "location": "line:2059"
+    },
+    {
+      "ref_id": "dd35e7ff651defc9dbc725b5fbecd47a4dfddcb9397f438312b1960488d54aae",
+      "old_value": "govreg_core/P_01999000042260124021_config.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01999000042260124021_config.py",
+      "location": "line:2462"
+    },
+    {
+      "ref_id": "63c3315abbed6e206a9c9b9be907fe972843125693ea499c65f1c84ee3b6aa79",
+      "old_value": "govreg_core/P_01999000042260124022_reporter.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01999000042260124022_reporter.py",
+      "location": "line:2473"
+    },
+    {
+      "ref_id": "79560311d3666e84c599e6798b7716c3366dd51f0fee46ddc5a167b24ae3a578",
+      "old_value": "govreg_core/P_01999000042260124023_scanner.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01999000042260124023_scanner.py",
+      "location": "line:2484"
+    },
+    {
+      "ref_id": "44b1fc4064b3f9bcbcfc74aaed839604806b7c4fd3f6fe6d07ec2d49d4158790",
+      "old_value": "govreg_core/P_01999000042260124024_validator.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01999000042260124024_validator.py",
+      "location": "line:2495"
+    },
+    {
+      "ref_id": "6c16ef0fb68f62f99f58231cee22ac22a992f14c4d82e4024b0d31269e26d1aa",
+      "old_value": "govreg_core/P_01999000042260124025___init__.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01999000042260124025___init__.py",
+      "location": "line:2506"
+    },
+    {
+      "ref_id": "d20413c5679a5d36920cb2d41a8f1dd1035dcf3571eaca0ddcabc02a45038c2a",
+      "old_value": "scripts/P_01999000042260124483_seed_geu_entries.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124483_seed_geu_entries.py",
+      "location": "line:2517"
+    },
+    {
+      "ref_id": "36d44e9adb69259143d751e555b216568a90a9ae47a3a3beadea79d61fc48632",
+      "old_value": "scripts/P_01999000042260125001_migrate_geu_to_20digit.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260125001_migrate_geu_to_20digit.py",
+      "location": "line:2528"
+    },
+    {
+      "ref_id": "d656acae8774c204e0403f68bb9f03f2285c75c3b83a79f396db20ff8bb2c3e6",
+      "old_value": "tests/P_01999000042260124029_test_id_allocator.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/tests/P_01999000042260124029_test_id_allocator.py",
+      "location": "line:2539"
+    },
+    {
+      "ref_id": "c75f5fbc7fc377dea3fa6e752ac85135b3702b3468edb3b72d6d1a91e0e58347",
+      "old_value": "src/P_01999000042260124484_geu_governance/P_01999000042260124484___init__.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/src/P_01999000042260124484_geu_governance/P_01999000042260124484___init__.py",
+      "location": "line:2572"
+    },
+    {
+      "ref_id": "e7fd52c8e5e28f9661cd19e7c096adb493506b81bcd9a07594746101571ff85d",
+      "old_value": "src/P_01999000042260124484_geu_governance/P_01999000042260124485___main__.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/src/P_01999000042260124484_geu_governance/P_01999000042260124485___main__.py",
+      "location": "line:2583"
+    },
+    {
+      "ref_id": "8a828859259dbab56f3b4faeb0608dd0cfa7cbc0e5b04ca2ed60a776b4165ddd",
+      "old_value": "src/P_01999000042260124484_geu_governance/P_01999000042260124486_cli.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/src/P_01999000042260124484_geu_governance/P_01999000042260124486_cli.py",
+      "location": "line:2594"
+    },
+    {
+      "ref_id": "662786b08229fbc634a8611b6753e2015df2b9fc5c6ec11cbefe177586002734",
+      "old_value": "src/P_01999000042260124484_geu_governance/P_01999000042260124487_constants.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/src/P_01999000042260124484_geu_governance/P_01999000042260124487_constants.py",
+      "location": "line:2605"
+    },
+    {
+      "ref_id": "b281346913b8b9a34aa17f908cd73d642eb416d8efa7f6e31bbcb890c2c50a8e",
+      "old_value": "src/P_01999000042260124484_geu_governance/P_01999000042260124488_generate.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/src/P_01999000042260124484_geu_governance/P_01999000042260124488_generate.py",
+      "location": "line:2616"
+    },
+    {
+      "ref_id": "3f65ff8a2509eb1946a350469a51a6a626ed8a04451499fa417de8772b1bebaf",
+      "old_value": "src/P_01999000042260124484_geu_governance/P_01999000042260124489_id_scheme.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/src/P_01999000042260124484_geu_governance/P_01999000042260124489_id_scheme.py",
+      "location": "line:2627"
+    },
+    {
+      "ref_id": "8e56f29ac9d73729e65d0e2e024558e9e0d6403665a67e062fabae64adf2bbc8",
+      "old_value": "src/P_01999000042260124484_geu_governance/P_01999000042260124490_io_utils.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/src/P_01999000042260124484_geu_governance/P_01999000042260124490_io_utils.py",
+      "location": "line:2638"
+    },
+    {
+      "ref_id": "8a217e452ac8f8d73e85a22e037c8f6f5a875a2b82b36499ee0dad1eeca2cc9c",
+      "old_value": "src/P_01999000042260124484_geu_governance/P_01999000042260124491_report.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/src/P_01999000042260124484_geu_governance/P_01999000042260124491_report.py",
+      "location": "line:2649"
+    },
+    {
+      "ref_id": "ffc60686ec826535d9010cc2f04d3c5420874c7d00f982804e449cac0a215ed6",
+      "old_value": "src/P_01999000042260124484_geu_governance/P_01999000042260124492_validation.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/src/P_01999000042260124484_geu_governance/P_01999000042260124492_validation.py",
+      "location": "line:2660"
+    },
+    {
+      "ref_id": "515bcf81f20a9645546b8b69011ce333f0e80506d21be18aae73f2a7aceff022",
+      "old_value": "evidence/0199900004226012469_geu_validation_report.json",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/evidence/0199900004226012469_geu_validation_report.json",
+      "location": "line:2693"
+    },
+    {
+      "ref_id": "680ff46d9d151aa4be5c2b7ec837093a84b8583dffdc973c64226cd1eab8a064",
+      "old_value": "src/P_01999000042260124484_geu_governance/P_01999000042260124484___init__.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/src/P_01999000042260124484_geu_governance/P_01999000042260124484___init__.py",
+      "location": "line:883"
+    },
+    {
+      "ref_id": "3ce9d5088d701e40b417a80bbdbab8165438e8827c40eb17daf9bee1cfef2ab7",
+      "old_value": "src/P_01999000042260124484_geu_governance/P_01999000042260124485___main__.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/src/P_01999000042260124484_geu_governance/P_01999000042260124485___main__.py",
+      "location": "line:912"
+    },
+    {
+      "ref_id": "797e8d7118bef07545bdbcec86783ef07bcca9b08e73ee2c8d915636b9f7b7e0",
+      "old_value": "src/P_01999000042260124484_geu_governance/P_01999000042260124486_cli.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/src/P_01999000042260124484_geu_governance/P_01999000042260124486_cli.py",
+      "location": "line:941"
+    },
+    {
+      "ref_id": "9b1043488b62ffb4e4a3a034a95c3559205f686a51cdac3e726cfd7404bcf223",
+      "old_value": "src/P_01999000042260124484_geu_governance/P_01999000042260124487_constants.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/src/P_01999000042260124484_geu_governance/P_01999000042260124487_constants.py",
+      "location": "line:970"
+    },
+    {
+      "ref_id": "a111cf088957d630ddd0de0a9fe51e72c09e72ad9bf0abd7239ea1cadc9cd9d7",
+      "old_value": "src/P_01999000042260124484_geu_governance/P_01999000042260124488_generate.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/src/P_01999000042260124484_geu_governance/P_01999000042260124488_generate.py",
+      "location": "line:999"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\7a369120f0eed945.diff"
+}

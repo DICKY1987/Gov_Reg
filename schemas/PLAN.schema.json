@@ -1,0 +1,291 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://govreg.local/schemas/PLAN.schema.json",
+  "title": "Planning-Only Refinement Loop - Plan Schema",
+  "description": "Schema for validated structural plan documents produced by the planning loop. Version 2.0",
+  "type": "object",
+  "required": [
+    "plan_id",
+    "version",
+    "objective",
+    "scope",
+    "assumptions",
+    "constraints",
+    "workstreams",
+    "deliverables",
+    "acceptance_criteria",
+    "risks",
+    "dependencies",
+    "gates",
+    "declared_new_artifacts",
+    "metadata"
+  ],
+  "properties": {
+    "plan_id": {
+      "type": "string",
+      "description": "Unique identifier for this plan",
+      "pattern": "^PLAN_[0-9]{8}T[0-9]{6}Z_[a-f0-9]{8}$",
+      "examples": ["PLAN_20260218T195130Z_a1b2c3d4"]
+    },
+    "version": {
+      "type": "string",
+      "description": "Plan schema version",
+      "const": "2.0"
+    },
+    "objective": {
+      "type": "string",
+      "description": "Clear, measurable objective of the plan",
+      "minLength": 10,
+      "maxLength": 500
+    },
+    "scope": {
+      "type": "object",
+      "description": "Explicit scope boundaries",
+      "required": ["in_scope", "out_of_scope"],
+      "properties": {
+        "in_scope": {
+          "type": "array",
+          "items": {"type": "string"},
+          "minItems": 1
+        },
+        "out_of_scope": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "description": "List of assumptions underlying the plan",
+      "items": {
+        "type": "object",
+        "required": ["assumption_id", "description", "risk_if_false"],
+        "properties": {
+          "assumption_id": {"type": "string"},
+          "description": {"type": "string"},
+          "risk_if_false": {"type": "string"}
+        }
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "description": "Hard constraints that must be respected",
+      "items": {
+        "type": "object",
+        "required": ["constraint_id", "description", "validation_method"],
+        "properties": {
+          "constraint_id": {"type": "string"},
+          "description": {"type": "string"},
+          "validation_method": {"type": "string"}
+        }
+      }
+    },
+    "workstreams": {
+      "type": "array",
+      "description": "Parallel or sequential work units",
+      "items": {
+        "type": "object",
+        "required": [
+          "workstream_id",
+          "name",
+          "owner",
+          "inputs",
+          "outputs",
+          "steps",
+          "evidence_requirements"
+        ],
+        "properties": {
+          "workstream_id": {
+            "type": "string",
+            "pattern": "^WS_[A-Z0-9_]+$"
+          },
+          "name": {"type": "string"},
+          "owner": {"type": "string"},
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["artifact_id", "source"],
+              "properties": {
+                "artifact_id": {"type": "string"},
+                "source": {"type": "string"},
+                "validation": {"type": "string"}
+              }
+            }
+          },
+          "outputs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["artifact_id", "path", "validation"],
+              "properties": {
+                "artifact_id": {"type": "string"},
+                "path": {"type": "string"},
+                "validation": {"type": "string"}
+              }
+            }
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["step_id", "description", "command", "validation"],
+              "properties": {
+                "step_id": {"type": "string"},
+                "description": {"type": "string"},
+                "command": {"type": "string"},
+                "validation": {"type": "string"},
+                "timeout_sec": {"type": "integer", "minimum": 1},
+                "idempotent": {"type": "boolean"}
+              }
+            }
+          },
+          "evidence_requirements": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["evidence_id", "path_pattern", "validation"],
+              "properties": {
+                "evidence_id": {"type": "string"},
+                "path_pattern": {"type": "string"},
+                "validation": {"type": "string"}
+              }
+            }
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "deliverables": {
+      "type": "array",
+      "description": "Concrete outputs of the plan",
+      "items": {
+        "type": "object",
+        "required": ["deliverable_id", "description", "acceptance_test"],
+        "properties": {
+          "deliverable_id": {"type": "string"},
+          "description": {"type": "string"},
+          "acceptance_test": {"type": "string"},
+          "due_date": {"type": "string", "format": "date"}
+        }
+      },
+      "minItems": 1
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "description": "Measurable criteria for plan completion",
+      "items": {
+        "type": "object",
+        "required": ["criteria_id", "description", "measurement_method", "target_value"],
+        "properties": {
+          "criteria_id": {"type": "string"},
+          "description": {"type": "string"},
+          "measurement_method": {"type": "string"},
+          "target_value": {"type": "string"}
+        }
+      },
+      "minItems": 1
+    },
+    "risks": {
+      "type": "array",
+      "description": "Identified risks with mitigation strategies",
+      "items": {
+        "type": "object",
+        "required": ["risk_id", "description", "probability", "impact", "mitigation"],
+        "properties": {
+          "risk_id": {"type": "string"},
+          "description": {"type": "string"},
+          "probability": {"type": "string", "enum": ["LOW", "MEDIUM", "HIGH"]},
+          "impact": {"type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]},
+          "mitigation": {"type": "string"}
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "description": "External dependencies required for plan execution",
+      "items": {
+        "type": "object",
+        "required": ["dependency_id", "description", "validation_command"],
+        "properties": {
+          "dependency_id": {"type": "string"},
+          "description": {"type": "string"},
+          "validation_command": {"type": "string"},
+          "failure_mode": {"type": "string"}
+        }
+      }
+    },
+    "gates": {
+      "type": "array",
+      "description": "Validation gates with pass/fail criteria",
+      "items": {
+        "type": "object",
+        "required": ["gate_id", "gate_type", "required_evidence", "pass_criteria", "command"],
+        "properties": {
+          "gate_id": {
+            "type": "string",
+            "pattern": "^GATE-[0-9]{3}$"
+          },
+          "gate_type": {
+            "type": "string",
+            "enum": ["SCHEMA", "POLICY", "DEPENDENCY", "SCOPE", "IMMUTABILITY", "EVIDENCE"]
+          },
+          "required_evidence": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "pass_criteria": {"type": "string"},
+          "command": {"type": "string"},
+          "failure_exit_code": {"type": "integer"}
+        }
+      }
+    },
+    "declared_new_artifacts": {
+      "type": "array",
+      "description": "Artifacts that will be created by plan execution (not yet existing)",
+      "items": {
+        "type": "object",
+        "required": ["artifact_id", "kind", "path", "purpose", "justification"],
+        "properties": {
+          "artifact_id": {"type": "string"},
+          "kind": {"type": "string", "enum": ["FILE", "DIRECTORY", "SCHEMA", "CONFIG", "SCRIPT", "TEST", "DOCUMENTATION"]},
+          "path": {"type": "string"},
+          "purpose": {"type": "string"},
+          "justification": {"type": "string"},
+          "validation_method": {"type": "string"}
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Plan metadata for tracking and governance",
+      "required": ["created_at", "created_by", "template_version", "planning_run_id"],
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "enum": ["PLANNER_AGENT", "HUMAN", "HYBRID"]
+        },
+        "template_version": {
+          "type": "string",
+          "const": "3.0.0"
+        },
+        "planning_run_id": {
+          "type": "string",
+          "pattern": "^planning_[0-9]{8}T[0-9]{6}Z_[a-f0-9]{8}$"
+        },
+        "parent_plan_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "iteration": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

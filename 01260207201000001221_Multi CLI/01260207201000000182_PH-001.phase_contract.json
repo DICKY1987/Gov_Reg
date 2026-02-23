@@ -1,0 +1,115 @@
+{
+  "$schema": "../schemas/phase_contract.schema.json",
+  "phase_contract_version": "1.0",
+
+  "phase": {
+    "phase_id": "PH-001",
+    "title": "{{PHASE_TITLE}}",
+    "summary": "{{1 paragraph outcome summary}}",
+    "objective": "{{Definition of Done in 1 sentence}}",
+    "phase_type": "implementation",
+    "status": "planned",
+    "tags": []
+  },
+
+  "dependencies": {
+    "depends_on_phase_ids": []
+  },
+
+  "scope": {
+    "intent": {
+      "in_scope": [
+        "{{What this phase will change/add - cap at ~10 bullets}}"
+      ],
+      "out_of_scope": [
+        "{{Explicit exclusions to prevent creep}}"
+      ]
+    },
+    "path_policy": {
+      "allowed": [
+        {
+          "rule_id": "PATH-ALLOW-001",
+          "globs": ["{{relative/glob/**}}"],
+          "modes": ["read", "create", "modify"]
+        }
+      ],
+      "forbidden": [
+        {
+          "rule_id": "PATH-DENY-001",
+          "globs": [".git/**", ".venv/**", "core/generated/**"],
+          "modes": ["create", "modify"]
+        }
+      ]
+    }
+  },
+
+  "tasks": [
+    {
+      "task_id": "TASK-001",
+      "title": "{{Atomic task title}}",
+      "description": "{{What is done (intent-level)}}",
+      "acceptance_criteria": [
+        "{{Concrete condition true after task completion}}"
+      ],
+      "artifact_ids_touched": ["ART-001"],
+      "validation_ids": ["VAL-001"]
+    }
+  ],
+
+  "artifacts": [
+    {
+      "artifact_id": "ART-001",
+      "path": "{{relative/path.ext}}",
+      "action": "create",
+      "classification": "source",
+      "owner": {
+        "phase_id": "PH-001",
+        "task_id": "TASK-001"
+      },
+      "notes": "{{Why it exists/changes}}",
+      "must_exist_after_phase": true,
+      "registry_artifact_id": "{{ARTIFACT_REGISTRY_ID}}"
+    }
+  ],
+
+  "validations": [
+    {
+      "validation_id": "VAL-001",
+      "kind": "command",
+      "description": "{{What this proves}}",
+      "command": "{{command_to_run}}",
+      "success_criteria": {
+        "exit_code": 0,
+        "stdout_patterns_any": []
+      },
+      "evidence_output": {
+        "log_path": ".runs/PH-001/val_001.log"
+      },
+      "must_pass": true
+    }
+  ],
+
+  "completion_gate": {
+    "rules": {
+      "dependencies_satisfied": true,
+      "all_required_artifacts_present": true,
+      "no_scope_violations": true,
+      "all_must_pass_validations_passed": true
+    },
+    "waivers": {
+      "allowed": false,
+      "waiver_process_ref": null
+    }
+  },
+
+  "extensions": {
+    "optional": {
+      "entry_criteria": {
+        "required_artifacts": [],
+        "prerequisites": []
+      },
+      "risks_delta": [],
+      "open_questions_delta": []
+    }
+  }
+}

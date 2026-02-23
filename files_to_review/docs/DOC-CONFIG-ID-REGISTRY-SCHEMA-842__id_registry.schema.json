@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/id_registry.schema.json",
+  "title": "ID Registry Schema",
+  "description": "Schema for stable ID registry with path tracking",
+  "type": "object",
+  "required": [
+    "meta",
+    "entries",
+    "path_index"
+  ],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": [
+        "version",
+        "created_utc",
+        "last_updated_utc"
+      ],
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "created_utc": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+        },
+        "last_updated_utc": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+        }
+      }
+    },
+    "entries": {
+      "type": "object",
+      "patternProperties": {
+        "^[A-Z]+-\\d{5}$": {
+          "type": "object",
+          "required": [
+            "id",
+            "current_path",
+            "normalized_path",
+            "allocated_utc",
+            "path_history"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[A-Z]+-\\d{5}$"
+            },
+            "current_path": {
+              "type": "string"
+            },
+            "normalized_path": {
+              "type": "string"
+            },
+            "allocated_utc": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+            },
+            "path_history": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "path",
+                  "from_utc"
+                ],
+                "properties": {
+                  "path": {
+                    "type": "string"
+                  },
+                  "from_utc": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+                  }
+                }
+              },
+              "minItems": 1
+            },
+            "metadata": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "path_index": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "type": "string",
+          "pattern": "^[A-Z]+-\\d{5}$"
+        }
+      }
+    }
+  },
+  "doc_id": "DOC-CONFIG-ID-REGISTRY-SCHEMA-842"
+}

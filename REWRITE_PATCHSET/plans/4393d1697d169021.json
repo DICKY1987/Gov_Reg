@@ -1,0 +1,70 @@
+{
+  "rewrite_plan_id": "4393d1697d169021",
+  "target_file_id": "01260207201000000149",
+  "target_relpath": "01260207201000000149_ID_CANONICALITY_EXECUTION_COMPLETE_V2.1.4.md",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "2e5165c6ce04ea3d3942da9b794b34b759f5ec50af23d690f0c984b984a55017",
+  "operations": [
+    {
+      "ref_id": "76ae0c7b6dc5a14401ad1b396d048c404e63b1010c9346336e8f91689ce77c60",
+      "old_value": "scripts/P_01999000042260124521_id_format_scanner.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124521_id_format_scanner.py",
+      "location": "line:100"
+    },
+    {
+      "ref_id": "c52062430c7a5463efe47a99909928c0d4931071e64a2e0f796a4f5c3ad79baf",
+      "old_value": "govreg_core/P_01999000042260125002_canonical_id_patterns.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01999000042260125002_canonical_id_patterns.py",
+      "location": "line:127"
+    },
+    {
+      "ref_id": "09baaa0e646296510f137e2c0d7da86c9a97de9edd837364dc4a5f0da119b53e",
+      "old_value": "govreg_core/P_01999000042260125006_id_allocator_facade.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01999000042260125006_id_allocator_facade.py",
+      "location": "line:129"
+    },
+    {
+      "ref_id": "444cf228de056bd9312dd72757efaf1b820021bd7b5c08f9f67cbc00198a3774",
+      "old_value": "gates/P_01999000042260125000_gate_id_canonicality.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/gates/P_01999000042260125000_gate_id_canonicality.py",
+      "location": "line:130"
+    },
+    {
+      "ref_id": "9dcc49ec6649a8cdac6cfd834e39ae04156bdad949116632a47c759b233bb198",
+      "old_value": "scripts/P_01999000042260124999_id_canonicality_enforcer.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124999_id_canonicality_enforcer.py",
+      "location": "line:131"
+    },
+    {
+      "ref_id": "cda7e0e60eba1f01a56bd5218dc24f701821102ab85da6f0eeb59f3f48786d74",
+      "old_value": "scripts\\P_01999000042260124999_id_canonicality_enforcer.py",
+      "new_value": "01260207201000001162_GEU\\01260207201000001165_ID\\scripts\\P_01999000042260124999_id_canonicality_enforcer.py",
+      "location": "line:208"
+    },
+    {
+      "ref_id": "ff848381a8383c8ccf875b2698b977a027da8d2ae6ddd2e12430034a7cbebcab",
+      "old_value": "gates/P_01999000042260125000_gate_id_canonicality.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/gates/P_01999000042260125000_gate_id_canonicality.py",
+      "location": "line:236"
+    },
+    {
+      "ref_id": "248a1359ccc7591e808c06fcac2a8f7fdbfaf6cf0cc6264d8e1d2d50271cc757",
+      "old_value": "scripts/P_01999000042260124027_id_allocator.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124027_id_allocator.py",
+      "location": "line:95"
+    },
+    {
+      "ref_id": "5472ad70f74dfe3f4569d890b4532594fed12c5f2f7764041f03c7b013e0e42b",
+      "old_value": "scripts/P_01999000042260124027_id_allocator.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124027_id_allocator.py",
+      "location": "line:96"
+    },
+    {
+      "ref_id": "36836dc3548561b37307ff7d276135014acc596da41db5f659c79dbb89a4745e",
+      "old_value": "scripts/P_01999000042260124521_id_format_scanner.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124521_id_format_scanner.py",
+      "location": "line:99"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\4393d1697d169021.diff"
+}

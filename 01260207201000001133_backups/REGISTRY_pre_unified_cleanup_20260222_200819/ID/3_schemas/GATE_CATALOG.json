@@ -1,0 +1,160 @@
+{
+  "version": "1.0.0",
+  "description": "Gate catalog for Unified File+Directory ID Package (IDPKG)",
+  "gates": [
+    {
+      "gate_id": "X-G1",
+      "scope": "cross-cutting",
+      "entity_kind": "any",
+      "severity": "BLOCK",
+      "defect_code": "X-G1",
+      "description": "Allocator store must be outside project root",
+      "applies_when": {
+        "zone": "any"
+      }
+    },
+    {
+      "gate_id": "X-G2",
+      "scope": "cross-cutting",
+      "entity_kind": "any",
+      "severity": "BLOCK",
+      "defect_code": "X-G2",
+      "description": "Allocator store must be reachable and lockable",
+      "applies_when": {
+        "zone": "any"
+      }
+    },
+    {
+      "gate_id": "X-G3",
+      "scope": "cross-cutting",
+      "entity_kind": "any",
+      "severity": "BLOCK",
+      "defect_code": "X-G3",
+      "description": "Registry mutations must be patch-only with provenance",
+      "applies_when": {
+        "zone": "any"
+      }
+    },
+    {
+      "gate_id": "X-G4",
+      "scope": "cross-cutting",
+      "entity_kind": "any",
+      "severity": "BLOCK",
+      "defect_code": "X-G4",
+      "description": "Staging zone must not be auto-registered by default",
+      "applies_when": {
+        "zone": "staging"
+      }
+    },
+    {
+      "gate_id": "DIR-G1",
+      "scope": "governed-only",
+      "entity_kind": "directory",
+      "severity": "BLOCK",
+      "defect_code": "DIR-G1",
+      "description": "Governed directory must contain .dir_id",
+      "applies_when": {
+        "zone": "governed"
+      }
+    },
+    {
+      "gate_id": "DIR-G2",
+      "scope": "governed-only",
+      "entity_kind": "directory",
+      "severity": "BLOCK",
+      "defect_code": "DIR-G2",
+      "description": ".dir_id must match schema and contain 20-digit dir_id",
+      "applies_when": {
+        "zone": "governed"
+      }
+    },
+    {
+      "gate_id": "DIR-G3",
+      "scope": "governed-only",
+      "entity_kind": "directory",
+      "severity": "BLOCK",
+      "defect_code": "DIR-G3",
+      "description": "dir_id must be unique across registry",
+      "applies_when": {
+        "zone": "governed"
+      }
+    },
+    {
+      "gate_id": "DIR-G4",
+      "scope": "governed-only",
+      "entity_kind": "directory",
+      "severity": "BLOCK",
+      "defect_code": "DIR-G4",
+      "description": "Directory record must exist in registry",
+      "applies_when": {
+        "zone": "governed"
+      }
+    },
+    {
+      "gate_id": "DIR-G5",
+      "scope": "governed-only",
+      "entity_kind": "directory",
+      "severity": "BLOCK",
+      "defect_code": "DIR-G5",
+      "description": "parent_dir_id must match actual parent anchor for depth >= 2",
+      "applies_when": {
+        "zone": "governed"
+      }
+    },
+    {
+      "gate_id": "FILE-G1",
+      "scope": "governed-only",
+      "entity_kind": "file",
+      "severity": "BLOCK",
+      "defect_code": "FILE-G1",
+      "description": "Governed file must have a valid ID prefix",
+      "applies_when": {
+        "zone": "governed"
+      }
+    },
+    {
+      "gate_id": "FILE-G2",
+      "scope": "governed-only",
+      "entity_kind": "file",
+      "severity": "BLOCK",
+      "defect_code": "FILE-G2",
+      "description": "Python files must use P_ prefix before the 20-digit file_id",
+      "applies_when": {
+        "zone": "governed"
+      }
+    },
+    {
+      "gate_id": "FILE-G3",
+      "scope": "governed-only",
+      "entity_kind": "file",
+      "severity": "BLOCK",
+      "defect_code": "FILE-G3",
+      "description": "file_id must be unique across registry",
+      "applies_when": {
+        "zone": "governed"
+      }
+    },
+    {
+      "gate_id": "FILE-G4",
+      "scope": "governed-only",
+      "entity_kind": "file",
+      "severity": "BLOCK",
+      "defect_code": "FILE-G4",
+      "description": "File record must exist in registry",
+      "applies_when": {
+        "zone": "governed"
+      }
+    },
+    {
+      "gate_id": "FILE-G5",
+      "scope": "governed-only",
+      "entity_kind": "file",
+      "severity": "BLOCK",
+      "defect_code": "FILE-G5",
+      "description": "owning_dir_id must be present and match containing directory",
+      "applies_when": {
+        "zone": "governed"
+      }
+    }
+  ]
+}

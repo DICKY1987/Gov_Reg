@@ -1,0 +1,194 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Gov_Reg File Manifest Schema v1.0",
+  "description": "Reusable file manifest for tracking repository assets with auto-derived and curated metadata",
+  "type": "object",
+  "required": ["manifest_metadata", "files"],
+  "properties": {
+    "manifest_metadata": {
+      "type": "object",
+      "required": ["schema_version", "scan_timestamp", "scanner_version", "root_path", "scan_host", "collision_handling"],
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "1.0.0",
+          "description": "Manifest schema version"
+        },
+        "scan_timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of scan (UTC)"
+        },
+        "scanner_version": {
+          "type": "string",
+          "description": "Version of the manifest generator tool"
+        },
+        "root_path": {
+          "type": "string",
+          "description": "Absolute path to scan root"
+        },
+        "scan_host": {
+          "type": "string",
+          "description": "Hostname where scan was performed"
+        },
+        "ignore_patterns": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Patterns excluded from scan (e.g., '.git', '__pycache__')"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "file_path": {"type": "string"},
+              "error_type": {"type": "string"},
+              "error_message": {"type": "string"}
+            }
+          },
+          "description": "Files that failed to process during scan"
+        },
+        "collision_handling": {
+          "type": "string",
+          "enum": ["error", "suffix", "skip"],
+          "description": "How file_id collisions were handled: error=abort, suffix=append _dup2/_dup3 to file_id in manifest, skip=omit duplicates. NOTE: Physical files are never renamed on disk."
+        }
+      }
+    },
+    "files": {
+      "type": "object",
+      "description": "Map of file_id to file metadata",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["file_id", "relative_path", "filename", "derivation_method", "file_size_bytes", "file_type", "modified_timestamp"],
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "REQUIRED: Stable unique identifier (path-based hash or extracted from filename prefix)",
+            "pattern": "^[0-9A-Za-z_-]+$"
+          },
+          "relative_path": {
+            "type": "string",
+            "description": "REQUIRED (AUTO): Path relative to root_path"
+          },
+          "absolute_path": {
+            "type": "string",
+            "description": "OPTIONAL (AUTO): Full filesystem path"
+          },
+          "filename": {
+            "type": "string",
+            "description": "REQUIRED (AUTO): File name with extension"
+          },
+          "derivation_method": {
+            "type": "string",
+            "enum": ["auto", "curated", "hybrid"],
+            "description": "REQUIRED: How this entry was created (auto=fully derived, curated=manual, hybrid=mixed)"
+          },
+          "file_size_bytes": {
+            "type": "integer",
+            "description": "REQUIRED (AUTO): File size in bytes"
+          },
+          "sha256_hash": {
+            "oneOf": [
+              {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+              {"type": "null"}
+            ],
+            "description": "OPTIONAL (AUTO): SHA-256 content hash; null for files >100MB or on hash errors"
+          },
+          "file_type": {
+            "type": "string",
+            "description": "REQUIRED (AUTO): MIME type or extension-based classification"
+          },
+          "is_text": {
+            "type": "boolean",
+            "description": "OPTIONAL (AUTO): True if file is text (for line count, encoding)"
+          },
+          "encoding": {
+            "type": "string",
+            "description": "OPTIONAL (AUTO, BEST-EFFORT): Character encoding (utf-8, etc.)"
+          },
+          "line_count": {
+            "type": "integer",
+            "description": "OPTIONAL (AUTO): Line count for text files only"
+          },
+          "created_timestamp": {
+            "type": "number",
+            "description": "OPTIONAL (AUTO, BEST-EFFORT): File creation time (Unix epoch)"
+          },
+          "modified_timestamp": {
+            "type": "number",
+            "description": "REQUIRED (AUTO): Last modification time (Unix epoch)"
+          },
+          "accessed_timestamp": {
+            "type": "number",
+            "description": "OPTIONAL (AUTO, BEST-EFFORT): Last access time (often disabled on Windows)"
+          },
+          "git_info": {
+            "type": "object",
+            "description": "OPTIONAL (AUTO): Git metadata if file is in a repository",
+            "properties": {
+              "last_commit_sha": {"type": "string"},
+              "last_commit_author": {"type": "string"},
+              "last_commit_date": {"type": "string"},
+              "last_commit_message": {"type": "string"},
+              "is_tracked": {"type": "boolean"},
+              "is_modified": {"type": "boolean"}
+            }
+          },
+          "category": {
+            "type": "string",
+            "enum": ["source", "test", "config", "documentation", "schema", "script", "data", "evidence", "other"],
+            "description": "CURATED (or heuristic): Functional classification"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "deprecated", "archived", "draft", "unknown"],
+            "description": "CURATED: Lifecycle status"
+          },
+          "owner": {
+            "type": "string",
+            "description": "CURATED (or git-derived): Primary owner/maintainer"
+          },
+          "version": {
+            "type": "string",
+            "description": "CURATED: Semantic version if applicable"
+          },
+          "gate_id": {
+            "type": "string",
+            "description": "CURATED: Related governance gate identifier"
+          },
+          "phase_id": {
+            "type": "string",
+            "description": "CURATED: Related phase/milestone identifier"
+          },
+          "dependencies": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "CURATED (or static-analysis): List of file_ids this file depends on"
+          },
+          "supersedes": {
+            "type": "string",
+            "description": "CURATED: file_id of previous version this replaces"
+          },
+          "superseded_by": {
+            "type": "string",
+            "description": "CURATED: file_id of newer version that replaces this"
+          },
+          "tags": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "CURATED: Searchable keywords/labels"
+          },
+          "description": {
+            "type": "string",
+            "description": "CURATED: Human-readable purpose"
+          },
+          "notes": {
+            "type": "string",
+            "description": "CURATED: Additional free-form notes"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,199 @@
+{
+  "section_id": "sec_020_final_summary",
+  "title": "Final Summary + Completion Checklist",
+  "required": true,
+  "instructions_file": "sections/sec_020_final_summary.inst.md",
+  "final_summary": {
+    "what_was_delivered": {
+      "description": "Phase Plan {{VERSION}} with ALL Deterministic Enhancements",
+      "features_delivered": [
+        {
+          "feature": "Self-healing rules (bounded + auditable)",
+          "details": "{{N}} failure types with explicit action allowlists, max retry budgets, abort conditions"
+        },
+        {
+          "feature": "Worktree isolation (merge-safe)",
+          "details": "Base ref: {{BRANCH}}, concurrency limit: {{N}} workers, {{MERGE_STRATEGY}} strategy"
+        },
+        {
+          "feature": "Ground truth validation levels (explicit)",
+          "details": "{{N}} levels (L0-L5) with commands + evidence, per-phase requirements"
+        },
+        {
+          "feature": "Phase contracts (machine-checkable)",
+          "details": "{{N}} phases with inputs/outputs/invariants, pre/postconditions, failure modes"
+        },
+        {
+          "feature": "Enhanced validation gates (regex patterns)",
+          "details": "{{N}} gates with expect/forbid patterns, file content assertions, timeout/retry"
+        },
+        {
+          "feature": "Metrics tracking (measurable progress)",
+          "details": "{{N}} tracked metrics with quantified targets, JSONL sink, per-phase summaries"
+        },
+        {
+          "feature": "Infrastructure requirements (reproducible env)",
+          "details": "{{OS}}/{{LANGUAGE}}/{{TOOLS}} requirements, resource minimums, CI parity"
+        },
+        {
+          "feature": "NO IMPLIED BEHAVIOR constraint (enforced)",
+          "details": "All rules expressible as config + command + evidence + pass/fail"
+        },
+        {
+          "feature": "Decision ledger (full rationale)",
+          "details": "{{N}} decisions logged with context, options, rationale, validation"
+        },
+        {
+          "feature": "Risk/Unknown registers (comprehensive)",
+          "details": "{{N}} risks with mitigation/fallback/detection, {{N}} unknowns tracked"
+        }
+      ]
+    },
+    "determinism_score": {
+      "target": "0.95",
+      "estimated_achieved": "{{PERCENTAGE}}",
+      "factors": [
+        "Decision ledger: {{N}} decisions logged with rationale",
+        "Assumption ledger: {{N}} assumptions tracked with validation",
+        "File scope enforcement: Hard boundaries per phase",
+        "Ground truth levels: Mechanical pass/fail (no human judgment)",
+        "Parallel execution: DAG-scheduled (deterministic ordering)",
+        "Self-healing: Bounded retries with convergence detection",
+        "Metrics: All targets quantified"
+      ]
+    },
+    "time_analysis": {
+      "sequential_estimate_minutes": "{{N}}",
+      "parallel_estimate_minutes": "{{N}}",
+      "speedup_percentage": "{{CALCULATED}}",
+      "bottlenecks": [
+        {
+          "phase_or_group": "{{ID}}",
+          "duration_minutes": "{{N}}",
+          "reason": "{{WHY_BOTTLENECK}}"
+        }
+      ]
+    },
+    "quality_gates_summary": {
+      "total_gates": "{{N}}",
+      "passed": 0,
+      "failed": 0,
+      "pending": "{{N}}",
+      "all_gates_have": [
+        "Executable commands: YES",
+        "Expected output patterns (regex): YES",
+        "Evidence artifact paths: YES",
+        "Pass/fail conditions: YES"
+      ]
+    },
+    "next_steps": [
+      {
+        "step": "Execute {{FIRST_PHASE}}",
+        "command": "{{COMMAND}}"
+      },
+      {
+        "step": "Validate high-impact assumptions",
+        "command": "python scripts/validate_assumptions.py .state/assumptions.jsonl --impact-min=7"
+      },
+      {
+        "step": "Start parallel execution group {{N}}",
+        "command": "{{COMMAND}}"
+      },
+      {
+        "step": "Monitor metrics",
+        "command": "python scripts/monitor_metrics.py --follow"
+      }
+    ],
+    "known_limitations": [
+      {
+        "limitation": "{{LIMITATION_1}}",
+        "description": "{{DESCRIPTION}}",
+        "workaround": "{{WORKAROUND_OR_FUTURE_WORK}}"
+      }
+    ],
+    "completion_checklist": {
+      "pre_execution": [
+        {
+          "item": "All required sections completed",
+          "status": "{{PENDING|DONE}}"
+        },
+        {
+          "item": "All phases have phase contracts",
+          "status": "{{PENDING|DONE}}"
+        },
+        {
+          "item": "All validations have commands + regex",
+          "status": "{{PENDING|DONE}}"
+        },
+        {
+          "item": "All assumptions have validation methods",
+          "status": "{{PENDING|DONE}}"
+        },
+        {
+          "item": "Decision ledger has >=5 entries",
+          "status": "{{PENDING|DONE}}"
+        },
+        {
+          "item": "Risk register has >=3 entries",
+          "status": "{{PENDING|DONE}}"
+        },
+        {
+          "item": "Artifact manifest matches phase contracts",
+          "status": "{{PENDING|DONE}}"
+        },
+        {
+          "item": "No [NOT_AUTOMATABLE] without justification",
+          "status": "{{PENDING|DONE}}"
+        }
+      ],
+      "post_execution": [
+        {
+          "item": "All phases marked DONE",
+          "status": "{{PENDING|DONE}}"
+        },
+        {
+          "item": "All must-pass validations passed",
+          "status": "{{PENDING|DONE}}"
+        },
+        {
+          "item": "All artifacts present at declared locations",
+          "status": "{{PENDING|DONE}}"
+        },
+        {
+          "item": "Global DoD criteria met",
+          "status": "{{PENDING|DONE}}"
+        },
+        {
+          "item": "Determinism score >= 0.95",
+          "status": "{{PENDING|DONE}}"
+        },
+        {
+          "item": "All metrics targets met",
+          "status": "{{PENDING|DONE}}"
+        },
+        {
+          "item": "Evidence logs exist for all validations",
+          "status": "{{PENDING|DONE}}"
+        }
+      ]
+    },
+    "appendix": {
+      "a_large_snippets": {
+        "description": "Large code blocks, configs, commands",
+        "items": []
+      },
+      "b_optional_timeline": {
+        "description": "Non-binding timeline (if dates included)",
+        "warning": "These are PLANNING AIDS ONLY, not contractual constraints",
+        "items": []
+      },
+      "c_mechanical_enforcement": {
+        "description": "Schema definitions for automated validation",
+        "plan_schema_path": "schemas/plan.schema.json",
+        "phase_contract_schema_path": "schemas/phase_contract.schema.json",
+        "validation_command": "jsonschema -i {{PLAN_FILE}} schemas/plan.schema.json",
+        "expect_exit_code": 0
+      }
+    }
+  }
+}

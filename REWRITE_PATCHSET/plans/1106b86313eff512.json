@@ -1,0 +1,130 @@
+{
+  "rewrite_plan_id": "1106b86313eff512",
+  "target_file_id": null,
+  "target_relpath": "REWRITE_PATCHSET\\plans\\06e2dd73f4d516de.json",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "eb30f11013dc8ab1b43495689eb9b07c260da93d9ad2165aec0aacbb1bf619cd",
+  "operations": [
+    {
+      "ref_id": "6c6a332f66149892dce089b5b9720e32f8d7c89288e2c88be4e8a773ee8b4b16",
+      "old_value": "ID/P_01999000042260126012_validate_no_doc_id.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/ID/P_01999000042260126012_validate_no_doc_id.py",
+      "location": "line:10"
+    },
+    {
+      "ref_id": "fc2ca71dd88fca6df071a285c860960ee2eef83e77059f7ff3a9af51ade7fd98",
+      "old_value": "ID/P_01999000042260126012_validate_no_doc_id.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/ID/P_01999000042260126012_validate_no_doc_id.py",
+      "location": "line:11"
+    },
+    {
+      "ref_id": "468993deb33ae4ce533995f9047f80e9a320cbcfe072f288823a5a5bc92e7f82",
+      "old_value": "REGISTRY/scripts/update_registry_with_real_files.py",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/scripts/update_registry_with_real_files.py",
+      "location": "line:16"
+    },
+    {
+      "ref_id": "3ff16576263741ef98d4c2fa52b3132b63713341da8f5a4ba65cace8904c1054",
+      "old_value": "REGISTRY/scripts/update_registry_with_real_files.py",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/scripts/update_registry_with_real_files.py",
+      "location": "line:17"
+    },
+    {
+      "ref_id": "e6114ae1c2ecbdc85d6fffa93db1348dd33d34642598d00b8ac4bd94775ff492",
+      "old_value": "REGISTRY/01999000042260124503_governance_registry_unified.json",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/01999000042260124503_governance_registry_unified.json",
+      "location": "line:22"
+    },
+    {
+      "ref_id": "e5dec822243e979d929404135639e84a006cb61c13761ae26d17373ec175b119",
+      "old_value": "REGISTRY/01999000042260124503_governance_registry_unified.json",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/01999000042260124503_governance_registry_unified.json",
+      "location": "line:23"
+    },
+    {
+      "ref_id": "a692d8d41230715e79b9db931d50000ec410a5832c9b0cdbfa5b7d3c8364e4a3",
+      "old_value": "REGISTRY/UNIFIED_SSOT_REGISTRY_WRITE_POLICY.yaml",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/UNIFIED_SSOT_REGISTRY_WRITE_POLICY.yaml",
+      "location": "line:28"
+    },
+    {
+      "ref_id": "8e7f4f0cefed42e368113470e10019d55ed34491dd8e3e62c015ea51d6e469f9",
+      "old_value": "REGISTRY/UNIFIED_SSOT_REGISTRY_WRITE_POLICY.yaml",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/UNIFIED_SSOT_REGISTRY_WRITE_POLICY.yaml",
+      "location": "line:29"
+    },
+    {
+      "ref_id": "7db13b430ac767160d81e3cad709878a48945609d82a555323c29b708378c243",
+      "old_value": "REGISTRY/UNIFIED_SSOT_REGISTRY_DERIVATIONS.yaml",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/UNIFIED_SSOT_REGISTRY_DERIVATIONS.yaml",
+      "location": "line:34"
+    },
+    {
+      "ref_id": "bc38ef0ac030fc07d60361a7ba3a513ad9fb1d3c31bdf17eb03876d73b948744",
+      "old_value": "REGISTRY/UNIFIED_SSOT_REGISTRY_DERIVATIONS.yaml",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/UNIFIED_SSOT_REGISTRY_DERIVATIONS.yaml",
+      "location": "line:35"
+    },
+    {
+      "ref_id": "c8892bf7c09b6aa5c98bb5732d654a609ac8934a5f82e5ba0cbe3a678f32dd6e",
+      "old_value": "REGISTRY/01999000042260124012_governance_registry_schema.v3.json",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/01999000042260124012_governance_registry_schema.v3.json",
+      "location": "line:40"
+    },
+    {
+      "ref_id": "b85ffe6893254dbde3d1cf57d25cf8c75ad541364001ca1dfcdaa46315a1fdd2",
+      "old_value": "REGISTRY/01999000042260124012_governance_registry_schema.v3.json",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/01999000042260124012_governance_registry_schema.v3.json",
+      "location": "line:41"
+    },
+    {
+      "ref_id": "3a3f12612d41574adda162fb3e9c30321274093eda2e2cf642e534fcb0f4f19c",
+      "old_value": "REGISTRY/2026012816000001_COLUMN_DICTIONARY.json",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/2026012816000001_COLUMN_DICTIONARY.json",
+      "location": "line:46"
+    },
+    {
+      "ref_id": "9feaa663d98a1189659f64ff61a6f978e09d2f145ef8ea5c3ec20ffda7663e18",
+      "old_value": "REGISTRY/2026012816000001_COLUMN_DICTIONARY.json",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/2026012816000001_COLUMN_DICTIONARY.json",
+      "location": "line:47"
+    },
+    {
+      "ref_id": "aa37bc72fb7a91367cfe8c9b8a2b02c6d13b69e07eaafc93e4535e4aa050c361",
+      "old_value": "scripts/P_01999000042260124547_validate_schema.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124547_validate_schema.py",
+      "location": "line:52"
+    },
+    {
+      "ref_id": "7b156194771ccc0fa1ce5edc9f3b00ed6e7fef2dbf3e7d4a0a14c104d1690751",
+      "old_value": "scripts/P_01999000042260124547_validate_schema.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124547_validate_schema.py",
+      "location": "line:53"
+    },
+    {
+      "ref_id": "0e96fa3ae69a2e14ac163e982ff6e9620082cdf79a2ba5e0267caba1c3f987a6",
+      "old_value": "validators/validate_sec_021.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/validators/validate_sec_021.py",
+      "location": "line:58"
+    },
+    {
+      "ref_id": "4f57680fcde5d6d230b848d70d7f4f9eed7c7283e068261171f5a26eda368a36",
+      "old_value": "validators/validate_sec_021.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/validators/validate_sec_021.py",
+      "location": "line:59"
+    },
+    {
+      "ref_id": "c49cd548c86e2dd04527151f714467a244dea07bb6c66df2563fab9559d8ff12",
+      "old_value": "validators/validate_derivation.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/validators/validate_derivation.py",
+      "location": "line:64"
+    },
+    {
+      "ref_id": "af56c4156b38e392dede4eca611178a50bd422a729acfcf87484a4a35be72798",
+      "old_value": "validators/validate_derivation.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/validators/validate_derivation.py",
+      "location": "line:65"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\1106b86313eff512.diff"
+}

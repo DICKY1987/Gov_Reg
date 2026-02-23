@@ -1,0 +1,44 @@
+{
+  "gap_id": "GAP-017",
+  "gap_name": "Access Control Audit Trail",
+  "verification_timestamp": "2026-02-12T17:19:04.141059+00:00",
+  "status": "VERIFIED",
+  "checks": [
+    {
+      "check_id": "CHECK-017-001",
+      "description": "Access audit log exists",
+      "status": "PASS",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\.state\\access_audit.jsonl",
+        "exists": true,
+        "sha256": "D8AA7F5BCBF7B10C944297FDC02FFEC56BA4EBCD1A07E9F740B263388EE9C56A"
+      }
+    },
+    {
+      "check_id": "CHECK-017-002",
+      "description": "Genesis event with valid chain hash",
+      "status": "PASS",
+      "evidence": {
+        "genesis_event_id": "ACCESS-00000000-0000",
+        "genesis_hash": "CECA2D5FA9FFFB5E29D217571C0D9E911D990F9141C4DD8CA0B562DBC7AED6A0",
+        "previous_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+        "hash_verified": true
+      }
+    },
+    {
+      "check_id": "CHECK-017-003",
+      "description": "Approval registry exists (GAP #15 integration)",
+      "status": "PASS",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\.state\\approvals.jsonl",
+        "exists": true,
+        "sha256": "B66ECC494C17303A5F6E7F9FDA6A9094431426918E7FAB5E4471536C519A2A17"
+      }
+    }
+  ],
+  "cryptographic_proof": {
+    "algorithm": "SHA256",
+    "hash": "60A9A3738756EA618B209476129E41B259C4213E676B054DA15210193AEC3652",
+    "timestamp": "2026-02-12T17:19:04.141059+00:00"
+  }
+}

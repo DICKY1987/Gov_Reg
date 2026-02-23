@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://govreg.local/schemas/plan_delta_request.schema.json",
+  "title": "Plan Delta Request Schema",
+  "description": "Structured request for adding new work discovered during planning",
+  "type": "object",
+  "required": [
+    "request_id",
+    "source_workstream",
+    "reason",
+    "evidence",
+    "proposed_new_nodes",
+    "blocking",
+    "budget_impact",
+    "cycle_check_status"
+  ],
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "pattern": "^DELTA_[0-9]{8}T[0-9]{6}Z_[a-f0-9]{8}$"
+    },
+    "source_workstream": {
+      "type": "string",
+      "description": "Workstream requesting the addition"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Justification for new work"
+    },
+    "evidence": {
+      "type": "string",
+      "description": "Evidence supporting the need"
+    },
+    "proposed_new_nodes": {
+      "type": "array",
+      "description": "New steps or workstreams to add",
+      "items": {
+        "type": "object",
+        "required": ["node_id", "node_type", "description"],
+        "properties": {
+          "node_id": {"type": "string"},
+          "node_type": {"type": "string", "enum": ["STEP", "WORKSTREAM", "GATE"]},
+          "description": {"type": "string"},
+          "dependencies": {"type": "array", "items": {"type": "string"}}
+        }
+      },
+      "minItems": 1
+    },
+    "blocking": {
+      "type": "boolean",
+      "description": "Whether this blocks existing work"
+    },
+    "budget_impact": {
+      "type": "object",
+      "required": ["time_impact_hours", "cost_impact_usd"],
+      "properties": {
+        "time_impact_hours": {"type": "number", "minimum": 0},
+        "cost_impact_usd": {"type": "number", "minimum": 0}
+      }
+    },
+    "cycle_check_status": {
+      "type": "string",
+      "enum": ["NO_CYCLE", "CYCLE_DETECTED", "NOT_CHECKED"],
+      "description": "Result of dependency cycle check"
+    },
+    "approval_status": {
+      "type": "string",
+      "enum": ["PENDING", "APPROVED", "REJECTED"]
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "gate_id": "GATE-001",
+  "gate_name": "Plan structure validation",
+  "validated_at": "2026-02-01T07:39:00.148494Z",
+  "validator_version": "1.0.0",
+  "plan_file": "C:\\Users\\richg\\AppData\\Local\\Temp\\test_plan.json",
+  "validation_result": {
+    "status": "invalid",
+    "errors_count": 1,
+    "warnings_count": 0,
+    "errors": [
+      {
+        "error_code": "FILE_NOT_FOUND",
+        "error_message": "Plan file not found: C:\\Users\\richg\\AppData\\Local\\Temp\\test_plan.json",
+        "severity": "critical"
+      }
+    ],
+    "warnings": []
+  },
+  "statistics": {
+    "phases_count": 0,
+    "gates_count": 0
+  }
+}

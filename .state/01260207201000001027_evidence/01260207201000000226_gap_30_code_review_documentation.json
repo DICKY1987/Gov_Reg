@@ -1,0 +1,33 @@
+{
+  "gap_id": "GAP-030",
+  "gap_name": "Code Review Documentation",
+  "verification_timestamp": "2026-02-12T17:19:05.531333+00:00",
+  "status": "VERIFIED",
+  "checks": [
+    {
+      "check_id": "CHECK-030-001",
+      "description": "Code reviews registry initialized",
+      "status": "PASS",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\.state\\code_reviews.jsonl",
+        "exists": true,
+        "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+      }
+    },
+    {
+      "check_id": "CHECK-030-002",
+      "description": "Code review template exists",
+      "status": "PASS",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\templates\\code_review_record.json",
+        "exists": true,
+        "sha256": "2250EAC6FF46E8B638278A90F5CD4E37839AA8BD665396793AF31744BB31B3EB"
+      }
+    }
+  ],
+  "cryptographic_proof": {
+    "algorithm": "SHA256",
+    "hash": "284CB1F19F062C29B6EC57CF3AB30E9590CFABB8E8BC916FD226B4BDCF1BE693",
+    "timestamp": "2026-02-12T17:19:05.531333+00:00"
+  }
+}

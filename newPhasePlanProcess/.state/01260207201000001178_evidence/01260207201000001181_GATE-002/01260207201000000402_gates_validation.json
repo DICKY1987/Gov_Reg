@@ -1,0 +1,26 @@
+{
+  "gate_id": "GATE-002",
+  "gate_name": "Validation gate completeness check",
+  "validated_at": "2026-02-01T08:20:02.324810Z",
+  "validator_version": "1.0.0",
+  "plan_file": "test_plan.json",
+  "validation_result": {
+    "status": "invalid",
+    "errors_count": 1,
+    "warnings_count": 0,
+    "errors": [
+      {
+        "error_code": "FILE_NOT_FOUND",
+        "error_message": "Plan file not found: test_plan.json",
+        "severity": "critical"
+      }
+    ],
+    "warnings": []
+  },
+  "statistics": {
+    "total_gates": 0,
+    "gates_with_commands": 0,
+    "gates_with_patterns": 0,
+    "gates_with_evidence": 0
+  }
+}

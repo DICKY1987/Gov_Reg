@@ -1,0 +1,1811 @@
+{
+  "capabilities": [
+    {
+      "candidate_files": [
+        "scripts/P_01999000042260124015_govreg.py"
+      ],
+      "capability_id": "CAP-CLI-REPORT",
+      "domain": "cli",
+      "expected_artifacts": [],
+      "name": "Report",
+      "source_evidence": [
+        {
+          "detail": "argparse subcommand 'report'",
+          "evidence_type": "ast",
+          "line_number": 97,
+          "path": "scripts/P_01999000042260124015_govreg.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "scripts/P_01999000042260124015_govreg.py"
+      ],
+      "capability_id": "CAP-CLI-SCAN",
+      "domain": "cli",
+      "expected_artifacts": [],
+      "name": "Scan",
+      "source_evidence": [
+        {
+          "detail": "argparse subcommand 'scan'",
+          "evidence_type": "ast",
+          "line_number": 71,
+          "path": "scripts/P_01999000042260124015_govreg.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "scripts/P_01999000042260124015_govreg.py"
+      ],
+      "capability_id": "CAP-CLI-VALIDATE",
+      "domain": "cli",
+      "expected_artifacts": [],
+      "name": "Validate",
+      "source_evidence": [
+        {
+          "detail": "argparse subcommand 'validate'",
+          "evidence_type": "ast",
+          "line_number": 85,
+          "path": "scripts/P_01999000042260124015_govreg.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000245_test_orchestration.py"
+      ],
+      "capability_id": "CAP-GATE-000-GATE_000",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Gate 000",
+      "source_evidence": [
+        {
+          "detail": "GATE-000",
+          "evidence_type": "string_match",
+          "line_number": 53,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000245_test_orchestration.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000258_validate_plan_structure.py"
+      ],
+      "capability_id": "CAP-GATE-000-STRUCTURAL_CONSISTENCY_PRE_CHECK",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Structural consistency pre-check.",
+      "source_evidence": [
+        {
+          "detail": "GATE-000: Structural consistency pre-check.",
+          "evidence_type": "string_match",
+          "line_number": 3,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000258_validate_plan_structure.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000263_validate_structure.py"
+      ],
+      "capability_id": "CAP-GATE-001-GATE_001",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Gate 001",
+      "source_evidence": [
+        {
+          "detail": "GATE-001",
+          "evidence_type": "string_match",
+          "line_number": 15,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000263_validate_structure.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000263_validate_structure.py"
+      ],
+      "capability_id": "CAP-GATE-001-PLAN_STRUCTURE_VALIDATION",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Plan Structure Validation\")",
+      "source_evidence": [
+        {
+          "detail": "GATE-001: Plan Structure Validation\")",
+          "evidence_type": "string_match",
+          "line_number": 483,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000263_validate_structure.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000263_validate_structure.py"
+      ],
+      "capability_id": "CAP-GATE-001-PLAN_STRUCTURE_VALIDATION_SCRIPT",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Plan Structure Validation Script",
+      "source_evidence": [
+        {
+          "detail": "GATE-001: Plan Structure Validation Script",
+          "evidence_type": "string_match",
+          "line_number": 3,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000263_validate_structure.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "scripts/generate_migration_guide.py"
+      ],
+      "capability_id": "CAP-GATE-001-SCHEMA_COMPLIANCE",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Schema Compliance",
+      "source_evidence": [
+        {
+          "detail": "GATE-001: Schema Compliance",
+          "evidence_type": "string_match",
+          "line_number": 158,
+          "path": "scripts/generate_migration_guide.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000263_validate_structure.py"
+      ],
+      "capability_id": "CAP-GATE-001-VALIDATE_PLAN_STRUCTURE",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Validate plan structure'",
+      "source_evidence": [
+        {
+          "detail": "GATE-001: Validate plan structure'",
+          "evidence_type": "string_match",
+          "line_number": 438,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000263_validate_structure.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "scripts/generate_migration_guide.py"
+      ],
+      "capability_id": "CAP-GATE-002-DATA_INTEGRITY",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Data Integrity",
+      "source_evidence": [
+        {
+          "detail": "GATE-002: Data Integrity",
+          "evidence_type": "string_match",
+          "line_number": 162,
+          "path": "scripts/generate_migration_guide.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000253_validate_gates.py"
+      ],
+      "capability_id": "CAP-GATE-002-GATE_002",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Gate 002",
+      "source_evidence": [
+        {
+          "detail": "GATE-002",
+          "evidence_type": "string_match",
+          "line_number": 15,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000253_validate_gates.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000253_validate_gates.py"
+      ],
+      "capability_id": "CAP-GATE-002-VALIDATE_GATE_DEFINITIONS",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Validate gate definitions')",
+      "source_evidence": [
+        {
+          "detail": "GATE-002: Validate gate definitions')",
+          "evidence_type": "string_match",
+          "line_number": 300,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000253_validate_gates.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000253_validate_gates.py"
+      ],
+      "capability_id": "CAP-GATE-002-VALIDATION_GATE_COMPLETENESS_CHECK",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Validation Gate Completeness Check",
+      "source_evidence": [
+        {
+          "detail": "GATE-002: Validation Gate Completeness Check",
+          "evidence_type": "string_match",
+          "line_number": 3,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000253_validate_gates.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "scripts/generate_migration_guide.py"
+      ],
+      "capability_id": "CAP-GATE-003-BACKWARD_COMPATIBILITY",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Backward Compatibility",
+      "source_evidence": [
+        {
+          "detail": "GATE-003: Backward Compatibility",
+          "evidence_type": "string_match",
+          "line_number": 167,
+          "path": "scripts/generate_migration_guide.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000259_validate_rollback_completeness.py"
+      ],
+      "capability_id": "CAP-GATE-003-GATE_003",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Gate 003",
+      "source_evidence": [
+        {
+          "detail": "GATE-003",
+          "evidence_type": "string_match",
+          "line_number": 72,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000259_validate_rollback_completeness.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000262_validate_step_contracts.py"
+      ],
+      "capability_id": "CAP-GATE-003-STEP_CONTRACTS_VALIDATION",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Step Contracts Validation",
+      "source_evidence": [
+        {
+          "detail": "GATE-003: Step Contracts Validation",
+          "evidence_type": "string_match",
+          "line_number": 3,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000262_validate_step_contracts.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000262_validate_step_contracts.py"
+      ],
+      "capability_id": "CAP-GATE-003-VALIDATE_STEP_CONTRACTS_IN_V3_0_0_PLAN",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Validate step contracts in v3.0.0 plan\"",
+      "source_evidence": [
+        {
+          "detail": "GATE-003: Validate step contracts in v3.0.0 plan\"",
+          "evidence_type": "string_match",
+          "line_number": 641,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000262_validate_step_contracts.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000248_validate_assumptions.py"
+      ],
+      "capability_id": "CAP-GATE-004-ASSUMPTIONS_VALIDATION",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Assumptions Validation",
+      "source_evidence": [
+        {
+          "detail": "GATE-004: Assumptions Validation",
+          "evidence_type": "string_match",
+          "line_number": 3,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000248_validate_assumptions.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000248_validate_assumptions.py"
+      ],
+      "capability_id": "CAP-GATE-004-GATE_004",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Gate 004",
+      "source_evidence": [
+        {
+          "detail": "GATE-004",
+          "evidence_type": "string_match",
+          "line_number": 233,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000248_validate_assumptions.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "scripts/generate_migration_guide.py"
+      ],
+      "capability_id": "CAP-GATE-004-PERFORMANCE",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Performance",
+      "source_evidence": [
+        {
+          "detail": "GATE-004: Performance",
+          "evidence_type": "string_match",
+          "line_number": 171,
+          "path": "scripts/generate_migration_guide.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000248_validate_assumptions.py"
+      ],
+      "capability_id": "CAP-GATE-004-VALIDATE_ASSUMPTIONS_IN_V3_0_0_PLAN",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Validate assumptions in v3.0.0 plan\"",
+      "source_evidence": [
+        {
+          "detail": "GATE-004: Validate assumptions in v3.0.0 plan\"",
+          "evidence_type": "string_match",
+          "line_number": 250,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000248_validate_assumptions.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000257_validate_planning_artifacts.py"
+      ],
+      "capability_id": "CAP-GATE-005-GATE_005",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Gate 005",
+      "source_evidence": [
+        {
+          "detail": "GATE-005",
+          "evidence_type": "string_match",
+          "line_number": 101,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000257_validate_planning_artifacts.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000257_validate_planning_artifacts.py"
+      ],
+      "capability_id": "CAP-GATE-005-PLANNING_ARTIFACTS_VALIDATION",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Planning Artifacts Validation",
+      "source_evidence": [
+        {
+          "detail": "GATE-005: Planning Artifacts Validation",
+          "evidence_type": "string_match",
+          "line_number": 3,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000257_validate_planning_artifacts.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000257_validate_planning_artifacts.py"
+      ],
+      "capability_id": "CAP-GATE-005-VALIDATE_PLANNING_ARTIFACTS",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Validate planning artifacts')",
+      "source_evidence": [
+        {
+          "detail": "GATE-005: Validate planning artifacts')",
+          "evidence_type": "string_match",
+          "line_number": 120,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000257_validate_planning_artifacts.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000250_validate_automation_spec.py"
+      ],
+      "capability_id": "CAP-GATE-006-AUTOMATION_SPECIFICATION_VALIDATION",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Automation Specification Validation",
+      "source_evidence": [
+        {
+          "detail": "GATE-006: Automation Specification Validation",
+          "evidence_type": "string_match",
+          "line_number": 3,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000250_validate_automation_spec.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000250_validate_automation_spec.py"
+      ],
+      "capability_id": "CAP-GATE-006-GATE_006",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Gate 006",
+      "source_evidence": [
+        {
+          "detail": "GATE-006",
+          "evidence_type": "string_match",
+          "line_number": 104,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000250_validate_automation_spec.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000250_validate_automation_spec.py"
+      ],
+      "capability_id": "CAP-GATE-006-VALIDATE_AUTOMATION_SPEC",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Validate automation spec')",
+      "source_evidence": [
+        {
+          "detail": "GATE-006: Validate automation spec')",
+          "evidence_type": "string_match",
+          "line_number": 123,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000250_validate_automation_spec.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000226_build_automation_index.py"
+      ],
+      "capability_id": "CAP-GATE-007-BUILD_AUTOMATION_INDEX",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Build Automation Index",
+      "source_evidence": [
+        {
+          "detail": "GATE-007: Build Automation Index",
+          "evidence_type": "string_match",
+          "line_number": 3,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000226_build_automation_index.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000226_build_automation_index.py"
+      ],
+      "capability_id": "CAP-GATE-007-GATE_007",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Gate 007",
+      "source_evidence": [
+        {
+          "detail": "GATE-007",
+          "evidence_type": "string_match",
+          "line_number": 96,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000226_build_automation_index.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000237_generate_automation_diagrams.py"
+      ],
+      "capability_id": "CAP-GATE-008-GATE_008",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Gate 008",
+      "source_evidence": [
+        {
+          "detail": "GATE-008",
+          "evidence_type": "string_match",
+          "line_number": 104,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000237_generate_automation_diagrams.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000237_generate_automation_diagrams.py"
+      ],
+      "capability_id": "CAP-GATE-008-GENERATE_AUTOMATION_DIAGRAMS",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Generate Automation Diagrams",
+      "source_evidence": [
+        {
+          "detail": "GATE-008: Generate Automation Diagrams",
+          "evidence_type": "string_match",
+          "line_number": 3,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000237_generate_automation_diagrams.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000261_validate_spine_coverage_map.py"
+      ],
+      "capability_id": "CAP-GATE-009-GATE_009",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Gate 009",
+      "source_evidence": [
+        {
+          "detail": "GATE-009",
+          "evidence_type": "string_match",
+          "line_number": 98,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000261_validate_spine_coverage_map.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000261_validate_spine_coverage_map.py"
+      ],
+      "capability_id": "CAP-GATE-009-SPINE_COVERAGE_VALIDATION",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Spine Coverage Validation",
+      "source_evidence": [
+        {
+          "detail": "GATE-009: Spine Coverage Validation",
+          "evidence_type": "string_match",
+          "line_number": 3,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000261_validate_spine_coverage_map.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000261_validate_spine_coverage_map.py"
+      ],
+      "capability_id": "CAP-GATE-009-VALIDATE_SPINE_COVERAGE",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Validate spine coverage')",
+      "source_evidence": [
+        {
+          "detail": "GATE-009: Validate spine coverage')",
+          "evidence_type": "string_match",
+          "line_number": 120,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000261_validate_spine_coverage_map.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000265_validate_wiring_proof.py"
+      ],
+      "capability_id": "CAP-GATE-010-GATE_010",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Gate 010",
+      "source_evidence": [
+        {
+          "detail": "GATE-010",
+          "evidence_type": "string_match",
+          "line_number": 32,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000265_validate_wiring_proof.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000265_validate_wiring_proof.py"
+      ],
+      "capability_id": "CAP-GATE-010-WIRING_PROOF_VALIDATION_MASTER_END_TO_END_WIRING_VALIDATION",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Wiring Proof Validation - Master end-to-end wiring validation\"\"\"",
+      "source_evidence": [
+        {
+          "detail": "GATE-010: Wiring Proof Validation - Master end-to-end wiring validation\"\"\"",
+          "evidence_type": "string_match",
+          "line_number": 2,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000265_validate_wiring_proof.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000247_validate_artifact_registry.py"
+      ],
+      "capability_id": "CAP-GATE-011-ARTIFACT_REGISTRY_VALIDATION_VALIDATES_ARTIFACT_PRODUCER_CONSUMER_TRACKING",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Artifact Registry Validation - Validates artifact producer/consumer tracking\"\"\"",
+      "source_evidence": [
+        {
+          "detail": "GATE-011: Artifact Registry Validation - Validates artifact producer/consumer tracking\"\"\"",
+          "evidence_type": "string_match",
+          "line_number": 2,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000247_validate_artifact_registry.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000247_validate_artifact_registry.py"
+      ],
+      "capability_id": "CAP-GATE-011-GATE_011",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Gate 011",
+      "source_evidence": [
+        {
+          "detail": "GATE-011",
+          "evidence_type": "string_match",
+          "line_number": 35,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000247_validate_artifact_registry.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/wiring/P_01260207233100000273_audit_failure_modes.py"
+      ],
+      "capability_id": "CAP-GATE-012-FAILURE_MODE_AUDIT_COMPREHENSIVE_FAILURE_MODE_AUDIT",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Failure Mode Audit - Comprehensive failure mode audit\"\"\"",
+      "source_evidence": [
+        {
+          "detail": "GATE-012: Failure Mode Audit - Comprehensive failure mode audit\"\"\"",
+          "evidence_type": "string_match",
+          "line_number": 2,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/wiring/P_01260207233100000273_audit_failure_modes.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/wiring/P_01260207233100000273_audit_failure_modes.py"
+      ],
+      "capability_id": "CAP-GATE-012-GATE_012",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Gate 012",
+      "source_evidence": [
+        {
+          "detail": "GATE-012",
+          "evidence_type": "string_match",
+          "line_number": 28,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/wiring/P_01260207233100000273_audit_failure_modes.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/wiring/P_01260207233100000280_run_all_e2e_proofs.py"
+      ],
+      "capability_id": "CAP-GATE-013-GATE_013",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Gate 013",
+      "source_evidence": [
+        {
+          "detail": "GATE-013",
+          "evidence_type": "string_match",
+          "line_number": 11,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/wiring/P_01260207233100000280_run_all_e2e_proofs.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/wiring/P_01260207233100000280_run_all_e2e_proofs.py"
+      ],
+      "capability_id": "CAP-GATE-013-RUN_ALL_E2E_PROOFS_FINAL_EXECUTION_OF_ALL_E2E_PROOFS",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Run All E2E Proofs - Final execution of all E2E proofs\"\"\"",
+      "source_evidence": [
+        {
+          "detail": "GATE-013: Run All E2E Proofs - Final execution of all E2E proofs\"\"\"",
+          "evidence_type": "string_match",
+          "line_number": 2,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/wiring/P_01260207233100000280_run_all_e2e_proofs.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000246_validate_artifact_closure.py"
+      ],
+      "capability_id": "CAP-GATE-014-ARTIFACT_CLOSURE_VALIDATION",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Artifact Closure Validation",
+      "source_evidence": [
+        {
+          "detail": "GATE-014: Artifact Closure Validation",
+          "evidence_type": "string_match",
+          "line_number": 3,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000246_validate_artifact_closure.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000246_validate_artifact_closure.py"
+      ],
+      "capability_id": "CAP-GATE-014-GATE_014",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Gate 014",
+      "source_evidence": [
+        {
+          "detail": "GATE-014",
+          "evidence_type": "string_match",
+          "line_number": 220,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000246_validate_artifact_closure.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000246_validate_artifact_closure.py"
+      ],
+      "capability_id": "CAP-GATE-014-VALIDATE_ARTIFACT_CLOSURE_IN_V3_0_0_PLAN",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Validate artifact closure in v3.0.0 plan\"",
+      "source_evidence": [
+        {
+          "detail": "GATE-014: Validate artifact closure in v3.0.0 plan\"",
+          "evidence_type": "string_match",
+          "line_number": 236,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000246_validate_artifact_closure.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000259_validate_rollback_completeness.py"
+      ],
+      "capability_id": "CAP-GATE-015-GATE_015",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Gate 015",
+      "source_evidence": [
+        {
+          "detail": "GATE-015",
+          "evidence_type": "string_match",
+          "line_number": 249,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000259_validate_rollback_completeness.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000259_validate_rollback_completeness.py"
+      ],
+      "capability_id": "CAP-GATE-015-ROLLBACK_COMPLETENESS_VALIDATION",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Rollback Completeness Validation",
+      "source_evidence": [
+        {
+          "detail": "GATE-015: Rollback Completeness Validation",
+          "evidence_type": "string_match",
+          "line_number": 3,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000259_validate_rollback_completeness.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000259_validate_rollback_completeness.py"
+      ],
+      "capability_id": "CAP-GATE-015-VALIDATE_ROLLBACK_COMPLETENESS_IN_V3_0_0_PLAN",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Validate rollback completeness in v3.0.0 plan\"",
+      "source_evidence": [
+        {
+          "detail": "GATE-015: Validate rollback completeness in v3.0.0 plan\"",
+          "evidence_type": "string_match",
+          "line_number": 265,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000259_validate_rollback_completeness.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000264_validate_verification_completeness.py"
+      ],
+      "capability_id": "CAP-GATE-016-GATE_016",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Gate 016",
+      "source_evidence": [
+        {
+          "detail": "GATE-016",
+          "evidence_type": "string_match",
+          "line_number": 290,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000264_validate_verification_completeness.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000264_validate_verification_completeness.py"
+      ],
+      "capability_id": "CAP-GATE-016-VALIDATE_VERIFICATION_COMPLETENESS_IN_V3_0_0_PLAN",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Validate verification completeness in v3.0.0 plan\"",
+      "source_evidence": [
+        {
+          "detail": "GATE-016: Validate verification completeness in v3.0.0 plan\"",
+          "evidence_type": "string_match",
+          "line_number": 306,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000264_validate_verification_completeness.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000264_validate_verification_completeness.py"
+      ],
+      "capability_id": "CAP-GATE-016-VERIFICATION_COMPLETENESS_VALIDATION",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Verification Completeness Validation",
+      "source_evidence": [
+        {
+          "detail": "GATE-016: Verification Completeness Validation",
+          "evidence_type": "string_match",
+          "line_number": 3,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000264_validate_verification_completeness.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000260_validate_single_source_of_truth.py"
+      ],
+      "capability_id": "CAP-GATE-017-GATE_017",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Gate 017",
+      "source_evidence": [
+        {
+          "detail": "GATE-017",
+          "evidence_type": "string_match",
+          "line_number": 289,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000260_validate_single_source_of_truth.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000260_validate_single_source_of_truth.py"
+      ],
+      "capability_id": "CAP-GATE-017-SINGLE_SOURCE_OF_TRUTH_SSOT_VALIDATION",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Single Source of Truth (SSOT) Validation",
+      "source_evidence": [
+        {
+          "detail": "GATE-017: Single Source of Truth (SSOT) Validation",
+          "evidence_type": "string_match",
+          "line_number": 3,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000260_validate_single_source_of_truth.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000260_validate_single_source_of_truth.py"
+      ],
+      "capability_id": "CAP-GATE-017-VALIDATE_SINGLE_SOURCE_OF_TRUTH_IN_V3_0_0_PLAN",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Validate single source of truth in v3.0.0 plan\"",
+      "source_evidence": [
+        {
+          "detail": "GATE-017: Validate single source of truth in v3.0.0 plan\"",
+          "evidence_type": "string_match",
+          "line_number": 305,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000260_validate_single_source_of_truth.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "OLD_MD_DOCUMENTS_FOR_REVIEW/PRMNT DOCS/ci_gate.py"
+      ],
+      "capability_id": "CAP-GATE-109-GATE_109",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Gate 109",
+      "source_evidence": [
+        {
+          "detail": "GATE-109",
+          "evidence_type": "string_match",
+          "line_number": 11,
+          "path": "OLD_MD_DOCUMENTS_FOR_REVIEW/PRMNT DOCS/ci_gate.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000249_validate_automation_audit.py"
+      ],
+      "capability_id": "CAP-GATE-998-AUTOMATION_AUDIT_AUDITS_AUTOMATION_FOR_COMPLIANCE",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Automation Audit - Audits automation for compliance\"\"\"",
+      "source_evidence": [
+        {
+          "detail": "GATE-998: Automation Audit - Audits automation for compliance\"\"\"",
+          "evidence_type": "string_match",
+          "line_number": 2,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000249_validate_automation_audit.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000249_validate_automation_audit.py"
+      ],
+      "capability_id": "CAP-GATE-998-GATE_998",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Gate 998",
+      "source_evidence": [
+        {
+          "detail": "GATE-998",
+          "evidence_type": "string_match",
+          "line_number": 26,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000249_validate_automation_audit.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000254_validate_goal_reconciliation.py"
+      ],
+      "capability_id": "CAP-GATE-999-GATE_999",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Gate 999",
+      "source_evidence": [
+        {
+          "detail": "GATE-999",
+          "evidence_type": "string_match",
+          "line_number": 22,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000254_validate_goal_reconciliation.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000254_validate_goal_reconciliation.py"
+      ],
+      "capability_id": "CAP-GATE-999-GOAL_RECONCILIATION_VALIDATES_GOAL_DECOMPOSITION_AND_RECONCILIATION",
+      "domain": "gate",
+      "expected_artifacts": [],
+      "name": "Goal Reconciliation - Validates goal decomposition and reconciliation\"\"\"",
+      "source_evidence": [
+        {
+          "detail": "GATE-999: Goal Reconciliation - Validates goal decomposition and reconciliation\"\"\"",
+          "evidence_type": "string_match",
+          "line_number": 2,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000254_validate_goal_reconciliation.py"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "schemas/01260207233100000467_column_dictionary_schema.json"
+      ],
+      "capability_id": "CAP-SCHEMA-COLUMN_DICTIONARY_SCHEMA",
+      "domain": "schema",
+      "expected_artifacts": [],
+      "name": "Column Dictionary Schema",
+      "source_evidence": [
+        {
+          "detail": "https://govreg.local/schemas/column_dictionary_schema.json",
+          "evidence_type": "schema_id",
+          "line_number": 1,
+          "path": "schemas/01260207233100000467_column_dictionary_schema.json"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "schemas/01260207233100000469_sec_021_quality_controls_catalog.schema.json"
+      ],
+      "capability_id": "CAP-SCHEMA-SEC_021_QUALITY_CONTROLS_CATALOG_SCHEMA",
+      "domain": "schema",
+      "expected_artifacts": [],
+      "name": "SEC-021 Quality Controls Catalog Schema",
+      "source_evidence": [
+        {
+          "detail": "https://gov-reg.local/schemas/sec_021_quality_controls_catalog.schema.json",
+          "evidence_type": "schema_id",
+          "line_number": 1,
+          "path": "schemas/01260207233100000469_sec_021_quality_controls_catalog.schema.json"
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "candidate_files": [
+        "schemas/01260207233100000468_command_spec.schema.json"
+      ],
+      "capability_id": "CAP-SCHEMA-STRUCTURED_COMMAND_SPECIFICATION_SCHEMA",
+      "domain": "schema",
+      "expected_artifacts": [],
+      "name": "Structured Command Specification Schema",
+      "source_evidence": [
+        {
+          "detail": "https://gov-reg.local/schemas/command_spec.schema.json",
+          "evidence_type": "schema_id",
+          "line_number": 1,
+          "path": "schemas/01260207233100000468_command_spec.schema.json"
+        }
+      ],
+      "status": "implemented"
+    }
+  ],
+  "capability_conflicts": [
+    {
+      "capability_id": "CAP-GATE-000-GATE_000",
+      "chosen_source": [
+        {
+          "detail": "GATE-000",
+          "evidence_type": "string_match",
+          "line_number": 53,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000245_test_orchestration.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-000",
+            "evidence_type": "string_match",
+            "line_number": 79,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000245_test_orchestration.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-000",
+            "evidence_type": "string_match",
+            "line_number": 96,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000258_validate_plan_structure.py"
+          }
+        ]
+      ]
+    },
+    {
+      "capability_id": "CAP-GATE-001-GATE_001",
+      "chosen_source": [
+        {
+          "detail": "GATE-001",
+          "evidence_type": "string_match",
+          "line_number": 15,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000263_validate_structure.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-001",
+            "evidence_type": "string_match",
+            "line_number": 405,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000263_validate_structure.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-001",
+            "evidence_type": "string_match",
+            "line_number": 453,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000263_validate_structure.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-001",
+            "evidence_type": "string_match",
+            "line_number": 454,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000263_validate_structure.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-001",
+            "evidence_type": "string_match",
+            "line_number": 38,
+            "path": "tests/P_01260207233100000063_test_validate_sec_021.py"
+          }
+        ]
+      ]
+    },
+    {
+      "capability_id": "CAP-GATE-002-GATE_002",
+      "chosen_source": [
+        {
+          "detail": "GATE-002",
+          "evidence_type": "string_match",
+          "line_number": 15,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000253_validate_gates.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-002",
+            "evidence_type": "string_match",
+            "line_number": 267,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000253_validate_gates.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-002",
+            "evidence_type": "string_match",
+            "line_number": 302,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000253_validate_gates.py"
+          }
+        ]
+      ]
+    },
+    {
+      "capability_id": "CAP-GATE-002-VALIDATION_GATE_COMPLETENESS_CHECK",
+      "chosen_source": [
+        {
+          "detail": "GATE-002: Validation Gate Completeness Check",
+          "evidence_type": "string_match",
+          "line_number": 3,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000253_validate_gates.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-002: Validation Gate Completeness Check\")",
+            "evidence_type": "string_match",
+            "line_number": 317,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000253_validate_gates.py"
+          }
+        ]
+      ]
+    },
+    {
+      "capability_id": "CAP-GATE-003-GATE_003",
+      "chosen_source": [
+        {
+          "detail": "GATE-003",
+          "evidence_type": "string_match",
+          "line_number": 72,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000259_validate_rollback_completeness.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-003",
+            "evidence_type": "string_match",
+            "line_number": 190,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000259_validate_rollback_completeness.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-003",
+            "evidence_type": "string_match",
+            "line_number": 625,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000262_validate_step_contracts.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-003",
+            "evidence_type": "string_match",
+            "line_number": 646,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000262_validate_step_contracts.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-003",
+            "evidence_type": "string_match",
+            "line_number": 647,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000262_validate_step_contracts.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-003",
+            "evidence_type": "string_match",
+            "line_number": 672,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000262_validate_step_contracts.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-003",
+            "evidence_type": "string_match",
+            "line_number": 675,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000262_validate_step_contracts.py"
+          }
+        ]
+      ]
+    },
+    {
+      "capability_id": "CAP-GATE-004-GATE_004",
+      "chosen_source": [
+        {
+          "detail": "GATE-004",
+          "evidence_type": "string_match",
+          "line_number": 233,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000248_validate_assumptions.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-004",
+            "evidence_type": "string_match",
+            "line_number": 255,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000248_validate_assumptions.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-004",
+            "evidence_type": "string_match",
+            "line_number": 256,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000248_validate_assumptions.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-004",
+            "evidence_type": "string_match",
+            "line_number": 283,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000248_validate_assumptions.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-004",
+            "evidence_type": "string_match",
+            "line_number": 287,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000248_validate_assumptions.py"
+          }
+        ]
+      ]
+    },
+    {
+      "capability_id": "CAP-GATE-005-GATE_005",
+      "chosen_source": [
+        {
+          "detail": "GATE-005",
+          "evidence_type": "string_match",
+          "line_number": 101,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000257_validate_planning_artifacts.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-005",
+            "evidence_type": "string_match",
+            "line_number": 122,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000257_validate_planning_artifacts.py"
+          }
+        ]
+      ]
+    },
+    {
+      "capability_id": "CAP-GATE-006-GATE_006",
+      "chosen_source": [
+        {
+          "detail": "GATE-006",
+          "evidence_type": "string_match",
+          "line_number": 104,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000250_validate_automation_spec.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-006",
+            "evidence_type": "string_match",
+            "line_number": 125,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000250_validate_automation_spec.py"
+          }
+        ]
+      ]
+    },
+    {
+      "capability_id": "CAP-GATE-007-BUILD_AUTOMATION_INDEX",
+      "chosen_source": [
+        {
+          "detail": "GATE-007: Build Automation Index",
+          "evidence_type": "string_match",
+          "line_number": 3,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000226_build_automation_index.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-007: Build automation index')",
+            "evidence_type": "string_match",
+            "line_number": 93,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000226_build_automation_index.py"
+          }
+        ]
+      ]
+    },
+    {
+      "capability_id": "CAP-GATE-008-GENERATE_AUTOMATION_DIAGRAMS",
+      "chosen_source": [
+        {
+          "detail": "GATE-008: Generate Automation Diagrams",
+          "evidence_type": "string_match",
+          "line_number": 3,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000237_generate_automation_diagrams.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-008: Generate automation diagrams')",
+            "evidence_type": "string_match",
+            "line_number": 101,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000237_generate_automation_diagrams.py"
+          }
+        ]
+      ]
+    },
+    {
+      "capability_id": "CAP-GATE-009-GATE_009",
+      "chosen_source": [
+        {
+          "detail": "GATE-009",
+          "evidence_type": "string_match",
+          "line_number": 98,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000261_validate_spine_coverage_map.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-009",
+            "evidence_type": "string_match",
+            "line_number": 122,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000261_validate_spine_coverage_map.py"
+          }
+        ]
+      ]
+    },
+    {
+      "capability_id": "CAP-GATE-010-GATE_010",
+      "chosen_source": [
+        {
+          "detail": "GATE-010",
+          "evidence_type": "string_match",
+          "line_number": 32,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000265_validate_wiring_proof.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-010",
+            "evidence_type": "string_match",
+            "line_number": 42,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000265_validate_wiring_proof.py"
+          }
+        ]
+      ]
+    },
+    {
+      "capability_id": "CAP-GATE-011-GATE_011",
+      "chosen_source": [
+        {
+          "detail": "GATE-011",
+          "evidence_type": "string_match",
+          "line_number": 35,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000247_validate_artifact_registry.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-011",
+            "evidence_type": "string_match",
+            "line_number": 46,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000247_validate_artifact_registry.py"
+          }
+        ]
+      ]
+    },
+    {
+      "capability_id": "CAP-GATE-012-GATE_012",
+      "chosen_source": [
+        {
+          "detail": "GATE-012",
+          "evidence_type": "string_match",
+          "line_number": 28,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/wiring/P_01260207233100000273_audit_failure_modes.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-012",
+            "evidence_type": "string_match",
+            "line_number": 72,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/wiring/P_01260207233100000273_audit_failure_modes.py"
+          }
+        ]
+      ]
+    },
+    {
+      "capability_id": "CAP-GATE-013-GATE_013",
+      "chosen_source": [
+        {
+          "detail": "GATE-013",
+          "evidence_type": "string_match",
+          "line_number": 11,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/wiring/P_01260207233100000280_run_all_e2e_proofs.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-013",
+            "evidence_type": "string_match",
+            "line_number": 45,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/wiring/P_01260207233100000280_run_all_e2e_proofs.py"
+          }
+        ]
+      ]
+    },
+    {
+      "capability_id": "CAP-GATE-014-GATE_014",
+      "chosen_source": [
+        {
+          "detail": "GATE-014",
+          "evidence_type": "string_match",
+          "line_number": 220,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000246_validate_artifact_closure.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-014",
+            "evidence_type": "string_match",
+            "line_number": 241,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000246_validate_artifact_closure.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-014",
+            "evidence_type": "string_match",
+            "line_number": 242,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000246_validate_artifact_closure.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-014",
+            "evidence_type": "string_match",
+            "line_number": 274,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000246_validate_artifact_closure.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-014",
+            "evidence_type": "string_match",
+            "line_number": 279,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000246_validate_artifact_closure.py"
+          }
+        ]
+      ]
+    },
+    {
+      "capability_id": "CAP-GATE-015-GATE_015",
+      "chosen_source": [
+        {
+          "detail": "GATE-015",
+          "evidence_type": "string_match",
+          "line_number": 249,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000259_validate_rollback_completeness.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-015",
+            "evidence_type": "string_match",
+            "line_number": 270,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000259_validate_rollback_completeness.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-015",
+            "evidence_type": "string_match",
+            "line_number": 271,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000259_validate_rollback_completeness.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-015",
+            "evidence_type": "string_match",
+            "line_number": 302,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000259_validate_rollback_completeness.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-015",
+            "evidence_type": "string_match",
+            "line_number": 307,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000259_validate_rollback_completeness.py"
+          }
+        ]
+      ]
+    },
+    {
+      "capability_id": "CAP-GATE-016-GATE_016",
+      "chosen_source": [
+        {
+          "detail": "GATE-016",
+          "evidence_type": "string_match",
+          "line_number": 290,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000264_validate_verification_completeness.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-016",
+            "evidence_type": "string_match",
+            "line_number": 311,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000264_validate_verification_completeness.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-016",
+            "evidence_type": "string_match",
+            "line_number": 312,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000264_validate_verification_completeness.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-016",
+            "evidence_type": "string_match",
+            "line_number": 343,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000264_validate_verification_completeness.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-016",
+            "evidence_type": "string_match",
+            "line_number": 348,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000264_validate_verification_completeness.py"
+          }
+        ]
+      ]
+    },
+    {
+      "capability_id": "CAP-GATE-017-GATE_017",
+      "chosen_source": [
+        {
+          "detail": "GATE-017",
+          "evidence_type": "string_match",
+          "line_number": 289,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000260_validate_single_source_of_truth.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-017",
+            "evidence_type": "string_match",
+            "line_number": 310,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000260_validate_single_source_of_truth.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-017",
+            "evidence_type": "string_match",
+            "line_number": 311,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000260_validate_single_source_of_truth.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-017",
+            "evidence_type": "string_match",
+            "line_number": 342,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000260_validate_single_source_of_truth.py"
+          }
+        ],
+        [
+          {
+            "detail": "GATE-017",
+            "evidence_type": "string_match",
+            "line_number": 347,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000260_validate_single_source_of_truth.py"
+          }
+        ]
+      ]
+    },
+    {
+      "capability_id": "CAP-GATE-109-GATE_109",
+      "chosen_source": [
+        {
+          "detail": "GATE-109",
+          "evidence_type": "string_match",
+          "line_number": 11,
+          "path": "OLD_MD_DOCUMENTS_FOR_REVIEW/PRMNT DOCS/ci_gate.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-109",
+            "evidence_type": "string_match",
+            "line_number": 168,
+            "path": "scripts/P_01260207233100000035_map_real_files_to_geus.py"
+          }
+        ]
+      ]
+    },
+    {
+      "capability_id": "CAP-GATE-998-GATE_998",
+      "chosen_source": [
+        {
+          "detail": "GATE-998",
+          "evidence_type": "string_match",
+          "line_number": 26,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000249_validate_automation_audit.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-998",
+            "evidence_type": "string_match",
+            "line_number": 37,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000249_validate_automation_audit.py"
+          }
+        ]
+      ]
+    },
+    {
+      "capability_id": "CAP-GATE-999-GATE_999",
+      "chosen_source": [
+        {
+          "detail": "GATE-999",
+          "evidence_type": "string_match",
+          "line_number": 22,
+          "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000254_validate_goal_reconciliation.py"
+        }
+      ],
+      "discarded_sources": [
+        [
+          {
+            "detail": "GATE-999",
+            "evidence_type": "string_match",
+            "line_number": 33,
+            "path": "LP_LONG_PLAN/newPhasePlanProcess/scripts/P_01260207233100000254_validate_goal_reconciliation.py"
+          }
+        ]
+      ]
+    }
+  ],
+  "generated_at": "2026-02-11T23:58:28.924815+00:00",
+  "precedence_rule": [
+    "code",
+    "schemas",
+    "template_specs",
+    "docs"
+  ],
+  "repo_root": "C:\\Users\\richg\\Gov_Reg",
+  "warnings": []
+}

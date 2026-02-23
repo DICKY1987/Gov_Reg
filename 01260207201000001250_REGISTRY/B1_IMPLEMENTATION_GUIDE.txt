@@ -1,0 +1,75 @@
+# B1 IMPLEMENTATION GUIDE
+## Fields to Register: 2
+
+### 1. py_capability_facts_hash
+- Type: string
+- Found in: 1133 records
+- Schema: {"type": ["string", "null"]}
+
+### 2. py_capability_tags  
+- Type: array of strings
+- Found in: 1133 records
+- Schema: {"type": "array", "items": {"type": "string"}}
+
+## Files to Modify:
+
+### File 1: 01260207201000000193_UNIFIED_SSOT_REGISTRY_WRITE_POLICY.yaml
+Add these entries:
+
+`yaml
+  py_capability_facts_hash:
+    rationale: SHA-256 hash of capability facts extracted from Python file
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_capability_tags:
+    rationale: Capability tags derived from Python code analysis
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+    merge_strategy: set_union
+`
+
+### File 2: 01260207201000000192_UNIFIED_SSOT_REGISTRY_DERIVATIONS.yaml
+Add these entries:
+
+`yaml
+  py_capability_facts_hash:
+    depends_on: []
+    error_policy: set_null
+    type: string
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: COALESCE(INPUT.py_capability_facts_hash, NULL)
+    rationale: Provided directly by Python analysis tool; null for non-Python files
+
+  py_capability_tags:
+    depends_on: []
+    error_policy: set_null
+    type: array
+    trigger: recompute_on_build
+    null_behavior: set_empty_array
+    formula: COALESCE(INPUT.py_capability_tags, [])
+    rationale: Provided directly by Python analysis tool; null for non-Python files
+`
+
+### File 3: 01999000042260124012_governance_registry_schema.v3.json
+Add to definitions.FileRecord.properties:
+
+`json
+"py_capability_facts_hash": {
+  "type": ["string", "null"]
+},
+"py_capability_tags": {
+  "type": "array",
+  "items": {"type": "string"}
+}
+`
+
+## Status
+This guide is saved. Manual editing required before proceeding to validation.
+Would you like to:
+A) Skip B1 and continue with other phases (B1 can be done later)
+B) Pause for manual editing now
+C) Continue with automated phases (A5, A6, etc.)

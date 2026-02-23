@@ -1,0 +1,308 @@
+category: "allocators"
+purpose: "ID generation, reservation, and counter management"
+location: "1_runtime/allocators/"
+last_updated: "2026-02-22"
+
+modules:
+  - name: "unified_id_allocator"
+    file: "P_01999000042260124031_unified_id_allocator.py"
+    status: "ACTIVE"
+    purpose: "Core 20-digit ID allocator with global counter"
+    priority: "CRITICAL"
+    
+    functions:
+      - name: "allocate_id"
+        signature: "allocate_id(zone: str = 'governed') -> str"
+        description: "Allocate a new 20-digit ID from global counter"
+        
+        parameters:
+          - name: "zone"
+            type: "str"
+            default: "'governed'"
+            options: ["governed", "staging", "excluded"]
+            description: "Governance zone for ID allocation"
+        
+        returns:
+          type: "str"
+          format: "\\d{20}"
+          description: "20-digit ID as string"
+          example: "01999000042260124550"
+        
+        raises:
+          - exception: "AllocationError"
+            when: "Counter store is locked or corrupted"
+          - exception: "IOError"
+            when: "Cannot read/write COUNTER_STORE.json"
+        
+        side_effects:
+          - "Increments global counter in COUNTER_STORE.json"
+          - "Creates lock file during operation"
+          - "Writes allocation to log"
+        
+        preconditions:
+          - "COUNTER_STORE.json exists and is readable"
+          - "No lock file older than timeout"
+        
+        postconditions:
+          - "Returned ID is unique (never allocated before)"
+          - "Counter incremented by 1"
+          - "Lock file removed"
+        
+        example: |
+          from ID.1_runtime.allocators.P_01999000042260124031_unified_id_allocator import allocate_id
+          
+          new_id = allocate_id(zone='governed')
+          # Returns: "01999000042260124550"
+        
+        performance:
+          typical_time: "10-50ms"
+          lock_timeout: "5000ms"
+      
+      - name: "allocate_batch"
+        signature: "allocate_batch(count: int, zone: str = 'governed') -> List[str]"
+        description: "Allocate multiple sequential IDs in one operation"
+        
+        parameters:
+          - name: "count"
+            type: "int"
+            constraints: "1 <= count <= 1000"
+            description: "Number of IDs to allocate"
+          - name: "zone"
+            type: "str"
+            default: "'governed'"
+        
+        returns:
+          type: "List[str]"
+          description: "List of sequential IDs"
+        
+        example: |
+          ids = allocate_batch(5, zone='governed')
+          # Returns: ["01999000042260124550", "01999000042260124551", ...]
+    
+    dependencies:
+      imports:
+        - module: "reservation_ledger"
+          file: "P_01999000042260124032_reservation_ledger.py"
+          usage: "Track reserved IDs"
+        - module: "id_scheme"
+          file: "P_01999000042260124489_id_scheme.py"
+          usage: "ID format specifications"
+      
+      files:
+        reads:
+          - path: "%APPDATA%/GovReg/IdAllocator/COUNTER_STORE.json"
+            format: "JSON"
+            keys: ["current_counter", "last_updated"]
+        
+        writes:
+          - path: "%APPDATA%/GovReg/IdAllocator/COUNTER_STORE.json"
+            operation: "increment_counter"
+          - path: "%APPDATA%/GovReg/IdAllocator/COUNTER_STORE.json.lock"
+            operation: "create_lock_then_delete"
+      
+      external_services: []
+    
+    configuration:
+      config_file: "4_config/idpkg_active_config.json"
+      config_keys:
+        - key: "allocator.allocator_store_path"
+          type: "string"
+          description: "Path to COUNTER_STORE.json"
+          default: "%APPDATA%/GovReg/IdAllocator/COUNTER_STORE.json"
+        
+        - key: "allocator.lock_timeout_ms"
+          type: "integer"
+          description: "Lock timeout in milliseconds"
+          default: 5000
+    
+    state_machine:
+      initial_state: "idle"
+      states:
+        - name: "idle"
+          transitions: ["locking"]
+        - name: "locking"
+          transitions: ["reading", "error"]
+        - name: "reading"
+          transitions: ["incrementing", "error"]
+        - name: "incrementing"
+          transitions: ["writing", "error"]
+        - name: "writing"
+          transitions: ["unlocking", "error"]
+        - name: "unlocking"
+          transitions: ["idle"]
+        - name: "error"
+          transitions: ["idle"]
+    
+    error_handling:
+      lock_timeout:
+        symptom: "Lock file exists beyond timeout"
+        recovery: "Delete stale lock file and retry"
+        prevention: "Ensure lock_timeout_ms is appropriate"
+      
+      corrupted_counter:
+        symptom: "COUNTER_STORE.json is malformed"
+        recovery: "Restore from backup"
+        prevention: "Atomic writes with backup"
+
+  - name: "id_allocator_facade"
+    file: "P_01999000042260125006_id_allocator_facade.py"
+    status: "ACTIVE"
+    purpose: "Simplified API for ID allocation"
+    priority: "HIGH"
+    
+    functions:
+      - name: "allocate"
+        signature: "allocate() -> str"
+        description: "Simple ID allocation with defaults"
+        
+        returns:
+          type: "str"
+          format: "\\d{20}"
+        
+        example: |
+          from ID.1_runtime.allocators.P_01999000042260125006_id_allocator_facade import allocate
+          
+          id = allocate()
+          # Returns: "01999000042260124550"
+        
+        note: "Wrapper around unified_id_allocator.allocate_id()"
+      
+      - name: "validate"
+        signature: "validate(id_value: str) -> bool"
+        description: "Validate ID format"
+        
+        parameters:
+          - name: "id_value"
+            type: "str"
+        
+        returns:
+          type: "bool"
+          description: "True if valid file_id format"
+    
+    dependencies:
+      imports:
+        - module: "unified_id_allocator"
+          file: "P_01999000042260124031_unified_id_allocator.py"
+
+  - name: "reservation_ledger"
+    file: "P_01999000042260124032_reservation_ledger.py"
+    status: "ACTIVE"
+    purpose: "Track ID reservations for planning-time allocation"
+    priority: "MEDIUM"
+    
+    functions:
+      - name: "reserve_ids"
+        signature: "reserve_ids(count: int, purpose: str, requester: str) -> List[str]"
+        description: "Reserve a batch of IDs for future use"
+        
+        parameters:
+          - name: "count"
+            type: "int"
+            constraints: "1 <= count <= 1000"
+          - name: "purpose"
+            type: "str"
+            description: "Reason for reservation"
+          - name: "requester"
+            type: "str"
+            description: "Who is requesting (user/system)"
+        
+        returns:
+          type: "List[str]"
+          description: "List of reserved IDs"
+        
+        side_effects:
+          - "Records reservation in ledger.json"
+          - "Marks IDs as 'reserved' (not 'allocated')"
+        
+        example: |
+          reserved = reserve_ids(10, "Migration batch", "admin")
+      
+      - name: "commit_reservation"
+        signature: "commit_reservation(id_value: str) -> bool"
+        description: "Mark reserved ID as actually allocated"
+      
+      - name: "release_reservation"
+        signature: "release_reservation(id_value: str) -> bool"
+        description: "Release unused reservation back to pool"
+    
+    storage:
+      file: "reservations/ledger.json"
+      format: "JSON array of reservation records"
+      schema:
+        - reservation_id: "UUID"
+        - ids: "List[str]"
+        - purpose: "str"
+        - requester: "str"
+        - reserved_at: "ISO 8601 timestamp"
+        - status: "reserved | committed | released"
+
+  - name: "id_scheme"
+    file: "P_01999000042260124489_id_scheme.py"
+    status: "ACTIVE"
+    purpose: "ID format specifications and constants"
+    priority: "LOW"
+    
+    constants:
+      ID_LENGTH: 20
+      ENHANCED_ID_LENGTH: 22
+      PYTHON_PREFIX: "P_"
+    
+    functions:
+      - name: "format_id"
+        signature: "format_id(counter: int) -> str"
+        description: "Format counter as 20-digit ID"
+
+dependency_graph:
+  unified_id_allocator:
+    imports: ["reservation_ledger", "id_scheme"]
+    imported_by: ["allocator_facade", "CLI tools"]
+    calls: ["lock_counter_store", "increment_counter"]
+    called_by: ["allocator_facade.allocate", "generate_dir_ids", "add_file_ids"]
+  
+  allocator_facade:
+    imports: ["unified_id_allocator"]
+    imported_by: ["CLI tools", "Other modules"]
+  
+  reservation_ledger:
+    imports: ["id_scheme"]
+    imported_by: ["unified_id_allocator"]
+
+common_workflows:
+  allocate_single_id:
+    steps:
+      - "Import allocate_id from unified_id_allocator"
+      - "Call allocate_id(zone='governed')"
+      - "Receive 20-digit ID string"
+      - "Use ID in filename or .dir_id file"
+  
+  allocate_batch:
+    steps:
+      - "Import allocate_batch"
+      - "Call allocate_batch(count=N)"
+      - "Receive list of N sequential IDs"
+      - "Assign IDs to files/directories"
+  
+  reserve_for_later:
+    steps:
+      - "Import reserve_ids from reservation_ledger"
+      - "Call reserve_ids(count, purpose, requester)"
+      - "Store reserved IDs"
+      - "Commit when actually used: commit_reservation(id)"
+
+troubleshooting:
+  allocation_fails:
+    symptoms:
+      - "AllocationError exception"
+      - "Timeout waiting for lock"
+    
+    diagnosis:
+      - "Check for stale lock file"
+      - "Check COUNTER_STORE.json exists and is valid"
+      - "Check disk space"
+    
+    resolution:
+      - "Delete lock file if > 5 minutes old"
+      - "Restore COUNTER_STORE.json from backup"
+      - "Increase lock_timeout_ms in config"
+    
+    reference: "operations/troubleshooting.yaml#counter_store_locked"

@@ -1,0 +1,46 @@
+{
+  "rewrite_plan_id": "c9f73f53b893a560",
+  "target_file_id": null,
+  "target_relpath": "REWRITE_PATCHSET\\plans\\9519b72bbcf3d129.json",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "ff4053e2cf0f2247360b8a1b2af8b42043f0df3eccaf6e2c2c34b25ac312531f",
+  "operations": [
+    {
+      "ref_id": "c5a8a405b41613f8ca061343e9635668d50dba584c0797df57850acc45f66d1e",
+      "old_value": "01260207201000000116_COUNTER_STORE.json",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/01260207201000000116_COUNTER_STORE.json",
+      "location": "line:10"
+    },
+    {
+      "ref_id": "ed3c5178a9cccd8886fae5e510ca56d2a943b256b7a0e3bd5f84a38f43d2aaf3",
+      "old_value": "01260207201000000116_COUNTER_STORE.json",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/01260207201000000116_COUNTER_STORE.json",
+      "location": "line:11"
+    },
+    {
+      "ref_id": "bbc8c675e9fd48821d151752ff5974cc6051b726999e72984385f482df05d1ad",
+      "old_value": "01260207201000000116_COUNTER_STORE.json",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/01260207201000000116_COUNTER_STORE.json",
+      "location": "line:16"
+    },
+    {
+      "ref_id": "33c6052c0d7108b28e66df4030c7d49bd92a362af99df93ecb576380f02f0c2f",
+      "old_value": "01260207201000000116_COUNTER_STORE.json",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/01260207201000000116_COUNTER_STORE.json",
+      "location": "line:17"
+    },
+    {
+      "ref_id": "7418e9ef84cb810f97bcf12431acaa0d9ca7b55d88679bf922ae5cc366882fca",
+      "old_value": "govreg_core/P_01999000042260124031_unified_id_allocator.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01999000042260124031_unified_id_allocator.py",
+      "location": "line:22"
+    },
+    {
+      "ref_id": "9583ed2acebcd08906de968f401f44c90011dd0a902920a71b4a5bea2bc36915",
+      "old_value": "govreg_core/P_01999000042260124031_unified_id_allocator.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01999000042260124031_unified_id_allocator.py",
+      "location": "line:23"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\c9f73f53b893a560.diff"
+}

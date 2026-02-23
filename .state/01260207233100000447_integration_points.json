@@ -1,0 +1,306 @@
+{
+  "analysis_date": "2026-02-04",
+  "phase": "PH-001",
+  "step": "ST-001",
+  "status": "COMPLETE",
+  "integration_points": {
+    "internal_module_dependencies": {
+      "description": "Dependencies between govreg_core modules",
+      "dependencies": [
+        {
+          "module": "pfms_ingestor.py",
+          "depends_on": [
+            "canonical_hash.py",
+            "registry_writer.py",
+            "registry_schema_v3.py",
+            "feature_flags.py"
+          ],
+          "integration_type": "internal",
+          "risk_level": "low",
+          "notes": "Core PFMS ingestion depends on canonical hash, registry writer, and schema"
+        },
+        {
+          "module": "reconciliation.py",
+          "depends_on": [
+            "canonical_hash.py",
+            "registry_schema_v3.py"
+          ],
+          "integration_type": "internal",
+          "risk_level": "low",
+          "notes": "Reconciliation logic depends on canonical hash and schema v3"
+        },
+        {
+          "module": "cross_phase_validator.py",
+          "depends_on": [
+            "conflict_validator.py"
+          ],
+          "integration_type": "internal",
+          "risk_level": "low",
+          "notes": "Cross-phase validation builds on conflict validator"
+        },
+        {
+          "module": "pfms_generator.py",
+          "depends_on": [
+            "canonical_hash.py"
+          ],
+          "integration_type": "internal",
+          "risk_level": "low",
+          "notes": "PFMS generation uses canonical hash for identity"
+        }
+      ]
+    },
+    "external_system_integration": {
+      "description": "Integration points with systems outside govreg_core",
+      "points": [
+        {
+          "interface": "File System",
+          "modules": [
+            "registry_writer.py",
+            "registry_schema_v3.py",
+            "pfms_ingestor.py"
+          ],
+          "operations": [
+            "read registry files",
+            "write registry files",
+            "backup operations"
+          ],
+          "integration_type": "file_io",
+          "risk_level": "medium",
+          "test_requirements": [
+            "Test file read operations with production-sized registry",
+            "Test file write operations with concurrent access",
+            "Test backup and restore procedures",
+            "Test file locking and atomicity"
+          ]
+        },
+        {
+          "interface": "Feature Flags System",
+          "modules": [
+            "feature_flags.py",
+            "pfms_ingestor.py"
+          ],
+          "operations": [
+            "query feature flag status",
+            "control migration phases"
+          ],
+          "integration_type": "configuration",
+          "risk_level": "high",
+          "test_requirements": [
+            "Test phase transition feature flags",
+            "Test fallback behavior when flags unavailable",
+            "Test flag consistency across distributed system"
+          ],
+          "notes": "CRITICAL: Feature flags control migration phases - must be reliable"
+        },
+        {
+          "interface": "Logging System",
+          "modules": [
+            "conflict_validator.py",
+            "cross_phase_validator.py",
+            "pfms_generator.py",
+            "pfms_ingestor.py",
+            "registry_writer.py",
+            "reconciliation.py"
+          ],
+          "operations": [
+            "log events",
+            "log errors",
+            "log metrics"
+          ],
+          "integration_type": "logging",
+          "risk_level": "low",
+          "test_requirements": [
+            "Verify structured logging format",
+            "Test log aggregation compatibility",
+            "Ensure no PII in logs"
+          ]
+        },
+        {
+          "interface": "Migration Guard System",
+          "modules": [
+            "migration_guard.py"
+          ],
+          "operations": [
+            "enforce phase boundaries",
+            "prevent invalid transitions"
+          ],
+          "integration_type": "runtime_guard",
+          "risk_level": "critical",
+          "test_requirements": [
+            "Test phase boundary enforcement",
+            "Test rollback prevention in Phase 4+",
+            "Verify guard cannot be bypassed"
+          ],
+          "notes": "CRITICAL: Guards the point of no return"
+        }
+      ]
+    },
+    "data_flow_integration": {
+      "description": "Data flows between components",
+      "flows": [
+        {
+          "flow_name": "PFMS Ingestion Flow",
+          "sequence": [
+            "pfms_ingestor.py receives PFMS data",
+            "canonical_hash.py computes identity hash",
+            "feature_flags.py checks if ingestion enabled",
+            "registry_schema_v3.py validates structure",
+            "registry_writer.py writes to registry"
+          ],
+          "integration_type": "data_pipeline",
+          "risk_level": "high",
+          "test_requirements": [
+            "End-to-end flow test with sample PFMS",
+            "Error handling at each step",
+            "Rollback on partial failure",
+            "Performance under load"
+          ]
+        },
+        {
+          "flow_name": "Conflict Detection Flow",
+          "sequence": [
+            "conflict_validator.py detects conflicts",
+            "cross_phase_validator.py validates across phases",
+            "reconciliation.py provides resolution options"
+          ],
+          "integration_type": "validation_pipeline",
+          "risk_level": "medium",
+          "test_requirements": [
+            "Test conflict detection accuracy",
+            "Test cross-phase validation rules",
+            "Test reconciliation suggestions"
+          ]
+        }
+      ]
+    },
+    "api_contracts": {
+      "description": "Public APIs that must remain stable",
+      "contracts": [
+        {
+          "module": "canonical_hash.py",
+          "public_api": [
+            "compute_hash(data)",
+            "verify_hash(data, hash)"
+          ],
+          "contract": "Deterministic hashing - same input must always produce same hash",
+          "backward_compatibility": "REQUIRED",
+          "test_requirements": [
+            "Test hash stability",
+            "Test hash collision resistance"
+          ]
+        },
+        {
+          "module": "registry_writer.py",
+          "public_api": [
+            "write_entry(entry)",
+            "update_entry(id, entry)",
+            "delete_entry(id)"
+          ],
+          "contract": "Atomic registry operations with backup",
+          "backward_compatibility": "REQUIRED",
+          "test_requirements": [
+            "Test atomicity",
+            "Test backup on write",
+            "Test concurrent writes"
+          ]
+        },
+        {
+          "module": "registry_schema_v3.py",
+          "public_api": [
+            "validate(data)",
+            "migrate_from_v2(data)"
+          ],
+          "contract": "Schema validation and migration",
+          "backward_compatibility": "REQUIRED for migration",
+          "test_requirements": [
+            "Test v2 to v3 migration",
+            "Test validation errors",
+            "Test schema round-trip"
+          ]
+        }
+      ]
+    }
+  },
+  "testing_priorities": [
+    {
+      "priority": 1,
+      "area": "Migration Guard System",
+      "reason": "Critical safety mechanism - guards point of no return"
+    },
+    {
+      "priority": 2,
+      "area": "Feature Flags System",
+      "reason": "Controls phase transitions - must be reliable"
+    },
+    {
+      "priority": 3,
+      "area": "PFMS Ingestion Flow",
+      "reason": "End-to-end critical path for data ingestion"
+    },
+    {
+      "priority": 4,
+      "area": "Registry Write Operations",
+      "reason": "Data integrity and atomicity required"
+    },
+    {
+      "priority": 5,
+      "area": "Conflict Detection Flow",
+      "reason": "Ensures data consistency across phases"
+    }
+  ],
+  "recommended_test_scenarios": [
+    {
+      "scenario": "End-to-End PFMS Ingestion",
+      "description": "Ingest a complete PFMS through the full pipeline",
+      "modules_involved": [
+        "pfms_ingestor",
+        "canonical_hash",
+        "registry_writer",
+        "registry_schema_v3"
+      ],
+      "test_type": "integration"
+    },
+    {
+      "scenario": "Phase Transition Safety",
+      "description": "Attempt invalid phase transitions and verify they are blocked",
+      "modules_involved": [
+        "feature_flags",
+        "migration_guard"
+      ],
+      "test_type": "negative"
+    },
+    {
+      "scenario": "Concurrent Registry Access",
+      "description": "Multiple writers attempting simultaneous registry updates",
+      "modules_involved": [
+        "registry_writer"
+      ],
+      "test_type": "concurrency"
+    },
+    {
+      "scenario": "Schema Migration v2 to v3",
+      "description": "Migrate real production data from v2 to v3 schema",
+      "modules_involved": [
+        "registry_schema_v3"
+      ],
+      "test_type": "migration"
+    },
+    {
+      "scenario": "Conflict Resolution Workflow",
+      "description": "Detect, validate, and resolve conflicts across phases",
+      "modules_involved": [
+        "conflict_validator",
+        "cross_phase_validator",
+        "reconciliation"
+      ],
+      "test_type": "workflow"
+    }
+  ],
+  "success_criteria": {
+    "integration_points_identified": true,
+    "critical_dependencies_documented": true,
+    "test_scenarios_defined": true,
+    "risk_assessment_complete": true
+  },
+  "file_id": "01260207233100000447"
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.internal/schemas/planning_request.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["request_id", "title", "description", "context"],
+  "properties": {
+    "request_id": { "type": "string" },
+    "title": { "type": "string", "minLength": 10 },
+    "description": { "type": "string", "minLength": 50 },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "background": { "type": "string" },
+        "constraints": { "type": "array", "items": { "type": "string" } },
+        "success_criteria": { "type": "array", "items": { "type": "string" } },
+        "stakeholders": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "gap_id": "GAP-016",
+  "gap_name": "Change Impact Assessment",
+  "verification_timestamp": "2026-02-12T17:13:08.037071+00:00",
+  "status": "PARTIAL",
+  "checks": [
+    {
+      "check_id": "CHECK-016-001",
+      "description": "Impact assessment template with 10 risk dimensions",
+      "status": "FAIL",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\scripts\\templates\\change_impact_assessment.json",
+        "exists": false
+      }
+    },
+    {
+      "check_id": "CHECK-016-002",
+      "description": "Impact assessments registry initialized",
+      "status": "FAIL",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\scripts\\.state\\impact_assessments.jsonl",
+        "exists": false
+      }
+    },
+    {
+      "check_id": "CHECK-016-003",
+      "description": "Approval registry exists (GAP #15 dependency)",
+      "status": "FAIL",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\scripts\\.state\\approvals.jsonl",
+        "exists": false
+      }
+    }
+  ],
+  "cryptographic_proof": {
+    "algorithm": "SHA256",
+    "hash": "5150B06E9BEA54925F3B9DECA61E6EEF353A9E1C250FEABB2ED2B37F53AEE1EB",
+    "timestamp": "2026-02-12T17:13:08.037071+00:00"
+  }
+}

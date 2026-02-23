@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Unified ingest event envelope",
+  "type": "object",
+  "required": [
+    "trigger_event_kind",
+    "entity_kind",
+    "observed_at_utc",
+    "project_root_id",
+    "project_root_path",
+    "relative_path",
+    "depth",
+    "zone"
+  ],
+  "properties": {
+    "trigger_event_kind": {
+      "type": "string",
+      "enum": [
+        "DIR_CREATED",
+        "DIR_MOVED",
+        "DIR_DELETED",
+        "FILE_CREATED",
+        "FILE_MOVED",
+        "FILE_MODIFIED",
+        "FILE_DELETED",
+        "PROMOTE_REQUESTED"
+      ],
+      "description": "Kind of event that triggered ingestion"
+    },
+    "entity_kind": {
+      "type": "string",
+      "enum": ["file", "directory"],
+      "description": "Kind of entity being ingested"
+    },
+    "observed_at_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC timestamp when the event was observed"
+    },
+    "project_root_id": {
+      "type": "string",
+      "description": "Stable identifier for the project root"
+    },
+    "project_root_path": {
+      "type": "string",
+      "description": "Absolute path of the project root on disk"
+    },
+    "relative_path": {
+      "type": "string",
+      "description": "Path of the file or directory relative to the project root"
+    },
+    "depth": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of path segments below the project root"
+    },
+    "zone": {
+      "type": "string",
+      "enum": ["staging", "governed", "excluded"],
+      "description": "Computed governance zone based on depth and exclusions"
+    },
+    "desired_action": {
+      "type": "string",
+      "enum": ["register", "ignore", "promote", "update", "tombstone"],
+      "description": "High‑level action the ingest engine should perform"
+    },
+    "context": {
+      "type": "object",
+      "description": "Additional context information passed to the ingest pipeline",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

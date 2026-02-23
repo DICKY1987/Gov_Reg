@@ -1,0 +1,2656 @@
+Comprehensive Integration Specification: Enhanced Prompt Engineering for Production AI Development Pipeline
+
+Document Type: Technical Integration SpecificationOptimization: Agentic AI Autonomous ExecutionVersion: 1.0Date: 2025-11-19Scope: Complete integration of advanced prompt engineering patterns into operational orchestration infrastructure
+
+
+SECTION 1: EXECUTIVE CONTEXT & SYSTEM STATE
+1.1 Current System Architecture
+System Name: Complete AI Development Pipeline - Canonical Phase PlanPrimary Function: Automated software development through AI-driven workstream executionCurrent Phase: PH-05 (Single workstream orchestration operational)
+Core Philosophy:
+	∙	Contracts-first development (DDS, OpenSpec integration)
+	∙	Complete requirements traceability (RTM matrices)
+	∙	Modular plugin architecture (standardized manifests)
+	∙	Five Operations Model (ATVSO): Acquisition, Transformation, Validation, State-Change, Orchestration
+Operational Status:
+
+✅ Database-driven state management (SQLite)
+✅ Git worktree isolation for parallel workstreams
+✅ EDIT → STATIC → RUNTIME pipeline operational
+✅ Circuit breakers preventing infinite loops
+✅ Comprehensive telemetry and error tracking
+✅ AIM registry for tool capability routing
+✅ Workstream bundle validation with dependency DAG
+
+
+1.2 Problem Statement
+Current Gap: While orchestration infrastructure is production-grade, prompt engineering remains basic. Jinja2 templates in src/pipeline/prompts.py generate simple, unstructured prompts that do not leverage:
+	1.	Explicit role assignment and persona context
+	2.	Structured reasoning mode control (step-by-step vs concise)
+	3.	Classification-based routing (complexity/quality/domain)
+	4.	Output format contracts (machine-parseable response sections)
+	5.	Validation checklists and self-verification loops
+	6.	Patch-based artifact handoff between stages
+Impact: Workstreams succeed but require more fix attempts, exhibit lower first-pass success rates, and lack explicit audit trails for AI decision-making.
+1.3 Integration Objectives
+Primary Goal: Enhance existing operational infrastructure with advanced prompt engineering patterns from Anthropic guidance, Aider best practices, and multi-tool compatibility research.
+Success Criteria:
+	1.	First-pass success rate increases by ≥20%
+	2.	Average fix attempts per workstream decreases by ≥30%
+	3.	All changes captured as explicit patch artifacts
+	4.	Prompts are tool-agnostic (work with Aider, Codex, Claude)
+	5.	Zero breaking changes to existing workstream bundles
+	6.	Backwards compatibility maintained for all orchestration scripts
+
+SECTION 2: DETAILED ARCHITECTURAL ANALYSIS
+2.1 Current Orchestration Flow
+Entry Point: scripts/run_workstream.py
+
+# Current execution path
+python scripts/run_workstream.py --ws-id ws-hello-world [--run-id RUN] [--dry-run]
+
+
+Internal Flow:
+
+run_workstream.py (CLI entry)
+    ↓
+orchestrator.py::run_single_workstream_from_bundle()
+    ↓
+orchestrator.py::run_workstream()
+    ├── Initialize database records (runs, workstreams tables)
+    │
+    ├── run_edit_step()
+    │   ├── Create worktree via worktree.py
+    │   ├── Invoke Aider via prompts.py::run_aider_edit()
+    │   └── Record events to database
+    │
+    ├── run_static_with_fix()
+    │   ├── run_static_step() → tools.py executes linters
+    │   └── FIX loop (if failures detected)
+    │       ├── Check circuit_breakers.py limits
+    │       ├── Record error to errors table
+    │       ├── Invoke Aider fix via prompts.py::run_aider_fix()
+    │       └── Retry static_step()
+    │
+    ├── run_runtime_with_fix()
+    │   ├── run_runtime_step() → tools.py executes tests
+    │   └── FIX loop (if failures detected)
+    │       └── (mirrors static fix loop)
+    │
+    └── Validate file scope via worktree.py::validate_scope()
+
+
+State Machine Transitions:
+
+pending → started → editing → ready_for_static → static_check → runtime_tests → done
+                                                    ↓
+                                                  failed (if circuit breakers trip)
+
+
+2.2 Critical Integration Points
+Point A: Prompt Generation (src/pipeline/prompts.py)
+Current implementation:
+
+# EXISTING: src/pipeline/prompts.py (simplified representation)
+from jinja2 import Environment, FileSystemLoader
+
+def render_edit_prompt(bundle, context):
+    """Generate Aider EDIT prompt from workstream bundle"""
+    env = Environment(loader=FileSystemLoader('aider/templates/prompts'))
+    template = env.get_template('edit_prompt.txt.j2')
+    
+    return template.render(
+        ws_id=bundle['id'],
+        tasks=bundle['tasks'],
+        files_scope=bundle['files_scope'],
+        files_create=bundle.get('files_create', []),
+        acceptance_tests=bundle.get('acceptance_tests', [])
+    )
+
+def run_aider_edit(ws_id, prompt_text, worktree_path, tool_config):
+    """Execute Aider with generated prompt"""
+    # Implementation invokes Aider CLI with prompt
+    pass
+
+
+Current Template Structure (aider/templates/prompts/edit_prompt.txt.j2):
+
+{# EXISTING TEMPLATE - BASIC STRUCTURE #}
+Task: {{ tasks | join(', ') }}
+
+Files to modify:
+{% for file in files_scope %}
+- {{ file }}
+{% endfor %}
+
+{% if files_create %}
+Files you may create:
+{% for file in files_create %}
+- {{ file }}
+{% endfor %}
+{% endif %}
+
+Acceptance criteria:
+{% for test in acceptance_tests %}
+- {{ test }}
+{% endfor %}
+
+
+Point B: Workstream Bundle Schema (schema/workstream.schema.json)
+Current fields:
+
+{
+  "type": "object",
+  "required": ["id", "tasks", "files_scope"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^ws-[a-z0-9-]+$"},
+    "openspec_change": {"type": "string"},
+    "ccpm_issue": {"type": "integer"},
+    "gate": {"type": "integer", "minimum": 0},
+    "files_scope": {"type": "array", "items": {"type": "string"}},
+    "files_create": {"type": "array", "items": {"type": "string"}},
+    "tasks": {"type": "array", "items": {"type": "string"}},
+    "acceptance_tests": {"type": "array", "items": {"type": "string"}},
+    "depends_on": {"type": "array", "items": {"type": "string"}},
+    "tool": {"type": "string"},
+    "circuit_breaker": {
+      "type": "object",
+      "properties": {
+        "max_attempts": {"type": "integer"},
+        "max_error_repeats": {"type": "integer"}
+      }
+    },
+    "metadata": {"type": "object"}
+  },
+  "additionalProperties": false
+}
+
+
+Point C: Orchestrator EDIT Step (src/pipeline/orchestrator.py)
+Current implementation:
+
+# EXISTING: src/pipeline/orchestrator.py (simplified)
+def run_edit_step(run_id, ws_id, bundle, worktree_path, context):
+    """Execute EDIT phase via Aider"""
+    db.record_event(run_id, ws_id, 'edit_start')
+    
+    # Generate prompt
+    prompt_text = prompts.render_edit_prompt(bundle, context)
+    
+    # Execute Aider
+    result = prompts.run_aider_edit(
+        ws_id=ws_id,
+        prompt_text=prompt_text,
+        worktree_path=worktree_path,
+        tool_config=context.get('tool_config', {})
+    )
+    
+    db.record_event(run_id, ws_id, 'edit_end', {
+        'success': result.success,
+        'stdout': result.stdout,
+        'stderr': result.stderr
+    })
+    
+    return StepResult(success=result.success)
+
+
+2.3 Database Schema (State Management)
+Tables: state/pipeline.db (SQLite)
+
+-- runs: Top-level execution tracking
+CREATE TABLE runs (
+    run_id TEXT PRIMARY KEY,
+    started_at TEXT NOT NULL,
+    ended_at TEXT,
+    status TEXT NOT NULL  -- 'running', 'done', 'failed'
+);
+
+-- workstreams: Per-workstream status
+CREATE TABLE workstreams (
+    run_id TEXT NOT NULL,
+    ws_id TEXT NOT NULL,
+    status TEXT NOT NULL,  -- follows state machine
+    started_at TEXT NOT NULL,
+    ended_at TEXT,
+    PRIMARY KEY (run_id, ws_id),
+    FOREIGN KEY (run_id) REFERENCES runs(run_id)
+);
+
+-- events: Lifecycle events
+CREATE TABLE events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    run_id TEXT NOT NULL,
+    ws_id TEXT NOT NULL,
+    timestamp TEXT NOT NULL,
+    event_type TEXT NOT NULL,  -- 'edit_start', 'patch_captured', etc.
+    payload TEXT,  -- JSON blob
+    FOREIGN KEY (run_id, ws_id) REFERENCES workstreams(run_id, ws_id)
+);
+
+-- step_attempts: Detailed step execution
+CREATE TABLE step_attempts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    run_id TEXT NOT NULL,
+    ws_id TEXT NOT NULL,
+    step_name TEXT NOT NULL,  -- 'edit', 'static', 'runtime'
+    attempt INTEGER NOT NULL,
+    started_at TEXT NOT NULL,
+    ended_at TEXT,
+    success INTEGER NOT NULL,  -- 0 or 1
+    stdout TEXT,
+    stderr TEXT,
+    FOREIGN KEY (run_id, ws_id) REFERENCES workstreams(run_id, ws_id)
+);
+
+-- errors: Error signatures for circuit breakers
+CREATE TABLE errors (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    run_id TEXT NOT NULL,
+    ws_id TEXT NOT NULL,
+    step_name TEXT NOT NULL,
+    attempt INTEGER NOT NULL,
+    error_signature TEXT NOT NULL,  -- Hash of error pattern
+    full_error TEXT,
+    timestamp TEXT NOT NULL,
+    FOREIGN KEY (run_id, ws_id) REFERENCES workstreams(run_id, ws_id)
+);
+
+
+SECTION 3: ENHANCED PROMPT ENGINEERING SPECIFICATIONS
+3.1 Universal WORKSTREAM_V1.1 Template Structure
+Design Principles:
+	1.	ASCII-only: No XML, parseable by all AI tools
+	2.	Section-based: Clear boundaries for machine parsing
+	3.	Tool-agnostic: Works with Aider, Codex, Claude, Copilot
+	4.	3C Framework: Clarity, Context, Constraints (from Anthropic guidance)
+	5.	Validation-first: Built-in self-check requirements
+Complete Template Specification:
+
+=== WORKSTREAM_V1.1 ===
+
+[HEADER]
+WORKSTREAM_ID: {{workstream_id}}
+CALLING_APP: {{source_app}}
+TARGET_APP: {{target_app}}
+REPO_ROOT: {{repo_path}}
+ENTRY_FILES: {{primary_files_or_globs}}
+
+ROLE: {{persona_line}}
+
+CLASSIFICATION: complexity={{simple|moderate|complex|enterprise}}; quality={{standard|production}}; domain={{code|docs|analysis}}
+
+[OBJECTIVE]
+{{1-3 sentences describing exact goal and success criteria}}
+
+[CONTEXT]
+- Project: {{project_name_or_subsystem}}
+- Current state: {{description of existing behavior/structure}}
+- Why this workstream: {{reason/triggering event}}
+- Relevant architecture/constraints: {{e.g., hexagonal, layered, microservices}}
+- Related tickets/docs: {{optional links}}
+
+[CONSTRAINTS]
+- Must:
+  - {{hard requirement 1}}
+  - {{hard requirement 2}}
+- Must NOT:
+  - {{prohibited behavior 1 - e.g., no breaking changes to public API}}
+  - {{prohibited behavior 2 - e.g., no new external dependencies}}
+- Safety:
+  - Prefer minimal, well-scoped changes
+  - Preserve existing behavior unless explicitly requested
+
+[TASK_BREAKDOWN]
+- Main task type: {{refactor|implement_feature|write_tests|analysis|docs}}
+- Suggested steps:
+  1) {{step 1}}
+  2) {{step 2}}
+  3) {{step 3}}
+- Focus areas:
+  - {{specific files/functions/modules}}
+
+[FILE_SCOPE]
+files_scope:
+  - {{path/to/file1.py}}
+  - {{path/to/file2.py}}
+files_may_create:
+  - {{path/to/new_file1.py}}
+  - {{path/to/new_file2.py}}
+
+[REASONING_MODE]
+- Mode: {{step_by_step|concise}}
+- If step_by_step: briefly outline your plan first, then apply it
+- Keep reasoning compact and focused on decisions that affect code
+
+[OUTPUT_FORMAT]
+- Primary format: markdown
+- Required sections in the final answer (in this order):
+
+CHANGES_SUMMARY:
+- Bullet list summarizing what you changed and why
+- Mention which files changed
+
+IMPLEMENTATION_NOTES:
+- Short explanation of important design/refactoring decisions
+- Point out any non-obvious tradeoffs or constraints
+
+RISK_CHECKS:
+- Potential risks or edge cases introduced or exposed by changes
+- Any assumptions made that should be verified
+
+NEXT_STEPS:
+- Follow-up tasks, tests, or cleanup recommended
+- Additional files that should be loaded in future workstreams
+
+- When showing code, prefer minimal focused snippets or short unified diff blocks
+
+[VALIDATION]
+- Before final answer, self-check that:
+  - [ ] Changes match stated OBJECTIVE
+  - [ ] All CONSTRAINTS respected
+  - [ ] No obvious syntax or structural errors
+- If you detect blocking ambiguity, STOP and output only:
+  "CLARIFICATION_NEEDED: {{your concise questions}}"
+
+[TESTS_AND_VALIDATION]
+required_checks:
+  - {{command or description, e.g., pytest -q -k test_hello}}
+  - {{lints or static checks, e.g., ruff check src}}
+acceptance_criteria:
+  - All required checks pass, or you explain why they cannot
+  - Code builds and runs without errors in documented workflows
+
+=== END_WORKSTREAM_V1.1 ===
+
+
+3.2 Field Mapping: Bundle to Template
+Mapping Table:
+
+
+
+|Bundle Field      |Template Section                        |Transformation Logic                 |
+|------------------|----------------------------------------|-------------------------------------|
+|`id`              |`[HEADER].WORKSTREAM_ID`                |Direct copy                          |
+|`tasks[0]`        |`[OBJECTIVE]`                           |First task becomes primary objective |
+|`tasks[1:]`       |`[TASK_BREAKDOWN]`                      |Remaining tasks become step list     |
+|`files_scope`     |`[FILE_SCOPE].files_scope`              |Direct copy                          |
+|`files_create`    |`[FILE_SCOPE].files_may_create`         |Direct copy                          |
+|`acceptance_tests`|`[TESTS_AND_VALIDATION].required_checks`|Direct copy                          |
+|`gate`            |`[CLASSIFICATION].complexity`           |Map: 0→simple, 1→moderate, 2+→complex|
+|`tool`            |`[HEADER].TARGET_APP`                   |Direct copy                          |
+|`metadata.owner`  |`[CONTEXT].Project`                     |Extract project name from owner      |
+|`depends_on`      |`[CONTEXT].Related tickets`             |List as comma-separated              |
+|`circuit_breaker` |Internal orchestrator use only          |Not in prompt                        |
+
+Classification Inference Logic:
+
+def infer_classification(bundle):
+    """Derive classification from bundle metadata"""
+    gate = bundle.get('gate', 1)
+    tasks = bundle.get('tasks', [])
+    files_scope = bundle.get('files_scope', [])
+    
+    # Complexity inference
+    if gate >= 3 or len(tasks) > 10 or len(files_scope) > 15:
+        complexity = 'enterprise'
+    elif gate == 2 or len(tasks) > 5 or any('refactor' in t.lower() for t in tasks):
+        complexity = 'complex'
+    elif gate == 1 or len(tasks) <= 3:
+        complexity = 'moderate'
+    else:
+        complexity = 'simple'
+    
+    # Quality inference (default to production for safety)
+    quality = bundle.get('metadata', {}).get('quality', 'production')
+    
+    # Domain inference
+    py_files = sum(1 for f in files_scope if f.endswith('.py'))
+    md_files = sum(1 for f in files_scope if f.endswith('.md'))
+    
+    if md_files > py_files:
+        domain = 'docs'
+    elif any('test' in f for f in files_scope):
+        domain = 'tests'
+    else:
+        domain = 'code'
+    
+    return {
+        'complexity': complexity,
+        'quality': quality,
+        'domain': domain
+    }
+
+
+Role Inference Logic:
+
+def infer_role_from_bundle(bundle):
+    """Generate persona string from bundle context"""
+    files_scope = bundle.get('files_scope', [])
+    tasks = bundle.get('tasks', [])
+    
+    # Detect primary language
+    if any(f.endswith('.py') for f in files_scope):
+        language = 'Python'
+    elif any(f.endswith('.ps1') for f in files_scope):
+        language = 'PowerShell'
+    elif any(f.endswith('.js') or f.endswith('.ts') for f in files_scope):
+        language = 'JavaScript/TypeScript'
+    else:
+        language = 'software'
+    
+    # Detect activity type
+    if any('refactor' in t.lower() for t in tasks):
+        specialty = 'refactoring specialist'
+    elif any('test' in t.lower() for t in tasks):
+        specialty = 'testing expert'
+    elif any('implement' in t.lower() for t in tasks):
+        specialty = 'feature implementation specialist'
+    else:
+        specialty = 'development engineer'
+    
+    return f"Senior {language} {specialty} and careful code reviewer"
+
+
+3.3 Reasoning Mode Selection
+Decision Matrix:
+
+
+
+|Complexity|Task Type        |Reasoning Mode|
+|----------|-----------------|--------------|
+|simple    |any              |concise       |
+|moderate  |implement_feature|step_by_step  |
+|moderate  |refactor         |step_by_step  |
+|moderate  |write_tests      |concise       |
+|complex   |any              |step_by_step  |
+|enterprise|any              |step_by_step  |
+
+Implementation:
+
+def determine_reasoning_mode(bundle, classification):
+    """Select appropriate reasoning mode"""
+    complexity = classification['complexity']
+    task_type = infer_task_type(bundle['tasks'])
+    
+    if complexity in ['enterprise', 'complex']:
+        return 'step_by_step'
+    elif complexity == 'moderate':
+        if task_type in ['implement_feature', 'refactor']:
+            return 'step_by_step'
+        else:
+            return 'concise'
+    else:  # simple
+        return 'concise'
+
+def infer_task_type(tasks):
+    """Detect primary task type from task list"""
+    task_text = ' '.join(tasks).lower()
+    
+    if 'refactor' in task_text or 'restructure' in task_text:
+        return 'refactor'
+    elif 'test' in task_text or 'verify' in task_text:
+        return 'write_tests'
+    elif 'implement' in task_text or 'add' in task_text or 'create' in task_text:
+        return 'implement_feature'
+    elif 'analyze' in task_text or 'review' in task_text:
+        return 'analysis'
+    elif 'document' in task_text or 'readme' in task_text:
+        return 'docs'
+    else:
+        return 'implement_feature'  # default
+
+
+SECTION 4: PATCH-BASED HANDOFF ARCHITECTURE
+4.1 Conceptual Model
+Current State: EDIT stage modifies files in worktree, STATIC stage reads modified files directly
+Enhanced State: EDIT stage produces patch artifact, STATIC stage validates patch before committing
+Benefits:
+	1.	Explicit Audit Trail: Every change captured as unified diff
+	2.	Review Workflows: Patches can be inspected/validated before application
+	3.	Rollback Safety: Patches are inherently reversible
+	4.	Multi-Agent Compatibility: Patch becomes standard handoff format
+	5.	Guard Rails: Can block patches that violate file scope before application
+Flow Diagram:
+
+EDIT Stage
+    ↓
+    Generate changes in worktree
+    ↓
+    Capture: git diff > .ledger/patches/ws-{id}-{run}.patch
+    ↓
+    Record patch metadata to database
+    ↓
+    ┌─────────────────────────────────────┐
+    │ Patch Validation Gate               │
+    │ - Check file scope boundaries       │
+    │ - Verify no unintended modifications│
+    │ - Schema validation on changed files│
+    └─────────────────────────────────────┘
+    ↓
+    If valid: continue to STATIC
+    If invalid: FAIL with clear error
+    ↓
+STATIC Stage
+    ↓
+    Run linters/static analysis on modified files
+    ↓
+    If failures: FIX loop (produces new patch)
+    ↓
+RUNTIME Stage
+    (continues as before)
+
+
+4.2 Patch Capture Implementation
+Location: src/pipeline/orchestrator.py::run_edit_step()
+Enhanced Implementation:
+
+# MODIFIED: src/pipeline/orchestrator.py
+import subprocess
+import hashlib
+from pathlib import Path
+from dataclasses import dataclass
+
+@dataclass
+class PatchArtifact:
+    """Patch metadata"""
+    patch_file: Path
+    line_count: int
+    files_modified: list[str]
+    diff_hash: str
+    created_at: str
+
+def run_edit_step(run_id, ws_id, bundle, worktree_path, context):
+    """Execute EDIT phase with patch capture"""
+    db.record_event(run_id, ws_id, 'edit_start')
+    
+    # Generate enhanced prompt
+    prompt_text = prompts.render_edit_prompt_v11(bundle, context)
+    
+    # Execute Aider
+    result = prompts.run_aider_edit(
+        ws_id=ws_id,
+        prompt_text=prompt_text,
+        worktree_path=worktree_path,
+        tool_config=context.get('tool_config', {})
+    )
+    
+    # NEW: Capture patch after edit
+    patch_artifact = capture_patch(run_id, ws_id, worktree_path)
+    
+    # NEW: Validate patch against file scope
+    validation_result = validate_patch_scope(patch_artifact, bundle)
+    
+    if not validation_result.valid:
+        db.record_event(run_id, ws_id, 'edit_scope_violation', {
+            'violations': validation_result.violations
+        })
+        return StepResult(success=False, error='Scope violation detected')
+    
+    # Record success with patch metadata
+    db.record_event(run_id, ws_id, 'edit_end', {
+        'success': result.success,
+        'patch_file': str(patch_artifact.patch_file),
+        'line_count': patch_artifact.line_count,
+        'files_modified': patch_artifact.files_modified,
+        'diff_hash': patch_artifact.diff_hash
+    })
+    
+    return StepResult(
+        success=result.success,
+        patch_artifact=patch_artifact
+    )
+
+def capture_patch(run_id, ws_id, worktree_path):
+    """Capture git diff as patch artifact"""
+    # Generate unified diff
+    result = subprocess.run(
+        ['git', 'diff', '--no-ext-diff', '--unified=3'],
+        cwd=worktree_path,
+        capture_output=True,
+        text=True,
+        check=False
+    )
+    
+    patch_content = result.stdout
+    
+    # Parse affected files
+    files_modified = []
+    for line in patch_content.splitlines():
+        if line.startswith('diff --git'):
+            # Extract filename from: diff --git a/path/file.py b/path/file.py
+            parts = line.split()
+            if len(parts) >= 4:
+                file_path = parts[2][2:]  # Remove 'a/' prefix
+                files_modified.append(file_path)
+    
+    # Generate diff hash for oscillation detection
+    diff_hash = hashlib.sha256(patch_content.encode()).hexdigest()[:16]
+    
+    # Store patch file
+    patch_dir = Path('.ledger/patches')
+    patch_dir.mkdir(parents=True, exist_ok=True)
+    
+    patch_file = patch_dir / f'{ws_id}-{run_id}.patch'
+    patch_file.write_text(patch_content, encoding='utf-8')
+    
+    return PatchArtifact(
+        patch_file=patch_file,
+        line_count=len(patch_content.splitlines()),
+        files_modified=files_modified,
+        diff_hash=diff_hash,
+        created_at=datetime.utcnow().isoformat()
+    )
+
+@dataclass
+class ScopeValidationResult:
+    """Patch scope validation result"""
+    valid: bool
+    violations: list[str]
+
+def validate_patch_scope(patch_artifact, bundle):
+    """Verify patch only modifies files in bundle scope"""
+    allowed_files = set(bundle['files_scope'])
+    allowed_creates = set(bundle.get('files_create', []))
+    
+    violations = []
+    
+    for modified_file in patch_artifact.files_modified:
+        if modified_file not in allowed_files and modified_file not in allowed_creates:
+            violations.append(
+                f"File '{modified_file}' modified but not in files_scope or files_create"
+            )
+    
+    return ScopeValidationResult(
+        valid=len(violations) == 0,
+        violations=violations
+    )
+
+
+4.3 Database Schema Extension for Patches
+New Table: patches
+
+CREATE TABLE patches (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    run_id TEXT NOT NULL,
+    ws_id TEXT NOT NULL,
+    step_name TEXT NOT NULL,  -- 'edit', 'fix_static', 'fix_runtime'
+    attempt INTEGER NOT NULL,
+    patch_file TEXT NOT NULL,  -- Path to .patch file
+    diff_hash TEXT NOT NULL,   -- For oscillation detection
+    line_count INTEGER NOT NULL,
+    files_modified TEXT NOT NULL,  -- JSON array of filenames
+    created_at TEXT NOT NULL,
+    validated INTEGER NOT NULL DEFAULT 0,  -- 0=pending, 1=valid, -1=invalid
+    applied INTEGER NOT NULL DEFAULT 0,     -- 0=pending, 1=applied
+    FOREIGN KEY (run_id, ws_id) REFERENCES workstreams(run_id, ws_id)
+);
+
+-- Index for oscillation detection
+CREATE INDEX idx_patches_diff_hash ON patches(ws_id, diff_hash);
+
+
+Database Operations:
+
+# ADDITION: src/pipeline/db.py
+def record_patch(run_id, ws_id, step_name, attempt, patch_artifact, validated=False):
+    """Record patch artifact to database"""
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        INSERT INTO patches (
+            run_id, ws_id, step_name, attempt,
+            patch_file, diff_hash, line_count, files_modified,
+            created_at, validated
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        run_id,
+        ws_id,
+        step_name,
+        attempt,
+        str(patch_artifact.patch_file),
+        patch_artifact.diff_hash,
+        patch_artifact.line_count,
+        json.dumps(patch_artifact.files_modified),
+        patch_artifact.created_at,
+        1 if validated else 0
+    ))
+    
+    conn.commit()
+    return cursor.lastrowid
+
+def get_recent_patches(ws_id, limit=5):
+    """Retrieve recent patches for oscillation detection"""
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        SELECT diff_hash, patch_file, created_at
+        FROM patches
+        WHERE ws_id = ?
+        ORDER BY created_at DESC
+        LIMIT ?
+    """, (ws_id, limit))
+    
+    return cursor.fetchall()
+
+
+4.4 Oscillation Detection Enhancement
+Problem: AI makes change → linter complains → AI reverts → linter happy → AI makes original change (infinite loop)
+Solution: Track diff hashes and detect repetition
+Implementation in Circuit Breakers:
+
+# MODIFIED: src/pipeline/circuit_breakers.py
+class CircuitBreaker:
+    def __init__(self, config):
+        self.max_attempts = config.get('max_attempts', 5)
+        self.max_error_repeats = config.get('max_error_repeats', 3)
+        self.oscillation_threshold = config.get('oscillation_threshold', 2)
+    
+    def check_oscillation(self, ws_id, current_diff_hash):
+        """Detect if we're flip-flopping between states"""
+        recent_patches = db.get_recent_patches(ws_id, limit=5)
+        diff_hashes = [p[0] for p in recent_patches]
+        
+        # Count how many times current diff appeared in last 5 attempts
+        occurrences = diff_hashes.count(current_diff_hash)
+        
+        if occurrences >= self.oscillation_threshold:
+            return CircuitBreakerTrip(
+                reason='OSCILLATION_DETECTED',
+                message=f'Diff hash {current_diff_hash[:8]} appeared {occurrences} times in last 5 attempts',
+                should_stop=True
+            )
+        
+        return None
+    
+    def should_stop(self, run_id, ws_id, step_name, attempt, error_signature=None, diff_hash=None):
+        """Comprehensive check: attempts, errors, oscillation"""
+        # Existing checks
+        if attempt >= self.max_attempts:
+            return CircuitBreakerTrip(
+                reason='MAX_ATTEMPTS',
+                message=f'Exceeded {self.max_attempts} attempts',
+                should_stop=True
+            )
+        
+        if error_signature:
+            recent_errors = db.get_recent_errors(run_id, ws_id, step_name)
+            repeats = sum(1 for e in recent_errors if e['signature'] == error_signature)
+            
+            if repeats >= self.max_error_repeats:
+                return CircuitBreakerTrip(
+                    reason='ERROR_REPETITION',
+                    message=f'Error signature repeated {repeats} times',
+                    should_stop=True
+                )
+        
+        # NEW: Oscillation check
+        if diff_hash:
+            oscillation = self.check_oscillation(ws_id, diff_hash)
+            if oscillation:
+                return oscillation
+        
+        return None
+
+
+SECTION 5: SCHEMA EXTENSIONS & BACKWARDS COMPATIBILITY
+5.1 Workstream Schema V1.1
+File: schema/workstream.schema.json
+Changes: ADD optional fields, maintain backwards compatibility
+
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["id", "tasks", "files_scope"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^ws-[a-z0-9-]+$",
+      "description": "Unique workstream identifier"
+    },
+    "openspec_change": {
+      "type": "string",
+      "description": "OpenSpec change ID linking to requirements"
+    },
+    "ccpm_issue": {
+      "type": "integer",
+      "description": "Critical Chain Project Management issue number"
+    },
+    "gate": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Quality gate level (0=low, 1=medium, 2+=high)"
+    },
+    "files_scope": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 1,
+      "description": "Files this workstream is allowed to modify"
+    },
+    "files_create": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Files this workstream may create"
+    },
+    "tasks": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 1,
+      "description": "Concrete tasks to accomplish"
+    },
+    "acceptance_tests": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Commands or descriptions of required checks"
+    },
+    "depends_on": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^ws-[a-z0-9-]+$"},
+      "description": "Other workstream IDs this depends on"
+    },
+    "tool": {
+      "type": "string",
+      "description": "Preferred AI tool (aider, codex, claude)"
+    },
+    "circuit_breaker": {
+      "type": "object",
+      "properties": {
+        "max_attempts": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 5
+        },
+        "max_error_repeats": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 3
+        },
+        "oscillation_threshold": {
+          "type": "integer",
+          "minimum": 2,
+          "default": 2,
+          "description": "NEW: How many times same diff can appear before circuit breaks"
+        }
+      }
+    },
+    "classification": {
+      "type": "object",
+      "description": "NEW: Explicit classification for routing and prompt generation",
+      "properties": {
+        "complexity": {
+          "type": "string",
+          "enum": ["simple", "moderate", "complex", "enterprise"],
+          "description": "Task complexity level"
+        },
+        "quality": {
+          "type": "string",
+          "enum": ["standard", "production"],
+          "default": "production",
+          "description": "Quality tier for this workstream"
+        },
+        "domain": {
+          "type": "string",
+          "enum": ["code", "docs", "tests", "analysis", "infrastructure"],
+          "description": "Primary domain of work"
+        }
+      }
+    },
+    "prompt_config": {
+      "type": "object",
+      "description": "NEW: Override prompt generation defaults",
+      "properties": {
+        "role_override": {
+          "type": "string",
+          "description": "Custom role/persona string"
+        },
+        "reasoning_mode": {
+          "type": "string",
+          "enum": ["auto", "step_by_step", "concise"],
+          "default": "auto"
+        },
+        "template_version": {
+          "type": "string",
+          "enum": ["v1.0", "v1.1"],
+          "default": "v1.1"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Free-form metadata",
+      "properties": {
+        "owner": {"type": "string"},
+        "priority": {"type": "string"},
+        "notes": {"type": "string"}
+      }
+    }
+  },
+  "additionalProperties": false
+}
+
+
+Migration Strategy: Existing bundles without classification or prompt_config remain valid. Inference functions provide defaults.
+5.2 Bundle Validation Updates
+File: scripts/validate_workstreams.py
+Changes: ADD classification validation, maintain backwards compatibility
+
+# MODIFIED: scripts/validate_workstreams.py
+def validate_bundle_v11(bundle, schema):
+    """Enhanced validation with V1.1 features"""
+    # Existing validation (schema compliance, DAG check, file scope check)
+    base_errors = validate_bundle_v10(bundle, schema)
+    
+    if base_errors:
+        return base_errors
+    
+    errors = []
+    
+    # NEW: Validate classification if present
+    if 'classification' in bundle:
+        classification = bundle['classification']
+        
+        # Validate enum values
+        valid_complexity = {'simple', 'moderate', 'complex', 'enterprise'}
+        if 'complexity' in classification:
+            if classification['complexity'] not in valid_complexity:
+                errors.append(f"Invalid complexity: {classification['complexity']}")
+        
+        valid_quality = {'standard', 'production'}
+        if 'quality' in classification:
+            if classification['quality'] not in valid_quality:
+                errors.append(f"Invalid quality: {classification['quality']}")
+    
+    # NEW: Validate oscillation_threshold if present
+    if 'circuit_breaker' in bundle:
+        cb = bundle['circuit_breaker']
+        if 'oscillation_threshold' in cb:
+            threshold = cb['oscillation_threshold']
+            if not isinstance(threshold, int) or threshold < 2:
+                errors.append(f"oscillation_threshold must be integer >= 2, got {threshold}")
+    
+    return errors
+
+
+SECTION 6: IMPLEMENTATION SPECIFICATIONS
+6.1 Enhanced Prompt Rendering Module
+File: src/pipeline/prompts.py (MAJOR REFACTOR)
+Complete Implementation:
+
+"""
+Enhanced prompt generation with V1.1 template support.
+
+This module generates structured prompts for AI coding tools (Aider, Codex, Claude)
+using the WORKSTREAM_V1.1 template format with role assignment, classification,
+reasoning modes, and validation requirements.
+"""
+
+import subprocess
+from pathlib import Path
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+from typing import Dict, Any, Optional
+from dataclasses import dataclass
+import json
+
+from . import db
+
+@dataclass
+class PromptContext:
+    """Context for prompt generation"""
+    template_version: str = 'v1.1'
+    reasoning_mode: str = 'auto'
+    target_app: str = 'aider'
+    repo_root: str = ''
+    
+class PromptEngine:
+    """Enhanced prompt generation engine"""
+    
+    def __init__(self, template_dir: str = 'aider/templates/prompts'):
+        self.env = Environment(
+            loader=FileSystemLoader(template_dir),
+            autoescape=select_autoescape(['html', 'xml']),
+            trim_blocks=True,
+            lstrip_blocks=True
+        )
+    
+    def render_edit_prompt_v11(
+        self,
+        bundle: Dict[str, Any],
+        context: PromptContext
+    ) -> str:
+        """
+        Generate EDIT prompt using WORKSTREAM_V1.1 template.
+        
+        Args:
+            bundle: Workstream bundle dict
+            context: Prompt generation context
+            
+        Returns:
+            Formatted prompt text
+        """
+        # Infer classification if not explicit
+        classification = bundle.get('classification')
+        if not classification:
+            classification = self._infer_classification(bundle)
+        
+        # Infer role if not explicit
+        role = bundle.get('prompt_config', {}).get('role_override')
+        if not role:
+            role = self._infer_role(bundle)
+        
+        # Determine reasoning mode
+        reasoning_mode = self._determine_reasoning_mode(bundle, classification, context)
+        
+        # Build template data
+        template_data = {
+            # Header
+            'workstream_id': bundle['id'],
+            'calling_app': 'orchestrator',
+            'target_app': context.target_app,
+            'repo_root': context.repo_root,
+            'entry_files': ', '.join(bundle['files_scope']),
+            
+            # Role and classification
+            'role': role,
+            'classification': self._format_classification(classification),
+            
+            # Objective (first task as primary goal)
+            'objective': bundle['tasks'][0] if bundle['tasks'] else 'Complete workstream tasks',
+            
+            # Context
+            'project_name': bundle.get('metadata', {}).get('owner', 'Unknown Project'),
+            'current_state': 'As defined in existing codebase',
+            'why_workstream': bundle.get('metadata', {}).get('notes', 'See workstream tasks'),
+            'architecture': 'Follow existing patterns in repository',
+            'related_tickets': self._format_related_tickets(bundle),
+            
+            # Constraints
+            'constraints_must': self._build_constraints_must(bundle),
+            'constraints_must_not': self._build_constraints_must_not(bundle),
+            
+            # Task breakdown
+            'task_type': self._infer_task_type(bundle['tasks']),
+            'suggested_steps': self._format_suggested_steps(bundle['tasks']),
+            'focus_areas': ', '.join(bundle['files_scope'][:3]),  # First 3 files
+            
+            # File scope
+            'files_scope': bundle['files_scope'],
+            'files_may_create': bundle.get('files_create', []),
+            
+            # Reasoning
+            'reasoning_mode': reasoning_mode,
+            
+            # Tests and validation
+            'required_checks': bundle.get('acceptance_tests', []),
+        }
+        
+        # Render template
+        template = self.env.get_template('edit_prompt_v1.1.txt.j2')
+        return template.render(**template_data)
+    
+    def _infer_classification(self, bundle: Dict[str, Any]) -> Dict[str, str]:
+        """Infer classification from bundle metadata"""
+        gate = bundle.get('gate', 1)
+        tasks = bundle.get('tasks', [])
+        files_scope = bundle.get('files_scope', [])
+        
+        # Complexity
+        if gate >= 3 or len(tasks) > 10 or len(files_scope) > 15:
+            complexity = 'enterprise'
+        elif gate == 2 or len(tasks) > 5 or any('refactor' in t.lower() for t in tasks):
+            complexity = 'complex'
+        elif gate == 1 or len(tasks) <= 3:
+            complexity = 'moderate'
+        else:
+            complexity = 'simple'
+        
+        # Quality (default to production for safety)
+        quality = bundle.get('metadata', {}).get('quality', 'production')
+        
+        # Domain
+        py_files = sum(1 for f in files_scope if f.endswith('.py'))
+        md_files = sum(1 for f in files_scope if f.endswith('.md'))
+        test_files = sum(1 for f in files_scope if 'test' in f)
+        
+        if test_files > len(files_scope) / 2:
+            domain = 'tests'
+        elif md_files > py_files:
+            domain = 'docs'
+        else:
+            domain = 'code'
+        
+        return {
+            'complexity': complexity,
+            'quality': quality,
+            'domain': domain
+        }
+    
+    def _infer_role(self, bundle: Dict[str, Any]) -> str:
+        """Generate persona string from bundle"""
+        files_scope = bundle.get('files_scope', [])
+        tasks = bundle.get('tasks', [])
+        
+        # Language detection
+        if any(f.endswith('.py') for f in files_scope):
+            language = 'Python'
+        elif any(f.endswith('.ps1') or f.endswith('.psm1') for f in files_scope):
+            language = 'PowerShell'
+        elif any(f.endswith(('.js', '.ts', '.jsx', '.tsx')) for f in files_scope):
+            language = 'JavaScript/TypeScript'
+        else:
+            language = 'software'
+        
+        # Activity detection
+        task_text = ' '.join(tasks).lower()
+        if 'refactor' in task_text:
+            specialty = 'refactoring specialist'
+        elif 'test' in task_text:
+            specialty = 'testing expert'
+        elif 'implement' in task_text or 'add' in task_text:
+            specialty = 'feature implementation specialist'
+        else:
+            specialty = 'development engineer'
+        
+        return f"Senior {language} {specialty} and careful code reviewer"
+    
+    def _determine_reasoning_mode(
+        self,
+        bundle: Dict[str, Any],
+        classification: Dict[str, str],
+        context: PromptContext
+    ) -> str:
+        """Select reasoning mode based on complexity"""
+        # Explicit override
+        explicit = bundle.get('prompt_config', {}).get('reasoning_mode')
+        if explicit and explicit != 'auto':
+            return explicit
+        
+        # Context override
+        if context.reasoning_mode != 'auto':
+            return context.reasoning_mode
+        
+        # Infer from classification
+        complexity = classification['complexity']
+        task_type = self._infer_task_type(bundle['tasks'])
+        
+        if complexity in ['enterprise', 'complex']:
+            return 'step_by_step'
+        elif complexity == 'moderate':
+            if task_type in ['implement_feature', 'refactor']:
+                return 'step_by_step'
+            else:
+                return 'concise'
+        else:  # simple
+            return 'concise'
+    
+    def _infer_task_type(self, tasks: list[str]) -> str:
+        """Detect primary task type"""
+        task_text = ' '.join(tasks).lower()
+        
+        if 'refactor' in task_text or 'restructure' in task_text:
+            return 'refactor'
+        elif 'test' in task_text:
+            return 'write_tests'
+        elif 'implement' in task_text or 'add' in task_text:
+            return 'implement_feature'
+        elif 'analyze' in task_text:
+            return 'analysis'
+        elif 'document' in task_text:
+            return 'docs'
+        else:
+            return 'implement_feature'
+    
+    def _format_classification(self, classification: Dict[str, str]) -> str:
+        """Format classification as inline string"""
+        return (
+            f"complexity={classification['complexity']}; "
+            f"quality={classification['quality']}; "
+            f"domain={classification['domain']}"
+        )
+    
+    def _format_related_tickets(self, bundle: Dict[str, Any]) -> str:
+        """Format related tickets/docs"""
+        parts = []
+        
+        if bundle.get('openspec_change'):
+            parts.append(f"OpenSpec: {bundle['openspec_change']}")
+        
+        if bundle.get('ccpm_issue'):
+            parts.append(f"CCPM Issue: {bundle['ccpm_issue']}")
+        
+        return ', '.join(parts) if parts else 'None'
+    
+    def _build_constraints_must(self, bundle: Dict[str, Any]) -> list[str]:
+        """Build 'must' constraints"""
+        constraints = [
+            "Keep changes minimal and targeted to this workstream",
+            "Preserve existing behavior unless explicitly requested",
+            "Match existing code style and patterns in repository"
+        ]
+        
+        # Add custom constraints from metadata if present
+        custom = bundle.get('metadata', {}).get('constraints_must', [])
+        constraints.extend(custom)
+        
+        return constraints
+    
+    def _build_constraints_must_not(self, bundle: Dict[str, Any]) -> list[str]:
+        """Build 'must not' constraints"""
+        constraints = [
+            "Introduce new external dependencies unless clearly justified",
+            "Make breaking changes to public APIs"
+        ]
+        
+        # Add custom constraints
+        custom = bundle.get('metadata', {}).get('constraints_must_not', [])
+        constraints.extend(custom)
+        
+        return constraints
+    
+    def _format_suggested_steps(self, tasks: list[str]) -> list[str]:
+        """Format tasks as numbered steps"""
+        if len(tasks) <= 1:
+            return [tasks[0] if tasks else "Complete workstream objective"]
+        
+        # First task is objective, rest are steps
+        return tasks[1:]
+
+def run_aider_edit(
+    ws_id: str,
+    prompt_text: str,
+    worktree_path: str,
+    tool_config: Dict[str, Any],
+    run_id: Optional[str] = None
+) -> 'ToolResult':
+    """
+    Execute Aider with generated prompt.
+    
+    Args:
+        ws_id: Workstream identifier
+        prompt_text: Generated prompt
+        worktree_path: Path to git worktree
+        tool_config: Tool configuration from config/tool_profiles.json
+        run_id: Optional run ID for telemetry
+        
+    Returns:
+        ToolResult with success status and output
+    """
+    from . import tools  # Avoid circular import
+    
+    # Write prompt to temp file
+    prompt_file = Path(worktree_path) / '.prompt.txt'
+    prompt_file.write_text(prompt_text, encoding='utf-8')
+    
+    # Build Aider command
+    cmd = [
+        'aider',
+        '--message-file', str(prompt_file),
+        '--yes',  # Auto-accept changes
+        '--no-auto-commits'  # We'll commit after validation
+    ]
+    
+    # Add files from scope (Aider needs them explicitly)
+    # Note: This is handled by orchestrator setting cwd to worktree
+    
+    # Execute
+    result = subprocess.run(
+        cmd,
+        cwd=worktree_path,
+        capture_output=True,
+        text=True,
+        timeout=tool_config.get('timeout', 300)
+    )
+    
+    # Record to database if run_id provided
+    if run_id:
+        db.record_event(run_id, ws_id, 'aider_execution', {
+            'command': ' '.join(cmd),
+            'exit_code': result.returncode,
+            'stdout_lines': len(result.stdout.splitlines()),
+            'stderr_lines': len(result.stderr.splitlines())
+        })
+    
+    # Clean up prompt file
+    prompt_file.unlink(missing_ok=True)
+    
+    return tools.ToolResult(
+        success=result.returncode == 0,
+        stdout=result.stdout,
+        stderr=result.stderr,
+        exit_code=result.returncode
+    )
+
+# Convenience function for backwards compatibility
+def render_edit_prompt(bundle: Dict[str, Any], context: Dict[str, Any]) -> str:
+    """Legacy function - redirects to V1.1 engine"""
+    engine = PromptEngine()
+    prompt_context = PromptContext(
+        repo_root=context.get('repo_root', ''),
+        target_app=context.get('target_app', 'aider')
+    )
+    return engine.render_edit_prompt_v11(bundle, prompt_context)
+
+
+6.2 Jinja2 Template Implementation
+File: aider/templates/prompts/edit_prompt_v1.1.txt.j2
+Complete Template:
+
+=== WORKSTREAM_V1.1 ===
+
+[HEADER]
+WORKSTREAM_ID: {{ workstream_id }}
+CALLING_APP: {{ calling_app }}
+TARGET_APP: {{ target_app }}
+REPO_ROOT: {{ repo_root }}
+ENTRY_FILES: {{ entry_files }}
+
+ROLE: {{ role }}
+
+CLASSIFICATION: {{ classification }}
+
+[OBJECTIVE]
+{{ objective }}
+
+[CONTEXT]
+- Project: {{ project_name }}
+- Current state: {{ current_state }}
+- Why this workstream: {{ why_workstream }}
+- Relevant architecture/constraints: {{ architecture }}
+- Related tickets/docs: {{ related_tickets }}
+
+[CONSTRAINTS]
+- Must:
+{%- for constraint in constraints_must %}
+  - {{ constraint }}
+{%- endfor %}
+- Must NOT:
+{%- for constraint in constraints_must_not %}
+  - {{ constraint }}
+{%- endfor %}
+- Safety:
+  - Prefer minimal, well-scoped changes
+  - Preserve existing behavior unless explicitly requested
+
+[TASK_BREAKDOWN]
+- Main task type: {{ task_type }}
+- Suggested steps:
+{%- for step in suggested_steps %}
+  {{ loop.index }}) {{ step }}
+{%- endfor %}
+- Focus areas:
+  - {{ focus_areas }}
+
+[FILE_SCOPE]
+files_scope:
+{%- for file in files_scope %}
+  - {{ file }}
+{%- endfor %}
+{%- if files_may_create %}
+files_may_create:
+{%- for file in files_may_create %}
+  - {{ file }}
+{%- endfor %}
+{%- endif %}
+
+[REASONING_MODE]
+- Mode: {{ reasoning_mode }}
+{%- if reasoning_mode == 'step_by_step' %}
+- If step_by_step: briefly outline your plan first, then apply it
+{%- endif %}
+- Keep reasoning compact and focused on decisions that affect code
+
+[OUTPUT_FORMAT]
+- Primary format: markdown
+- Required sections in the final answer (in this order):
+
+CHANGES_SUMMARY:
+- Bullet list summarizing what you changed and why
+- Mention which files changed
+
+IMPLEMENTATION_NOTES:
+- Short explanation of important design/refactoring decisions
+- Point out any non-obvious tradeoffs or constraints
+
+RISK_CHECKS:
+- Potential risks or edge cases introduced or exposed by changes
+- Any assumptions made that should be verified
+
+NEXT_STEPS:
+- Follow-up tasks, tests, or cleanup recommended
+- Additional files that should be loaded in future workstreams
+
+- When showing code, prefer minimal focused snippets or short unified diff blocks
+
+[VALIDATION]
+- Before final answer, self-check that:
+  - [ ] Changes match stated OBJECTIVE
+  - [ ] All CONSTRAINTS respected
+  - [ ] No obvious syntax or structural errors
+- If you detect blocking ambiguity, STOP and output only:
+  "CLARIFICATION_NEEDED: {{your concise questions}}"
+
+[TESTS_AND_VALIDATION]
+required_checks:
+{%- for check in required_checks %}
+  - {{ check }}
+{%- endfor %}
+{%- if not required_checks %}
+  - No explicit tests specified; propose reasonable verification
+{%- endif %}
+acceptance_criteria:
+  - All required checks pass, or you explain why they cannot
+  - Code builds and runs without errors in documented workflows
+
+=== END_WORKSTREAM_V1.1 ===
+
+
+SECTION 7: EXECUTION ROADMAP & IMPLEMENTATION PHASES
+7.1 Phase 1: Foundation (Week 1) - Zero Breaking Changes
+Objective: Add V1.1 infrastructure alongside existing V1.0, maintain full backwards compatibility
+Tasks:
+	1.	Create V1.1 Template
+	∙	File: aider/templates/prompts/edit_prompt_v1.1.txt.j2
+	∙	Copy template from Section 6.2
+	∙	Test: Manually render with sample bundle, verify output
+	2.	Extend PromptEngine Class
+	∙	File: src/pipeline/prompts.py
+	∙	Add render_edit_prompt_v11() method
+	∙	Add inference functions: _infer_classification(), _infer_role(), _determine_reasoning_mode()
+	∙	Test: Unit tests for inference logic with edge cases
+	3.	Add CLI Flag for Template Version
+	∙	File: scripts/run_workstream.py
+	∙	Add argument: --template-version {v1.0,v1.1}
+	∙	Default: v1.0 (preserve existing behavior)
+	∙	Pass to orchestrator context
+	4.	Database Schema Migration - Add patches Table
+	∙	File: schema/migrations/001_add_patches_table.sql
+	∙	Execute: python scripts/init_db.py --migration 001
+	∙	Test: Verify table exists, indexes created
+Acceptance Criteria:
+
+# All existing workstreams still work
+python scripts/run_workstream.py --ws-id ws-hello-world
+# Exit code: 0
+
+# V1.1 template can be invoked explicitly
+python scripts/run_workstream.py --ws-id ws-hello-world --template-version v1.1
+# Exit code: 0
+# Verify in logs: "Using template version: v1.1"
+
+# Unit tests pass
+pytest tests/pipeline/test_prompts.py -v
+# All tests green
+
+
+Rollback Plan: Remove --template-version flag, delete V1.1 template file. No schema changes affect existing queries.
+7.2 Phase 2: Patch Capture (Week 2) - Additive Feature
+Objective: Implement patch artifact capture without affecting existing execution flow
+Tasks:
+	1.	Implement capture_patch() Function
+	∙	File: src/pipeline/orchestrator.py
+	∙	Add function from Section 4.2
+	∙	Create .ledger/patches/ directory on first run
+	∙	Test: Execute workstream, verify patch file created
+	2.	Implement validate_patch_scope() Function
+	∙	File: src/pipeline/orchestrator.py
+	∙	Add validation from Section 4.2
+	∙	Test: Intentionally violate scope, verify detection
+	3.	Extend run_edit_step() to Capture Patches
+	∙	File: src/pipeline/orchestrator.py
+	∙	Add patch capture after Aider execution
+	∙	Add scope validation before marking success
+	∙	Record to patches table
+	∙	Test: Full orchestration run, verify patch in database
+	4.	Add --capture-patch CLI Flag
+	∙	File: scripts/run_workstream.py
+	∙	Add boolean flag (default: False for backwards compatibility)
+	∙	Pass to orchestrator context
+	∙	Test: Compare runs with/without flag
+Acceptance Criteria:
+
+# Existing behavior unchanged (no flag)
+python scripts/run_workstream.py --ws-id ws-hello-world
+# No patch files created
+
+# Patch capture enabled explicitly
+python scripts/run_workstream.py --ws-id ws-hello-world --capture-patch
+# Patch file exists: .ledger/patches/ws-hello-world-{run_id}.patch
+# Database record exists: SELECT * FROM patches WHERE ws_id='ws-hello-world'
+
+# Scope violation detection works
+# Create bundle with files_scope=['a.py'], have Aider modify 'b.py'
+python scripts/run_workstream.py --ws-id ws-scope-test --capture-patch
+# Exit code: 1
+# Error: "File 'b.py' modified but not in files_scope"
+
+
+Rollback Plan: Remove --capture-patch flag, revert run_edit_step() changes. Patches table remains (harmless).
+7.3 Phase 3: Classification Schema Extension (Week 3) - Backwards Compatible
+Objective: Extend workstream schema with optional classification fields
+Tasks:
+	1.	Update Workstream Schema
+	∙	File: schema/workstream.schema.json
+	∙	Add classification object (optional)
+	∙	Add prompt_config object (optional)
+	∙	Add oscillation_threshold to circuit_breaker (optional)
+	∙	Document in schema description
+	2.	Update Validation Script
+	∙	File: scripts/validate_workstreams.py
+	∙	Add validation for new fields
+	∙	Maintain acceptance of bundles without new fields
+	∙	Test: Validate old bundles (should pass), validate bundles with classification (should pass)
+	3.	Create Example Bundles
+	∙	File: workstreams/example_with_classification.json
+	∙	Show all new optional fields populated
+	∙	Add to documentation
+	4.	Migrate Existing Bundles (Optional)
+	∙	Script: scripts/migrate_bundles_to_v11.py
+	∙	Read all bundles, infer classifications, write back
+	∙	Run: Manual execution, not automated
+	∙	Backup original bundles first
+Acceptance Criteria:
+
+# Old bundles still validate
+python scripts/validate_workstreams.py
+# All bundles valid
+
+# New bundle with classification validates
+cp workstreams/example_with_classification.json workstreams/ws-test-class.json
+python scripts/validate_workstreams.py
+# ws-test-class: VALID
+
+# Schema validation catches invalid enums
+# Edit ws-test-class.json: "complexity": "invalid_value"
+python scripts/validate_workstreams.py
+# ws-test-class: ERROR - Invalid complexity: invalid_value
+
+
+Rollback Plan: Revert schema file, revert validation script. Existing bundles unaffected.
+7.4 Phase 4: Oscillation Detection (Week 4) - Circuit Breaker Enhancement
+Objective: Add diff hash tracking to prevent flip-flop loops
+Tasks:
+	1.	Extend CircuitBreaker Class
+	∙	File: src/pipeline/circuit_breakers.py
+	∙	Add check_oscillation() method from Section 4.4
+	∙	Modify should_stop() to check diff hash
+	∙	Test: Mock scenario with repeated diffs, verify trip
+	2.	Integrate with FIX Loops
+	∙	File: src/pipeline/orchestrator.py
+	∙	In run_static_with_fix() and run_runtime_with_fix()
+	∙	After generating fix patch, check for oscillation
+	∙	Trip circuit if detected
+	∙	Test: Force oscillation, verify graceful failure
+	3.	Add Database Queries for Recent Patches
+	∙	File: src/pipeline/db.py
+	∙	Add get_recent_patches() from Section 4.3
+	∙	Test: Insert patches, query, verify ordering
+Acceptance Criteria:
+
+# Oscillation detected and circuit trips
+# Create scenario: Aider makes change X, linter fails, Aider reverts to Y, linter passes, Aider makes X again
+python scripts/run_workstream.py --ws-id ws-oscillate-test --capture-patch
+# Exit code: 1
+# Error: "Circuit breaker tripped: OSCILLATION_DETECTED"
+# Database event recorded: SELECT * FROM events WHERE event_type='circuit_breaker_trip'
+
+
+Rollback Plan: Revert circuit_breakers.py, remove database query function. No data loss.
+7.5 Phase 5: Production Rollout (Week 5) - Make V1.1 Default
+Objective: Switch default template to V1.1, monitor production workstreams
+Tasks:
+	1.	Change Default Template Version
+	∙	File: scripts/run_workstream.py
+	∙	Change --template-version default from v1.0 to v1.1
+	∙	Document in CHANGELOG.md
+	2.	Enable Patch Capture by Default
+	∙	File: scripts/run_workstream.py
+	∙	Change --capture-patch default to True
+	∙	Add --no-capture-patch flag for opt-out
+	3.	Add Monitoring Dashboard Queries
+	∙	File: scripts/workstream_metrics.py (new utility)
+	∙	Query average fix attempts before/after V1.1
+	∙	Query first-pass success rate by template version
+	∙	Query circuit breaker trip reasons
+	4.	Run A/B Analysis
+	∙	Select 20 historical workstreams
+	∙	Re-run with V1.1 template
+	∙	Compare metrics: success rate, fix attempts, completion time
+	∙	Document findings
+Acceptance Criteria:
+
+# V1.1 is now default
+python scripts/run_workstream.py --ws-id ws-hello-world
+# Logs show: "Using template version: v1.1"
+
+# Metrics show improvement
+python scripts/workstream_metrics.py --compare-templates
+# Output:
+# V1.0: Average fix attempts = 2.3, First-pass success = 45%
+# V1.1: Average fix attempts = 1.6, First-pass success = 62%
+# Improvement: -30% fix attempts, +38% first-pass success
+
+
+Rollback Plan: Change defaults back to V1.0 and --no-capture-patch. No breaking changes.
+
+SECTION 8: QUALITY GATES & SUCCESS METRICS
+8.1 Quality Gates (Must Pass Before Next Phase)
+Phase 1 → Phase 2 Gate:
+	∙	All existing unit tests pass: pytest tests/ -v
+	∙	V1.1 template renders without Jinja2 errors for all example bundles
+	∙	Manual test: V1.0 and V1.1 both complete successfully on ws-hello-world
+	∙	Code review: No hardcoded paths, proper error handling in inference functions
+Phase 2 → Phase 3 Gate:
+	∙	Patch files created in .ledger/patches/ with correct naming
+	∙	Database patches table populated with valid data
+	∙	Scope violation detection blocks workstream (test with intentional violation)
+	∙	Patch capture adds <5% overhead to execution time
+	∙	Code review: Proper file handling, no resource leaks
+Phase 3 → Phase 4 Gate:
+	∙	Schema validator accepts both old and new bundle formats
+	∙	At least 5 production bundles migrated with classifications
+	∙	Classification inference matches manual classification (manual spot-check)
+	∙	Documentation updated: workstream authoring guide includes classification
+Phase 4 → Phase 5 Gate:
+	∙	Oscillation detection successfully trips circuit in controlled test
+	∙	No false positives: 20 historical workstreams re-run, none trip oscillation incorrectly
+	∙	Performance: Oscillation check adds <1 second per fix attempt
+	∙	Code review: Hash generation is deterministic, database queries efficient
+Phase 5 Completion Gate:
+	∙	A/B analysis shows ≥15% improvement in first-pass success rate
+	∙	Average fix attempts reduced by ≥20%
+	∙	Zero production incidents from V1.1 deployment (monitor for 1 week)
+	∙	All 17 existing workstreams complete successfully with V1.1
+8.2 Success Metrics (Continuous Monitoring)
+Primary Metrics (Query from database):
+
+-- First-pass success rate by template version
+SELECT 
+    metadata->>'template_version' as version,
+    COUNT(*) as total_workstreams,
+    SUM(CASE WHEN fix_attempts = 0 THEN 1 ELSE 0 END) as first_pass_success,
+    ROUND(100.0 * SUM(CASE WHEN fix_attempts = 0 THEN 1 ELSE 0 END) / COUNT(*), 2) as success_rate_pct
+FROM (
+    SELECT 
+        ws_id,
+        (SELECT COUNT(*) FROM step_attempts sa 
+         WHERE sa.ws_id = w.ws_id AND sa.step_name LIKE 'fix_%') as fix_attempts,
+        (SELECT payload FROM events e 
+         WHERE e.ws_id = w.ws_id AND e.event_type = 'edit_start' 
+         ORDER BY timestamp DESC LIMIT 1) as metadata
+    FROM workstreams w
+    WHERE status = 'done'
+) subq
+GROUP BY version;
+
+-- Average fix attempts per workstream
+SELECT 
+    metadata->>'template_version' as version,
+    AVG(fix_attempts) as avg_fix_attempts,
+    MIN(fix_attempts) as min_fix_attempts,
+    MAX(fix_attempts) as max_fix_attempts
+FROM (
+    SELECT 
+        ws_id,
+        (SELECT COUNT(*) FROM step_attempts sa 
+         WHERE sa.ws_id = w.ws_id AND sa.step_name LIKE 'fix_%') as fix_attempts,
+        (SELECT payload FROM events e 
+         WHERE e.ws_id = w.ws_id AND e.event_type = 'edit_start' 
+         ORDER BY timestamp DESC LIMIT 1) as metadata
+    FROM workstreams w
+    WHERE status = 'done'
+) subq
+GROUP BY version;
+
+-- Circuit breaker trip reasons distribution
+SELECT 
+    payload->>'reason' as trip_reason,
+    COUNT(*) as occurrences
+FROM events
+WHERE event_type = 'circuit_breaker_trip'
+GROUP BY trip_reason
+ORDER BY occurrences DESC;
+
+-- Patch validation failures (scope violations)
+SELECT 
+    ws_id,
+    payload->>'violations' as violations
+FROM events
+WHERE event_type = 'edit_scope_violation'
+ORDER BY timestamp DESC
+LIMIT 20;
+
+
+Secondary Metrics:
+	∙	Execution time: Compare V1.0 vs V1.1 average completion time (should be similar)
+	∙	Patch file size: Average lines per patch (monitor for unusually large changes)
+	∙	Oscillation frequency: How often does oscillation detection trigger (target: <2% of workstreams)
+	∙	Template rendering time: Should be <100ms for 99th percentile
+8.3 Monitoring Dashboard (PowerShell Script)
+File: scripts/workstream_metrics.ps1
+
+# Workstream Metrics Dashboard
+param(
+    [switch]$CompareTemplates,
+    [switch]$ShowRecent,
+    [int]$Days = 7
+)
+
+$dbPath = "state/pipeline.db"
+
+function Query-Database($sql) {
+    $result = sqlite3 $dbPath "$sql"
+    return $result
+}
+
+if ($CompareTemplates) {
+    Write-Host "`n=== Template Version Comparison ===" -ForegroundColor Cyan
+    
+    $query = @"
+SELECT 
+    COALESCE(json_extract(e.payload, '$.template_version'), 'v1.0') as version,
+    COUNT(DISTINCT w.ws_id) as total_workstreams,
+    PRINTF('%.1f', AVG(CAST((SELECT COUNT(*) FROM step_attempts sa 
+        WHERE sa.ws_id = w.ws_id AND sa.step_name LIKE 'fix_%') AS FLOAT))) as avg_fix_attempts,
+    PRINTF('%.1f%%', 100.0 * SUM(CASE WHEN 
+        (SELECT COUNT(*) FROM step_attempts sa 
+         WHERE sa.ws_id = w.ws_id AND sa.step_name LIKE 'fix_%') = 0 
+        THEN 1 ELSE 0 END) / COUNT(DISTINCT w.ws_id)) as first_pass_pct
+FROM workstreams w
+LEFT JOIN events e ON e.ws_id = w.ws_id AND e.event_type = 'edit_start'
+WHERE w.status = 'done'
+GROUP BY version
+ORDER BY version;
+"@
+    
+    Query-Database $query | ConvertFrom-Csv -Delimiter '|' | Format-Table
+}
+
+if ($ShowRecent) {
+    Write-Host "`n=== Recent Workstream Results (Last $Days days) ===" -ForegroundColor Cyan
+    
+    $cutoff = (Get-Date).AddDays(-$Days).ToString("yyyy-MM-ddTHH:mm:ss")
+    
+    $query = @"
+SELECT 
+    w.ws_id,
+    w.status,
+    PRINTF('%.0f', (julianday(w.ended_at) - julianday(w.started_at)) * 1440) as duration_min,
+    (SELECT COUNT(*) FROM step_attempts sa 
+     WHERE sa.ws_id = w.ws_id AND sa.step_name LIKE 'fix_%') as fix_attempts
+FROM workstreams w
+WHERE w.started_at > '$cutoff'
+ORDER BY w.started_at DESC
+LIMIT 20;
+"@
+    
+    Query-Database $query | ConvertFrom-Csv -Delimiter '|' | Format-Table
+}
+
+# Circuit breaker statistics
+Write-Host "`n=== Circuit Breaker Statistics ===" -ForegroundColor Cyan
+
+$cbQuery = @"
+SELECT 
+    json_extract(payload, '$.reason') as reason,
+    COUNT(*) as count
+FROM events
+WHERE event_type = 'circuit_breaker_trip'
+GROUP BY reason
+ORDER BY count DESC;
+"@
+
+Query-Database $cbQuery | ConvertFrom-Csv -Delimiter '|' | Format-Table
+
+
+SECTION 9: TOOL-SPECIFIC ADAPTATIONS (ADVANCED)
+9.1 When to Create Tool-Specific Templates
+Decision Criteria: Only create tool-specific variants if empirical testing shows ≥20% improvement in success metrics for that tool.
+Testing Protocol:
+	1.	Run same 10 workstreams through Aider, Codex, Claude using universal V1.1 template
+	2.	Measure: first-pass success rate, fix attempts, completion time
+	3.	If one tool shows significantly worse performance (>20% delta), investigate cause
+	4.	If cause is tool behavior (not task complexity), create tool-specific template
+Example Analysis:
+
+Universal V1.1 Results (10 workstreams):
+- Aider: 70% first-pass success, avg 1.8 fix attempts
+- Codex: 65% first-pass success, avg 2.1 fix attempts
+- Claude: 80% first-pass success, avg 1.3 fix attempts
+
+Conclusion: Claude performs better (15% above average)
+Action: Universal template sufficient, no tool-specific needed
+
+Hypothetical Scenario:
+- Aider: 70% success
+- Codex: 40% success  ← 30% below average
+Action: Investigate Codex failures, consider Codex-specific template
+
+
+9.2 Aider-Specific Template (Only If Needed)
+Key Differences:
+	∙	Aider expects files to be passed via CLI args, not listed in prompt
+	∙	Aider has native /add and /drop commands (avoid in prompt)
+	∙	Aider works best with minimal, directive prompts
+Modified Sections:
+
+[FILE_SCOPE]
+NOTE: Files in ENTRY_FILES are already loaded via CLI.
+You do not need to run /add commands.
+
+Primary focus files:
+{list key files from ENTRY_FILES}
+
+You may reference other files conceptually, but do not assume they are loaded.
+If you need additional files beyond ENTRY_FILES, mention them in NEXT_STEPS.
+
+
+Template Location: aider/templates/prompts/edit_prompt_v1.1_aider.txt.j2
+Selection Logic in PromptEngine:
+
+def select_template_variant(self, target_app: str, template_version: str) -> str:
+    """Select appropriate template file based on tool"""
+    if template_version == 'v1.1':
+        if target_app == 'aider':
+            template_name = 'edit_prompt_v1.1_aider.txt.j2'
+        elif target_app == 'codex':
+            template_name = 'edit_prompt_v1.1_codex.txt.j2'
+        else:
+            template_name = 'edit_prompt_v1.1.txt.j2'  # Universal
+    else:
+        template_name = 'edit_prompt.txt.j2'  # Legacy V1.0
+    
+    return template_name
+
+
+9.3 Classification-Based Tool Routing
+Objective: Automatically select best tool based on workstream classification
+Routing Matrix:
+
+
+
+|Complexity|Quality   |Domain|Primary Tool     |Fallback Tool|
+|----------|----------|------|-----------------|-------------|
+|simple    |standard  |code  |aider-gpt-4o-mini|aider        |
+|simple    |production|code  |aider            |codex        |
+|moderate  |standard  |code  |aider            |codex        |
+|moderate  |production|code  |aider-gpt-4      |claude       |
+|complex   |standard  |code  |aider-gpt-4      |claude       |
+|complex   |production|code  |claude-sonnet-4  |aider-gpt-4  |
+|enterprise|production|code  |claude-sonnet-4  |manual       |
+|any       |any       |docs  |aider            |claude       |
+|any       |any       |tests |aider            |codex        |
+
+Implementation:
+
+# NEW MODULE: src/pipeline/tool_router.py
+
+from typing import Dict, Any, Optional
+from dataclasses import dataclass
+
+@dataclass
+class ToolSelection:
+    """Selected tool with reasoning"""
+    primary: str
+    fallback: str
+    reason: str
+
+class ToolRouter:
+    """Route workstreams to appropriate AI tools based on classification"""
+    
+    ROUTING_TABLE = {
+        ('simple', 'standard', 'code'): ('aider-gpt-4o-mini', 'aider'),
+        ('simple', 'production', 'code'): ('aider', 'codex'),
+        ('moderate', 'standard', 'code'): ('aider', 'codex'),
+        ('moderate', 'production', 'code'): ('aider-gpt-4', 'claude'),
+        ('complex', 'standard', 'code'): ('aider-gpt-4', 'claude'),
+        ('complex', 'production', 'code'): ('claude-sonnet-4', 'aider-gpt-4'),
+        ('enterprise', 'production', 'code'): ('claude-sonnet-4', 'manual'),
+    }
+    
+    DOMAIN_OVERRIDES = {
+        'docs': ('aider', 'claude'),
+        'tests': ('aider', 'codex'),
+    }
+    
+    def select_tool(self, bundle: Dict[str, Any]) -> ToolSelection:
+        """Select appropriate tool for workstream"""
+        # Get classification (explicit or inferred)
+        classification = bundle.get('classification')
+        if not classification:
+            from .prompts import PromptEngine
+            engine = PromptEngine()
+            classification = engine._infer_classification(bundle)
+        
+        complexity = classification['complexity']
+        quality = classification['quality']
+        domain = classification['domain']
+        
+        # Check domain-specific overrides first
+        if domain in self.DOMAIN_OVERRIDES:
+            primary, fallback = self.DOMAIN_OVERRIDES[domain]
+            return ToolSelection(
+                primary=primary,
+                fallback=fallback,
+                reason=f'Domain-specific routing for {domain}'
+            )
+        
+        # Look up in routing table
+        key = (complexity, quality, domain)
+        if key in self.ROUTING_TABLE:
+            primary, fallback = self.ROUTING_TABLE[key]
+            return ToolSelection(
+                primary=primary,
+                fallback=fallback,
+                reason=f'Classification-based routing: {key}'
+            )
+        
+        # Fallback to bundle.tool or default
+        explicit_tool = bundle.get('tool', 'aider')
+        return ToolSelection(
+            primary=explicit_tool,
+            fallback='aider',
+            reason='Explicit tool from bundle or default'
+        )
+
+
+Integration with Orchestrator:
+
+# MODIFIED: src/pipeline/orchestrator.py
+
+def run_single_workstream_from_bundle(ws_id, run_id, context):
+    """Enhanced entry point with tool routing"""
+    bundle = bundles.load_bundle(ws_id)
+    
+    # NEW: Route to appropriate tool
+    router = ToolRouter()
+    tool_selection = router.select_tool(bundle)
+    
+    # Record routing decision
+    db.record_event(run_id, ws_id, 'tool_routed', {
+        'primary': tool_selection.primary,
+        'fallback': tool_selection.fallback,
+        'reason': tool_selection.reason
+    })
+    
+    # Override context with selected tool
+    context['target_app'] = tool_selection.primary
+    context['fallback_app'] = tool_selection.fallback
+    
+    # Continue with normal orchestration
+    return run_workstream(run_id, ws_id, bundle, context)
+
+
+SECTION 10: REFERENCE SPECIFICATIONS
+10.1 Complete File Structure After Implementation
+
+Complete-AI-Development-Pipeline/
+├── .ledger/
+│   └── patches/                    # NEW: Patch artifacts
+│       └── ws-{id}-{run}.patch
+│
+├── aider/
+│   └── templates/
+│       └── prompts/
+│           ├── edit_prompt.txt.j2              # V1.0 (legacy)
+│           ├── edit_prompt_v1.1.txt.j2         # NEW: Universal V1.1
+│           ├── edit_prompt_v1.1_aider.txt.j2   # NEW: Aider-specific (optional)
+│           └── fix_prompt.txt.j2               # Existing
+│
+├── config/
+│   ├── tool_profiles.json          # Existing
+│   └── circuit_breakers.yaml       # Enhanced with oscillation_threshold
+│
+├── schema/
+│   ├── workstream.schema.json      # Enhanced with classification, prompt_config
+│   ├── schema.sql                  # Enhanced with patches table
+│   └── migrations/
+│       └── 001_add_patches_table.sql  # NEW
+│
+├── scripts/
+│   ├── run_workstream.py           # Enhanced: --template-version, --capture-patch
+│   ├── validate_workstreams.py     # Enhanced: V1.1 field validation
+│   ├── workstream_metrics.ps1      # NEW: Monitoring dashboard
+│   └── migrate_bundles_to_v11.py   # NEW: Optional migration tool
+│
+├── src/
+│   └── pipeline/
+│       ├── orchestrator.py         # Enhanced: patch capture, validation
+│       ├── prompts.py              # MAJOR REFACTOR: PromptEngine class, V1.1 rendering
+│       ├── circuit_breakers.py     # Enhanced: oscillation detection
+│       ├── db.py                   # Enhanced: patch operations
+│       └── tool_router.py          # NEW: Classification-based routing
+│
+├── tests/
+│   └── pipeline/
+│       ├── test_prompts.py         # Enhanced: V1.1 template tests
+│       ├── test_orchestrator_patches.py  # NEW: Patch capture tests
+│       └── test_circuit_breakers.py      # Enhanced: Oscillation tests
+│
+└── workstreams/
+    ├── ws-hello-world.json         # Existing (V1.0 format, still valid)
+    └── example_with_classification.json  # NEW: Shows V1.1 fields
+
+
+10.2 Critical Environment Variables
+
+# Database location
+export PIPELINE_DB_PATH="state/pipeline.db"
+
+# Workstream directory
+export PIPELINE_WORKSTREAM_DIR="workstreams"
+
+# Template version override (CLI takes precedence)
+export PIPELINE_TEMPLATE_VERSION="v1.1"
+
+# Patch capture default
+export PIPELINE_CAPTURE_PATCHES="true"
+
+# Dry run mode
+export PIPELINE_DRY_RUN="0"
+
+
+10.3 Prompt Template Version History
+
+
+
+|Version|Release Date|Key Features                                                                                |Status |
+|-------|------------|--------------------------------------------------------------------------------------------|-------|
+|v1.0   |2025-01-01  |Basic Jinja2 template, task list, file scope                                                |Legacy |
+|v1.1   |2025-11-19  |Structured sections, role assignment, classification, reasoning modes, validation checklists|Current|
+|v2.0   |Future      |Multi-agent coordination, explicit memory management, tool-specific optimizations           |Planned|
+
+10.4 Breaking Changes Policy
+Commitment: No breaking changes to existing workstream bundles. All enhancements must be backwards compatible.
+Versioning Strategy:
+	∙	Bundle Format: Optional new fields only. Old bundles remain valid.
+	∙	Templates: New templates added alongside old, selected by version flag.
+	∙	Database Schema: Additive only. No column drops or renames.
+	∙	CLI Arguments: New flags use long names with defaults preserving old behavior.
+Testing Before Release:
+	1.	Run all 17 historical workstreams with new code
+	2.	Verify zero failures, identical outcomes
+	3.	Check execution time delta <10%
+	4.	Manual review of generated prompts for regression
+
+SECTION 11: AGENTIC AI EXECUTION CHECKLIST
+11.1 Pre-Execution Validation
+BEFORE implementing any changes, an agentic AI must verify:
+	∙	Repository path exists: C:\Users\richg\ALL_AI\AI_Dev_Pipeline (or configured path)
+	∙	Database file exists: state/pipeline.db
+	∙	Python version ≥3.8: python --version
+	∙	Required packages installed: pip list | grep -E 'jinja2|jsonschema'
+	∙	Git is available: git --version
+	∙	Aider is available: aider --version (or configured tool)
+	∙	All existing tests pass: pytest tests/pipeline/ -v
+	∙	Backup created: cp -r workstreams workstreams.backup.$(date +%Y%m%d)
+11.2 Implementation Order (STRICT SEQUENCE)
+DO NOT skip steps. DO NOT proceed if tests fail.
+	1.	✅ Phase 1 Week 1: Foundation
+	∙	Task 1.1: Create edit_prompt_v1.1.txt.j2
+	∙	Task 1.2: Extend prompts.py with PromptEngine class
+	∙	Task 1.3: Add --template-version to run_workstream.py
+	∙	Task 1.4: Create 001_add_patches_table.sql, run migration
+	∙	GATE: Run pytest tests/pipeline/test_prompts.py -v → All pass
+	2.	✅ Phase 2 Week 2: Patch Capture
+	∙	Task 2.1: Implement capture_patch() in orchestrator.py
+	∙	Task 2.2: Implement validate_patch_scope() in orchestrator.py
+	∙	Task 2.3: Modify run_edit_step() to call capture functions
+	∙	Task 2.4: Add --capture-patch flag to run_workstream.py
+	∙	GATE: Manual test with scope violation → Workstream fails correctly
+	3.	✅ Phase 3 Week 3: Classification
+	∙	Task 3.1: Update workstream.schema.json with new fields
+	∙	Task 3.2: Extend validate_workstreams.py validation logic
+	∙	Task 3.3: Create example_with_classification.json
+	∙	Task 3.4: Document in docs/workstream_authoring_guide.md
+	∙	GATE: Run python scripts/validate_workstreams.py → All valid
+	4.	✅ Phase 4 Week 4: Oscillation Detection
+	∙	Task 4.1: Add check_oscillation() to circuit_breakers.py
+	∙	Task 4.2: Modify should_stop() to check diff hash
+	∙	Task 4.3: Integrate into FIX loops in orchestrator.py
+	∙	Task 4.4: Add get_recent_patches() to db.py
+	∙	GATE: Force oscillation in test → Circuit trips with correct reason
+	5.	✅ Phase 5 Week 5: Production Rollout
+	∙	Task 5.1: Change defaults to V1.1 in run_workstream.py
+	∙	Task 5.2: Run A/B analysis on 20 historical workstreams
+	∙	Task 5.3: Create workstream_metrics.ps1
+	∙	Task 5.4: Monitor production for 1 week
+	∙	GATE: Metrics show ≥15% improvement OR rollback if regression
+11.3 Rollback Procedures
+If Phase N fails quality gate, execute rollback for Phase N:
+Phase 1 Rollback:
+
+# Remove V1.1 template
+rm aider/templates/prompts/edit_prompt_v1.1.txt.j2
+
+# Revert prompts.py
+git checkout src/pipeline/prompts.py
+
+# Remove CLI flag
+git checkout scripts/run_workstream.py
+
+# Patches table can remain (unused)
+
+
+Phase 2 Rollback:
+
+# Revert orchestrator
+git checkout src/pipeline/orchestrator.py
+
+# Remove CLI flag
+git checkout scripts/run_workstream.py
+
+
+Phase 3-5 Rollback: Similar pattern - revert modified files via git
+11.4 Success Verification Commands
+After each phase, run these commands. All must succeed.:
+
+# Unit tests
+pytest tests/pipeline/ -v
+# Expected: All tests PASSED
+
+# Schema validation
+python scripts/validate_workstreams.py
+# Expected: All workstreams VALID
+
+# Integration test (dry run)
+python scripts/run_workstream.py --ws-id ws-hello-world --dry-run
+# Expected: Exit code 0, status "done"
+
+# Database integrity
+python scripts/db_inspect.py --check-schema
+# Expected: No errors, all tables present
+
+# Template rendering test
+python -c "
+from src.pipeline.prompts import PromptEngine
+import json
+bundle = json.load(open('workstreams/ws-hello-world.json'))
+engine = PromptEngine()
+from src.pipeline.prompts import PromptContext
+context = PromptContext()
+prompt = engine.render_edit_prompt_v11(bundle, context)
+print('SUCCESS' if len(prompt) > 100 else 'FAIL')
+"
+# Expected: SUCCESS
+
+
+SECTION 12: FAILURE MODES & RECOVERY
+12.1 Common Failure Scenarios
+Scenario 1: Jinja2 Template Syntax Error
+Symptoms:
+
+jinja2.exceptions.TemplateSyntaxError: unexpected '}'
+
+
+Diagnosis:
+	∙	Check edit_prompt_v1.1.txt.j2 for unmatched braces
+	∙	Verify all {% %} blocks are closed
+	∙	Ensure variables use {{ }} not { }
+Recovery:
+
+# Test template rendering in isolation
+python -c "
+from jinja2 import Environment, FileSystemLoader
+env = Environment(loader=FileSystemLoader('aider/templates/prompts'))
+template = env.get_template('edit_prompt_v1.1.txt.j2')
+# If this fails, syntax error in template
+"
+
+
+Scenario 2: Patch Capture Permission Denied
+Symptoms:
+
+PermissionError: [Errno 13] Permission denied: '.ledger/patches/...'
+
+
+Diagnosis:
+	∙	.ledger/patches/ directory doesn’t exist or wrong permissions
+	∙	Running as different user than orchestrator expects
+Recovery:
+
+# Ensure directory exists with correct permissions
+mkdir -p .ledger/patches
+chmod 755 .ledger/patches
+
+
+Scenario 3: Scope Validation False Positive
+Symptoms:
+
+Workstream failed: File 'src/module/__pycache__/file.pyc' modified but not in files_scope
+
+
+Diagnosis:
+	∙	Patch includes files that should be ignored (bytecode, temp files)
+	∙	Need to filter out non-source files in validation
+Recovery:
+
+# Enhance validate_patch_scope() to ignore common non-source files
+IGNORE_PATTERNS = ['__pycache__', '.pyc', '.pyo', '.pyd', '.so', '.dll']
+
+def should_ignore_file(filepath):
+    return any(pattern in filepath for pattern in IGNORE_PATTERNS)
+
+def validate_patch_scope(patch_artifact, bundle):
+    violations = []
+    for modified_file in patch_artifact.files_modified:
+        if should_ignore_file(modified_file):
+            continue  # Skip ignored files
+        # ... rest of validation
+
+
+Scenario 4: Circuit Breaker False Trip
+Symptoms:
+
+Circuit breaker tripped: OSCILLATION_DETECTED, but changes were different
+
+
+Diagnosis:
+	∙	Diff hash collision (unlikely but possible)
+	∙	Threshold too low (2 occurrences too strict)
+Recovery:
+
+# Increase oscillation_threshold in bundle
+{
+  "circuit_breaker": {
+    "oscillation_threshold": 3  // Was 2, increase to 3
+  }
+}
+
+
+12.2 Database Corruption Recovery
+Symptoms:
+	∙	SQLite errors: “database disk image is malformed”
+	∙	Queries hang indefinitely
+	∙	Foreign key constraint violations
+Recovery Procedure:
+
+# 1. Stop all orchestrator processes
+pkill -f run_workstream.py
+
+# 2. Backup corrupted database
+cp state/pipeline.db state/pipeline.db.corrupted.$(date +%Y%m%d_%H%M%S)
+
+# 3. Dump to SQL
+sqlite3 state/pipeline.db .dump > pipeline_dump.sql
+
+# 4. Rebuild database
+rm state/pipeline.db
+python scripts/init_db.py
+
+# 5. Restore data
+sqlite3 state/pipeline.db < pipeline_dump.sql
+
+# 6. Verify integrity
+sqlite3 state/pipeline.db "PRAGMA integrity_check;"
+# Expected: ok
+
+# 7. Verify foreign keys
+sqlite3 state/pipeline.db "PRAGMA foreign_key_check;"
+# Expected: (empty result)
+
+
+12.3 Performance Degradation
+Symptoms:
+	∙	Workstreams taking >2x normal time
+	∙	Database queries slow (>1 second for simple SELECT)
+	∙	High CPU/memory usage
+Diagnosis:
+
+# Check database size
+ls -lh state/pipeline.db
+# If >1GB, may need cleanup
+
+# Check query performance
+sqlite3 state/pipeline.db "EXPLAIN QUERY PLAN SELECT * FROM workstreams WHERE ws_id = 'ws-test';"
+# Look for "SCAN TABLE" (bad) vs "SEARCH TABLE USING INDEX" (good)
+
+# Check for missing indexes
+sqlite3 state/pipeline.db ".schema" | grep "CREATE INDEX"
+# Verify indexes exist on foreign keys
+
+
+Recovery:
+
+# Vacuum database (reclaim space, rebuild indexes)
+sqlite3 state/pipeline.db "VACUUM;"
+
+# Archive old runs (keep last 90 days)
+python -c "
+import sqlite3
+from datetime import datetime, timedelta
+conn = sqlite3.connect('state/pipeline.db')
+cutoff = (datetime.now() - timedelta(days=90)).isoformat()
+conn.execute('DELETE FROM events WHERE timestamp < ?', (cutoff,))
+conn.execute('DELETE FROM step_attempts WHERE started_at < ?', (cutoff,))
+conn.commit()
+"
+
+# Re-analyze for query optimizer
+sqlite3 state/pipeline.db "ANALYZE;"
+
+
+SECTION 13: APPENDIX - COMPLETE CODE EXAMPLES
+13.1 Example Workstream Bundle (V1.1 Format)
+File: workstreams/example_v11_complete.json
+
+{
+  "id": "ws-example-v11",
+  "openspec_change": "OS-2025-001",
+  "ccpm_issue": 2025,
+  "gate": 2,
+  
+  "files_scope": [
+    "src/pipeline/orchestrator.py",
+    "src/pipeline/prompts.py"
+  ],
+  "files_create": [
+    "src/pipeline/tool_router.py"
+  ],
+  
+  "tasks": [
+    "Implement classification-based tool routing in orchestrator",
+    "Create ToolRouter class with routing matrix",
+    "Integrate router into run_single_workstream_from_bundle()",
+    "Add unit tests for routing logic"
+  ],
+  
+  "acceptance_tests": [
+    "pytest tests/pipeline/test_tool_router.py -v",
+    "python -m mypy src/pipeline/tool_router.py --strict"
+  ],
+  
+  "depends_on": [],
+  
+  "tool": "aider",
+  
+  "circuit_breaker": {
+    "max_attempts": 5,
+    "max_error_repeats": 3,
+    "oscillation_threshold": 3
+  },
+  
+  "classification": {
+    "complexity": "complex",
+    "quality": "production",
+    "domain": "code"
+  },
+  
+  "prompt_config": {
+    "reasoning_mode": "step_by_step",
+    "template_version": "v1.1"
+  },
+  
+  "metadata": {
+    "owner": "pipeline-team",
+    "priority": "high",
+    "notes": "Part of Phase 3 enhancement: classification-based routing",
+    "estimated_duration_minutes": 120
+  }
+}
+
+
+13.2 Example Rendered Prompt (Output)
+Generated from bundle above:
+
+=== WORKSTREAM_V1.1 ===
+
+[HEADER]
+WORKSTREAM_ID: ws-example-v11
+CALLING_APP: orchestrator
+TARGET_APP: aider
+REPO_ROOT: /path/to/AI_Dev_Pipeline
+ENTRY_FILES: src/pipeline/orchestrator.py, src/pipeline/prompts.py
+
+ROLE: Senior Python development engineer and careful code reviewer
+
+CLASSIFICATION: complexity=complex; quality=production; domain=code
+
+[OBJECTIVE]
+Implement classification-based tool routing in orchestrator
+
+[CONTEXT]
+- Project: pipeline-team
+- Current state: As defined in existing codebase
+- Why this workstream: Part of Phase 3 enhancement: classification-based routing
+- Relevant architecture/constraints: Follow existing patterns in repository
+- Related tickets/docs: OpenSpec: OS-2025-001, CCPM Issue: 2025
+
+[CONSTRAINTS]
+- Must:
+  - Keep changes minimal and targeted to this workstream
+  - Preserve existing behavior unless explicitly requested
+  - Match existing code style and patterns in repository
+- Must NOT:
+  - Introduce new external dependencies unless clearly justified
+  - Make breaking changes to public APIs
+- Safety:
+  - Prefer minimal, well-scoped changes
+  - Preserve existing behavior unless explicitly requested
+
+[TASK_BREAKDOWN]
+- Main task type: implement_feature
+- Suggested steps:
+  1) Create ToolRouter class with routing matrix
+  2) Integrate router into run_single_workstream_from_bundle()
+  3) Add unit tests for routing logic
+- Focus areas:
+  - src/pipeline/orchestrator.py, src/pipeline/prompts.py
+
+[FILE_SCOPE]
+files_scope:
+  - src/pipeline/orchestrator.py
+  - src/pipeline/prompts.py
+files_may_create:
+  - src/pipeline/tool_router.py
+
+[REASONING_MODE]
+- Mode: step_by_step
+- If step_by_step: briefly outline your plan first, then apply it
+- Keep reasoning compact and focused on decisions that affect code
+
+[OUTPUT_FORMAT]
+- Primary format: markdown
+- Required sections in the final answer (in this order):
+
+CHANGES_SUMMARY:
+- Bullet list summarizing what you changed and why
+- Mention which files changed
+
+IMPLEMENTATION_NOTES:
+- Short explanation of important design/refactoring decisions
+- Point out any non-obvious tradeoffs or constraints
+
+RISK_CHECKS:
+- Potential risks or edge cases introduced or exposed by changes
+- Any assumptions made that should be verified
+
+NEXT_STEPS:
+- Follow-up tasks, tests, or cleanup recommended
+- Additional files that should be loaded in future workstreams
+
+- When showing code, prefer minimal focused snippets or short unified diff blocks
+
+[VALIDATION]
+- Before final answer, self-check that:
+  - [ ] Changes match stated OBJECTIVE
+  - [ ] All CONSTRAINTS respected
+  - [ ] No obvious syntax or structural errors
+- If you detect blocking ambiguity, STOP and output only:
+  "CLARIFICATION_NEEDED: {{your concise questions}}"
+
+[TESTS_AND_VALIDATION]
+required_checks:
+  - pytest tests/pipeline/test_tool_router.py -v
+  - python -m mypy src/pipeline/tool_router.py --strict
+acceptance_criteria:
+  - All required checks pass, or you explain why they cannot
+  - Code builds and runs without errors in documented workflows
+
+=== END_WORKSTREAM_V1.1 ===
+
+
+13.3 Example Patch File
+File: .ledger/patches/ws-example-v11-run-20251119T143022Z.patch
+
+diff --git a/src/pipeline/orchestrator.py b/src/pipeline/orchestrator.py
+index 1234567..89abcde 100644
+--- a/src/pipeline/orchestrator.py
++++ b/src/pipeline/orchestrator.py
+@@ -10,6 +10,7 @@ from . import db
+ from . import bundles
+ from . import worktree
+ from . import tools
++from . import tool_router
+ 
+ def run_single_workstream_from_bundle(ws_id, run_id, context):
+     """Execute a single workstream from its bundle definition"""
+@@ -20,6 +21,15 @@ def run_single_workstream_from_bundle(ws_id, run_id, context):
+     # Load bundle
+     bundle = bundles.load_bundle(ws_id)
+     
++    # NEW: Route to appropriate tool based on classification
++    router = tool_router.ToolRouter()
++    tool_selection = router.select_tool(bundle)
++    
++    db.record_event(run_id, ws_id, 'tool_routed', {
++        'primary': tool_selection.primary,
++        'fallback': tool_selection.fallback
++    })
++    
++    context['target_app'] = tool_selection.primary
++    
+     # Execute orchestration
+     return run_workstream(run_id, ws_id, bundle, context)
+
+diff --git a/src/pipeline/tool_router.py b/src/pipeline/tool_router.py
+new file mode 100644
+index 0000000..1234567
+--- /dev/null
++++ b/src/pipeline/tool_router.py
+@@ -0,0 +1,45 @@
++"""Tool routing based on workstream classification"""
++
++from typing import Dict, Any
++from dataclasses import dataclass
++
++@dataclass
++class ToolSelection:
++    """Selected tool with reasoning"""
++    primary: str
++    fallback: str
++    reason: str
++
++class ToolRouter:
++    """Route workstreams to appropriate AI tools"""
++    
++    ROUTING_TABLE = {
++        ('simple', 'standard', 'code'): ('aider-gpt-4o-mini', 'aider'),
++        ('moderate', 'production', 'code'): ('aider-gpt-4', 'claude'),
++        ('complex', 'production', 'code'): ('claude-sonnet-4', 'aider-gpt-4'),
++    }
++    
++    def select_tool(self, bundle: Dict[str, Any]) -> ToolSelection:
++        """Select tool based on classification"""
++        classification = bundle.get('classification', {})
++        complexity = classification.get('complexity', 'moderate')
++        quality = classification.get('quality', 'production')
++        domain = classification.get('domain', 'code')
++        
++        key = (complexity, quality, domain)
++        if key in self.ROUTING_TABLE:
++            primary, fallback = self.ROUTING_TABLE[key]
++            return ToolSelection(
++                primary=primary,
++                fallback=fallback,
++                reason=f'Classification: {key}'
++            )
++        
++        # Fallback to explicit tool or default
++        explicit = bundle.get('tool', 'aider')
++        return ToolSelection(
++            primary=explicit,
++            fallback='aider',
++            reason='Explicit or default'
++        )
+
+
+SECTION 14: FINAL SUMMARY FOR AGENTIC EXECUTION
+14.1 Critical Success Factors
+For an agentic AI to successfully execute this integration:
+	1.	Backwards Compatibility is Non-Negotiable: Every change must allow existing workstreams to continue functioning
+	2.	Incremental Implementation: Follow phases strictly, validate at each gate before proceeding
+	3.	Test-Driven: Write/update tests before modifying production code
+	4.	Database First: Extend schema before code that uses new fields
+	5.	Templates are Separate Files: Never inline prompts in Python code
+	6.	Classification is Inferred: Don’t require users to manually classify workstreams
+	7.	Patches are Audit Trail: Every change must be captured and validated
+	8.	Circuit Breakers Prevent Waste: Better to fail fast than loop infinitely
+14.2 Integration Sequence Summary
+
+Week 1: Add V1.1 infrastructure (templates, engine, flags)
+  → GATE: All tests pass, V1.0 still works
+  
+Week 2: Implement patch capture (artifacts, validation)
+  → GATE: Patches created, scope violations blocked
+  
+Week 3: Extend schema (classification, prompt_config)
+  → GATE: Old bundles still valid, new fields accepted
+  
+Week 4: Add oscillation detection (diff hash tracking)
+  → GATE: False loops prevented, no false positives
+  
+Week 5: Deploy to production (change defaults, monitor)
+  → GATE: Metrics show improvement or rollback
+
+
+14.3 What Success Looks Like
+After full implementation:
+
+# Create new workstream with classification
+cat > workstreams/ws-new-feature.json <<EOF
+{
+  "id": "ws-new-feature",
+  "tasks": ["Implement user authentication"],
+  "files_scope": ["src/auth/login.py"],
+  "classification": {
+    "complexity": "complex",
+    "quality": "production",
+    "domain": "code"
+  }
+}
+EOF
+
+# Execute with new system
+python scripts/run_workstream.py --ws-id ws-new-feature
+
+# System automatically:
+# 1. Routes to claude-sonnet-4 (complex + production)
+# 2. Generates V1.1 structured prompt with role/reasoning
+# 3. Executes EDIT phase via Claude
+# 4. Captures patch to .ledger/patches/
+# 5. Validates patch against file scope
+# 6. Runs STATIC checks
+# 7. If failures, FIX loop with oscillation detection
+# 8. Runs RUNTIME tests
+# 9. Records all events and metrics to database
+
+# View results
+cat .ledger/patches/ws-new-feature-*.patch
+sqlite3 state/pipeline.db "SELECT * FROM workstreams WHERE ws_id='ws-new-feature'"
+
+# Check metrics
+python scripts/workstream_metrics.ps1 -CompareTemplates
+# Output shows V1.1 outperforming V1.0
+
+
+14.4 Document Usage for Agentic AI
+This document is complete and self-contained. An agentic AI should:
+	1.	Read this document in full (all 14 sections)
+	2.	Validate pre-execution checklist (Section 11.1)
+	3.	Follow implementation order strictly (Section 11.2)
+	4.	Refer to code examples (Section 13) when implementing
+	5.	Use rollback procedures (Section 11.3) if quality gates fail
+	6.	Consult failure modes (Section 12) if errors occur
+	7.	Report progress after each phase completion
+No additional context or clarification should be needed. Every decision, every code pattern, every integration point is documented above.
+
+END OF COMPREHENSIVE INTEGRATION SPECIFICATION

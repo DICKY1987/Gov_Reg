@@ -1,0 +1,879 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Column to Script Mapping",
+  "description": "Machine-executable mapping of registry columns to analyzer scripts",
+  "version": "2.2",
+  "work_id": "WORK-MAPP-PY-001",
+  "generated_at": "2026-02-02T22:13:00Z",
+  "changelog": "v2.2: Reconciliation patch - fixed text_normalizer.py status/location, added encoding policy, established error handling policy",
+
+  "compatibility_requirements": {
+    "python_version_min": "3.9",
+    "python_version_max": "3.12",
+    "python_version_tested": ["3.9", "3.10", "3.11"],
+    "encoding": "UTF-8",
+    "platform": "cross-platform (Windows, Linux, macOS)",
+    "registry_file_format": "JSON",
+    "registry_schema_version": "v3",
+    "column_dictionary_min_version": "4.1.1",
+    "encoding_policy": {
+      "strategy": "stdlib_only_with_fallback",
+      "primary_encoding": "utf-8",
+      "fallback_chain": ["utf-8", "utf-8-sig", "latin-1", "cp1252", "iso-8859-1"],
+      "error_handling": "replace_with_audit",
+      "determinism": "guaranteed_per_input_bytes"
+    },
+    "error_handling_policy": {
+      "fatal_errors": ["file_not_found", "invalid_file_id", "registry_corruption", "lock_timeout"],
+      "recoverable_errors": ["syntax_error", "encoding_replacement", "invalid_ast"],
+      "warnings": ["ambiguous_pattern", "low_confidence_tag", "performance_degradation"]
+    },
+    "required_stdlib": ["ast", "hashlib", "json", "pathlib", "re", "sys"],
+    "optional_external": {
+      "pytest": ">=7.4.0",
+      "pytest-cov": ">=4.1.0",
+      "ruff": ">=0.1.0",
+      "mypy": ">=1.7.0",
+      "radon": ">=6.0.0"
+    }
+  },
+
+  "column_dictionary_reference": {
+    "file": "2026012816000001_COLUMN_DICTIONARY.json",
+    "min_version": "4.1.1",
+    "columns_count": 37,
+    "integration_status": "pending",
+    "note": "Full column definitions managed in separate Column Dictionary file"
+  },
+
+  "hash_canonicalization": {
+    "version": "HASH_V1",
+    "rules": {
+      "json_serialization": {
+        "sort_keys": true,
+        "separators": [",", ":"],
+        "ensure_ascii": true
+      },
+      "list_ordering": "alphabetical_unless_semantic",
+      "ast_dump": {
+        "annotate_fields": false,
+        "include_attributes": false
+      }
+    }
+  },
+
+  "scripts": [
+    {
+      "script_id": "DOC-SCRIPT-1000",
+      "name": "text_normalizer.py",
+      "status": "implemented",
+      "phase": "A",
+      "location": "mapp_py/text_normalizer.py",
+      "columns_produced": [
+        "py_canonical_text_hash"
+      ],
+      "dependencies": [],
+      "estimated_duration_ms": 50,
+      "time_complexity": "O(N)",
+      "technical_details": {
+        "python_version": "3.9+",
+        "input_type": "bytes | str | Path",
+        "input_format": "Python source file or raw bytes/string",
+        "output_type": "NormalizedText",
+        "output_format": {
+          "normalized": "str (UTF-8, LF newlines)",
+          "canonical_hash": "str (64-char hex)",
+          "changes_made": "List[str]",
+          "original_encoding": "str"
+        },
+        "error_handling": "Best-effort with errors='replace' fallback, logs replacement count",
+        "thread_safe": true,
+        "stdlib_only": true,
+        "encoding_fallback_chain": ["utf-8", "utf-8-sig", "latin-1", "cp1252", "iso-8859-1", "utf-8-replace"],
+        "key_functions": [
+          "normalize(source: bytes | str | Path) -> NormalizedText",
+          "normalize_encoding(source: bytes) -> tuple[str, str]",
+          "normalize_newlines(text: str) -> str",
+          "calculate_canonical_hash(text: str) -> str"
+        ],
+        "validation": {
+          "input": "Must be readable file or text (binary files rejected)",
+          "output": "canonical_hash matches ^[0-9a-f]{64}$"
+        }
+      }
+    },
+    {
+      "script_id": "DOC-SCRIPT-0996",
+      "name": "python_ast_parser.py",
+      "status": "implemented",
+      "phase": "A",
+      "location": "py_parser_files/DOC-SCRIPT-0996__python_ast_parser.py",
+      "columns_produced": [
+        "py_ast_dump_hash",
+        "py_ast_parse_ok"
+      ],
+      "dependencies": [],
+      "estimated_duration_ms": 200,
+      "technical_details": {
+        "python_version": "3.9+",
+        "input_type": "Path | str",
+        "input_format": "Python source file (.py)",
+        "output_type": "ParseResult",
+        "output_format": {
+          "success": "boolean",
+          "ast_tree": "ast.AST | None",
+          "ast_dump": "str",
+          "ast_dump_hash": "str (64-char hex)",
+          "parse_errors": "List[str]"
+        },
+        "error_handling": "Returns ParseResult with success=False on syntax errors",
+        "timeout_ms": 500,
+        "thread_safe": true,
+        "stdlib_only": true,
+        "key_functions": [
+          "parse_file(path: Path) -> ParseResult",
+          "parse_string(source: str) -> ParseResult",
+          "get_ast_hash(tree: ast.AST) -> str"
+        ],
+        "validation": {
+          "input": "File must exist and be readable",
+          "output": "ast_dump_hash matches ^[0-9a-f]{64}$"
+        }
+      }
+    },
+    {
+      "script_id": "DOC-SCRIPT-1267",
+      "name": "component_extractor.py",
+      "status": "stubbed",
+      "phase": "A",
+      "location": "mapp_py/DOC-SCRIPT-1267__component_extractor.py",
+      "columns_produced": [
+        "py_defs_functions_count",
+        "py_defs_classes_count",
+        "py_defs_public_api_hash",
+        "py_component_count"
+      ],
+      "dependencies": ["DOC-SCRIPT-0996"],
+      "estimated_duration_ms": 300,
+      "technical_details": {
+        "python_version": "3.9+",
+        "input_type": "ast.AST",
+        "input_format": "Python AST tree from parser",
+        "output_type": "List[Component]",
+        "output_format": {
+          "components": "List[Component]",
+          "Component": {
+            "kind": "function | class | method",
+            "name": "str",
+            "qualname": "str",
+            "signature": "str",
+            "docstring": "str | None",
+            "is_public": "bool",
+            "decorators": "List[str]",
+            "lineno": "int"
+          }
+        },
+        "error_handling": "Returns empty list on AST traversal errors",
+        "thread_safe": true,
+        "stdlib_only": true,
+        "key_functions": [
+          "extract(ast_tree: ast.AST) -> List[Component]",
+          "extract_functions(node: ast.Module) -> List[FunctionComponent]",
+          "extract_classes(node: ast.Module) -> List[ClassComponent]",
+          "extract_methods(class_node: ast.ClassDef) -> List[MethodComponent]",
+          "get_public_api_signature(components: List) -> str"
+        ],
+        "validation": {
+          "input": "ast_tree must be valid AST",
+          "output": "py_defs_public_api_hash matches ^[0-9a-f]{64}$"
+        }
+      }
+    },
+    {
+      "script_id": "DOC-SCRIPT-1268",
+      "name": "component_id_generator.py",
+      "status": "stubbed",
+      "phase": "A",
+      "location": "mapp_py/DOC-SCRIPT-1268__component_id_generator.py",
+      "columns_produced": [
+        "py_component_ids"
+      ],
+      "dependencies": ["DOC-SCRIPT-1267"],
+      "estimated_duration_ms": 100,
+      "critical_note": "MUST use file_id (not doc_id) in hash input",
+      "technical_details": {
+        "python_version": "3.9+",
+        "input_type": "Tuple[str, List[Component]]",
+        "input_format": "file_id (20-digit string) + list of Component objects",
+        "output_type": "List[str]",
+        "output_format": {
+          "component_ids": "List[str] with pattern COMP-[0-9a-f]{12}"
+        },
+        "hash_algorithm": "SHA256",
+        "hash_input_format": "{file_id}|{kind}|{qualname}|{signature}",
+        "error_handling": "Raises ValueError if file_id invalid or components malformed",
+        "thread_safe": true,
+        "stdlib_only": true,
+        "deterministic": true,
+        "key_functions": [
+          "generate_id(file_id: str, kind: str, qualname: str, signature: str) -> str",
+          "validate_id(component_id: str) -> bool",
+          "batch_generate(file_id: str, components: List[Component]) -> List[str]"
+        ],
+        "validation": {
+          "input": "file_id matches ^[0-9]{20}$",
+          "output": "Each ID matches ^COMP-[0-9a-f]{12}$"
+        },
+        "critical_requirements": [
+          "MUST use file_id (20 digits), NOT doc_id",
+          "Hash input MUST be deterministic",
+          "IDs MUST be reproducible across runs"
+        ]
+      }
+    },
+    {
+      "script_id": "DOC-SCRIPT-1269",
+      "name": "dependency_analyzer.py",
+      "status": "stubbed",
+      "phase": "A",
+      "location": "mapp_py/DOC-SCRIPT-1269__dependency_analyzer.py",
+      "columns_produced": [
+        "py_imports_stdlib",
+        "py_imports_third_party",
+        "py_imports_local",
+        "py_imports_hash"
+      ],
+      "dependencies": ["DOC-SCRIPT-0996"],
+      "estimated_duration_ms": 200,
+      "technical_details": {
+        "python_version": "3.10+",
+        "input_type": "ast.AST",
+        "input_format": "Python AST tree from parser",
+        "output_type": "DependencyReport",
+        "output_format": {
+          "stdlib": "List[str]",
+          "third_party": "List[str]",
+          "local": "List[str]",
+          "imports_hash": "str (64-char hex)"
+        },
+        "categorization_method": "sys.stdlib_module_names for Python 3.10+",
+        "error_handling": "Returns empty lists on traversal errors",
+        "thread_safe": true,
+        "stdlib_only": true,
+        "key_functions": [
+          "analyze(ast_tree: ast.AST) -> DependencyReport",
+          "extract_imports(node: ast.Module) -> List[Import]",
+          "categorize_import(module_name: str) -> ImportCategory",
+          "get_imports_hash(imports: List[str]) -> str"
+        ],
+        "validation": {
+          "input": "ast_tree must be valid AST",
+          "output": "imports_hash matches ^[0-9a-f]{64}$, lists sorted alphabetically"
+        },
+        "notes": "Requires Python 3.10+ for sys.stdlib_module_names"
+      }
+    },
+    {
+      "script_id": "DOC-SCRIPT-1271",
+      "name": "io_surface_analyzer.py",
+      "status": "stubbed",
+      "phase": "A",
+      "location": "mapp_py/DOC-SCRIPT-1271__io_surface_analyzer.py",
+      "columns_produced": [
+        "py_io_surface_flags",
+        "py_deliverable_inputs",
+        "py_deliverable_outputs",
+        "py_security_risk_flags"
+      ],
+      "dependencies": ["DOC-SCRIPT-0996"],
+      "estimated_duration_ms": 400,
+      "technical_details": {
+        "python_version": "3.9+",
+        "input_type": "ast.AST",
+        "input_format": "Python AST tree from parser",
+        "output_type": "IOSurfaceReport",
+        "output_format": {
+          "io_flags": {
+            "file_read": "bool",
+            "file_write": "bool",
+            "network": "bool",
+            "subprocess": "bool",
+            "env_read": "bool",
+            "db_access": "bool"
+          },
+          "inputs": "List[str]",
+          "outputs": "List[str]",
+          "security_risks": "List[str]"
+        },
+        "detection_patterns": {
+          "file_read": ["open()", "Path.read_text()", "Path.read_bytes()"],
+          "file_write": ["open('w')", "Path.write_text()", "Path.write_bytes()"],
+          "network": ["requests", "urllib", "socket", "http.client"],
+          "subprocess": ["subprocess", "os.system()", "os.popen()"],
+          "env_read": ["os.environ", "os.getenv()"],
+          "db_access": ["sqlalchemy", "pymongo", "psycopg2"]
+        },
+        "error_handling": "Returns safe defaults (all False) on errors",
+        "thread_safe": true,
+        "stdlib_only": true,
+        "key_functions": [
+          "analyze(ast_tree: ast.AST) -> IOSurfaceReport",
+          "detect_file_operations(tree: ast.AST) -> FileOps",
+          "detect_network_access(tree: ast.AST) -> bool",
+          "detect_subprocess_calls(tree: ast.AST) -> List[SubprocessCall]",
+          "extract_cli_arguments(tree: ast.AST) -> List[str]",
+          "extract_security_risks(tree: ast.AST) -> List[str]"
+        ],
+        "validation": {
+          "input": "ast_tree must be valid AST",
+          "output": "security_risks limited to enum values"
+        }
+      }
+    },
+    {
+      "script_id": "DOC-SCRIPT-XXXX-DELIV",
+      "name": "deliverable_analyzer.py",
+      "status": "missing",
+      "phase": "A",
+      "location": "mapp_py/DOC-SCRIPT-XXXX__deliverable_analyzer.py",
+      "columns_produced": [
+        "py_deliverable_kinds",
+        "py_deliverable_signature_hash",
+        "py_deliverable_interfaces"
+      ],
+      "dependencies": ["DOC-SCRIPT-1267", "DOC-SCRIPT-1271"],
+      "estimated_duration_ms": 300,
+      "technical_details": {
+        "python_version": "3.9+",
+        "input_type": "AnalysisContext",
+        "input_format": "AST tree, component list, IO surface report, filename metadata",
+        "output_type": "DeliverableReport",
+        "output_format": {
+          "kinds": "List[str]",
+          "interfaces": "List[str]",
+          "signature_hash": "str (64-char hex)",
+          "fingerprint": "dict"
+        },
+        "hash_algorithm": "SHA256",
+        "hash_input_format": "canonical_json(fingerprint) using HASH_V1",
+        "error_handling": "Returns empty lists and hash of empty fingerprint on errors",
+        "thread_safe": true,
+        "stdlib_only": true,
+        "deterministic": true,
+        "key_functions": [
+          "analyze(context: AnalysisContext) -> DeliverableReport",
+          "classify_kinds(context: AnalysisContext) -> List[str]",
+          "extract_interfaces(context: AnalysisContext) -> List[str]",
+          "calculate_signature_hash(fingerprint: dict) -> str"
+        ],
+        "validation": {
+          "output": "signature_hash matches ^[0-9a-f]{64}$ and lists are sorted"
+        }
+      }
+    },
+    {
+      "script_id": "DOC-SCRIPT-XXXX-CAPAB",
+      "name": "capability_tagger.py",
+      "status": "missing",
+      "phase": "A",
+      "location": "mapp_py/DOC-SCRIPT-XXXX__capability_tagger.py",
+      "columns_produced": [
+        "py_capability_tags",
+        "py_capability_facts_hash"
+      ],
+      "dependencies": ["DOC-SCRIPT-0996", "DOC-SCRIPT-1267", "DOC-SCRIPT-1269", "DOC-SCRIPT-1271"],
+      "estimated_duration_ms": 200,
+      "technical_details": {
+        "python_version": "3.9+",
+        "input_type": "AnalysisContext",
+        "input_format": "AST tree, components, dependency report, IO surface report",
+        "output_type": "CapabilityReport",
+        "output_format": {
+          "tags": "List[str]",
+          "facts_hash": "str (64-char hex)",
+          "facts": "dict"
+        },
+        "controlled_vocabulary": "py_capability_tags controlled list",
+        "hash_algorithm": "SHA256",
+        "hash_input_format": "canonical_json(facts) using HASH_V1",
+        "error_handling": "Returns empty tags and hash of empty facts on errors",
+        "thread_safe": true,
+        "stdlib_only": true,
+        "deterministic": true,
+        "key_functions": [
+          "tag(context: AnalysisContext) -> CapabilityReport",
+          "detect_patterns(ast_tree: ast.AST) -> dict",
+          "calculate_facts_hash(facts: dict) -> str"
+        ],
+        "validation": {
+          "output": "facts_hash matches ^[0-9a-f]{64}$ and tags are sorted and unique"
+        }
+      }
+    },
+    {
+      "script_id": "DOC-SCRIPT-XXXX-TEST",
+      "name": "test_runner.py",
+      "status": "missing",
+      "phase": "B",
+      "location": "mapp_py/DOC-SCRIPT-XXXX__test_runner.py",
+      "columns_produced": [
+        "py_tests_executed",
+        "py_pytest_exit_code",
+        "py_coverage_percent"
+      ],
+      "dependencies": [],
+      "external_dependencies": ["pytest", "pytest-cov"],
+      "estimated_duration_ms": 5000,
+      "technical_details": {
+        "python_version": "3.9+",
+        "input_type": "Path | str",
+        "input_format": "Python source file path; tests discovered via pytest",
+        "output_type": "TestResult",
+        "output_format": {
+          "tests_executed": "bool",
+          "pytest_exit_code": "int | null",
+          "coverage_percent": "float | null",
+          "stdout": "str",
+          "stderr": "str"
+        },
+        "invocation": {
+          "command": "pytest",
+          "coverage_flag": "--cov"
+        },
+        "timeout_ms": 60000,
+        "error_handling": "Returns tests_executed=false when no tests found; captures stderr on tool failure",
+        "thread_safe": false,
+        "stdlib_only": false,
+        "deterministic": false,
+        "key_functions": [
+          "discover_tests(file_path: Path) -> List[Path]",
+          "run_pytest(test_paths: List[Path]) -> TestResult",
+          "parse_coverage(output: str) -> float | null"
+        ],
+        "validation": {
+          "output": "coverage_percent in [0,100] when provided"
+        }
+      }
+    },
+    {
+      "script_id": "DOC-SCRIPT-XXXX-LINT",
+      "name": "linter_runner.py",
+      "status": "missing",
+      "phase": "B",
+      "location": "mapp_py/DOC-SCRIPT-XXXX__linter_runner.py",
+      "columns_produced": [
+        "py_static_issues_count"
+      ],
+      "dependencies": [],
+      "external_dependencies": ["ruff", "mypy"],
+      "estimated_duration_ms": 2000,
+      "technical_details": {
+        "python_version": "3.9+",
+        "input_type": "Path | str",
+        "input_format": "Python source file path",
+        "output_type": "LintResult",
+        "output_format": {
+          "issues_count": "int | null",
+          "ruff_exit_code": "int | null",
+          "mypy_exit_code": "int | null",
+          "issues": "List[str]"
+        },
+        "invocation": {
+          "ruff_command": "ruff check",
+          "mypy_command": "mypy"
+        },
+        "error_handling": "Returns issues_count=null when linters unavailable; captures tool output",
+        "thread_safe": false,
+        "stdlib_only": false,
+        "deterministic": false,
+        "key_functions": [
+          "run_ruff(file_path: Path) -> LintToolResult",
+          "run_mypy(file_path: Path) -> LintToolResult",
+          "count_issues(results: List[LintToolResult]) -> int"
+        ],
+        "validation": {
+          "output": "issues_count >= 0 when available"
+        }
+      }
+    },
+    {
+      "script_id": "DOC-SCRIPT-XXXX-COMPLEX",
+      "name": "complexity_analyzer.py",
+      "status": "missing",
+      "phase": "B",
+      "location": "mapp_py/DOC-SCRIPT-XXXX__complexity_analyzer.py",
+      "columns_produced": [
+        "py_complexity_cyclomatic"
+      ],
+      "dependencies": [],
+      "external_dependencies": ["radon"],
+      "estimated_duration_ms": 1000,
+      "technical_details": {
+        "python_version": "3.9+",
+        "input_type": "str",
+        "input_format": "Python source text",
+        "output_type": "ComplexityReport",
+        "output_format": {
+          "cyclomatic_max": "int",
+          "per_function": "List[dict]",
+          "errors": "List[str]"
+        },
+        "invocation": {
+          "library": "radon"
+        },
+        "error_handling": "Returns cyclomatic_max=0 on parse errors",
+        "thread_safe": true,
+        "stdlib_only": false,
+        "deterministic": true,
+        "key_functions": [
+          "analyze(source: str) -> ComplexityReport",
+          "calculate_cyclomatic(source: str) -> int"
+        ],
+        "validation": {
+          "output": "cyclomatic_max >= 0"
+        }
+      }
+    },
+    {
+      "script_id": "DOC-SCRIPT-XXXX-QUALITY",
+      "name": "quality_scorer.py",
+      "status": "missing",
+      "phase": "B",
+      "location": "mapp_py/DOC-SCRIPT-XXXX__quality_scorer.py",
+      "columns_produced": [
+        "py_quality_score"
+      ],
+      "dependencies": ["DOC-SCRIPT-XXXX-TEST", "DOC-SCRIPT-XXXX-LINT", "DOC-SCRIPT-XXXX-COMPLEX"],
+      "estimated_duration_ms": 100,
+      "technical_details": {
+        "python_version": "3.9+",
+        "input_type": "QualityMetrics",
+        "input_format": "dict of test, coverage, lint, complexity, documentation metrics",
+        "output_type": "QualityScore",
+        "output_format": {
+          "score": "int (0-100)",
+          "breakdown": "dict"
+        },
+        "scoring_weights": {
+          "tests": 30,
+          "coverage": 20,
+          "docstrings": 20,
+          "lint": 15,
+          "complexity": 15
+        },
+        "error_handling": "Missing metrics default to zero contribution",
+        "thread_safe": true,
+        "stdlib_only": true,
+        "deterministic": true,
+        "key_functions": [
+          "calculate_score(metrics: dict) -> int",
+          "clamp_score(score: float) -> int"
+        ],
+        "validation": {
+          "output": "score in [0,100]"
+        }
+      }
+    },
+    {
+      "script_id": "DOC-SCRIPT-XXXX-CLUSTER",
+      "name": "similarity_clusterer.py",
+      "status": "missing",
+      "phase": "C",
+      "location": "mapp_py/DOC-SCRIPT-XXXX__similarity_clusterer.py",
+      "columns_produced": [
+        "py_overlap_group_id"
+      ],
+      "dependencies": ["DOC-SCRIPT-XXXX-DELIV"],
+      "batch_mode": true,
+      "estimated_duration_ms": "O(N)",
+      "technical_details": {
+        "python_version": "3.9+",
+        "input_type": "Iterable[dict]",
+        "input_format": "records with file_id and py_deliverable_signature_hash",
+        "output_type": "ClusterResult",
+        "output_format": {
+          "overlap_group_ids": "dict[file_id, group_id]",
+          "clusters": "dict[group_id, List[file_id]]"
+        },
+        "cluster_strategy": "exact hash match on py_deliverable_signature_hash",
+        "error_handling": "Files without hash are placed in singleton clusters",
+        "thread_safe": true,
+        "stdlib_only": true,
+        "deterministic": true,
+        "key_functions": [
+          "cluster_by_hash(records: Iterable[dict]) -> dict",
+          "assign_group_ids(clusters: dict) -> dict"
+        ],
+        "validation": {
+          "input": "file_id matches ^[0-9]{20}$",
+          "output": "group_id deterministic per cluster contents"
+        }
+      }
+    },
+    {
+      "script_id": "DOC-SCRIPT-1274",
+      "name": "structural_similarity.py",
+      "status": "stubbed",
+      "phase": "C",
+      "location": "mapp_py/DOC-SCRIPT-1274__structural_similarity.py",
+      "columns_produced": [],
+      "dependencies": ["DOC-SCRIPT-0996", "DOC-SCRIPT-1267"],
+      "batch_mode": true,
+      "estimated_duration_ms": "O(K) where K = candidates",
+      "technical_details": {
+        "python_version": "3.9+",
+        "input_type": "Tuple[ast.AST, ast.AST]",
+        "input_format": "AST trees from parser",
+        "output_type": "SimilarityScore",
+        "output_format": {
+          "score": "float (0.0-1.0)",
+          "breakdown": "dict"
+        },
+        "error_handling": "Returns score=0.0 on errors",
+        "thread_safe": true,
+        "stdlib_only": true,
+        "deterministic": true,
+        "key_functions": [
+          "compare(tree_a: ast.AST, tree_b: ast.AST) -> float",
+          "normalize_ast(tree: ast.AST) -> ast.AST"
+        ],
+        "validation": {
+          "output": "score in [0.0,1.0]"
+        }
+      }
+    },
+    {
+      "script_id": "DOC-SCRIPT-1273",
+      "name": "semantic_similarity.py",
+      "status": "stubbed",
+      "phase": "C",
+      "location": "mapp_py/DOC-SCRIPT-1273__semantic_similarity.py",
+      "columns_produced": [],
+      "dependencies": ["DOC-SCRIPT-0996", "DOC-SCRIPT-1267", "DOC-SCRIPT-1271"],
+      "batch_mode": true,
+      "estimated_duration_ms": "O(K) expensive NLP",
+      "technical_details": {
+        "python_version": "3.9+",
+        "input_type": "Tuple[str, str] | Tuple[ast.AST, ast.AST]",
+        "input_format": "source text or AST trees",
+        "output_type": "SimilarityScore",
+        "output_format": {
+          "score": "float (0.0-1.0)",
+          "breakdown": "dict"
+        },
+        "method": "token/name/docstring similarity (stdlib baseline)",
+        "error_handling": "Returns score=0.0 on errors",
+        "thread_safe": true,
+        "stdlib_only": true,
+        "deterministic": true,
+        "key_functions": [
+          "compare(source_a: str, source_b: str) -> float",
+          "compare_docstrings(a: str, b: str) -> float",
+          "compare_names(a: List[str], b: List[str]) -> float"
+        ],
+        "validation": {
+          "output": "score in [0.0,1.0]"
+        }
+      }
+    },
+    {
+      "script_id": "DOC-SCRIPT-1270",
+      "name": "file_comparator.py",
+      "status": "stubbed",
+      "phase": "C",
+      "location": "mapp_py/DOC-SCRIPT-1270__file_comparator.py",
+      "columns_produced": [
+        "py_overlap_similarity_max",
+        "py_overlap_best_match_file_id"
+      ],
+      "dependencies": ["DOC-SCRIPT-1274", "DOC-SCRIPT-1273"],
+      "batch_mode": true,
+      "estimated_duration_ms": "O(K) composite scoring",
+      "technical_details": {
+        "python_version": "3.9+",
+        "input_type": "Tuple[dict, dict]",
+        "input_format": "file records with similarity inputs",
+        "output_type": "ComparisonResult",
+        "output_format": {
+          "composite_score": "float (0.0-1.0)",
+          "best_match_file_id": "str (20-digit file_id)"
+        },
+        "weights": {
+          "structural": 0.6,
+          "semantic": 0.4
+        },
+        "error_handling": "Returns score=0.0 and best_match_file_id=null on errors",
+        "thread_safe": true,
+        "stdlib_only": true,
+        "deterministic": true,
+        "key_functions": [
+          "compare_pair(file_a: dict, file_b: dict) -> ComparisonResult",
+          "compare_batch(records: List[dict]) -> dict",
+          "combine_scores(structural: float, semantic: float) -> float"
+        ],
+        "validation": {
+          "output": "composite_score in [0.0,1.0]"
+        }
+      }
+    },
+    {
+      "script_id": "DOC-SCRIPT-XXXX-CANON",
+      "name": "canonical_ranker.py",
+      "status": "missing",
+      "phase": "C",
+      "location": "mapp_py/DOC-SCRIPT-XXXX__canonical_ranker.py",
+      "columns_produced": [
+        "py_canonical_candidate_score"
+      ],
+      "dependencies": ["DOC-SCRIPT-XXXX-QUALITY", "DOC-SCRIPT-XXXX-CLUSTER"],
+      "batch_mode": true,
+      "estimated_duration_ms": "O(G) where G = groups",
+      "technical_details": {
+        "python_version": "3.9+",
+        "input_type": "List[dict]",
+        "input_format": "files grouped by py_overlap_group_id with quality metrics",
+        "output_type": "RankResult",
+        "output_format": {
+          "canonical_candidate_score": "float (0-100)",
+          "ranked_file_ids": "List[str]"
+        },
+        "error_handling": "Defaults missing metrics to zero; tie-breaker by file_id",
+        "thread_safe": true,
+        "stdlib_only": true,
+        "deterministic": true,
+        "key_functions": [
+          "rank_group(files: List[dict]) -> List[dict]",
+          "calculate_canonical_score(metrics: dict) -> float",
+          "select_canonical(ranked: List[dict]) -> str"
+        ],
+        "validation": {
+          "output": "canonical_candidate_score in [0,100]"
+        }
+      }
+    },
+    {
+      "script_id": "DOC-SCRIPT-XXXX-PIPELINE",
+      "name": "registry_integration_pipeline.py",
+      "status": "missing",
+      "phase": "orchestrator",
+      "location": "mapp_py/DOC-SCRIPT-XXXX__registry_integration_pipeline.py",
+      "columns_produced": [
+        "py_analysis_run_id",
+        "py_analyzed_at_utc",
+        "py_toolchain_id",
+        "py_tool_versions",
+        "py_analysis_success",
+        "py_component_artifact_path"
+      ],
+      "dependencies": ["ALL"],
+      "estimated_duration_ms": "orchestration_overhead",
+      "technical_details": {
+        "python_version": "3.9+",
+        "input_type": "Path | str | Iterable[Path]",
+        "input_format": "file paths plus registry config",
+        "output_type": "AnalysisRunResult",
+        "output_format": {
+          "py_analysis_run_id": "str",
+          "py_analyzed_at_utc": "str (ISO-8601 UTC)",
+          "py_toolchain_id": "str",
+          "py_tool_versions": "dict",
+          "py_analysis_success": "bool",
+          "py_component_artifact_path": "str"
+        },
+        "error_handling": "Captures per-file errors; sets py_analysis_success false on any failure",
+        "thread_safe": false,
+        "stdlib_only": true,
+        "deterministic": true,
+        "key_functions": [
+          "generate_run_id() -> str",
+          "collect_tool_versions() -> dict",
+          "analyze_file(path: Path) -> dict",
+          "write_artifacts(run_id: str, evidence: dict) -> str",
+          "update_registry(records: List[dict]) -> None"
+        ],
+        "validation": {
+          "output": "py_analysis_run_id matches ^RUN-[0-9]{8}-[0-9]{6}-[a-f0-9]{6}$"
+        }
+      }
+    }
+  ],
+
+  "column_definitions": [
+    {
+      "column_name": "py_analysis_run_id",
+      "type": "string",
+      "producer_script": "DOC-SCRIPT-XXXX-PIPELINE",
+      "producer_function": "generate_run_id",
+      "required_when": "artifact_kind == 'PYTHON_MODULE'",
+      "validation": {
+        "pattern": "^RUN-[0-9]{8}-[0-9]{6}-[a-f0-9]{6}$"
+      },
+      "storage": "per_file_denormalized"
+    },
+    {
+      "column_name": "py_deliverable_signature_hash",
+      "type": "string",
+      "producer_script": "DOC-SCRIPT-XXXX-DELIV",
+      "producer_function": "calculate_signature_hash",
+      "required_when": "artifact_kind == 'PYTHON_MODULE'",
+      "validation": {
+        "pattern": "^[0-9a-f]{64}$",
+        "hash_algorithm": "SHA256",
+        "hash_input_canonicalization": "HASH_V1"
+      },
+      "used_for": "duplicate_clustering"
+    },
+    {
+      "column_name": "py_component_ids",
+      "type": "array[string]",
+      "storage_format": "json_string",
+      "producer_script": "DOC-SCRIPT-1268",
+      "producer_function": "batch_generate",
+      "required_when": "artifact_kind == 'PYTHON_MODULE'",
+      "validation": {
+        "item_pattern": "^COMP-[0-9a-f]{12}$"
+      },
+      "critical_note": "MUST use file_id (not doc_id) in generation"
+    }
+  ],
+
+  "validation_rules": {
+    "all_columns_mapped": "Every py_* column must have a producer_script",
+    "no_circular_dependencies": "Script dependencies must form a DAG",
+    "batch_mode_enforced": "Phase C scripts must set batch_mode=true",
+    "hash_canonicalization": "All *_hash columns must use HASH_V1 rules"
+  },
+
+  "implementation_priority": [
+    {
+      "priority": "P0",
+      "phase": "A",
+      "scripts": ["DOC-SCRIPT-XXXX-PIPELINE", "DOC-SCRIPT-1000"],
+      "reason": "Foundation for all other scripts"
+    },
+    {
+      "priority": "P1",
+      "phase": "A",
+      "scripts": ["DOC-SCRIPT-1267", "DOC-SCRIPT-1268", "DOC-SCRIPT-1269", "DOC-SCRIPT-1271"],
+      "reason": "Core static analysis"
+    },
+    {
+      "priority": "P1",
+      "phase": "A",
+      "scripts": ["DOC-SCRIPT-XXXX-DELIV", "DOC-SCRIPT-XXXX-CAPAB"],
+      "reason": "Deliverable signature for clustering"
+    },
+    {
+      "priority": "P2",
+      "phase": "B",
+      "scripts": ["DOC-SCRIPT-XXXX-TEST", "DOC-SCRIPT-XXXX-LINT", "DOC-SCRIPT-XXXX-COMPLEX", "DOC-SCRIPT-XXXX-QUALITY"],
+      "reason": "Quality metrics (optional, expensive)"
+    },
+    {
+      "priority": "P3",
+      "phase": "C",
+      "scripts": ["DOC-SCRIPT-XXXX-CLUSTER", "DOC-SCRIPT-1274", "DOC-SCRIPT-1273", "DOC-SCRIPT-1270", "DOC-SCRIPT-XXXX-CANON"],
+      "reason": "Similarity analysis (batch mode, after ingestion)"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "decision_id": "DEC-001",
+    "question": "How should schema v4 be introduced?",
+    "options": [
+      "Overwrite v3 schema file",
+      "Create a new v4 schema file and update references"
+    ],
+    "decision": "Create a new v4 schema file and update references",
+    "rationale": "Preserves historical v3 and avoids breaking existing references without review.",
+    "impacts": ["Requires updating schema_version references", "Adds a new artifact to registry"],
+    "timestamp_utc": "2026-01-30T00:00:00Z"
+  },
+  {
+    "decision_id": "DEC-002",
+    "question": "Scope of naming normalization",
+    "options": [
+      "Rename all DOC- prefixed files in repo",
+      "Limit renames to registry-tracked artifacts"
+    ],
+    "decision": "Limit renames to registry-tracked artifacts",
+    "rationale": "Reduces risk and scope while addressing audit bucket.",
+    "impacts": ["Some legacy DOC- files remain outside registry scope"],
+    "timestamp_utc": "2026-01-30T00:00:00Z"
+  },
+  {
+    "decision_id": "DEC-003",
+    "question": "How to treat doc_id references in legacy docs?",
+    "options": [
+      "Remove all doc_id mentions",
+      "Allow in legacy sections only"
+    ],
+    "decision": "Allow in legacy sections only",
+    "rationale": "Preserves historical context while enforcing file_id in live artifacts.",
+    "impacts": ["Docs must clearly mark legacy sections"],
+    "timestamp_utc": "2026-01-30T00:00:00Z"
+  },
+  {
+    "decision_id": "DEC-004",
+    "question": "Which validators enforce policy and doc_id rules?",
+    "options": [
+      "Create new validators",
+      "Use existing validate_derivation.py and P_01999000042260126012_validate_no_doc_id.py"
+    ],
+    "decision": "Use existing validate_derivation.py and P_01999000042260126012_validate_no_doc_id.py",
+    "rationale": "Leverages existing tools and minimizes new surface area.",
+    "impacts": ["CI workflow must call these scripts"],
+    "timestamp_utc": "2026-01-30T00:00:00Z"
+  }
+]

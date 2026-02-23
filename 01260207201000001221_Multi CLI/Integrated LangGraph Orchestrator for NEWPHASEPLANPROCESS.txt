@@ -1,0 +1,430 @@
+Integrated LangGraph Orchestrator for NEWPHASEPLANPROCESS
+
+This document defines a fully functional LangGraph control-plane integrated with your existing deterministic CLI execution plane (worktrees, gates, evidence, SSOT registries). It is designed to be 0-touch, artifact-based, replayable, and fail-closed.
+
+Grounding principles come directly from your project’s LangGraph integration and deterministic execution specs:
+	•	LangGraph is control-plane only; enforcement stays in CLIs.
+	•	Messages are artifacts (hashable, schema-bound).
+	•	Routing is rule-based, not “LLM decides.”
+	•	Checkpointing must reference artifact hashes, not raw content.
+
+⸻
+
+1) Target outcome
+
+A user drops a plan into an inbox (or commits to a repo). The system:
+	1.	creates run_id
+	2.	validates plan + allocates IDs (planning-time reservation)
+	3.	provisions worktrees + schedules work
+	4.	runs execution tools
+	5.	runs gates (binary pass/fail)
+	6.	self-heals deterministically when possible (bounded)
+	7.	merges via single-writer tool
+	8.	seals evidence
+	9.	emits a final run summary artifact
+
+No prompts. No interactive questions. No implicit state.
+
+⸻
+
+2) Architecture: control plane vs execution plane
+
+2.1 Execution plane (existing / kept intact)
+
+These are external tools LangGraph calls:
+	•	plan_validate_cli
+	•	canonicalize_and_hash_cli
+	•	worktree_provision_cli
+	•	conflict_graph_cli
+	•	dispatch_workers_cli
+	•	collect_outputs_cli
+	•	gate_runner_cli
+	•	self_heal_orchestrator_cli
+	•	merge_integrator_cli
+	•	evidence_sealer_cli
+	•	registry_tool_cli (append-only / patch-only policies)
+
+2.2 Control plane (new)
+
+A LangGraph graph runs the deterministic “phase spine”:
+	1.	ValidatePlan
+	2.	CanonicalizeHash
+	3.	RepoPreflight
+	4.	BuildConflictGraph
+	5.	ProvisionWorktrees
+	6.	DispatchWorkers
+	7.	CollectOutputs
+	8.	RunGates (with bounded heal loop)
+	9.	SingleWriterMerge
+	10.	PostRunInvariantValidation
+	11.	EvidenceSeal
+	12.	EmitRunSummary
+
+LangGraph state stores only references:
+	•	artifact paths
+	•	sha256 hashes
+	•	schema versions
+	•	deterministic routing decisions
+
+⸻
+
+3) Run directory and artifact model
+
+3.1 Run root layout (required)
+
+.acms_runs/
+  {run_id}/
+    state/
+      checkpoints/                 # langgraph checkpoints
+      transition_log.jsonl         # node transitions (structured)
+    artifacts/
+      envelopes/                   # artifact envelopes (schema-bound)
+      phase/PHASE_*/               # deterministic phase outputs
+      gates/GATE_*/                # gate outputs + evidence pointers
+      heal/ATTEMPT_*/              # heal outputs + evidence pointers
+    evidence/
+      phase/PHASE_*/               # io validation, hash manifests, etc.
+      seals/                       # sealed bundle + manifest
+    logs/
+      orchestrator.jsonl
+      tool_calls.jsonl
+
+3.2 ArtifactEnvelope (required)
+
+Every tool output that matters is wrapped in an envelope:
+
+{
+  "artifact_id": "sha256:...",
+  "schema_id": "acms.artifact_envelope.v1",
+  "schema_version": "1.0.0",
+  "run_id": "RUN_...",
+  "produced_at": "2026-02-14T00:00:00Z",
+  "artifact": {
+    "path": "artifacts/phase/PHASE_X/output.json",
+    "sha256": "sha256:..."
+  },
+  "provenance": {
+    "produced_by": { "type": "phase|gate|heal", "id": "PHASE_X|GATE_Y|HEAL_Z", "attempt": 1 },
+    "derived_from_artifacts": [
+      { "path": "...", "sha256": "sha256:..." }
+    ],
+    "transformation_rule": "gate_spec_id|heal_template_id|phase_command_hash"
+  },
+  "process_identity": {
+    "semantic_version": "3.1.0",
+    "logic_hash": "sha256:..."
+  }
+}
+
+3.3 Lineage Integrity Verification (LIV) (required)
+
+Before any downstream node consumes an envelope, the orchestrator must:
+	•	compute sha256 of each derived_from_artifacts[].path
+	•	compare to recorded sha256
+	•	fail closed on mismatch
+	•	emit evidence/phase/PHASE_X/io_validation.json
+
+⸻
+
+4) LangGraph state (canonical)
+
+The state must be small and deterministic:
+
+{
+  "run_id": "RUN_...",
+  "phase": "PHASE_VALIDATE_PLAN",
+  "hop_counter": 0,
+  "retry_count": 0,
+  "termination_flag": false,
+
+  "artifact_index": [
+    { "envelope_path": "artifacts/envelopes/...", "sha256": "sha256:...", "schema_version": "1.0.0" }
+  ],
+
+  "error_history": [
+    { "node": "RunGates", "error_code": "GATE_FAIL", "fingerprint": "sha256:..." }
+  ],
+
+  "workstreams": {
+    "workstream_map_path": "artifacts/phase/PHASE_PROVISION_WORKTREES/workstreams.json",
+    "sha256": "sha256:..."
+  },
+
+  "declared_write_manifest": {
+    "path": "artifacts/phase/PHASE_VALIDATE_PLAN/declared_writes.json",
+    "sha256": "sha256:..."
+  },
+
+  "merge_status": { "status": "NOT_STARTED|OK|CONFLICT|ROLLED_BACK" },
+  "invariant_status": { "status": "UNKNOWN|OK|FAIL" }
+}
+
+
+⸻
+
+5) Routing rules (no LLM discretion)
+
+5.1 Gate loop routing
+
+Routing is explicit:
+	•	if gate_result.passed == true → continue
+	•	else if attempt < max_attempts → heal → rerun gate
+	•	else → escalate (stop run, seal evidence, emit failure summary)
+
+5.2 Retry policy separation
+	•	LangGraph retry wrappers only for:
+	•	transient tool invocation failures
+	•	timeouts
+	•	Deterministic circuit breakers remain in your tools:
+	•	repeated fingerprints in same run
+	•	repeated invariant failure
+	•	repeated merge conflict recurrence
+
+⸻
+
+6) Tool adapter contracts (LangGraph nodes call CLIs)
+
+6.1 Standard ToolCall (input)
+
+{
+  "run_id": "RUN_...",
+  "node_id": "ValidatePlan",
+  "attempt": 1,
+  "inputs": [
+    { "path": "artifacts/envelopes/...", "sha256": "sha256:..." }
+  ],
+  "params": { "strict": true }
+}
+
+6.2 Standard ToolResult (output)
+
+{
+  "status": "OK|FAIL",
+  "exit_code": 0,
+  "envelopes_written": [
+    { "path": "artifacts/envelopes/ENV_....json", "sha256": "sha256:..." }
+  ],
+  "evidence_paths": [
+    "evidence/phase/PHASE_X/io_validation.json"
+  ],
+  "error": {
+    "error_code": "SCHEMA_INVALID",
+    "fingerprint": "sha256:...",
+    "classification": "A|B|C|..."
+  }
+}
+
+
+⸻
+
+7) 0-touch automation wiring (Windows)
+
+Pick one trigger (both are compatible):
+
+Option A: Folder drop (recommended)
+	•	Watch: C:\Users\richg\Gov_Reg\INBOX_PLANS\
+	•	On create: call orchestrator with the plan path
+	•	On success: move plan to ARCHIVE_PLANS\{run_id}\
+	•	On fail: move plan to FAILED_PLANS\{run_id}\ and keep evidence
+
+Option B: Local commit trigger
+	•	Post-commit hook runs orchestrator in “validate + gate” mode
+	•	Fail closed (commit stays, but run is marked failed and evidence sealed)
+
+Implementation note: do not run orchestration inside the hook if it needs long execution; instead the hook can enqueue a run request file in an inbox and the service consumes it.
+
+⸻
+
+8) Implementation plan (build order)
+	1.	Create orchestrator package + state + checkpoint store
+	2.	Implement tool adapters (one wrapper per CLI)
+	3.	Implement ArtifactEnvelope + LIV verifier
+	4.	Implement phase spine graph (no heal loop yet)
+	5.	Add gate loop + self-heal subgraph
+	6.	Add merge integrator node
+	7.	Add evidence sealing + run summary node
+	8.	Add Windows service / watcher for 0-touch triggering
+	9.	Add integration tests (golden run, fail+heal run, fail+escalate run)
+
+⸻
+
+Mutation set
+
+The mutation set is expressed as a strict JSON “file change plan”: each file created/modified, purpose, and patch strategy.
+
+Mutation Set (JSON)
+
+{
+  "mutation_set_id": "MS_LANGGRAPH_INTEGRATION_V1",
+  "root_assumption": "C:\\Users\\richg\\Gov_Reg",
+  "patch_policy_default": "FULL_REWRITE",
+  "files": [
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\orchestrator_langgraph\\README.md",
+      "action": "CREATE",
+      "strategy": "FULL_REWRITE",
+      "purpose": "Top-level operator documentation: how to run headless, run directory layout, triggers, and troubleshooting."
+    },
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\orchestrator_langgraph\\pyproject.toml",
+      "action": "CREATE",
+      "strategy": "FULL_REWRITE",
+      "purpose": "Python packaging for the orchestrator (pins langgraph/langchain deps, sets entrypoints, reproducible builds)."
+    },
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\orchestrator_langgraph\\src\\acms_orchestrator\\__init__.py",
+      "action": "CREATE",
+      "strategy": "FULL_REWRITE",
+      "purpose": "Package root."
+    },
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\orchestrator_langgraph\\src\\acms_orchestrator\\main.py",
+      "action": "CREATE",
+      "strategy": "FULL_REWRITE",
+      "purpose": "CLI entrypoint: parse args, create run_id, initialize run dir, start LangGraph execution, emit final summary path."
+    },
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\orchestrator_langgraph\\src\\acms_orchestrator\\graph.py",
+      "action": "CREATE",
+      "strategy": "FULL_REWRITE",
+      "purpose": "Defines the LangGraph phase spine, node wiring, conditional edges, and termination behavior."
+    },
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\orchestrator_langgraph\\src\\acms_orchestrator\\state.py",
+      "action": "CREATE",
+      "strategy": "FULL_REWRITE",
+      "purpose": "Canonical state model (dataclass/Pydantic) used by all nodes; enforces deterministic state mutation rules."
+    },
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\orchestrator_langgraph\\src\\acms_orchestrator\\checkpointing.py",
+      "action": "CREATE",
+      "strategy": "FULL_REWRITE",
+      "purpose": "Checkpoint persistence: writes checkpoints referencing artifact envelope hashes; supports resume/replay."
+    },
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\orchestrator_langgraph\\src\\acms_orchestrator\\artifacts\\envelope.py",
+      "action": "CREATE",
+      "strategy": "FULL_REWRITE",
+      "purpose": "ArtifactEnvelope schema creation + validation + sha256 computation utilities."
+    },
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\orchestrator_langgraph\\src\\acms_orchestrator\\artifacts\\lineage.py",
+      "action": "CREATE",
+      "strategy": "FULL_REWRITE",
+      "purpose": "Lineage Integrity Verification (LIV): validates derived_from_artifacts sha256 before state advance; fail-closed evidence emission."
+    },
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\orchestrator_langgraph\\src\\acms_orchestrator\\tools\\base.py",
+      "action": "CREATE",
+      "strategy": "FULL_REWRITE",
+      "purpose": "Standard ToolCall/ToolResult types and the contract that all adapters must satisfy."
+    },
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\orchestrator_langgraph\\src\\acms_orchestrator\\tools\\gate_runner.py",
+      "action": "CREATE",
+      "strategy": "FULL_REWRITE",
+      "purpose": "Adapter that calls your gate runner CLI and normalizes output into GateResult + envelope references."
+    },
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\orchestrator_langgraph\\src\\acms_orchestrator\\tools\\self_heal.py",
+      "action": "CREATE",
+      "strategy": "FULL_REWRITE",
+      "purpose": "Adapter that calls the deterministic SelfHealOrchestrator CLI, consumes FailureMode registry outputs, enforces max_attempts."
+    },
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\orchestrator_langgraph\\src\\acms_orchestrator\\tools\\merge_integrator.py",
+      "action": "CREATE",
+      "strategy": "FULL_REWRITE",
+      "purpose": "Adapter that calls single-writer merge integrator; returns conflicts/applied patches/rollback status deterministically."
+    },
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\orchestrator_langgraph\\schemas\\acms.artifact_envelope.v1.json",
+      "action": "CREATE",
+      "strategy": "FULL_REWRITE",
+      "purpose": "JSON Schema for ArtifactEnvelope; used by gates and tools for schema validation."
+    },
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\orchestrator_langgraph\\schemas\\acms.orchestrator_state.v1.json",
+      "action": "CREATE",
+      "strategy": "FULL_REWRITE",
+      "purpose": "JSON Schema for persisted state/checkpoints; prevents state drift and enables replay validation."
+    },
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\orchestrator_langgraph\\tests\\test_golden_run.py",
+      "action": "CREATE",
+      "strategy": "FULL_REWRITE",
+      "purpose": "Integration test: happy path run produces sealed evidence and passes required gates."
+    },
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\orchestrator_langgraph\\tests\\test_fail_heal_pass.py",
+      "action": "CREATE",
+      "strategy": "FULL_REWRITE",
+      "purpose": "Integration test: forced gate fail triggers heal loop; rerun passes; evidence proves loop behavior."
+    },
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\orchestrator_langgraph\\tests\\test_fail_escalate.py",
+      "action": "CREATE",
+      "strategy": "FULL_REWRITE",
+      "purpose": "Integration test: repeated failures exceed max_attempts; orchestrator escalates and seals evidence."
+    },
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\automation\\watch_inbox.ps1",
+      "action": "CREATE",
+      "strategy": "FULL_REWRITE",
+      "purpose": "0-touch watcher: monitors INBOX_PLANS, queues run requests, starts orchestrator, archives outputs based on status."
+    },
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\automation\\install_orchestrator_task.ps1",
+      "action": "CREATE",
+      "strategy": "FULL_REWRITE",
+      "purpose": "Installs Scheduled Task or Windows service wrapper to run watch_inbox.ps1 at startup, headless."
+    },
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3.json",
+      "action": "MODIFY",
+      "strategy": "UNIFIED_DIFF_APPLY",
+      "purpose": "Add explicit orchestration metadata fields: required artifacts/envelopes, validation_evidence_path per phase, and a langgraph_execution section (graph_id, checkpoint_policy, termination rules)."
+    },
+    {
+      "path": "C:\\Users\\richg\\Gov_Reg\\REGISTRY\\REGISTRY_PLANNING_INTEGRATION_SPEC.md",
+      "action": "MODIFY",
+      "strategy": "UNIFIED_DIFF_APPLY",
+      "purpose": "Document ArtifactEnvelope as the required inter-tool transport; specify LIV checks and how registry tools emit structured diffs for LangGraph routing."
+    }
+  ]
+}
+
+
+⸻
+
+Template modifications (exactly what to add)
+
+In NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3.json, add:
+	1.	Top-level orchestration block
+
+	•	langgraph_execution.graph_id
+	•	checkpoint_policy (enabled, frequency, storage path under .acms_runs/{run_id}/state/checkpoints)
+	•	termination_rules (max_hops, max_gate_attempts, convergence thresholds)
+
+	2.	Per-phase validation evidence path
+
+	•	validation_evidence_path: evidence/phase/PHASE_X/io_validation.json
+
+	3.	Artifact envelope requirements
+
+	•	each phase declares:
+	•	required_input_envelopes[] (schema_ids)
+	•	produced_output_envelopes[] (schema_ids)
+	•	derived_from_artifacts_policy (must provide sha256 + path)
+
+This makes “done” machine-checkable and aligns with fail-closed LIV.
+
+⸻
+
+What you get after implementing this
+	•	A working integrated LangGraph orchestrator that:
+	•	is headless / 0-touch
+	•	routes deterministically
+	•	loops gates + healing with bounded attempts
+	•	produces replayable artifacts with lineage checks
+	•	uses your existing enforcement tools without weakening invariants

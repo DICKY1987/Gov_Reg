@@ -1,0 +1,103 @@
+{
+  "section_id": "sec_016_testing_strategy",
+  "title": "Testing Strategy",
+  "required": true,
+  "instructions_file": "sections/sec_016_testing_strategy.inst.md",
+  "testing_strategy": {
+    "test_first_development": {
+      "enabled": true,
+      "description": "Write tests alongside code (TDD)",
+      "requirement": "Tests must pass 100% (or explicit exception with mitigation)"
+    },
+    "test_layers": {
+      "unit": {
+        "description": "Test individual functions/classes in isolation",
+        "coverage_target": "{{70|80|90|95}}%",
+        "location": "tests/unit/**",
+        "run_command": "pytest tests/unit -v --tb=short --cov=src --cov-report=term",
+        "timeout_seconds": 300,
+        "quality_gates": [
+          "0 failures",
+          "Coverage >= target",
+          "No skipped tests without justification"
+        ]
+      },
+      "integration": {
+        "description": "Test component interactions",
+        "coverage_target": "{{70|80|90}}%",
+        "location": "tests/integration/**",
+        "run_command": "pytest tests/integration -v --tb=short",
+        "timeout_seconds": 600,
+        "quality_gates": [
+          "0 failures",
+          "All critical paths tested",
+          "External dependencies mocked appropriately"
+        ]
+      },
+      "e2e": {
+        "description": "Test complete workflows end-to-end",
+        "coverage_target": "{{50|70|80}}%",
+        "location": "tests/e2e/**",
+        "run_command": "pytest tests/e2e -v --tb=short",
+        "timeout_seconds": 1800,
+        "quality_gates": [
+          "0 failures",
+          "All user stories covered",
+          "Performance targets met"
+        ]
+      },
+      "determinism": {
+        "description": "Verify outputs are stable across runs",
+        "location": "tests/determinism/**",
+        "run_command": "python scripts/test_determinism.py --runs 3 --compare-outputs",
+        "timeout_seconds": 600,
+        "quality_gates": [
+          "Determinism score >= 0.95",
+          "All idempotency tests pass"
+        ]
+      }
+    },
+    "test_fixtures": {
+      "valid_inputs": {
+        "location": "tests/fixtures/valid/**",
+        "description": "Sample valid input data",
+        "count": "{{N}}"
+      },
+      "invalid_inputs": {
+        "location": "tests/fixtures/invalid/**",
+        "description": "Sample invalid input data with expected errors",
+        "count": "{{N}}"
+      },
+      "expected_outputs": {
+        "location": "tests/fixtures/expected/**",
+        "description": "Expected outputs for each input",
+        "format": "{{json|yaml|csv|text}}"
+      },
+      "mock_objects": {
+        "location": "tests/mocks/**",
+        "description": "Mock external dependencies",
+        "dependencies_mocked": [
+          "{{DEPENDENCY1}}",
+          "{{DEPENDENCY2}}"
+        ]
+      }
+    },
+    "quality_gates_summary": {
+      "run_all_tests_command": "pytest tests/ -v --tb=short --cov=src --cov-report=term --cov-report=html:.runs/coverage_html",
+      "expect_exit_code": 0,
+      "gates": [
+        "100% of tests pass",
+        "Coverage >= classification-based target",
+        "Determinism score >= 0.95",
+        "0 high/critical security issues in test code"
+      ]
+    },
+    "control_test_mapping": {
+      "description": "Maps quality controls from SEC-021 to required tests",
+      "mappings": [],
+      "validation_command": "python validators/validate_control_tests.py",
+      "expect_exit_code": 0
+    }
+  },
+  "file_id": "01260207233100000486"
+}

@@ -1,0 +1,22 @@
+{
+  "rewrite_plan_id": "d16618008459dee8",
+  "target_file_id": "01260207201000000146",
+  "target_relpath": "01260207201000000146_ID_CANONICALITY_CORRECTIONS_V2.1.3_FINAL.md",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "4220eed255925a43c3b6cab08e6e805f77ae14fc8fa045ccbf1bbcd7fd54d08b",
+  "operations": [
+    {
+      "ref_id": "0deb1b63799f22820dfb656bdc2d96261ef9b9cc38ad9b2d328b52ce35a54e2f",
+      "old_value": "scripts/P_01999000042260124027_id_allocator.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124027_id_allocator.py",
+      "location": "line:316"
+    },
+    {
+      "ref_id": "aee273f14c3540f5e3594324b5377e70fd7e755cc0dd7fb5bb22d2891492847d",
+      "old_value": "scripts\\P_01999000042260124999_id_canonicality_enforcer.py",
+      "new_value": "01260207201000001162_GEU\\01260207201000001165_ID\\scripts\\P_01999000042260124999_id_canonicality_enforcer.py",
+      "location": "line:410"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\d16618008459dee8.diff"
+}

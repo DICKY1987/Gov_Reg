@@ -1,0 +1,3433 @@
+{
+  "unified_master_template": {
+    "version": "1.0",
+    "generated_at": "2026-01-28T12:47:09.474Z",
+    "total_sections": 22,
+    "source_directory": "C:\\Users\\richg\\Gov_Reg\\sections",
+    "sections": [
+      {
+        "section_id": "sec_000_critical_constraints",
+        "title": "CRITICAL: NO IMPLIED BEHAVIOR CONSTRAINT",
+        "required": true,
+        "instructions_file": "sections/sec_000_critical_constraints.inst.md",
+        "critical_constraints": {
+          "no_implied_behavior": {
+            "enforcement": "MANDATORY",
+            "description": "Every rule, gate, and contract in plans generated from this template MUST be expressible as:\n1. A config entry\n2. An executable command\n3. An evidence artifact path\n4. A pass/fail condition (regex or exit code)",
+            "marking_requirement": [
+              "Items that cannot be expressed this way MUST be marked [NOT_AUTOMATABLE]",
+              "Manual steps MUST be escalated with explicit human approval gates"
+            ],
+            "forbidden": [
+              "Vague success criteria (e.g., 'works well', 'good enough')",
+              "Subjective pass/fail (e.g., 'looks correct', 'seems fine')",
+              "Open-ended 'fix it' actions",
+              "Skeleton/placeholder code in final output",
+              "TODOs or TBDs in deliverables"
+            ],
+            "validation_command": "python scripts/validate_no_implied_behavior.py {{PLAN_FILE}}",
+            "expect_exit_code": 0,
+            "expect_stdout_regex": [
+              "/all_rules_explicit: true/"
+            ]
+          },
+          "determinism_constraint": {
+            "target_reproducibility": 0.95,
+            "description": "Plans must produce identical results across runs given identical inputs",
+            "requirements": [
+              "Decision ledger: ALL decisions logged with rationale",
+              "Assumption ledger: ALL assumptions tracked with validation methods",
+              "File scope enforcement: Hard boundaries per phase",
+              "Ground truth levels: Mechanical pass/fail (no human judgment)",
+              "Parallel execution: DAG-scheduled (deterministic ordering)",
+              "Self-healing: Bounded retries with convergence detection"
+            ]
+          }
+        }
+      },
+      {
+        "section_id": "sec_001_plan_identity",
+        "title": "Plan Identity + Fixed Assumptions",
+        "required": true,
+        "instructions_file": "sections/sec_001_plan_identity.inst.md",
+        "plan_identity": {
+          "metadata": {
+            "plan_id": "{{PLAN_ID}}",
+            "plan_title": "{{PLAN_TITLE}}",
+            "plan_version": "{{PLAN_VERSION}}",
+            "plan_status": "{{Draft|Review|Approved|In Progress|Blocked|Done}}",
+            "doc_id": "{{DOC_ID}}"
+          },
+          "ownership": {
+            "owner_dri": "{{NAME}}",
+            "reviewers": [
+              "{{NAME1}}",
+              "{{NAME2}}"
+            ]
+          },
+          "timestamps": {
+            "created_date": "{{YYYY-MM-DD}}",
+            "last_updated_date": "{{YYYY-MM-DD}}",
+            "last_synced_at": null
+          },
+          "scope": {
+            "target_environments": [
+              "{{Windows|Linux|Mac|Docker|Cloud}}"
+            ],
+            "execution_surface": "{{repo|service|library|infra|docs|mixed}}",
+            "repo_or_workspace_root": "{{PATH_OR_URL}}",
+            "primary_branch": "{{main|master|develop}}"
+          },
+          "related_documentation": [
+            {
+              "path": "{{PATH_TO_RELATED_DOC}}",
+              "type": "{{spec|design|rfc|runbook}}"
+            }
+          ],
+          "fixed_assumptions": {
+            "team_model": "solo_developer",
+            "time_constraints": "none",
+            "override_policy": "If you include any dates/durations, they must be explicitly marked as **optional planning aids** and must not be used as contractual constraints. Place them in PLAN-SEC-020 Appendix B."
+          }
+        }
+      },
+      {
+        "section_id": "sec_002_task_analysis",
+        "title": "Task Analysis + Classification",
+        "required": true,
+        "instructions_file": "sections/sec_002_task_analysis.inst.md",
+        "task_analysis": {
+          "original_request": {
+            "verbatim": "{{PASTE_USER_REQUEST_VERBATIM}}",
+            "timestamp": "{{ISO8601_TIMESTAMP}}",
+            "source": "{{user_input|github_issue|slack_thread|other}}"
+          },
+          "specificity_transformation": {
+            "objective": "Deliver {{PROJECT_NAME}} with MECHANICALLY VERIFIABLE outcomes",
+            "transformation_examples": [
+              {
+                "vague": "Fast response time",
+                "quantified": "<100ms p95 latency",
+                "validation": "python scripts/benchmark.py --percentile 95 | grep 'p95:' | awk '{print $2}'",
+                "expect_regex": "/^[0-9]{1,2}ms$/"
+              },
+              {
+                "vague": "Reliable",
+                "quantified": "100% of tests pass",
+                "validation": "pytest --tb=short -q",
+                "expect_exit_code": 0
+              },
+              {
+                "vague": "Well-tested",
+                "quantified": ">95% coverage",
+                "validation": "pytest --cov=src --cov-report=term | grep TOTAL | awk '{print $4}'",
+                "expect_regex": "/(9[5-9]|100)%/"
+              }
+            ]
+          },
+          "classification": {
+            "complexity": "{{simple|moderate|complex|enterprise}}",
+            "domain": "{{technical|analytical|creative|general}}",
+            "quality": "{{standard|high|critical|production}}",
+            "inferred_behavior": {
+              "verification_level": "{{1|2|3}}",
+              "test_coverage_min": "{{70|80|90|95}}",
+              "phases": [
+                "{{LIST_OF_PHASE_IDS}}"
+              ],
+              "parallel_groups": [
+                "{{GROUP_IDS}}"
+              ]
+            }
+          }
+        },
+        "classification_decision_tree": {
+          "rules": [
+            {
+              "rule_id": "CLASSIFY-SIMPLE",
+              "condition": "file_count <= 3 AND loc < 200",
+              "result": "simple",
+              "behavior": {
+                "verification_level": 1,
+                "test_coverage_min": 70,
+                "phases": [
+                  "intake",
+                  "implement",
+                  "verify"
+                ],
+                "parallel_groups": []
+              }
+            },
+            {
+              "rule_id": "CLASSIFY-MODERATE",
+              "condition": "file_count <= 10 AND loc < 1000",
+              "result": "moderate",
+              "behavior": {
+                "verification_level": 2,
+                "test_coverage_min": 80,
+                "phases": [
+                  "intake",
+                  "plan",
+                  "implement",
+                  "verify"
+                ],
+                "parallel_groups": []
+              }
+            },
+            {
+              "rule_id": "CLASSIFY-COMPLEX",
+              "condition": "file_count <= 30 OR requires_integration_tests",
+              "result": "complex",
+              "behavior": {
+                "verification_level": 2,
+                "test_coverage_min": 90,
+                "phases": [
+                  "intake",
+                  "architecture",
+                  "implement",
+                  "integration",
+                  "verify"
+                ],
+                "parallel_groups": [
+                  "integration_tests"
+                ]
+              }
+            },
+            {
+              "rule_id": "CLASSIFY-ENTERPRISE",
+              "condition": "file_count > 30 OR requires_contracts",
+              "result": "enterprise",
+              "behavior": {
+                "verification_level": 3,
+                "test_coverage_min": 95,
+                "phases": [
+                  "bootstrap",
+                  "architecture",
+                  "contracts",
+                  "implement_parallel",
+                  "integration",
+                  "hardening",
+                  "package"
+                ],
+                "parallel_groups": [
+                  "implement_parallel",
+                  "hardening"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "section_id": "sec_003_executive_summary",
+        "title": "Executive Summary (Decision-Ready)",
+        "required": true,
+        "instructions_file": "sections/sec_003_executive_summary.inst.md",
+        "executive_summary": {
+          "outcome_one_sentence": "{{WHAT_THIS_PLAN_DELIVERS_IN_ONE_SENTENCE}}",
+          "what_changes": "{{LIST_WHAT_WILL_BE_MODIFIED_OR_CREATED}}",
+          "what_does_not_change": "{{EXPLICIT_LIST_OF_OUT_OF_SCOPE_ITEMS}}",
+          "primary_decisions_needed": [
+            {
+              "decision_id": "D1",
+              "statement": "{{DECISION_STATEMENT}}",
+              "options": [
+                "{{OPT1}}",
+                "{{OPT2}}"
+              ],
+              "impact": "{{HIGH|MEDIUM|LOW}}",
+              "blocking": "{{YES|NO}}"
+            }
+          ],
+          "primary_risks_top_3": [
+            {
+              "risk_id": "RISK-001",
+              "type": "risk",
+              "description": "{{RISK_DESCRIPTION}}",
+              "impact": "{{HIGH|MEDIUM|LOW}}",
+              "probability": "{{HIGH|MEDIUM|LOW}}",
+              "mitigation": "{{MITIGATION_STRATEGY}}"
+            },
+            {
+              "risk_id": "RISK-002",
+              "type": "risk",
+              "description": "{{RISK_DESCRIPTION}}",
+              "impact": "{{HIGH|MEDIUM|LOW}}",
+              "probability": "{{HIGH|MEDIUM|LOW}}",
+              "mitigation": "{{MITIGATION_STRATEGY}}"
+            },
+            {
+              "risk_id": "RISK-003",
+              "type": "risk",
+              "description": "{{RISK_DESCRIPTION}}",
+              "impact": "{{HIGH|MEDIUM|LOW}}",
+              "probability": "{{HIGH|MEDIUM|LOW}}",
+              "mitigation": "{{MITIGATION_STRATEGY}}"
+            }
+          ],
+          "done_at_highest_level": [
+            "{{DONE_CRITERION_1}}",
+            "{{DONE_CRITERION_2}}",
+            "{{DONE_CRITERION_3}}",
+            "{{DONE_CRITERION_4}}",
+            "{{DONE_CRITERION_5}}"
+          ]
+        }
+      },
+      {
+        "section_id": "sec_004_assumptions_scope",
+        "title": "Assumptions & Scope Contract",
+        "required": true,
+        "instructions_file": "sections/sec_004_assumptions_scope.inst.md",
+        "assumptions_scope": {
+          "assumptions_ledger": {
+            "assumptions": [
+              {
+                "assumption_id": "ASM-001",
+                "statement": "{{ASSUMPTION_STATEMENT}}",
+                "impact_score": "{{1-10}}",
+                "confidence": "{{HIGH|MEDIUM|LOW}}",
+                "validation_method": "{{HOW_TO_VERIFY}}",
+                "validation_command": "{{EXECUTABLE_COMMAND}}",
+                "expect_exit_code": 0,
+                "expect_stdout_regex": [
+                  "/{{PATTERN}}/"
+                ],
+                "not_automatable": false
+              }
+            ],
+            "storage": {
+              "format": "jsonl",
+              "path": ".state/assumptions.jsonl",
+              "rotation_policy": "append_only"
+            },
+            "validation_batch_command": "python scripts/validate_assumptions.py .state/assumptions.jsonl --impact-min=7"
+          },
+          "scope_contract": {
+            "in_scope": [
+              "{{IN_SCOPE_ITEM_1}}",
+              "{{IN_SCOPE_ITEM_2}}"
+            ],
+            "out_of_scope": [
+              "{{EXPLICIT_EXCLUSION_1}}",
+              "{{EXPLICIT_EXCLUSION_2}}"
+            ],
+            "non_goals": [
+              "{{NON_GOAL_1}}",
+              "{{NON_GOAL_2}}"
+            ],
+            "constraints": {
+              "time_budget": "{{OPTIONAL}}",
+              "security_compliance": "{{OPTIONAL}}",
+              "performance_targets": "{{OPTIONAL}}",
+              "regulatory": "{{OPTIONAL}}"
+            }
+          },
+          "global_definition_of_done": [
+            "Outputs are schema-valid (where schemas exist)",
+            "Deterministic outputs stable across 3 runs",
+            "Unit + integration tests pass (100%)",
+            "All 'must_pass' validations pass in every phase contract",
+            "Audit/evidence logs exist at declared locations",
+            "{{ADDITIONAL_DOD_CRITERION}}"
+          ]
+        }
+      },
+      {
+        "section_id": "sec_005_phase_dag",
+        "title": "Phase DAG + Parallel Execution",
+        "required": true,
+        "instructions_file": "sections/sec_005_phase_dag.inst.md",
+        "phase_dag": {
+          "phase_index": {
+            "phases": [
+              {
+                "phase_id": "PH-001",
+                "title": "{{PHASE_TITLE}}",
+                "objective": "{{ONE_SENTENCE_OBJECTIVE}}",
+                "status": "{{planned|in_progress|blocked|done}}",
+                "estimate_hours": "{{N}}",
+                "tags": [
+                  "{{TAG1}}",
+                  "{{TAG2}}"
+                ]
+              }
+            ]
+          },
+          "dag_structure": {
+            "dependencies": [
+              {
+                "phase_id": "PH-002",
+                "depends_on": [
+                  "PH-001"
+                ],
+                "may_run_parallel_with": [
+                  "PH-010"
+                ],
+                "parallel_group": "{{GROUP_ID}}",
+                "is_critical_path": true
+              }
+            ],
+            "parallel_execution_groups": [
+              {
+                "group_id": "PG-001",
+                "group_name": "{{GROUP_NAME}}",
+                "phases": [
+                  "PH-003",
+                  "PH-004",
+                  "PH-005"
+                ],
+                "concurrency_limit": 3,
+                "conflict_detection": "auto"
+              }
+            ],
+            "sequential_estimate_minutes": "{{TOTAL_SEQ_TIME}}",
+            "parallel_estimate_minutes": "{{TOTAL_PARALLEL_TIME}}",
+            "speedup_percentage": "{{CALCULATED_SPEEDUP}}",
+            "bottlenecks": [
+              {
+                "phase_or_group": "{{ID}}",
+                "duration_minutes": "{{N}}",
+                "reason": "{{WHY_BOTTLENECK}}"
+              }
+            ]
+          },
+          "workstream_bundling": {
+            "workstreams": [
+              {
+                "workstream_id": "WS-001",
+                "workstream_bundle_id": "ws-bundle-01",
+                "title": "{{WORKSTREAM_TITLE}}",
+                "phases": [
+                  "PH-001",
+                  "PH-002",
+                  "PH-003"
+                ],
+                "owner": "{{DRI}}"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "section_id": "sec_006_ground_truth_levels",
+        "title": "Ground Truth Validation Levels (L0-L5)",
+        "required": true,
+        "instructions_file": "sections/sec_006_ground_truth_levels.inst.md",
+        "ground_truth_levels": {
+          "description": "Explicit validation hierarchy from basic syntax to production deployment. Each level MUST include: command, evidence path, timeout, pass/fail criteria.",
+          "levels": [
+            {
+              "level": "L0",
+              "name": "Syntax + Basic Validation",
+              "description": "Files parse, basic structure valid",
+              "commands": [
+                {
+                  "command": {
+                    "exe": "python",
+                    "args": [
+                      "-m",
+                      "py_compile",
+                      "{{FILE}}"
+                    ],
+                    "timeout_seconds": 600,
+                    "expected_exit_codes": [
+                      0
+                    ]
+                  },
+                  "timeout_seconds": 10,
+                  "expect_exit_code": 0
+                },
+                {
+                  "command": {
+                    "exe": "yamllint",
+                    "args": [
+                      "{{YAML_FILE}}"
+                    ],
+                    "timeout_seconds": 600,
+                    "expected_exit_codes": [
+                      0
+                    ]
+                  },
+                  "timeout_seconds": 5,
+                  "expect_exit_code": 0
+                }
+              ],
+              "evidence_path": ".runs/validation/L0_syntax.log",
+              "required_for_phases": [
+                "ALL"
+              ]
+            },
+            {
+              "level": "L1",
+              "name": "Static Analysis",
+              "description": "Lint, type check, security scan pass",
+              "required_control_classes": [
+                "lint_type",
+                "security_scan"
+              ],
+              "commands": [
+                {
+                  "command": {
+                    "exe": "ruff",
+                    "args": [
+                      "check",
+                      "src/"
+                    ],
+                    "timeout_seconds": 600,
+                    "expected_exit_codes": [
+                      0
+                    ]
+                  },
+                  "timeout_seconds": 30,
+                  "expect_exit_code": 0
+                },
+                {
+                  "command": {
+                    "exe": "mypy",
+                    "args": [
+                      "src/",
+                      "--strict"
+                    ],
+                    "timeout_seconds": 600,
+                    "expected_exit_codes": [
+                      0
+                    ]
+                  },
+                  "timeout_seconds": 60,
+                  "expect_exit_code": 0
+                },
+                {
+                  "command": {
+                    "exe": "bandit",
+                    "args": [
+                      "-r",
+                      "src/",
+                      "-f",
+                      "json",
+                      "-o",
+                      ".runs/validation/L1_security.json"
+                    ],
+                    "timeout_seconds": 600,
+                    "expected_exit_codes": [
+                      0
+                    ]
+                  },
+                  "timeout_seconds": 60,
+                  "expect_exit_code": 0
+                }
+              ],
+              "evidence_path": ".runs/validation/L1_static.log",
+              "required_for_phases": [
+                "implement",
+                "refactor"
+              ]
+            },
+            {
+              "level": "L2",
+              "name": "Unit Tests",
+              "description": "All unit tests pass, coverage target met",
+              "commands": [
+                {
+                  "command": {
+                    "exe": "pytest",
+                    "args": [
+                      "tests/unit",
+                      "-v",
+                      "--tb=short",
+                      "--cov=src",
+                      "--cov-report=term",
+                      "--cov-report=json:.runs/validation/L2_coverage.json"
+                    ],
+                    "timeout_seconds": 600,
+                    "expected_exit_codes": [
+                      0
+                    ]
+                  },
+                  "timeout_seconds": 300,
+                  "expect_exit_code": 0,
+                  "expect_stdout_regex": [
+                    "/PASSED/",
+                    "/TOTAL.*9[5-9]|100%/"
+                  ]
+                }
+              ],
+              "evidence_path": ".runs/validation/L2_unit_tests.log",
+              "required_for_phases": [
+                "implement",
+                "refactor",
+                "integration"
+              ]
+            },
+            {
+              "level": "L3",
+              "name": "Integration Tests",
+              "description": "Component interactions verified",
+              "commands": [
+                {
+                  "command": {
+                    "exe": "pytest",
+                    "args": [
+                      "tests/integration",
+                      "-v",
+                      "--tb=short"
+                    ],
+                    "timeout_seconds": 600,
+                    "expected_exit_codes": [
+                      0
+                    ]
+                  },
+                  "timeout_seconds": 600,
+                  "expect_exit_code": 0
+                }
+              ],
+              "evidence_path": ".runs/validation/L3_integration.log",
+              "required_for_phases": [
+                "integration",
+                "hardening"
+              ]
+            },
+            {
+              "level": "L4",
+              "name": "End-to-End Tests",
+              "description": "Full system workflows verified",
+              "commands": [
+                {
+                  "command": {
+                    "exe": "pytest",
+                    "args": [
+                      "tests/e2e",
+                      "-v",
+                      "--tb=short"
+                    ],
+                    "timeout_seconds": 600,
+                    "expected_exit_codes": [
+                      0
+                    ]
+                  },
+                  "timeout_seconds": 1800,
+                  "expect_exit_code": 0
+                }
+              ],
+              "evidence_path": ".runs/validation/L4_e2e.log",
+              "required_for_phases": [
+                "hardening",
+                "package"
+              ]
+            },
+            {
+              "level": "L5",
+              "name": "Production Deployment Validation",
+              "description": "Smoke tests in prod-like env (Docker/staging)",
+              "commands": [
+                {
+                  "command": {
+                    "exe": "docker-compose",
+                    "args": [
+                      "-f",
+                      "docker-compose.test.yml",
+                      "up",
+                      "--abort-on-container-exit"
+                    ],
+                    "timeout_seconds": 600,
+                    "expected_exit_codes": [
+                      0
+                    ]
+                  },
+                  "timeout_seconds": 3600,
+                  "expect_exit_code": 0
+                },
+                {
+                  "command": {
+                    "exe": "python",
+                    "args": [
+                      "scripts/smoke_tests.py",
+                      "--env",
+                      "staging"
+                    ],
+                    "timeout_seconds": 600,
+                    "expected_exit_codes": [
+                      0
+                    ]
+                  },
+                  "timeout_seconds": 600,
+                  "expect_exit_code": 0
+                }
+              ],
+              "evidence_path": ".runs/validation/L5_production.log",
+              "required_for_phases": [
+                "package"
+              ]
+            }
+          ],
+          "per_phase_requirements": [
+            {
+              "phase_id": "PH-001",
+              "minimum_level": "L0"
+            },
+            {
+              "phase_id": "PH-002",
+              "minimum_level": "L2"
+            },
+            {
+              "phase_id": "PH-003",
+              "minimum_level": "L3"
+            }
+          ]
+        }
+      },
+      {
+        "section_id": "sec_007_self_healing",
+        "title": "Self-Healing Rules + Circuit Breakers",
+        "required": true,
+        "instructions_file": "sections/sec_007_self_healing.inst.md",
+        "self_healing": {
+          "enabled": true,
+          "description": "Bounded, auditable retry logic with convergence detection",
+          "failure_taxonomy": [
+            {
+              "failure_type": "DEP_INSTALL_FAIL",
+              "allowed_actions": [
+                "retry with --force-reinstall",
+                "clear pip cache",
+                "use alternate mirror",
+                "pin to last-known-good version"
+              ],
+              "max_retry_budget": 2,
+              "abort_conditions": [
+                {
+                  "regex": "/ConnectionError.*unable to reach/i",
+                  "reason": "Network unreachable"
+                },
+                {
+                  "regex": "/PermissionError/i",
+                  "reason": "Insufficient permissions"
+                }
+              ],
+              "evidence_per_attempt": ".runs/fix_loop/dep_install_attempt_{{N}}.log"
+            },
+            {
+              "failure_type": "TEST_FAIL",
+              "allowed_actions": [
+                "rerun tests with --lf (last failed)",
+                "apply deterministic fix pattern from test output",
+                "update test fixtures if data contract changed",
+                "skip flaky test with waiver justification"
+              ],
+              "max_retry_budget": 2,
+              "abort_conditions": [
+                {
+                  "regex": "/FAILED.*AssertionError.*expected.*got/i",
+                  "reason": "Logic error (not transient)"
+                }
+              ],
+              "evidence_per_attempt": ".runs/fix_loop/test_fail_attempt_{{N}}.log"
+            },
+            {
+              "failure_type": "LINT_FAIL",
+              "allowed_actions": [
+                "run formatter (black/ruff format)",
+                "apply auto-fixes (ruff --fix)",
+                "add # noqa comment with justification"
+              ],
+              "max_retry_budget": 1,
+              "abort_conditions": [
+                {
+                  "regex": "/SyntaxError/i",
+                  "reason": "Fundamental syntax error"
+                }
+              ],
+              "evidence_per_attempt": ".runs/fix_loop/lint_fail_attempt_{{N}}.log"
+            },
+            {
+              "failure_type": "TYPE_CHECK_FAIL",
+              "allowed_actions": [
+                "add type annotations",
+                "add # type: ignore with justification",
+                "update stub files"
+              ],
+              "max_retry_budget": 2,
+              "abort_conditions": [
+                {
+                  "regex": "/incompatible types.*Expected.*Got/i",
+                  "reason": "Type contract violation"
+                }
+              ],
+              "evidence_per_attempt": ".runs/fix_loop/type_check_attempt_{{N}}.log"
+            },
+            {
+              "failure_type": "INTEGRATION_TEST_FAIL",
+              "allowed_actions": [
+                "verify external service availability",
+                "update integration test mocks",
+                "adjust timeout values",
+                "mark as known flaky with tracking issue"
+              ],
+              "max_retry_budget": 2,
+              "abort_conditions": [
+                {
+                  "regex": "/HTTP 403|HTTP 401/i",
+                  "reason": "Authentication failure"
+                }
+              ],
+              "evidence_per_attempt": ".runs/fix_loop/integration_fail_attempt_{{N}}.log"
+            },
+            {
+              "failure_type": "CONTROL_VIOLATION",
+              "allowed_actions": [
+                "apply deterministic auto-fix if control allows",
+                "generate waiver request with evidence",
+                "escalate to human review"
+              ],
+              "max_retry_budget": 1,
+              "abort_conditions": [
+                {
+                  "regex": "/CTRL001_MISSING_SATISFYING_GATE/i",
+                  "reason": "Control violation requires gate implementation"
+                }
+              ],
+              "evidence_per_attempt": ".runs/fix_loop/control_violation_{{control_id}}_{{N}}.log"
+            }
+          ],
+          "convergence_detection": {
+            "enabled": true,
+            "description": "Detect when changes stabilize (stop thrashing)",
+            "window_size": 3,
+            "stability_threshold": 0.9,
+            "max_total_attempts_per_phase": 5
+          },
+          "circuit_breakers": {
+            "enabled": true,
+            "config_file": "config/circuit_breakers.yaml",
+            "defaults": {
+              "oscillation_window": 3,
+              "oscillation_threshold": 2,
+              "on_breaker_trip": "mark_phase_failed"
+            },
+            "behavior": {
+              "on_first_failure": "invoke_fix_pattern",
+              "on_subsequent_failure": "re-run-base-step",
+              "on_breaker_trip": "mark_phase_failed"
+            },
+            "applies_to_steps": [
+              "step-03-static-checks",
+              "step-04-runtime-tests",
+              "step-05-integration-tests"
+            ]
+          }
+        }
+      },
+      {
+        "section_id": "sec_008_worktree_isolation",
+        "title": "Worktree Isolation + Merge Strategy",
+        "required": false,
+        "instructions_file": "sections/sec_008_worktree_isolation.inst.md",
+        "worktree_isolation": {
+          "enabled": "{{true|false}}",
+          "strategy": {
+            "mode": "per_workstream",
+            "base_branch": "main",
+            "max_parallel_workers": 3,
+            "naming_patterns": {
+              "worktree_dir": ".worktrees/wt-${workstream_id}-${phase_id}",
+              "branch_name": "feature/${phase_id}-${workstream_id}"
+            },
+            "multi_worktree_enabled": false,
+            "worker_declarations": [
+              {
+                "worker_id": "WT-001",
+                "scope": [
+                  "src/**/*.py"
+                ],
+                "branch_pattern": "feature/${phase_id}-${workstream_id}-${worker_id}"
+              },
+              {
+                "worker_id": "WT-002",
+                "scope": [
+                  "tests/**/*.py"
+                ],
+                "branch_pattern": "feature/${phase_id}-${workstream_id}-${worker_id}"
+              }
+            ]
+          },
+          "merge_strategy": {
+            "method": "squash-merge",
+            "conflict_policy": "abort_and_escalate",
+            "pre_merge_validations": [
+              "All tests pass in worktree",
+              "No scope violations detected",
+              "Diff size <= 1000 lines (or waiver required)"
+            ],
+            "post_merge_validations": [
+              "All tests pass in target branch",
+              "No new lint errors introduced"
+            ]
+          },
+          "isolation_rules": [
+            "Each worktree writes ONLY to its root",
+            "No cross-worktree file references",
+            "Shared state via .state/ directory (read-only from worktrees)"
+          ]
+        }
+      },
+      {
+        "section_id": "sec_009_environment_tools",
+        "title": "Environment + Tool Configuration",
+        "required": true,
+        "instructions_file": "sections/sec_009_environment_tools.inst.md",
+        "environment_tools": {
+          "target_os": [
+            "windows",
+            "linux",
+            "macos"
+          ],
+          "default_shell": "powershell",
+          "primary_language": "python",
+          "language_config": {
+            "python": {
+              "version_constraint": ">=3.11,<3.13",
+              "venv_path": ".venv",
+              "package_manager": "pip"
+            }
+          },
+          "required_services": [
+            {
+              "name": "sqlite_db",
+              "type": "file",
+              "path": ".state/pipeline.db",
+              "must_exist_before_phase": false,
+              "validation_command": "sqlite3 .state/pipeline.db 'SELECT 1;'",
+              "expect_exit_code": 0
+            }
+          ],
+          "config_files": [
+            {
+              "path": "config/tool_profiles.json",
+              "must_exist": true,
+              "schema": "schemas/tool_profiles.schema.json"
+            },
+            {
+              "path": "config/circuit_breakers.yaml",
+              "must_exist": true,
+              "schema": "schemas/circuit_breakers.schema.yaml"
+            }
+          ],
+          "ai_operators": {
+            "primary_agent": "claude-code",
+            "secondary_agents": [
+              "aider",
+              "codex"
+            ],
+            "agent_config": [
+              {
+                "agent_id": "claude-code",
+                "capabilities": [
+                  "analyze",
+                  "edit",
+                  "refactor",
+                  "test"
+                ],
+                "limitations": [
+                  "no_direct_git_ops",
+                  "no_file_deletion"
+                ]
+              },
+              {
+                "agent_id": "aider",
+                "capabilities": [
+                  "edit",
+                  "fix",
+                  "refactor"
+                ],
+                "limitations": [
+                  "requires_explicit_file_list"
+                ]
+              }
+            ]
+          },
+          "tool_profiles": {
+            "preferred_ids": [
+              "pytest",
+              "ruff",
+              "mypy",
+              "black",
+              "powershell-script",
+              "aider-edit",
+              "aider-fix"
+            ],
+            "tool_definitions": [
+              {
+                "tool_id": "pytest",
+                "executable": "pytest",
+                "version_constraint": ">=7.4",
+                "purpose": "unit/integration testing"
+              },
+              {
+                "tool_id": "ruff",
+                "executable": "ruff",
+                "version_constraint": ">=0.3",
+                "purpose": "linting and formatting"
+              },
+              {
+                "tool_id": "bandit",
+                "executable": "bandit",
+                "version_constraint": ">=1.7",
+                "purpose": "security scanning for Python code",
+                "install_command": "pip install bandit>=1.7",
+                "evidence_outputs": [
+                  ".state/evidence/security_scan/"
+                ]
+              },
+              {
+                "tool_id": "mypy",
+                "executable": "mypy",
+                "version_constraint": ">=1.8",
+                "purpose": "static type checking",
+                "install_command": "pip install mypy>=1.8",
+                "evidence_outputs": [
+                  ".state/evidence/type_check/"
+                ]
+              },
+              {
+                "tool_id": "semgrep",
+                "executable": "semgrep",
+                "version_constraint": ">=1.50",
+                "purpose": "static analysis for security and code quality",
+                "install_command": "pip install semgrep>=1.50",
+                "evidence_outputs": [
+                  ".state/evidence/semgrep/"
+                ]
+              }
+            ]
+          },
+          "resource_requirements": {
+            "minimum": {
+              "ram_gb": 8,
+              "disk_gb": 10,
+              "cpu_cores": 2
+            },
+            "recommended": {
+              "ram_gb": 16,
+              "disk_gb": 50,
+              "cpu_cores": 4
+            }
+          },
+          "dependencies": {
+            "python_packages": [
+              {
+                "name": "pytest",
+                "version": ">=7.4",
+                "purpose": "unit/integration testing",
+                "dev_only": true
+              },
+              {
+                "name": "pytest-cov",
+                "version": ">=4.1",
+                "purpose": "coverage reporting",
+                "dev_only": true
+              },
+              {
+                "name": "ruff",
+                "version": ">=0.3",
+                "purpose": "linting and formatting",
+                "dev_only": true
+              },
+              {
+                "name": "mypy",
+                "version": ">=1.8",
+                "purpose": "type checking",
+                "dev_only": true
+              },
+              {
+                "name": "pyyaml",
+                "version": ">=6.0",
+                "purpose": "YAML parsing",
+                "dev_only": false
+              },
+              {
+                "name": "jsonschema",
+                "version": ">=4.21",
+                "purpose": "schema validation",
+                "dev_only": false
+              },
+              {
+                "name": "click",
+                "version": ">=8.1",
+                "purpose": "CLI utilities",
+                "dev_only": false
+              },
+              {
+                "name": "requests",
+                "version": ">=2.31",
+                "purpose": "HTTP requests for integrations",
+                "dev_only": false
+              },
+              {
+                "name": "psutil",
+                "version": ">=5.9",
+                "purpose": "resource metrics collection",
+                "dev_only": false
+              },
+              {
+                "name": "rich",
+                "version": ">=13.7",
+                "purpose": "structured console output",
+                "dev_only": false
+              }
+            ],
+            "validation": {
+              "command": {
+                "exe": "pip",
+                "args": [
+                  "check",
+                  "&&",
+                  "python",
+                  "scripts/validate_dependencies.py",
+                  "requirements.txt"
+                ],
+                "timeout_seconds": 600,
+                "expected_exit_codes": [
+                  0
+                ]
+              },
+              "expect_exit_code": 0
+            }
+          },
+          "ci_parity": {
+            "required": true,
+            "notes": "All commands must run in CI without interactive prompts",
+            "validation_command": "python scripts/validate_ci_compatibility.py",
+            "expect_exit_code": 0,
+            "requirements": [
+              "No TTY-dependent operations",
+              "All inputs via config files or env vars",
+              "Timeouts on all blocking operations"
+            ]
+          },
+          "secrets_management": {
+            "allowed_sources": [
+              "environment variables",
+              ".env file (must be in .gitignore)",
+              "CI secret store"
+            ],
+            "forbidden": [
+              "hardcoded in source",
+              "committed plaintext"
+            ],
+            "validation_command": "python scripts/check_secrets.py src/",
+            "expect_exit_code": 0,
+            "expect_stdout_regex": [
+              "/no_secrets_found: true/"
+            ]
+          }
+        }
+      },
+      {
+        "section_id": "sec_010_phase_contracts",
+        "title": "Phase Contracts (Machine-Checkable)",
+        "required": true,
+        "instructions_file": "sections/sec_010_phase_contracts.inst.md",
+        "phase_contracts": {
+          "contract_specification": {
+            "phase_contract_version": "1.0",
+            "description": "Each phase is represented as a Phase Contract JSON object. No free text in the plan may imply file touches. All file touches live in artifacts[]."
+          },
+          "phase_contract_schema": {
+            "required_fields": [
+              "phase_contract_version",
+              "phase",
+              "dependencies",
+              "scope",
+              "tasks",
+              "artifacts",
+              "validations",
+              "completion_gate",
+              "extensions"
+            ],
+            "stable_id_anchors": [
+              "phase.phase_id [2003]",
+              "tasks[].task_id [2004]",
+              "artifacts[].artifact_id [2005]",
+              "validations[].validation_id [2006]",
+              "scope.path_policy.allowed[].rule_id [2007]",
+              "scope.path_policy.forbidden[].rule_id [2008]",
+              "dependencies.depends_on_phase_ids [2025]",
+              "completion_gate.rules [2026]"
+            ]
+          },
+          "non_negotiable_rules": [
+            "Each phase must be a Phase Contract JSON object",
+            "No free text may imply file touches",
+            "Every task references only existing artifact_ids_touched and validation_ids",
+            "scope.path_policy includes >=1 allowed rule AND >=1 forbidden rule",
+            "completion_gate.rules exists and is fully specified",
+            "Entry criteria via dependencies.depends_on_phase_ids OR extensions.optional.entry_criteria",
+            "Phase risks/unknowns captured in extensions.optional.risks_delta[]",
+            "Generator phases: core/generated/** in allowed[], NOT in forbidden[]",
+            "Non-generator phases: core/generated/** in forbidden[] for create/modify"
+          ],
+          "phase_contract_template": {
+            "phase_contract_version": "1.0",
+            "phase": {
+              "phase_id": "PH-XXX",
+              "workstream_id": "WS-XXX",
+              "title": "{{SHORT_HUMAN_READABLE_NAME}}",
+              "summary": "{{SINGLE_PARAGRAPH_OUTCOME_SUMMARY}}",
+              "objective": "{{DEFINITION_OF_DONE_IN_ONE_SENTENCE}}",
+              "phase_type": "{{implementation|documentation|refactor|integration|testing|ops|generator}}",
+              "status": "{{planned|in_progress|blocked|done|abandoned}}",
+              "tags": [
+                "{{TAG1}}",
+                "{{TAG2}}"
+              ],
+              "gh_item_id": null,
+              "estimate_hours": 0
+            },
+            "dependencies": {
+              "depends_on_phase_ids": [
+                "PH-001",
+                "PH-002"
+              ],
+              "may_run_parallel_with": [
+                "PH-010"
+              ],
+              "parallel_group": "{{GROUP_ID}}",
+              "workstream_bundle_id": "{{ws-bundle-xx}}",
+              "is_critical_path": true
+            },
+            "scope": {
+              "intent": {
+                "in_scope": [
+                  "{{IN_SCOPE_ITEM_1}}",
+                  "{{IN_SCOPE_ITEM_2}}"
+                ],
+                "out_of_scope": [
+                  "{{EXPLICIT_EXCLUSION_1}}",
+                  "{{EXPLICIT_EXCLUSION_2}}"
+                ]
+              },
+              "path_policy": {
+                "allowed": [
+                  {
+                    "rule_id": "PATH-ALLOW-001",
+                    "globs": [
+                      "src/{{module}}/**/*.py"
+                    ],
+                    "modes": [
+                      "read",
+                      "create",
+                      "modify"
+                    ]
+                  },
+                  {
+                    "rule_id": "PATH-ALLOW-002",
+                    "globs": [
+                      "tests/{{module}}/**/*.py"
+                    ],
+                    "modes": [
+                      "read",
+                      "create",
+                      "modify"
+                    ]
+                  }
+                ],
+                "forbidden": [
+                  {
+                    "rule_id": "PATH-DENY-001",
+                    "globs": [
+                      ".git/**",
+                      ".venv/**"
+                    ],
+                    "modes": [
+                      "create",
+                      "modify",
+                      "delete"
+                    ]
+                  },
+                  {
+                    "rule_id": "PATH-DENY-002",
+                    "globs": [
+                      "core/generated/**"
+                    ],
+                    "modes": [
+                      "create",
+                      "modify"
+                    ]
+                  }
+                ]
+              },
+              "modules": [
+                {
+                  "module_id": "mod.{{NAME}}",
+                  "description": "{{MODULE_DESCRIPTION}}"
+                }
+              ]
+            },
+            "tasks": [
+              {
+                "task_id": "TASK-001",
+                "title": "{{ATOMIC_TASK_TITLE}}",
+                "description": "{{WHAT_IS_DONE_INTENT_LEVEL}}",
+                "acceptance_criteria": [
+                  "{{CONCRETE_CONDITION_TRUE_AFTER_COMPLETION}}",
+                  "{{CONCRETE_CONDITION_TRUE_AFTER_COMPLETION}}"
+                ],
+                "artifact_ids_touched": [
+                  "ART-001",
+                  "ART-002"
+                ],
+                "validation_ids": [
+                  "VAL-001"
+                ],
+                "controls": []
+              }
+            ],
+            "artifacts": [
+              {
+                "artifact_id": "ART-001",
+                "path": "{{relative/path/to/file.ext}}",
+                "action": "{{read|create|modify|delete}}",
+                "classification": "{{source|test|config|schema|doc|generated|other}}",
+                "owner": {
+                  "phase_id": "PH-XXX",
+                  "task_id": "TASK-001"
+                },
+                "notes": "{{WHY_IT_EXISTS_OR_CHANGES}}",
+                "must_exist_after_phase": true,
+                "introduced_in_phase": "PH-XXX"
+              }
+            ],
+            "validations": [
+              {
+                "validation_id": "VAL-001",
+                "kind": "command",
+                "description": "{{WHAT_THIS_PROVES}}",
+                "command": {
+                  "exe": "echo",
+                  "args": [
+                    "TEMPLATE_PLACEHOLDER"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                },
+                "timeout_seconds": 60,
+                "success_criteria": {
+                  "exit_code": 0,
+                  "stdout_patterns_any": [
+                    "{{OPTIONAL_REGEX}}"
+                  ],
+                  "stdout_patterns_all": [],
+                  "forbid_stdout_patterns": [
+                    "ERROR",
+                    "FAILED"
+                  ]
+                },
+                "evidence_output": {
+                  "log_path": "{{.runs/PH-XXX/val_001.log}}"
+                },
+                "must_pass": true
+              }
+            ],
+            "completion_gate": {
+              "rules": {
+                "dependencies_satisfied": true,
+                "all_required_artifacts_present": true,
+                "no_scope_violations": true,
+                "all_must_pass_validations_passed": true,
+                "pre_flight_checks_passed": true,
+                "acceptance_tests_passed": true,
+                "circuit_breakers_not_tripped": true
+              },
+              "waivers": {
+                "allowed": false,
+                "waiver_process_ref": null
+              }
+            },
+            "execution_profile": {
+              "prompt_template_id": "{{EXECUTION_PROMPT_TEMPLATE_V2_DAG}}",
+              "run_mode": "{{plan_only|dry_run|execute}}",
+              "max_runtime_minutes": 60,
+              "concurrency": {
+                "allowed_for_phase": true,
+                "max_parallel_steps": 1
+              },
+              "retry_policy": {
+                "default_max_attempts": 1
+              }
+            },
+            "pre_flight_checks": {
+              "checks": [
+                {
+                  "id": "pf-git-clean",
+                  "description": "Repo has no uncommitted changes in target paths",
+                  "when": "always",
+                  "command": {
+                    "exe": "pwsh",
+                    "args": [
+                      "-Command",
+                      "git status --porcelain"
+                    ],
+                    "timeout_seconds": 60,
+                    "expected_exit_codes": [
+                      0
+                    ]
+                  },
+                  "success_pattern": "^$",
+                  "on_fail": "abort"
+                }
+              ]
+            },
+            "execution_plan": {
+              "steps": [
+                {
+                  "id": "step-01-analyze-context",
+                  "name": "{{STEP_NAME}}",
+                  "operation_kind": "OP-ANALYZE-CONTEXT",
+                  "pattern_ids": [
+                    "PAT-ANALYZE-REPO-001"
+                  ],
+                  "description": "{{WHAT_THIS_STEP_DOES}}",
+                  "tool_id": "{{TOOL_ID}}",
+                  "inputs": {
+                    "repo_paths": [
+                      "src/{{module}}/**"
+                    ],
+                    "constraints": {
+                      "respect_file_scope": true
+                    },
+                    "execution_templates": []
+                  },
+                  "expected_outputs": [
+                    "{{OUTPUT_DESCRIPTION}}"
+                  ],
+                  "requires_human_confirmation": false
+                }
+              ]
+            },
+            "expected_artifacts": {
+              "patches": [
+                {
+                  "path": ".ledger/patches/${phase_id}_${workstream_id}.patch",
+                  "must_exist": true
+                }
+              ],
+              "logs": [
+                {
+                  "path": ".runs/${workstream_id}/${phase_id}/static_checks.log",
+                  "must_exist": true
+                },
+                {
+                  "path": ".runs/${workstream_id}/${phase_id}/runtime_tests.log",
+                  "must_exist": true
+                }
+              ],
+              "docs": [
+                {
+                  "path": "docs/{{TOPIC}}/{{FILE}}.md",
+                  "must_exist": true
+                }
+              ],
+              "db": {
+                "migrations_applied": [
+                  "schema/migrations/{{ID}}_{{NAME}}.sql"
+                ]
+              }
+            },
+            "acceptance_tests": {
+              "tests": [
+                {
+                  "id": "acc-01-{{NAME}}",
+                  "description": "{{WHAT_THIS_ACCEPTANCE_TEST_VERIFIES}}",
+                  "command": {
+                    "exe": "echo",
+                    "args": [
+                      "TEMPLATE_PLACEHOLDER"
+                    ],
+                    "timeout_seconds": 600,
+                    "expected_exit_codes": [
+                      0
+                    ]
+                  },
+                  "success_pattern": "{{REGEX_PATTERN}}",
+                  "must_pass": true
+                }
+              ]
+            },
+            "extensions": {
+              "optional": {
+                "entry_criteria": {
+                  "required_artifacts": [
+                    {
+                      "entry_artifact_id": "ENTRY-ART-001",
+                      "path": "{{PATH_TO_REQUIRED_INPUT}}",
+                      "must_exist": true
+                    }
+                  ],
+                  "prerequisites": [
+                    {
+                      "criterion_id": "ENTRY-PREREQ-001",
+                      "description": "{{PREREQUISITE_DESCRIPTION}}",
+                      "validation_command": "{{COMMAND}}",
+                      "expect_exit_code": 0
+                    }
+                  ]
+                },
+                "risks_delta": [
+                  {
+                    "risk_delta_id": "RD-001",
+                    "risk_id": "RISK-005",
+                    "phase_specific_impact": "{{HOW_THIS_PHASE_AFFECTED}}",
+                    "mitigation": "{{PHASE_SPECIFIC_MITIGATION}}"
+                  }
+                ],
+                "open_questions_delta": [
+                  {
+                    "question_id": "Q-PH-001",
+                    "question": "{{QUESTION_TEXT}}",
+                    "why_it_matters": "{{IMPACT}}",
+                    "resolution_step": "{{HOW_TO_RESOLVE}}",
+                    "blocking": "{{YES|NO}}"
+                  }
+                ]
+              },
+              "custom_fields": {}
+            }
+          },
+          "operation_kind_taxonomy": {
+            "analysis": [
+              "OP-ANALYZE-CONTEXT",
+              "OP-ANALYZE-DEPENDENCIES",
+              "OP-ANALYZE-IMPACT"
+            ],
+            "editing": [
+              "OP-EDIT-IMPLEMENT",
+              "OP-EDIT-REFACTOR",
+              "OP-EDIT-FIX"
+            ],
+            "validation": [
+              "OP-VALIDATE-STATIC",
+              "OP-VALIDATE-RUNTIME",
+              "OP-VALIDATE-INTEGRATION",
+              "OP-VALIDATE-SCHEMA"
+            ],
+            "orchestration": [
+              "OP-ORCHESTRATE-PARALLEL",
+              "OP-ORCHESTRATE-MERGE",
+              "OP-ORCHESTRATE-ROLLBACK"
+            ]
+          },
+          "generator_phase_note": "If phase.phase_type is 'generator', move core/generated/** out of scope.path_policy.forbidden[].globs and into scope.path_policy.allowed[].globs (with create/modify modes)."
+        }
+      },
+      {
+        "section_id": "sec_011_artifact_manifest",
+        "title": "Cross-Phase Artifact Manifest",
+        "required": true,
+        "instructions_file": "sections/sec_011_artifact_manifest.inst.md",
+        "artifact_manifest": {
+          "description": "Cross-phase 'bill of materials'. Every file/path created/modified/deleted must be represented here. Source of truth for file touches is artifacts[] inside each phase contract.",
+          "manifest_table": {
+            "columns": [
+              "phase_id [2003]",
+              "artifact_id [2005]",
+              "action",
+              "path [2024]",
+              "introduced_in_phase",
+              "purpose",
+              "validation_ids [2006]",
+              "validation_command_hint"
+            ],
+            "entries": [
+              {
+                "phase_id": "PH-001",
+                "artifact_id": "ART-001",
+                "action": "create",
+                "path": "src/pipeline/state.py",
+                "introduced_in_phase": "PH-001",
+                "purpose": "State machine implementation",
+                "validation_ids": [
+                  "VAL-001",
+                  "VAL-002"
+                ],
+                "validation_command_hint": "pytest tests/test_state.py",
+                "required_by_controls": []
+              }
+            ]
+          },
+          "action_taxonomy": [
+            "read",
+            "create",
+            "modify",
+            "delete"
+          ],
+          "consistency_check": {
+            "command": {
+              "exe": "python",
+              "args": [
+                "scripts/validate_artifact_manifest.py",
+                "{{PLAN_FILE}}"
+              ],
+              "timeout_seconds": 600,
+              "expected_exit_codes": [
+                0
+              ]
+            },
+            "expect_exit_code": 0,
+            "checks": [
+              "All artifact_ids in phase contracts appear in manifest",
+              "All paths are unique within action type",
+              "No artifacts reference non-existent validation_ids",
+              "introduced_in_phase matches first appearance"
+            ]
+          }
+        }
+      },
+      {
+        "section_id": "sec_012_validation_gates",
+        "title": "Global Validation Gates",
+        "required": true,
+        "instructions_file": "sections/sec_012_validation_gates.inst.md",
+        "validation_gates": {
+          "description": "Global gates that apply across phases. Phase-specific validations are in phase contracts.",
+          "gates": [
+            {
+              "gate_id": "GATE-STRUCTURE-001",
+              "name": "Directory Structure Validation",
+              "description": "Required directories exist",
+              "command": {
+                "exe": "python",
+                "args": [
+                  "scripts/validate_structure.py",
+                  "--schema",
+                  "schemas/dir_structure.json"
+                ],
+                "timeout_seconds": 600,
+                "expected_exit_codes": [
+                  0
+                ]
+              },
+              "timeout_seconds": 10,
+              "success_criteria": {
+                "exit_code": 0,
+                "expect_stdout_regex": [
+                  "/all_required_dirs_present: true/"
+                ],
+                "forbid_stdout_regex": [
+                  "missing_dir"
+                ]
+              },
+              "evidence_path": ".runs/global_gates/structure.log",
+              "must_pass": true,
+              "run_after_phase": null
+            },
+            {
+              "gate_id": "GATE-COVERAGE-001",
+              "name": "Global Coverage Threshold",
+              "description": "Minimum coverage across all modules",
+              "command": {
+                "exe": "pytest",
+                "args": [
+                  "--cov=src",
+                  "--cov-report=term",
+                  "|",
+                  "grep",
+                  "TOTAL"
+                ],
+                "timeout_seconds": 600,
+                "expected_exit_codes": [
+                  0
+                ]
+              },
+              "timeout_seconds": 300,
+              "success_criteria": {
+                "exit_code": 0,
+                "expect_stdout_regex": [
+                  "/TOTAL.*9[5-9]|100%/"
+                ]
+              },
+              "evidence_path": ".runs/global_gates/coverage.log",
+              "must_pass": true,
+              "run_after_phase": "PH-IMPLEMENT"
+            },
+            {
+              "gate_id": "GATE-SECURITY-001",
+              "name": "Security Scan",
+              "description": "No high/critical vulnerabilities",
+              "command": {
+                "exe": "bandit",
+                "args": [
+                  "-r",
+                  "src/",
+                  "-f",
+                  "json",
+                  "-o",
+                  ".runs/global_gates/security.json",
+                  "-ll"
+                ],
+                "timeout_seconds": 600,
+                "expected_exit_codes": [
+                  0
+                ]
+              },
+              "timeout_seconds": 120,
+              "success_criteria": {
+                "exit_code": 0,
+                "file_content_assertions": [
+                  {
+                    "path": ".runs/global_gates/security.json",
+                    "json_path": "$.results",
+                    "expect_value": "[]"
+                  }
+                ]
+              },
+              "evidence_path": ".runs/global_gates/security.log",
+              "must_pass": true,
+              "run_after_phase": "PH-HARDENING"
+            },
+            {
+              "gate_id": "GATE-DETERMINISM-001",
+              "name": "Determinism Verification",
+              "description": "Outputs stable across 3 runs",
+              "command": {
+                "exe": "python",
+                "args": [
+                  "scripts/test_determinism.py",
+                  "--runs",
+                  "3",
+                  "--compare-outputs"
+                ],
+                "timeout_seconds": 600,
+                "expected_exit_codes": [
+                  0
+                ]
+              },
+              "timeout_seconds": 600,
+              "success_criteria": {
+                "exit_code": 0,
+                "expect_stdout_regex": [
+                  "/determinism_score: (0\\.[9][5-9]|1\\.0)/"
+                ]
+              },
+              "evidence_path": ".runs/global_gates/determinism.log",
+              "must_pass": true,
+              "run_after_phase": "PH-PACKAGE"
+            },
+            {
+              "gate_id": "G-CTRL-001",
+              "name": "Control Coverage Enforcement",
+              "description": "All required quality controls have complete mappings (gates + evidence + artifacts + tests)",
+              "command": {
+                "exe": "python",
+                "args": [
+                  "validators/validate_control_coverage.py"
+                ],
+                "timeout_seconds": 600,
+                "expected_exit_codes": [
+                  0
+                ]
+              },
+              "timeout_seconds": 60,
+              "success_criteria": {
+                "exit_code": 0,
+                "expect_stdout_regex": [
+                  "/all_required_controls_satisfied: true/"
+                ]
+              },
+              "evidence_path": ".state/evidence/gates/G-CTRL-001/report.json",
+              "evidence_outputs": [
+                ".state/evidence/gates/G-CTRL-001/report.json"
+              ],
+              "controls_satisfied": [],
+              "must_pass": true,
+              "run_after_phase": null
+            }
+          ],
+          "gate_execution_policy": {
+            "run_all_after_each_phase": false,
+            "run_specific_after_phases": true,
+            "fail_fast": true,
+            "parallel_execution": false
+          }
+        }
+      },
+      {
+        "section_id": "sec_013_risk_unknown_management",
+        "title": "Risk + Unknown Management",
+        "required": true,
+        "instructions_file": "sections/sec_013_risk_unknown_management.inst.md",
+        "risk_unknown_management": {
+          "risk_register": {
+            "description": "Centralized risk tracking across all phases",
+            "risks": [
+              {
+                "risk_id": "RISK-001",
+                "type": "risk",
+                "category": "{{technical|process|resource|external}}",
+                "description": "{{RISK_DESCRIPTION}}",
+                "impact": "{{HIGH|MEDIUM|LOW}}",
+                "probability": "{{HIGH|MEDIUM|LOW}}",
+                "risk_score": "{{1-10}}",
+                "mitigation": "{{MITIGATION_STRATEGY}}",
+                "fallback": "{{FALLBACK_PLAN}}",
+                "detection_signal": "{{WHAT_WOULD_YOU_OBSERVE}}",
+                "owner": "{{DRI}}",
+                "status": "{{open|mitigated|closed|accepted}}"
+              }
+            ]
+          },
+          "unknown_register": {
+            "description": "Explicit tracking of uncertainty",
+            "unknowns": [
+              {
+                "unknown_id": "UNK-001",
+                "type": "unknown",
+                "category": "{{technical|requirements|data|integration}}",
+                "description": "{{WHAT_IS_UNKNOWN}}",
+                "impact": "{{HIGH|MEDIUM|LOW}}",
+                "investigation_plan": "{{HOW_TO_LEARN_MORE}}",
+                "investigation_budget": "{{HOURS_OR_DAYS}}",
+                "fallback": "{{IF_REMAINS_UNKNOWN}}",
+                "detection_signal": "{{WHAT_WOULD_YOU_OBSERVE}}",
+                "owner": "{{DRI}}",
+                "status": "{{open|investigating|resolved|accepted}}"
+              }
+            ]
+          },
+          "open_questions": {
+            "questions": [
+              {
+                "question_id": "Q-001",
+                "question": "{{QUESTION_TEXT}}",
+                "why_it_matters": "{{IMPACT_ON_PLAN}}",
+                "options": [
+                  "{{OPTION1}}",
+                  "{{OPTION2}}"
+                ],
+                "resolution_step": "{{HOW_TO_ANSWER}}",
+                "blocking": "{{YES|NO}}",
+                "owner": "{{DRI}}",
+                "status": "{{open|answered|deferred}}"
+              }
+            ]
+          },
+          "phase_specific_deltas": {
+            "description": "Phases can add phase-specific risks/unknowns via extensions.optional.risks_delta[] in phase contract",
+            "aggregation_command": "python scripts/aggregate_phase_risks.py {{PLAN_FILE}}",
+            "expect_exit_code": 0
+          }
+        }
+      },
+      {
+        "section_id": "sec_014_decision_ledger",
+        "title": "Decision Ledger",
+        "required": true,
+        "instructions_file": "sections/sec_014_decision_ledger.inst.md",
+        "decision_ledger": {
+          "description": "Append-only log of all decisions made during planning and execution. Every decision must have: context, options, selected, rationale.",
+          "storage": {
+            "format": "jsonl",
+            "path": ".state/decisions.jsonl",
+            "rotation_policy": "append_only"
+          },
+          "decisions": [
+            {
+              "decision_id": "DEC-{{PROJECT}}-001",
+              "category": "{{classification|architecture|tooling|process|technical}}",
+              "timestamp": "{{ISO8601_TIMESTAMP}}",
+              "context": {
+                "key": "value"
+              },
+              "options": [
+                "{{OPTION1}}",
+                "{{OPTION2}}",
+                "{{OPTION3}}"
+              ],
+              "selected_option": "{{SELECTED}}",
+              "rationale": "{{WHY_THIS_CHOICE}}",
+              "owner": "{{DRI}}",
+              "impact": "{{HIGH|MEDIUM|LOW}}",
+              "reversible": "{{YES|NO}}",
+              "validation": {
+                "command": {
+                  "exe": "{{COMMAND_TO_VERIFY_DECISION}}",
+                  "args": [],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                },
+                "expect_exit_code": 0
+              }
+            }
+          ],
+          "decision_categories": [
+            "classification",
+            "architecture",
+            "tooling",
+            "process",
+            "technical",
+            "scope",
+            "quality"
+          ],
+          "ledger_validation": {
+            "command": {
+              "exe": "python",
+              "args": [
+                "scripts/validate_decision_ledger.py",
+                ".state/decisions.jsonl"
+              ],
+              "timeout_seconds": 600,
+              "expected_exit_codes": [
+                0
+              ]
+            },
+            "expect_exit_code": 0,
+            "checks": [
+              "All decisions have rationale",
+              "All decisions have timestamp",
+              "All decisions have owner",
+              "No duplicate decision_ids"
+            ]
+          }
+        }
+      },
+      {
+        "section_id": "sec_015_metrics_observability",
+        "title": "Metrics + Observability",
+        "required": true,
+        "instructions_file": "sections/sec_015_metrics_observability.inst.md",
+        "metrics_observability": {
+          "metrics_tracking": {
+            "enabled": true,
+            "description": "Quantified progress measurement with targets",
+            "storage": {
+              "format": "jsonl",
+              "path": ".state/metrics.jsonl",
+              "rotation_policy": "size_based",
+              "max_size_mb": 100,
+              "keep_files": 10
+            },
+            "tracked_metrics": [
+              {
+                "metric_id": "MET-001",
+                "metric_name": "test_coverage_percentage",
+                "target_value": 95,
+                "target_operator": ">=",
+                "current_value": null,
+                "unit": "percent",
+                "collection_command": "pytest --cov=src --cov-report=json:.runs/coverage.json && jq '.totals.percent_covered' .runs/coverage.json"
+              },
+              {
+                "metric_id": "MET-002",
+                "metric_name": "lint_errors",
+                "target_value": 0,
+                "target_operator": "==",
+                "current_value": null,
+                "unit": "count",
+                "collection_command": "ruff check src/ --output-format json | jq 'length'"
+              },
+              {
+                "metric_id": "MET-003",
+                "metric_name": "type_coverage_percentage",
+                "target_value": 90,
+                "target_operator": ">=",
+                "current_value": null,
+                "unit": "percent",
+                "collection_command": "mypy src/ --txt-report .runs/mypy-report && grep 'success' .runs/mypy-report/index.txt | awk '{print $2}'"
+              },
+              {
+                "metric_id": "MET-004",
+                "metric_name": "build_time_seconds",
+                "target_value": 60,
+                "target_operator": "<=",
+                "current_value": null,
+                "unit": "seconds",
+                "collection_command": "time python -m build | grep 'real' | awk '{print $2}'"
+              },
+              {
+                "metric_id": "MET-005",
+                "metric_name": "test_execution_time_seconds",
+                "target_value": 300,
+                "target_operator": "<=",
+                "current_value": null,
+                "unit": "seconds",
+                "collection_command": "pytest --durations=0 -q | grep 'seconds' | awk '{print $1}'"
+              },
+              {
+                "metric_id": "MET-006",
+                "metric_name": "security_issues_high_critical",
+                "target_value": 0,
+                "target_operator": "==",
+                "current_value": null,
+                "unit": "count",
+                "collection_command": "bandit -r src/ -f json | jq '[.results[] | select(.issue_severity | IN(\"HIGH\", \"CRITICAL\"))] | length'"
+              },
+              {
+                "metric_id": "MET-007",
+                "metric_name": "documentation_coverage_percentage",
+                "target_value": 80,
+                "target_operator": ">=",
+                "current_value": null,
+                "unit": "percent",
+                "collection_command": "python scripts/check_doc_coverage.py src/"
+              },
+              {
+                "metric_id": "MET-008",
+                "metric_name": "determinism_score",
+                "target_value": 0.95,
+                "target_operator": ">=",
+                "current_value": null,
+                "unit": "ratio",
+                "collection_command": "python scripts/test_determinism.py --runs 3"
+              }
+            ],
+            "per_phase_summaries": {
+              "required": true,
+              "summary_command": "python scripts/generate_phase_metrics_summary.py {{PHASE_ID}}",
+              "output_path": ".runs/{{PHASE_ID}}/metrics_summary.json"
+            }
+          },
+          "observability": {
+            "event_logging": {
+              "enabled": true,
+              "format": "jsonl",
+              "path": ".state/events.jsonl",
+              "event_tags": [
+                "phase:${phase_id}",
+                "workstream:${workstream_id}",
+                "phase_type:${phase_type}",
+                "environment:${target_os}"
+              ]
+            },
+            "record_settings": {
+              "record_durations": true,
+              "record_attempt_counts": true,
+              "record_fix_loop_stats": true,
+              "record_validation_results": true
+            },
+            "telemetry": {
+              "enabled": false,
+              "endpoint": null,
+              "api_key_env_var": null
+            }
+          },
+          "validation_summary_command": {
+            "command": {
+              "exe": "python",
+              "args": [
+                "scripts/validate_metrics.py",
+                ".state/metrics.jsonl"
+              ],
+              "timeout_seconds": 600,
+              "expected_exit_codes": [
+                0
+              ]
+            },
+            "expect_exit_code": 0,
+            "expect_stdout_regex": [
+              "/all_targets_met: true/"
+            ]
+          }
+        }
+      },
+      {
+        "section_id": "sec_016_testing_strategy",
+        "title": "Testing Strategy",
+        "required": true,
+        "instructions_file": "sections/sec_016_testing_strategy.inst.md",
+        "testing_strategy": {
+          "test_first_development": {
+            "enabled": true,
+            "description": "Write tests alongside code (TDD)",
+            "requirement": "Tests must pass 100% (or explicit exception with mitigation)"
+          },
+          "test_layers": {
+            "unit": {
+              "description": "Test individual functions/classes in isolation",
+              "coverage_target": "{{70|80|90|95}}%",
+              "location": "tests/unit/**",
+              "run_command": "pytest tests/unit -v --tb=short --cov=src --cov-report=term",
+              "timeout_seconds": 300,
+              "quality_gates": [
+                "0 failures",
+                "Coverage >= target",
+                "No skipped tests without justification"
+              ]
+            },
+            "integration": {
+              "description": "Test component interactions",
+              "coverage_target": "{{70|80|90}}%",
+              "location": "tests/integration/**",
+              "run_command": "pytest tests/integration -v --tb=short",
+              "timeout_seconds": 600,
+              "quality_gates": [
+                "0 failures",
+                "All critical paths tested",
+                "External dependencies mocked appropriately"
+              ]
+            },
+            "e2e": {
+              "description": "Test complete workflows end-to-end",
+              "coverage_target": "{{50|70|80}}%",
+              "location": "tests/e2e/**",
+              "run_command": "pytest tests/e2e -v --tb=short",
+              "timeout_seconds": 1800,
+              "quality_gates": [
+                "0 failures",
+                "All user stories covered",
+                "Performance targets met"
+              ]
+            },
+            "determinism": {
+              "description": "Verify outputs are stable across runs",
+              "location": "tests/determinism/**",
+              "run_command": "python scripts/test_determinism.py --runs 3 --compare-outputs",
+              "timeout_seconds": 600,
+              "quality_gates": [
+                "Determinism score >= 0.95",
+                "All idempotency tests pass"
+              ]
+            }
+          },
+          "test_fixtures": {
+            "valid_inputs": {
+              "location": "tests/fixtures/valid/**",
+              "description": "Sample valid input data",
+              "count": "{{N}}"
+            },
+            "invalid_inputs": {
+              "location": "tests/fixtures/invalid/**",
+              "description": "Sample invalid input data with expected errors",
+              "count": "{{N}}"
+            },
+            "expected_outputs": {
+              "location": "tests/fixtures/expected/**",
+              "description": "Expected outputs for each input",
+              "format": "{{json|yaml|csv|text}}"
+            },
+            "mock_objects": {
+              "location": "tests/mocks/**",
+              "description": "Mock external dependencies",
+              "dependencies_mocked": [
+                "{{DEPENDENCY1}}",
+                "{{DEPENDENCY2}}"
+              ]
+            }
+          },
+          "quality_gates_summary": {
+            "run_all_tests_command": "pytest tests/ -v --tb=short --cov=src --cov-report=term --cov-report=html:.runs/coverage_html",
+            "expect_exit_code": 0,
+            "gates": [
+              "100% of tests pass",
+              "Coverage >= classification-based target",
+              "Determinism score >= 0.95",
+              "0 high/critical security issues in test code"
+            ]
+          },
+          "control_test_mapping": {
+            "description": "Maps quality controls from SEC-021 to required tests",
+            "mappings": [],
+            "validation_command": "python validators/validate_control_tests.py",
+            "expect_exit_code": 0
+          }
+        }
+      },
+      {
+        "section_id": "sec_017_governance",
+        "title": "Governance + Anti-patterns",
+        "required": true,
+        "instructions_file": "sections/sec_017_governance.inst.md",
+        "governance": {
+          "anti_patterns_blocked": [
+            {
+              "pattern_id": "ANTI-GIANT-REFACTOR-001",
+              "description": "Massive refactors without incremental validation",
+              "detection": "Diff size > 2000 lines in single PR",
+              "mitigation": "Break into smaller phases with validation gates"
+            },
+            {
+              "pattern_id": "ANTI-EDIT-OUTSIDE-SCOPE-001",
+              "description": "Editing files outside declared file_scope",
+              "detection": "File touch not in allowed paths",
+              "mitigation": "Abort phase, require scope amendment"
+            },
+            {
+              "pattern_id": "ANTI-SKIP-TESTS-001",
+              "description": "Skipping tests without justification",
+              "detection": "pytest.mark.skip without reason",
+              "mitigation": "Require waiver with tracking issue"
+            },
+            {
+              "pattern_id": "ANTI-HARDCODED-SECRETS-001",
+              "description": "Hardcoded credentials or API keys",
+              "detection": "Secrets scanner finds matches",
+              "mitigation": "Use environment variables or secret store"
+            },
+            {
+              "pattern_id": "ANTI-NO-ERROR-HANDLING-001",
+              "description": "Missing try/except in critical paths",
+              "detection": "Static analysis finds uncaught exceptions",
+              "mitigation": "Add error handling with logging"
+            }
+          ],
+          "notes_for_operators": [
+            "Never modify files outside declared file_scope",
+            "Always trust git/tests/filesystem over conversational summaries",
+            "If tools under-deliver, repair or escalate\u2014do not silently accept",
+            "Use decision ledger for all non-trivial choices",
+            "Mark [NOT_AUTOMATABLE] when truly cannot automate",
+            "Bounded retries only\u2014no infinite loops"
+          ],
+          "manual_override_policy": {
+            "allowed": false,
+            "justification_required": true,
+            "approval_required_from": "{{DRI|TECH_LEAD|MANAGER}}",
+            "documentation_required": true,
+            "documentation_path": ".state/manual_overrides.jsonl"
+          },
+          "waiver_process": {
+            "allowed": true,
+            "process_ref": "docs/governance/waiver_process.md",
+            "waiver_criteria": [
+              "Must have technical justification",
+              "Must have tracking issue",
+              "Must have mitigation plan",
+              "Must have approval from DRI"
+            ],
+            "waiver_documentation": {
+              "path": ".state/waivers.jsonl",
+              "schema": "schemas/waiver.schema.json"
+            }
+          },
+          "quality_enforcement": {
+            "description": "Mechanical enforcement via linters and gates",
+            "enforcement_tools": [
+              {
+                "tool": "ruff",
+                "config": "ruff.toml",
+                "purpose": "Linting and formatting"
+              },
+              {
+                "tool": "mypy",
+                "config": "mypy.ini",
+                "purpose": "Type checking"
+              },
+              {
+                "tool": "bandit",
+                "config": ".bandit",
+                "purpose": "Security scanning"
+              },
+              {
+                "tool": "pytest",
+                "config": "pytest.ini",
+                "purpose": "Test execution"
+              }
+            ]
+          },
+          "no_skeleton_code": {
+            "enforcement": "MANDATORY",
+            "description": "Final deliverables must be complete and runnable",
+            "forbidden": [
+              "TODO comments in production code",
+              "pass statements in function bodies",
+              "NotImplementedError without clear timeline",
+              "Placeholder functions",
+              "Empty test files"
+            ],
+            "validation_command": "python scripts/check_no_skeletons.py src/ tests/",
+            "expect_exit_code": 0
+          }
+        }
+      },
+      {
+        "section_id": "sec_018_github_integration",
+        "title": "GitHub Integration (Optional)",
+        "required": false,
+        "instructions_file": "sections/sec_018_github_integration.inst.md",
+        "github_integration": {
+          "enabled": "{{true|false}}",
+          "repository": {
+            "owner": "{{GITHUB_USERNAME_OR_ORG}}",
+            "name": "{{REPO_NAME}}",
+            "default_branch": "{{main|master|develop}}",
+            "visibility": "{{public|private}}"
+          },
+          "issue_management": {
+            "mode": "one-per-phase",
+            "issue_config": {
+              "number": null,
+              "title_template": "[{phase_id}] {title}",
+              "body_template_path": "templates/github_issue.md",
+              "labels": [
+                "phase-plan",
+                "ai-generated",
+                "{{CUSTOM_LABEL}}"
+              ],
+              "assignees": [
+                "{{GITHUB_USERNAME}}"
+              ],
+              "milestone": "{{MILESTONE_TITLE}}"
+            }
+          },
+          "project_management": {
+            "url": "{{https://github.com/orgs/ORG/projects/N}}",
+            "owner": "{{ORG_OR_USER}}",
+            "project_number": "{{N}}",
+            "item_id": null,
+            "field_mappings": {
+              "phase_id_field": "Phase ID",
+              "workstream_field": "Workstream",
+              "status_field": "Status",
+              "risk_field": "Risk",
+              "target_date_field": "Target date",
+              "doc_id_field": "doc_id",
+              "story_points_field": null,
+              "owner_field": null
+            },
+            "status_mappings": {
+              "planned": "Todo",
+              "in_progress": "In Progress",
+              "blocked": "Blocked",
+              "done": "Done",
+              "abandoned": "Abandoned"
+            }
+          },
+          "automation": {
+            "allow_issue_create": true,
+            "allow_issue_update": true,
+            "allow_project_item_create": true,
+            "allow_project_item_update": true,
+            "sync_direction": "yaml->github",
+            "on_phase_status_change_update_project": true,
+            "on_project_status_change_update_phase": false,
+            "last_synced_at": null,
+            "last_synced_by": null
+          },
+          "sync_script": {
+            "command": {
+              "exe": "python",
+              "args": [
+                "scripts/sync_github.py",
+                "{{PLAN_FILE}}"
+              ],
+              "timeout_seconds": 600,
+              "expected_exit_codes": [
+                0
+              ]
+            },
+            "expect_exit_code": 0
+          }
+        }
+      },
+      {
+        "section_id": "sec_019_runbooks",
+        "title": "Operational Runbooks",
+        "required": true,
+        "instructions_file": "sections/sec_019_runbooks.inst.md",
+        "runbooks": {
+          "installation": {
+            "prerequisites": {
+              "os": [
+                "{{Windows|Linux|macOS}}"
+              ],
+              "runtime": "{{Python >=3.11, <3.13}}",
+              "tools": [
+                "git >=2.40",
+                "docker >=24 (optional)"
+              ]
+            },
+            "steps": [
+              {
+                "step": "1. Clone repository",
+                "command": {
+                  "exe": "git",
+                  "args": [
+                    "clone",
+                    "{{REPO_URL}}",
+                    "&&",
+                    "cd",
+                    "{{REPO_NAME}}"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              },
+              {
+                "step": "2. Create virtual environment",
+                "command": {
+                  "exe": "python",
+                  "args": [
+                    "-m",
+                    "venv",
+                    ".venv"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              },
+              {
+                "step": "3. Activate virtual environment",
+                "command": {
+                  "exe": ".venv\\Scripts\\activate",
+                  "args": [
+                    "#",
+                    "Windows",
+                    "PowerShell",
+                    "source",
+                    ".venv/bin/activate",
+                    "#",
+                    "Linux/macOS"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              },
+              {
+                "step": "4. Install dependencies",
+                "command": {
+                  "exe": "pip",
+                  "args": [
+                    "install",
+                    "-r",
+                    "requirements.txt"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              },
+              {
+                "step": "5. Verify installation",
+                "command": {
+                  "exe": "python",
+                  "args": [
+                    "scripts/verify_install.py"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                },
+                "expect_exit_code": 0
+              }
+            ],
+            "troubleshooting": [
+              {
+                "issue": "pip install fails with dependency conflict",
+                "solution": "pip install --upgrade pip && pip install -r requirements.txt --force-reinstall"
+              },
+              {
+                "issue": "Virtual environment activation fails",
+                "solution": "Check PowerShell execution policy: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser"
+              }
+            ]
+          },
+          "execution": {
+            "development": [
+              {
+                "step": "1. Run plan generation",
+                "command": {
+                  "exe": "python",
+                  "args": [
+                    "scripts/generate_plan.py",
+                    "--input",
+                    "{{INPUT}}",
+                    "--output",
+                    "{{OUTPUT}}"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              },
+              {
+                "step": "2. Validate plan",
+                "command": {
+                  "exe": "python",
+                  "args": [
+                    "scripts/validate_plan.py",
+                    "{{PLAN_FILE}}"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                },
+                "expect_exit_code": 0
+              },
+              {
+                "step": "3. Execute plan (dry-run)",
+                "command": {
+                  "exe": "python",
+                  "args": [
+                    "scripts/execute_plan.py",
+                    "{{PLAN_FILE}}",
+                    "--dry-run"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              },
+              {
+                "step": "4. Execute plan (real)",
+                "command": {
+                  "exe": "python",
+                  "args": [
+                    "scripts/execute_plan.py",
+                    "{{PLAN_FILE}}",
+                    "--execute"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              }
+            ],
+            "production": [
+              {
+                "step": "1. Run smoke tests",
+                "command": {
+                  "exe": "python",
+                  "args": [
+                    "scripts/smoke_tests.py",
+                    "--env",
+                    "production"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                },
+                "expect_exit_code": 0
+              },
+              {
+                "step": "2. Deploy with feature flag",
+                "command": {
+                  "exe": "python",
+                  "args": [
+                    "scripts/deploy.py",
+                    "--env",
+                    "production",
+                    "--feature-flag",
+                    "{{FLAG_NAME}}=off"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              },
+              {
+                "step": "3. Monitor metrics",
+                "command": {
+                  "exe": "python",
+                  "args": [
+                    "scripts/monitor_metrics.py",
+                    "--duration",
+                    "300"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              },
+              {
+                "step": "4. Enable feature flag",
+                "command": {
+                  "exe": "python",
+                  "args": [
+                    "scripts/toggle_feature.py",
+                    "--flag",
+                    "{{FLAG_NAME}}",
+                    "--value",
+                    "on"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              }
+            ]
+          },
+          "maintenance": {
+            "backup": [
+              {
+                "step": "Backup state database",
+                "command": {
+                  "exe": "sqlite3",
+                  "args": [
+                    ".state/pipeline.db",
+                    "'.backup",
+                    ".state/backups/pipeline_$(date",
+                    "+%Y%m%d_%H%M%S).db'"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              },
+              {
+                "step": "Backup decision ledger",
+                "command": {
+                  "exe": "cp",
+                  "args": [
+                    ".state/decisions.jsonl",
+                    ".state/backups/decisions_$(date",
+                    "+%Y%m%d_%H%M%S).jsonl"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              }
+            ],
+            "restore": [
+              {
+                "step": "Restore state database",
+                "command": {
+                  "exe": "sqlite3",
+                  "args": [
+                    ".state/pipeline.db",
+                    "'.restore",
+                    ".state/backups/{{BACKUP_FILE}}'"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              },
+              {
+                "step": "Verify restore",
+                "command": {
+                  "exe": "sqlite3",
+                  "args": [
+                    ".state/pipeline.db",
+                    "'SELECT",
+                    "COUNT(*)",
+                    "FROM",
+                    "phases;'"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              }
+            ],
+            "upgrade": [
+              {
+                "step": "1. Backup current version",
+                "command": {
+                  "exe": "python",
+                  "args": [
+                    "scripts/backup_all.py"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              },
+              {
+                "step": "2. Pull latest changes",
+                "command": {
+                  "exe": "git",
+                  "args": [
+                    "pull",
+                    "origin",
+                    "main"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              },
+              {
+                "step": "3. Upgrade dependencies",
+                "command": {
+                  "exe": "pip",
+                  "args": [
+                    "install",
+                    "-r",
+                    "requirements.txt",
+                    "--upgrade"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              },
+              {
+                "step": "4. Run migrations",
+                "command": {
+                  "exe": "python",
+                  "args": [
+                    "scripts/run_migrations.py"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              },
+              {
+                "step": "5. Verify upgrade",
+                "command": {
+                  "exe": "python",
+                  "args": [
+                    "scripts/verify_upgrade.py"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                },
+                "expect_exit_code": 0
+              }
+            ]
+          },
+          "rollback": {
+            "default_procedure": [
+              {
+                "step": "1. Revert commits",
+                "command": {
+                  "exe": "git",
+                  "args": [
+                    "revert",
+                    "{{COMMIT_HASH}}"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              },
+              {
+                "step": "2. Rerun validations",
+                "command": {
+                  "exe": "pytest",
+                  "args": [
+                    "tests/",
+                    "-v"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                },
+                "expect_exit_code": 0
+              },
+              {
+                "step": "3. Verify rollback",
+                "command": {
+                  "exe": "python",
+                  "args": [
+                    "scripts/verify_rollback.py"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              }
+            ],
+            "additional_steps": [
+              "{{ADDITIONAL_ROLLBACK_STEP_1}}",
+              "{{ADDITIONAL_ROLLBACK_STEP_2}}"
+            ],
+            "enterprise_mode_specific": [
+              {
+                "step": "1. Disable feature flag",
+                "command": {
+                  "exe": "python",
+                  "args": [
+                    "scripts/toggle_feature.py",
+                    "--flag",
+                    "{{FLAG_NAME}}",
+                    "--value",
+                    "off"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              },
+              {
+                "step": "2. Drain traffic",
+                "command": {
+                  "exe": "python",
+                  "args": [
+                    "scripts/drain_traffic.py",
+                    "--duration",
+                    "300"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              },
+              {
+                "step": "3. Revert deployment",
+                "command": {
+                  "exe": "python",
+                  "args": [
+                    "scripts/rollback_deployment.py",
+                    "--to-version",
+                    "{{PREVIOUS_VERSION}}"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              },
+              {
+                "step": "4. Verify rollback",
+                "command": {
+                  "exe": "python",
+                  "args": [
+                    "scripts/smoke_tests.py",
+                    "--env",
+                    "production"
+                  ],
+                  "timeout_seconds": 600,
+                  "expected_exit_codes": [
+                    0
+                  ]
+                }
+              }
+            ]
+          },
+          "troubleshooting_guide": {
+            "common_issues": [
+              {
+                "issue": "Phase fails with scope violation",
+                "diagnosis": "File touched outside allowed paths",
+                "resolution": "Review file_scope in phase contract, amend if needed"
+              },
+              {
+                "issue": "Circuit breaker trips",
+                "diagnosis": "Oscillation detected in fix loop",
+                "resolution": "Review fix attempt logs, identify root cause, manual intervention required"
+              },
+              {
+                "issue": "Determinism test fails",
+                "diagnosis": "Non-deterministic behavior (timestamps, random, UUIDs)",
+                "resolution": "Use fixed seeds, mock time sources, use stable IDs"
+              }
+            ],
+            "escalation_paths": [
+              {
+                "level": "L1 - Automated repair",
+                "trigger": "First failure",
+                "action": "Invoke fix pattern from allowed actions"
+              },
+              {
+                "level": "L2 - Human review",
+                "trigger": "Circuit breaker trip",
+                "action": "Create GitHub issue with fix loop logs"
+              },
+              {
+                "level": "L3 - Plan amendment",
+                "trigger": "Unresolvable scope violation",
+                "action": "Update phase contract, re-validate plan"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "section_id": "sec_020_final_summary",
+        "title": "Final Summary + Completion Checklist",
+        "required": true,
+        "instructions_file": "sections/sec_020_final_summary.inst.md",
+        "final_summary": {
+          "what_was_delivered": {
+            "description": "Phase Plan {{VERSION}} with ALL Deterministic Enhancements",
+            "features_delivered": [
+              {
+                "feature": "Self-healing rules (bounded + auditable)",
+                "details": "{{N}} failure types with explicit action allowlists, max retry budgets, abort conditions"
+              },
+              {
+                "feature": "Worktree isolation (merge-safe)",
+                "details": "Base ref: {{BRANCH}}, concurrency limit: {{N}} workers, {{MERGE_STRATEGY}} strategy"
+              },
+              {
+                "feature": "Ground truth validation levels (explicit)",
+                "details": "{{N}} levels (L0-L5) with commands + evidence, per-phase requirements"
+              },
+              {
+                "feature": "Phase contracts (machine-checkable)",
+                "details": "{{N}} phases with inputs/outputs/invariants, pre/postconditions, failure modes"
+              },
+              {
+                "feature": "Enhanced validation gates (regex patterns)",
+                "details": "{{N}} gates with expect/forbid patterns, file content assertions, timeout/retry"
+              },
+              {
+                "feature": "Metrics tracking (measurable progress)",
+                "details": "{{N}} tracked metrics with quantified targets, JSONL sink, per-phase summaries"
+              },
+              {
+                "feature": "Infrastructure requirements (reproducible env)",
+                "details": "{{OS}}/{{LANGUAGE}}/{{TOOLS}} requirements, resource minimums, CI parity"
+              },
+              {
+                "feature": "NO IMPLIED BEHAVIOR constraint (enforced)",
+                "details": "All rules expressible as config + command + evidence + pass/fail"
+              },
+              {
+                "feature": "Decision ledger (full rationale)",
+                "details": "{{N}} decisions logged with context, options, rationale, validation"
+              },
+              {
+                "feature": "Risk/Unknown registers (comprehensive)",
+                "details": "{{N}} risks with mitigation/fallback/detection, {{N}} unknowns tracked"
+              }
+            ]
+          },
+          "determinism_score": {
+            "target": "0.95",
+            "estimated_achieved": "{{PERCENTAGE}}",
+            "factors": [
+              "Decision ledger: {{N}} decisions logged with rationale",
+              "Assumption ledger: {{N}} assumptions tracked with validation",
+              "File scope enforcement: Hard boundaries per phase",
+              "Ground truth levels: Mechanical pass/fail (no human judgment)",
+              "Parallel execution: DAG-scheduled (deterministic ordering)",
+              "Self-healing: Bounded retries with convergence detection",
+              "Metrics: All targets quantified"
+            ]
+          },
+          "time_analysis": {
+            "sequential_estimate_minutes": "{{N}}",
+            "parallel_estimate_minutes": "{{N}}",
+            "speedup_percentage": "{{CALCULATED}}",
+            "bottlenecks": [
+              {
+                "phase_or_group": "{{ID}}",
+                "duration_minutes": "{{N}}",
+                "reason": "{{WHY_BOTTLENECK}}"
+              }
+            ]
+          },
+          "quality_gates_summary": {
+            "total_gates": "{{N}}",
+            "passed": 0,
+            "failed": 0,
+            "pending": "{{N}}",
+            "all_gates_have": [
+              "Executable commands: YES",
+              "Expected output patterns (regex): YES",
+              "Evidence artifact paths: YES",
+              "Pass/fail conditions: YES"
+            ]
+          },
+          "next_steps": [
+            {
+              "step": "Execute {{FIRST_PHASE}}",
+              "command": {
+                "exe": "{{COMMAND}}",
+                "args": [],
+                "timeout_seconds": 600,
+                "expected_exit_codes": [
+                  0
+                ]
+              }
+            },
+            {
+              "step": "Validate high-impact assumptions",
+              "command": {
+                "exe": "python",
+                "args": [
+                  "scripts/validate_assumptions.py",
+                  ".state/assumptions.jsonl",
+                  "--impact-min=7"
+                ],
+                "timeout_seconds": 600,
+                "expected_exit_codes": [
+                  0
+                ]
+              }
+            },
+            {
+              "step": "Start parallel execution group {{N}}",
+              "command": {
+                "exe": "{{COMMAND}}",
+                "args": [],
+                "timeout_seconds": 600,
+                "expected_exit_codes": [
+                  0
+                ]
+              }
+            },
+            {
+              "step": "Monitor metrics",
+              "command": {
+                "exe": "python",
+                "args": [
+                  "scripts/monitor_metrics.py",
+                  "--follow"
+                ],
+                "timeout_seconds": 600,
+                "expected_exit_codes": [
+                  0
+                ]
+              }
+            }
+          ],
+          "known_limitations": [
+            {
+              "limitation": "{{LIMITATION_1}}",
+              "description": "{{DESCRIPTION}}",
+              "workaround": "{{WORKAROUND_OR_FUTURE_WORK}}"
+            }
+          ],
+          "completion_checklist": {
+            "pre_execution": [
+              {
+                "item": "All required sections completed",
+                "status": "{{PENDING|DONE}}"
+              },
+              {
+                "item": "All phases have phase contracts",
+                "status": "{{PENDING|DONE}}"
+              },
+              {
+                "item": "All validations have commands + regex",
+                "status": "{{PENDING|DONE}}"
+              },
+              {
+                "item": "All assumptions have validation methods",
+                "status": "{{PENDING|DONE}}"
+              },
+              {
+                "item": "Decision ledger has >=5 entries",
+                "status": "{{PENDING|DONE}}"
+              },
+              {
+                "item": "Risk register has >=3 entries",
+                "status": "{{PENDING|DONE}}"
+              },
+              {
+                "item": "Artifact manifest matches phase contracts",
+                "status": "{{PENDING|DONE}}"
+              },
+              {
+                "item": "No [NOT_AUTOMATABLE] without justification",
+                "status": "{{PENDING|DONE}}"
+              }
+            ],
+            "post_execution": [
+              {
+                "item": "All phases marked DONE",
+                "status": "{{PENDING|DONE}}"
+              },
+              {
+                "item": "All must-pass validations passed",
+                "status": "{{PENDING|DONE}}"
+              },
+              {
+                "item": "All artifacts present at declared locations",
+                "status": "{{PENDING|DONE}}"
+              },
+              {
+                "item": "Global DoD criteria met",
+                "status": "{{PENDING|DONE}}"
+              },
+              {
+                "item": "Determinism score >= 0.95",
+                "status": "{{PENDING|DONE}}"
+              },
+              {
+                "item": "All metrics targets met",
+                "status": "{{PENDING|DONE}}"
+              },
+              {
+                "item": "Evidence logs exist for all validations",
+                "status": "{{PENDING|DONE}}"
+              }
+            ]
+          },
+          "appendix": {
+            "a_large_snippets": {
+              "description": "Large code blocks, configs, commands",
+              "items": []
+            },
+            "b_optional_timeline": {
+              "description": "Non-binding timeline (if dates included)",
+              "warning": "These are PLANNING AIDS ONLY, not contractual constraints",
+              "items": []
+            },
+            "c_mechanical_enforcement": {
+              "description": "Schema definitions for automated validation",
+              "plan_schema_path": "schemas/plan.schema.json",
+              "phase_contract_schema_path": "schemas/phase_contract.schema.json",
+              "validation_command": "jsonschema -i {{PLAN_FILE}} schemas/plan.schema.json",
+              "expect_exit_code": 0
+            }
+          }
+        }
+      },
+      {
+        "section_id": "sec_021_quality_controls_catalog",
+        "title": "Quality Controls Catalog (SSOT)",
+        "required": true,
+        "instructions_file": "sections/sec_021_quality_controls_catalog.inst.md",
+        "quality_controls_catalog": {
+          "version": "1.0.0",
+          "description": "Single source of truth for proactive quality controls derived from DBG debugging topics. Controls are enforced at planning time via G-CTRL-001 gate.",
+          "control_classes": {
+            "enum": [
+              "security",
+              "testing",
+              "validation",
+              "architecture",
+              "observability",
+              "deployment",
+              "documentation"
+            ],
+            "description": "Control classification categories mapped from DBG topic areas"
+          },
+          "controls": [
+            {
+              "control_id": "CTRL-SEC-001",
+              "class": "security",
+              "name": "Input Validation Required",
+              "description": "All external inputs must be validated before processing",
+              "derived_from_dbg": null,
+              "enforcement": {
+                "gate_id": "G-INPUT-VAL",
+                "validation_command": {
+                  "exe": "python",
+                  "args": [
+                    "validators/validate_input_handling.py",
+                    "--scan-dir",
+                    "{{SOURCE_DIR}}"
+                  ]
+                },
+                "expect_exit_code": 0,
+                "expect_stdout_regex": [
+                  "/no_unvalidated_inputs: true/"
+                ]
+              },
+              "evidence_requirements": {
+                "artifacts": [
+                  ".state/evidence/{{PHASE}}/controls/CTRL-SEC-001/scan_report.json"
+                ],
+                "path_formula": ".state/evidence/{{PHASE}}/controls/{{CONTROL_ID}}/{{ARTIFACT_NAME}}"
+              },
+              "severity": "critical",
+              "auto_remediable": false
+            },
+            {
+              "control_id": "CTRL-SEC-002",
+              "class": "security",
+              "name": "No Hardcoded Secrets",
+              "description": "Secrets must not be hardcoded in source files",
+              "derived_from_dbg": null,
+              "enforcement": {
+                "gate_id": "G-SECRETS-SCAN",
+                "validation_command": {
+                  "exe": "python",
+                  "args": [
+                    "validators/validate_no_secrets.py",
+                    "--scan-dir",
+                    "{{SOURCE_DIR}}"
+                  ]
+                },
+                "expect_exit_code": 0,
+                "expect_stdout_regex": [
+                  "/no_secrets_found: true/"
+                ]
+              },
+              "evidence_requirements": {
+                "artifacts": [
+                  ".state/evidence/{{PHASE}}/controls/CTRL-SEC-002/secrets_scan.json"
+                ],
+                "path_formula": ".state/evidence/{{PHASE}}/controls/{{CONTROL_ID}}/{{ARTIFACT_NAME}}"
+              },
+              "severity": "critical",
+              "auto_remediable": false
+            },
+            {
+              "control_id": "CTRL-TST-001",
+              "class": "testing",
+              "name": "Minimum Test Coverage",
+              "description": "Code changes must maintain minimum test coverage threshold",
+              "derived_from_dbg": null,
+              "enforcement": {
+                "gate_id": "G-TEST-COV",
+                "validation_command": {
+                  "exe": "pytest",
+                  "args": [
+                    "--cov={{SOURCE_DIR}}",
+                    "--cov-report=json:.state/evidence/{{PHASE}}/coverage.json",
+                    "--cov-fail-under=90"
+                  ]
+                },
+                "expect_exit_code": 0,
+                "expect_stdout_regex": [
+                  "/TOTAL.*9[0-9]%|100%/"
+                ]
+              },
+              "evidence_requirements": {
+                "artifacts": [
+                  ".state/evidence/{{PHASE}}/controls/CTRL-TST-001/coverage.json"
+                ],
+                "path_formula": ".state/evidence/{{PHASE}}/controls/{{CONTROL_ID}}/{{ARTIFACT_NAME}}"
+              },
+              "severity": "high",
+              "auto_remediable": false
+            },
+            {
+              "control_id": "CTRL-VAL-001",
+              "class": "validation",
+              "name": "Schema Compliance",
+              "description": "All JSON artifacts must validate against their schemas",
+              "derived_from_dbg": null,
+              "enforcement": {
+                "gate_id": "G-SCHEMA-VAL",
+                "validation_command": {
+                  "exe": "python",
+                  "args": [
+                    "validators/validate_all_schemas.py",
+                    "--artifacts-dir",
+                    "{{ARTIFACTS_DIR}}"
+                  ]
+                },
+                "expect_exit_code": 0,
+                "expect_stdout_regex": [
+                  "/all_schemas_valid: true/"
+                ]
+              },
+              "evidence_requirements": {
+                "artifacts": [
+                  ".state/evidence/{{PHASE}}/controls/CTRL-VAL-001/schema_validation.json"
+                ],
+                "path_formula": ".state/evidence/{{PHASE}}/controls/{{CONTROL_ID}}/{{ARTIFACT_NAME}}"
+              },
+              "severity": "high",
+              "auto_remediable": false
+            },
+            {
+              "control_id": "CTRL-ARC-001",
+              "class": "architecture",
+              "name": "No Circular Dependencies",
+              "description": "Module dependencies must form a DAG (no cycles)",
+              "derived_from_dbg": null,
+              "enforcement": {
+                "gate_id": "G-DEP-DAG",
+                "validation_command": {
+                  "exe": "python",
+                  "args": [
+                    "validators/validate_dependency_graph.py",
+                    "--module-dir",
+                    "{{SOURCE_DIR}}"
+                  ]
+                },
+                "expect_exit_code": 0,
+                "expect_stdout_regex": [
+                  "/no_cycles_detected: true/"
+                ]
+              },
+              "evidence_requirements": {
+                "artifacts": [
+                  ".state/evidence/{{PHASE}}/controls/CTRL-ARC-001/dependency_graph.json"
+                ],
+                "path_formula": ".state/evidence/{{PHASE}}/controls/{{CONTROL_ID}}/{{ARTIFACT_NAME}}"
+              },
+              "severity": "medium",
+              "auto_remediable": false
+            }
+          ],
+          "control_mappings": {
+            "description": "Maps controls to gates, phases, and test suites",
+            "by_phase": {
+              "PH-DESIGN": [
+                "CTRL-ARC-001"
+              ],
+              "PH-IMPLEMENT": [
+                "CTRL-SEC-001",
+                "CTRL-SEC-002",
+                "CTRL-TST-001",
+                "CTRL-VAL-001"
+              ],
+              "PH-HARDENING": [
+                "CTRL-SEC-001",
+                "CTRL-SEC-002"
+              ],
+              "PH-PACKAGE": [
+                "CTRL-VAL-001"
+              ]
+            },
+            "by_gate": {
+              "G-INPUT-VAL": [
+                "CTRL-SEC-001"
+              ],
+              "G-SECRETS-SCAN": [
+                "CTRL-SEC-002"
+              ],
+              "G-TEST-COV": [
+                "CTRL-TST-001"
+              ],
+              "G-SCHEMA-VAL": [
+                "CTRL-VAL-001"
+              ],
+              "G-DEP-DAG": [
+                "CTRL-ARC-001"
+              ],
+              "GATE-CONTRACT-001": [
+                "DBG-0019"
+              ],
+              "GATE-COVERAGE-001": [
+                "DBG-0033"
+              ],
+              "GATE-SCHEMA-001": [
+                "DBG-0045"
+              ],
+              "GATE-LOGGING-001": [
+                "DBG-0052"
+              ],
+              "GATE-ROLLBACK-001": [
+                "DBG-0067"
+              ]
+            }
+          },
+          "additional_controls": [
+            {
+              "control_id": "DBG-0019",
+              "title": "API Contract Consistency",
+              "control_class": "architecture",
+              "required": true,
+              "intent": "Prevent API drift between spec and implementation",
+              "required_gates": [
+                "GATE-CONTRACT-001"
+              ],
+              "evidence_requirements": {},
+              "required_artifacts": [],
+              "test_requirements": {},
+              "tools": [
+                "python"
+              ]
+            },
+            {
+              "control_id": "DBG-0033",
+              "title": "Test Coverage Minimum",
+              "control_class": "testing",
+              "required": true,
+              "intent": "Ensure adequate test coverage before deployment",
+              "required_gates": [
+                "GATE-COVERAGE-001"
+              ],
+              "evidence_requirements": {},
+              "required_artifacts": [],
+              "test_requirements": {},
+              "tools": [
+                "pytest"
+              ]
+            },
+            {
+              "control_id": "DBG-0045",
+              "title": "Schema Validation on Input",
+              "control_class": "validation",
+              "required": true,
+              "intent": "Prevent malformed input from causing runtime errors",
+              "required_gates": [
+                "GATE-SCHEMA-001"
+              ],
+              "evidence_requirements": {},
+              "required_artifacts": [],
+              "test_requirements": {},
+              "tools": [
+                "python"
+              ]
+            },
+            {
+              "control_id": "DBG-0052",
+              "title": "Logging Consistency",
+              "control_class": "observability",
+              "required": false,
+              "intent": "Enable effective debugging through consistent log format",
+              "required_gates": [
+                "GATE-LOGGING-001"
+              ],
+              "evidence_requirements": {},
+              "required_artifacts": [],
+              "test_requirements": {},
+              "tools": [
+                "python"
+              ]
+            },
+            {
+              "control_id": "DBG-0067",
+              "title": "Deployment Rollback Tested",
+              "control_class": "deployment",
+              "required": true,
+              "intent": "Ensure ability to recover from failed deployments",
+              "required_gates": [
+                "GATE-ROLLBACK-001"
+              ],
+              "evidence_requirements": {},
+              "required_artifacts": [],
+              "test_requirements": {},
+              "tools": [
+                "python",
+                "pytest"
+              ]
+            }
+          ],
+          "enforcement_policy": {
+            "gate_id": "G-CTRL-001",
+            "description": "Control coverage gate validates all required controls are satisfied",
+            "algorithm": "For each control required by current phase, verify a satisfying gate exists and has passed",
+            "error_codes": {
+              "CTRL001_MISSING_SATISFYING_GATE": "Control requires a gate but none found in plan",
+              "CTRL001_MISSING_EVIDENCE_MAPPING": "Control requires evidence but path not defined",
+              "CTRL001_UNSATISFIED_CONTROL": "Control gate did not pass",
+              "CTRL001_INVALID_CONTROL_ID": "Referenced control_id not found in catalog"
+            },
+            "validation_command": {
+              "exe": "python",
+              "args": [
+                "validators/validate_control_coverage.py",
+                "--plan",
+                "{{PLAN_FILE}}",
+                "--catalog",
+                "sections/sec_021_quality_controls_catalog.json"
+              ]
+            },
+            "expect_exit_code": 0,
+            "expect_stdout_regex": [
+              "/all_required_controls_satisfied: true/"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "file_id": "01260207233100000492"
+}

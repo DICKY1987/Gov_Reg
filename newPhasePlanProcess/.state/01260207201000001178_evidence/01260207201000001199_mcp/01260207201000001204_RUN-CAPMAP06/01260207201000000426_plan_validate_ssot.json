@@ -1,0 +1,45 @@
+{
+  "tool": "plan.validate_ssot",
+  "tool_version": "1.0.0",
+  "run_id": "RUN-CAPMAP06",
+  "status": "pass",
+  "exit_code": 0,
+  "summary": "Evidence written to: C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess\\.state\\evidence\\mcp\\RUN-CAPMAP06\\ssot_validation.json\nSSOT summary: 4 path facts (0 duplicated), 0 version facts (0 duplicated)\n\u00e2\u0153\u201c GATE-017 PASSED: Single source of truth validated",
+  "input": {
+    "context": {
+      "repo_root": "C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess",
+      "run_id": "RUN-CAPMAP06",
+      "invoker": "human"
+    },
+    "plan_path": "C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess\\Plans_Instructions\\wobbly-purring-island_registry-integrated.plan.json",
+    "ignore_common_paths": [
+      ".",
+      "..",
+      "/",
+      "scripts",
+      "schemas",
+      ".state"
+    ],
+    "write_evidence": true,
+    "evidence_path": ".state/evidence/mcp/{run_id}/plan_validate_ssot.json",
+    "timeout_s": 300
+  },
+  "defects": [
+    {
+      "severity": "info",
+      "code": "SSOT_CONTRADICTION",
+      "location": "/plan",
+      "message": "SSOT summary: 4 path facts (0 duplicated), 0 version facts (0 duplicated)",
+      "why_it_matters": "Summary statistics for SSOT analysis"
+    }
+  ],
+  "hashes": {
+    "ssot_evidence_sha256": "sha256:ff38f96cb2de9a23e0040ec279eb622df86348783a1565fba878781481f77972"
+  },
+  "artifacts_emitted": [
+    "C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess\\.state\\evidence\\mcp\\RUN-CAPMAP06\\ssot_validation.json"
+  ],
+  "timestamps": {
+    "generated_at": "2026-02-11T22:19:55.392812+00:00"
+  }
+}

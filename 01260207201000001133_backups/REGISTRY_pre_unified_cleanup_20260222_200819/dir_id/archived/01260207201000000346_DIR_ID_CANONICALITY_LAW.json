@@ -1,0 +1,241 @@
+{
+  "law_id": "DIR_ID_CANONICALITY_LAW",
+  "version": "1.0.0",
+  "status": "authoritative",
+  "generated_utc": "2026-02-13T14:48:27Z",
+  "applies_to": "directory_identity_system",
+  "supersedes": null,
+  "purpose": "Define canonical directory identity rules parallel to file ID canonicality",
+  
+  "format_rules": {
+    "dir_id_format": {
+      "pattern": "^\\d{20}$",
+      "description": "Exactly 20-digit numeric ID from unified allocator",
+      "examples": ["01260207201000000068", "01260207201000000550"],
+      "format_breakdown": {
+        "scope": "6 digits (012602)",
+        "namespace": "3 digits (072)",
+        "type_code": "2 digits (01)",
+        "counter": "9 digits (000000000-999999999)",
+        "total": "20 digits"
+      },
+      "forbidden_patterns": [
+        "^DIR-",
+        "^P_",
+        ".*[a-zA-Z].*",
+        ".*-.*",
+        "^\\d{19}$",
+        "^\\d{21,}$"
+      ],
+      "enforcement": "validator rejects IDs that are not exactly 20 digits"
+    },
+    "dir_id_anchor_file": {
+      "filename": ".dir_id",
+      "location": "directory root",
+      "format": "JSON",
+      "required_fields": [
+        "dir_id",
+        "allocator_version",
+        "allocated_at_utc",
+        "project_root_id",
+        "relative_path"
+      ],
+      "schema_reference": "schemas/DIR_ID_ANCHOR.schema.json"
+    }
+  },
+  
+  "immutability_rules": {
+    "dir_id_immutable_after_allocation": {
+      "rule": "Once allocated, dir_id MUST NOT change even if directory is renamed or moved",
+      "enforcement": "write_policy:immutable",
+      "violation_code": "DIR-IDENTITY-001"
+    },
+    "dir_id_file_write_once": {
+      "rule": ".dir_id file MUST be written exactly once by identity resolver",
+      "enforcement": "file_scope:tool_only",
+      "violation_code": "DIR-IDENTITY-002"
+    },
+    "dir_id_uniqueness_global": {
+      "rule": "No two directories across all projects may share same dir_id",
+      "enforcement": "allocator:atomic_increment",
+      "violation_code": "DIR-IDENTITY-003"
+    }
+  },
+  
+  "rename_move_invariants": {
+    "directory_rename": {
+      "rule": "Directory rename preserves dir_id, updates relative_path in .dir_id file",
+      "enforcement": "watcher:on_moved",
+      "required_actions": [
+        "Update .dir_id relative_path field",
+        "Update registry relative_path column",
+        "Preserve dir_id unchanged"
+      ]
+    },
+    "directory_move": {
+      "rule": "Directory move preserves dir_id, updates parent_dir_id derivation",
+      "enforcement": "watcher:on_moved + derivation:parent_dir_id",
+      "required_actions": [
+        "Update .dir_id relative_path field",
+        "Recompute parent_dir_id by walking up tree",
+        "Update registry record",
+        "Preserve dir_id unchanged"
+      ]
+    },
+    "directory_delete": {
+      "rule": "Directory delete archives .dir_id, marks registry record as deleted",
+      "enforcement": "watcher:on_deleted",
+      "required_actions": [
+        "Archive .dir_id to .state/deleted_dir_ids/",
+        "Set registry status='deleted'",
+        "Set last_seen_utc to deletion time"
+      ]
+    }
+  },
+  
+  "mutation_violations": {
+    "DIR-IDENTITY-001": {
+      "code": "DIR-IDENTITY-001",
+      "name": "DIR_ID_CHANGED",
+      "meaning": "dir_id was modified after allocation",
+      "severity": "CRITICAL",
+      "action": "BLOCK",
+      "detection": "gate:compare .dir_id file with registry",
+      "remediation": "Restore original dir_id from registry or evidence"
+    },
+    "DIR-IDENTITY-002": {
+      "code": "DIR-IDENTITY-002",
+      "name": "DIR_ID_FILE_TAMPERED",
+      "meaning": ".dir_id file was modified by non-resolver process",
+      "severity": "CRITICAL",
+      "action": "BLOCK",
+      "detection": "gate:check .dir_id timestamp and provenance",
+      "remediation": "Regenerate .dir_id from registry"
+    },
+    "DIR-IDENTITY-003": {
+      "code": "DIR-IDENTITY-003",
+      "name": "DIR_ID_COLLISION",
+      "meaning": "Multiple directories claim same dir_id",
+      "severity": "CRITICAL",
+      "action": "BLOCK",
+      "detection": "gate:uniqueness check in registry",
+      "remediation": "Allocate new dir_id for duplicate, archive old"
+    },
+    "DIR-IDENTITY-004": {
+      "code": "DIR-IDENTITY-004",
+      "name": "DIR_ID_MISSING_GOVERNED",
+      "meaning": "Directory in governed zone lacks .dir_id",
+      "severity": "ERROR",
+      "action": "WARN",
+      "detection": "scanner:enumerate governed directories",
+      "remediation": "Allocate dir_id via scanner --fix"
+    },
+    "DIR-IDENTITY-005": {
+      "code": "DIR-IDENTITY-005",
+      "name": "DIR_ID_FORMAT_INVALID",
+      "meaning": ".dir_id file format is invalid or unparseable",
+      "severity": "ERROR",
+      "action": "WARN",
+      "detection": "scanner:parse .dir_id JSON",
+      "remediation": "Regenerate .dir_id from registry if exists, else allocate new"
+    },
+    "DIR-IDENTITY-006": {
+      "code": "DIR-IDENTITY-006",
+      "name": "REGISTRY_DIR_ID_MISMATCH",
+      "meaning": ".dir_id content differs from registry",
+      "severity": "ERROR",
+      "action": "WARN",
+      "detection": "scanner:compare .dir_id with registry",
+      "remediation": "Registry is SSOT: overwrite .dir_id from registry"
+    },
+    "DIR-IDENTITY-007": {
+      "code": "DIR-IDENTITY-007",
+      "name": "ORPHAN_DIR_ID_FILE",
+      "meaning": ".dir_id exists but no registry record",
+      "severity": "WARNING",
+      "action": "INFO",
+      "detection": "scanner:check registry coverage",
+      "remediation": "Ingest directory to create registry record"
+    }
+  },
+  
+  "repair_procedures": {
+    "restore_from_registry": {
+      "trigger": ["DIR-IDENTITY-002", "DIR-IDENTITY-006"],
+      "steps": [
+        "Lookup dir_id in registry by relative_path",
+        "If found: regenerate .dir_id file from registry fields",
+        "If not found: escalate to DIR-IDENTITY-007 repair"
+      ],
+      "evidence": ".state/evidence/dir_id_repairs/{dir_id}/restore_from_registry.json"
+    },
+    "allocate_new_id": {
+      "trigger": ["DIR-IDENTITY-004", "DIR-IDENTITY-005"],
+      "steps": [
+        "Confirm directory is in governed zone (depth>=1)",
+        "Call allocator.allocate_dir_id(relative_path)",
+        "Write .dir_id file atomically",
+        "Ingest directory to registry",
+        "Emit evidence"
+      ],
+      "evidence": ".state/evidence/dir_id_repairs/{dir_id}/allocate_new.json"
+    },
+    "resolve_collision": {
+      "trigger": ["DIR-IDENTITY-003"],
+      "steps": [
+        "Identify all directories claiming same dir_id",
+        "Compare allocated_at_utc: earliest wins",
+        "For losers: archive .dir_id, allocate new dir_id",
+        "Update registry records",
+        "Emit collision report"
+      ],
+      "evidence": ".state/evidence/dir_id_repairs/collisions/{dir_id}_collision.json"
+    }
+  },
+  
+  "allowed_repair_actions": [
+    "Regenerate .dir_id from registry (if registry has record)",
+    "Allocate new dir_id (if directory in governed zone)",
+    "Archive invalid .dir_id (if repair impossible)",
+    "Create registry record (if .dir_id valid but registry missing)"
+  ],
+  
+  "forbidden_actions": [
+    "Modify allocated dir_id",
+    "Delete .dir_id without archiving",
+    "Create .dir_id manually (must use allocator)",
+    "Reuse dir_id from deleted directory"
+  ],
+  
+  "enforcement_mechanisms": {
+    "pre_commit_gate": "gates/P_*_gate_directory_identity.py",
+    "scanner_reconciliation": "govreg_core/P_*_scanner_service.py",
+    "watcher_enforcement": "govreg_core/P_*_fs_watcher.py",
+    "derivation_engine": "UNIFIED_SSOT_REGISTRY_DERIVATIONS.yaml",
+    "write_policy": "UNIFIED_SSOT_REGISTRY_WRITE_POLICY.yaml"
+  },
+  
+  "evidence_requirements": {
+    "allocation": [
+      ".state/evidence/dir_id_allocations/{dir_id}/allocation.json",
+      ".state/evidence/dir_id_allocations/{dir_id}/allocator_before.json",
+      ".state/evidence/dir_id_allocations/{dir_id}/allocator_after.json"
+    ],
+    "violation": [
+      ".state/evidence/dir_id_violations/{violation_code}/{dir_id}.json"
+    ],
+    "repair": [
+      ".state/evidence/dir_id_repairs/{dir_id}/repair_action.json",
+      ".state/evidence/dir_id_repairs/{dir_id}/before.json",
+      ".state/evidence/dir_id_repairs/{dir_id}/after.json"
+    ]
+  },
+  
+  "integration_with_file_id_canonicality": {
+    "shared_allocator": true,
+    "parallel_enforcement": true,
+    "gate_coordination": "Directory gates run before file gates in pre-commit",
+    "scanner_coordination": "Scanner checks directories first, then files within",
+    "evidence_namespace": "Separate: dir_id_* vs file_id_*"
+  }
+}

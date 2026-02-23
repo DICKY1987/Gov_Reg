@@ -1,0 +1,28 @@
+{
+  "input_file": "sections\\sec_021_quality_controls_catalog.json",
+  "schema_file": "schemas\\sec_021_quality_controls_catalog.schema.json",
+  "validations": {
+    "schema": {
+      "passed": true,
+      "errors": []
+    },
+    "control_id_uniqueness": {
+      "passed": true,
+      "duplicates": []
+    },
+    "required_fields": {
+      "passed": true,
+      "missing": []
+    },
+    "evidence_paths": {
+      "passed": true,
+      "issues": []
+    },
+    "control_mappings": {
+      "passed": true,
+      "issues": []
+    }
+  },
+  "status": "pass",
+  "file_id": "01260207233100000522"
+}

@@ -1,0 +1,108 @@
+{
+  "section_id": "sec_017_governance",
+  "title": "Governance + Anti-patterns",
+  "required": true,
+  "instructions_file": "sections/sec_017_governance.inst.md",
+  "governance": {
+    "anti_patterns_blocked": [
+      {
+        "pattern_id": "ANTI-GIANT-REFACTOR-001",
+        "description": "Massive refactors without incremental validation",
+        "detection": "Diff size > 2000 lines in single PR",
+        "mitigation": "Break into smaller phases with validation gates"
+      },
+      {
+        "pattern_id": "ANTI-EDIT-OUTSIDE-SCOPE-001",
+        "description": "Editing files outside declared file_scope",
+        "detection": "File touch not in allowed paths",
+        "mitigation": "Abort phase, require scope amendment"
+      },
+      {
+        "pattern_id": "ANTI-SKIP-TESTS-001",
+        "description": "Skipping tests without justification",
+        "detection": "pytest.mark.skip without reason",
+        "mitigation": "Require waiver with tracking issue"
+      },
+      {
+        "pattern_id": "ANTI-HARDCODED-SECRETS-001",
+        "description": "Hardcoded credentials or API keys",
+        "detection": "Secrets scanner finds matches",
+        "mitigation": "Use environment variables or secret store"
+      },
+      {
+        "pattern_id": "ANTI-NO-ERROR-HANDLING-001",
+        "description": "Missing try/except in critical paths",
+        "detection": "Static analysis finds uncaught exceptions",
+        "mitigation": "Add error handling with logging"
+      }
+    ],
+    "notes_for_operators": [
+      "Never modify files outside declared file_scope",
+      "Always trust git/tests/filesystem over conversational summaries",
+      "If tools under-deliver, repair or escalate\u2014do not silently accept",
+      "Use decision ledger for all non-trivial choices",
+      "Mark [NOT_AUTOMATABLE] when truly cannot automate",
+      "Bounded retries only\u2014no infinite loops"
+    ],
+    "manual_override_policy": {
+      "allowed": false,
+      "justification_required": true,
+      "approval_required_from": "{{DRI|TECH_LEAD|MANAGER}}",
+      "documentation_required": true,
+      "documentation_path": ".state/manual_overrides.jsonl"
+    },
+    "waiver_process": {
+      "allowed": true,
+      "process_ref": "docs/governance/waiver_process.md",
+      "waiver_criteria": [
+        "Must have technical justification",
+        "Must have tracking issue",
+        "Must have mitigation plan",
+        "Must have approval from DRI"
+      ],
+      "waiver_documentation": {
+        "path": ".state/waivers.jsonl",
+        "schema": "schemas/waiver.schema.json"
+      }
+    },
+    "quality_enforcement": {
+      "description": "Mechanical enforcement via linters and gates",
+      "enforcement_tools": [
+        {
+          "tool": "ruff",
+          "config": "ruff.toml",
+          "purpose": "Linting and formatting"
+        },
+        {
+          "tool": "mypy",
+          "config": "mypy.ini",
+          "purpose": "Type checking"
+        },
+        {
+          "tool": "bandit",
+          "config": ".bandit",
+          "purpose": "Security scanning"
+        },
+        {
+          "tool": "pytest",
+          "config": "pytest.ini",
+          "purpose": "Test execution"
+        }
+      ]
+    },
+    "no_skeleton_code": {
+      "enforcement": "MANDATORY",
+      "description": "Final deliverables must be complete and runnable",
+      "forbidden": [
+        "TODO comments in production code",
+        "pass statements in function bodies",
+        "NotImplementedError without clear timeline",
+        "Placeholder functions",
+        "Empty test files"
+      ],
+      "validation_command": "python scripts/check_no_skeletons.py src/ tests/",
+      "expect_exit_code": 0
+    }
+  },
+  "file_id": "01260207233100000487"
+}

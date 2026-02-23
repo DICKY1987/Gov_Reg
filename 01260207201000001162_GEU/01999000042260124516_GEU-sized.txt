@@ -1,0 +1,175 @@
+
+## GEUs present (as implied by the subsystem boundaries)
+
+1. **GEU — Work Unit Contract System**
+   **Anchors:** `gate_aggregate.schema.json`, `universal_registry_entry.schema.json`, `validator_catalog.schema.json`, `system_manifest.schema.json`, plus `ssot_current_approach.schema.json` and `types.py` models.
+
+2. **GEU — Runner + Evidence Gate System**
+   **Anchors:** `gate_runner.py`, `enforcement_bridge.py`
+   **Also includes:** evidence schema validation + bundling + event infrastructure (`event_emitter.py`, `event_router.py`, `event_sinks.py`) and event tests.
+
+3. **GEU — Deterministic Trace + Replay System**
+   **Anchors:** `trace_storage.py`, `trace_context.py`, `determinism.py` (+ associated tests).
+
+4. **GEU — Registry SSOT + Drift Prevention System**
+   **Anchors:** `id_registry.json` (multiple locations), `SSOT_CURRENT_APPROACH.json`, `SYSTEM_MANIFEST.json`
+   **Also includes:** registry management scripts, registry validators, and registry integrity/concurrency tests.
+
+5. **GEU — Validator Suite System**
+   **Anchors:** the SSOT validation toolchain (`validate_manifest.py`, `validate_manifest_coverage.py`, `validate_solutions.py`, `validate_automation_spec.py`, `authority_chain_enforcer.py`, etc.) plus the large `scripts\validators\validate_*.py` library and its tests.
+
+6. **GEU — DAG Scheduler System**
+   **Anchors:** `scheduler.py` plus DAG utilities/builders and DAG tests/config locations.
+
+7. **GEU — Error Classifier + Remedy Library**
+   **Anchors:** `error_engine.py` and `ERROR_TAXONOMY.json`
+   **Also includes:** plugin manager/pipeline engine/state machine, plus remediation tools (patch applier, execute remediation, etc.).
+
+8. **GEU — Reporting System**
+   **Anchors:** `render_pipeline.py`, `render_file_tree.py`, `merge_scan_overlay.py`, `scan_repo.py` (+ top-level render scripts)
+   **Outputs:** reports directories + key report files (implementation/migration/doc-id completion reports).
+
+9. **GEU — SSOT CLI System**
+   **Anchors:** `ssot\__main__.py` + CLI modules and the 7-phase pipeline modules (inventory → reports).
+
+10. **GEU — Integration & Automation**
+    **Anchors:** `AUTOMATION.INDEX.json`, `build_automation_index.py`, `automation_gate.py`
+    **Also includes:** CI gate + “run all gates” scripts + cross-folder automation test.
+
+### Cross-check: the map’s “CRITICAL FILES (DO NOT DELETE)” list matches the anchor set for these GEUs
+
+`gate_runner.py`, `enforcement_bridge.py`, event infra, `validate_*.py`, `id_registry.json`, `SSOT_CURRENT_APPROACH.json`, `scheduler.py`, `error_engine.py`, `ssot\__main__.py`
+
+
+
+-----
+
+
+
+
+
+Use **file_id for identity** and a **GEU registry as the SSOT for membership**, with an optional **derived column** in the file registry for convenience.
+
+That gives you:
+
+* stable linking (file_id doesn’t change when paths move)
+* no multi-source drift (membership lives in one place)
+* clean “graph” queries (GEU↔file and GEU↔GEU)
+
+---
+
+## 1) Canonical linking model
+
+### A. GEU registry = SSOT (authoritative)
+
+Each GEU entry defines a connected component:
+
+* `geu_id` (your 16-digit GEU scheme, e.g., `99xx..............`)
+* `anchor_file_id` (the file_id of the anchor artifact)
+* `members[]`: list of `{file_id, role_slot, required, notes}`
+* `depends_on_geu_ids[]`: inter-GEU links (optional)
+* `outputs[]`: evidence/report artifacts (by file_id)
+* `tests[]`: proof artifacts (by file_id)
+
+**Key point:** membership is expressed only here (SSOT).
+
+### B. File registry = identity inventory (authoritative for file facts)
+
+Each file has:
+
+* `file_id`
+* `path`
+* `artifact_type/role` (schema/validator/runner/etc.)
+* (optional) `primary_geu_id` and/or `geu_ids[]` **but derived**, not hand-edited
+
+---
+
+## 2) How to link GEU files together
+
+You have two clean options. Pick one.
+
+### Option 1 (best): Graph edges (explicit, scalable)
+
+Add edge records:
+
+* `edge_type: "MEMBER_OF_GEU"`
+
+  * `source_file_id = <file_id>`
+  * `target_geu_id = <geu_id>`
+  * `role_slot = "VALIDATOR" | "RUNNER" | ...`
+* `edge_type: "GEU_DEPENDS_ON"`
+
+  * `source_geu_id`
+  * `target_geu_id`
+
+This handles:
+
+* files shared across GEUs
+* cross-cutting infra
+* dependency ordering between GEUs
+
+### Option 2 (simpler): `geu_id` column on each file record
+
+Add to each file row:
+
+* `primary_geu_id` (single)
+* `geu_ids[]` (if shared)
+
+This is fast to query but becomes messy with shared files and is easy to let drift unless it’s generated.
+
+**If you do Option 2, still keep the GEU registry as SSOT and generate these fields.**
+
+---
+
+## 3) Handling shared files (you will hit this immediately)
+
+Some files will be used by multiple GEUs (event bus, common validators, utilities).
+
+Do **not** force “one file → one GEU”.
+
+Instead define ownership + consumers:
+
+* In GEU registry:
+
+  * one GEU lists it as `role_slot="SHARED_LIB"` (owner)
+  * other GEUs reference it as `role_slot="CONSUMES_SHARED_LIB"`
+* Or in edges:
+
+  * multiple `MEMBER_OF_GEU` edges with different `role_slot`
+
+Also add a file attribute:
+
+* `is_shared: true`
+* `owner_geu_id: <geu_id>`
+
+---
+
+## 4) Minimal validation rules (non-negotiable)
+
+1. Every `geu_id` is unique.
+2. Every `anchor_file_id` exists in file registry.
+3. Every `members[].file_id` exists in file registry.
+4. Slot matrix enforcement: GEU type requires specific roles (schema/rules/validator/runner/evidence/tests).
+5. No orphan files for governance-critical roles (validators/runners/schemas must belong to ≥1 GEU or be explicitly tagged `SHARED`).
+
+---
+
+## 5) Merge-safety / workflow
+
+* Store each GEU as its own file:
+  `governance/geu-registry/<geu_id>.json`
+* Generate:
+
+  * `geu_index.json` (aggregated list)
+  * derived `primary_geu_id/geu_ids` fields in the file registry (optional)
+
+This avoids constant merge conflicts in one giant registry file.
+
+---
+
+### Bottom line
+
+* **Link by file_id** (never by path).
+* **Define GEUs in a GEU registry** (SSOT).
+* **Use edges for membership + dependencies** (best long-term).
+* If you want a “GEU column”, make it **generated**, not hand-edited.

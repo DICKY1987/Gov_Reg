@@ -1,0 +1,72 @@
+{
+  "id": "ws-21-ci-gate-path-standards",
+  "openspec_change": "WS-21",
+  "ccpm_issue": "TBD",
+  "gate": 1,
+  "files_scope": [
+    "scripts/paths_index_cli.py",
+    "scripts/check-path-standards.sh",
+    "scripts/fix-path-standards.sh",
+    "refactor_paths.db",
+    "config/path_index.yaml"
+  ],
+  "files_create": [
+    ".github/workflows/path_standards.yml"
+  ],
+  "tasks": [
+    "Create .github/workflows/path_standards.yml - CI workflow to enforce path standards",
+    "Configure workflow to run paths_index_cli.py scan on every PR",
+    "Set up checks to fail on new occurrences of deprecated path patterns",
+    "Configure workflow to check for hardcoded references to old structure (src/pipeline, MOD_ERROR_PIPELINE, PHASE_DEV_DOCS, etc.)",
+    "Add check for proper use of path registry keys instead of hardcoded paths",
+    "Document CI gate behavior and how to fix violations",
+    "Test workflow with example violations to ensure it catches regressions",
+    "Add workflow badge to README.md if desired",
+    "Create documentation on how to update path_index.yaml when adding new 'special' paths"
+  ],
+  "acceptance_tests": [
+    "Verify .github/workflows/path_standards.yml is syntactically valid YAML",
+    "Test workflow locally or in CI with no violations (should pass)",
+    "Introduce a test violation (hardcoded old path) and verify workflow fails",
+    "python scripts/paths_index_cli.py scan",
+    "python scripts/paths_index_cli.py summary",
+    "Verify deprecated patterns are properly flagged in path registry"
+  ],
+  "depends_on": [
+    "ws-01-hardcoded-path-index",
+    "ws-03-refactor-meta-section",
+    "ws-04-refactor-gui-section",
+    "ws-05-refactor-infra-ci",
+    "ws-18-update-infrastructure-scripts",
+    "ws-06-refactor-aim-section",
+    "ws-07-refactor-pm-ccpm",
+    "ws-08-refactor-aider-section",
+    "ws-09-refactor-spec-tools",
+    "ws-10-openspec-integration",
+    "ws-11-spec-docs",
+    "ws-12-error-shared-utils",
+    "ws-13-refactor-error-plugins",
+    "ws-14-refactor-error-engine",
+    "ws-15-refactor-core-state",
+    "ws-16-refactor-core-orchestration",
+    "ws-17-refactor-core-planning",
+    "ws-18-update-infrastructure-scripts",
+    "ws-19-test-suite-updates"
+  ],
+  "tool": "aider",
+  "circuit_breaker": {
+    "max_attempts": 3,
+    "max_error_repeats": 2,
+    "oscillation_threshold": 1
+  },
+  "metadata": {
+    "phase": "9",
+    "parallel_group": "Can follow WS-20 or be parallelized",
+    "risk_level": "LOW",
+    "estimated_effort_hours": "3-4",
+    "optional": true,
+    "notes": "Creates CI enforcement to prevent regressions after refactor. Ensures no new hardcoded references to old directory structure are introduced. Uses paths_index_cli.py to scan for deprecated patterns. Once enabled, enforces that all 'special' file references use the path registry abstraction layer."
+  },
+  "doc_id": "DOC-CONFIG-WS-21-CI-GATE-PATH-STANDARDS-161",
+  "file_id": "01260207233100000735"
+}

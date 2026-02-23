@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-02-12T00:15:13.301643Z",
+  "gate_id": "GATE-017",
+  "gate_name": "Single Source of Truth Validation",
+  "passed": false,
+  "defect_count": 5,
+  "defects": [
+    {
+      "severity": "info",
+      "category": "other",
+      "location": "/plan",
+      "problem": "SSOT summary: 10 path facts (0 duplicated), 0 version facts (0 duplicated)",
+      "why_it_matters": "Summary statistics for SSOT analysis"
+    },
+    {
+      "severity": "high",
+      "category": "contradiction",
+      "location": "/plan/phases/1/steps/0/inputs",
+      "problem": "Artifact 'CAPMAP_CAPABILITIES' has inconsistent paths: 'artifact:CAPMAP_CAPABILITIES:S001:output' in S001 vs 'artifact:CAPMAP_CAPABILITIES:S002:input' in S002",
+      "why_it_matters": "Same artifact must have same path across all references"
+    },
+    {
+      "severity": "high",
+      "category": "contradiction",
+      "location": "/plan/phases/2/steps/0/inputs",
+      "problem": "Artifact 'CAPMAP_CAPABILITIES' has inconsistent paths: 'artifact:CAPMAP_CAPABILITIES:S001:output' in S001 vs 'artifact:CAPMAP_CAPABILITIES:S003:input' in S003",
+      "why_it_matters": "Same artifact must have same path across all references"
+    },
+    {
+      "severity": "high",
+      "category": "contradiction",
+      "location": "/plan/phases/2/steps/0/inputs",
+      "problem": "Artifact 'CAPMAP_FILE_INVENTORY' has inconsistent paths: 'artifact:CAPMAP_FILE_INVENTORY:S002:output' in S002 vs 'artifact:CAPMAP_FILE_INVENTORY:S003:input' in S003",
+      "why_it_matters": "Same artifact must have same path across all references"
+    },
+    {
+      "severity": "high",
+      "category": "contradiction",
+      "location": "/plan/phases/3/steps/0/inputs",
+      "problem": "Artifact 'CAPMAP_PURPOSE_REGISTRY' has inconsistent paths: 'artifact:CAPMAP_PURPOSE_REGISTRY:S003:output' in S003 vs 'artifact:CAPMAP_PURPOSE_REGISTRY:S004:input' in S004",
+      "why_it_matters": "Same artifact must have same path across all references"
+    }
+  ]
+}

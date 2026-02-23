@@ -1,0 +1,80 @@
+{
+  "registry_version": "1.0",
+  "last_updated": "2026-02-12T17:11:34.094Z",
+  "frameworks": {
+    "SOX": {
+      "full_name": "Sarbanes-Oxley Act",
+      "applicable": true,
+      "sections": {
+        "302": {
+          "description": "Corporate Responsibility for Financial Reports",
+          "evidence_artifacts": [
+            ".state/approvals.jsonl",
+            ".state/access_audit.jsonl"
+          ]
+        },
+        "404": {
+          "description": "Management Assessment of Internal Controls",
+          "evidence_artifacts": [
+            ".state/evidence/",
+            "sections/01260207233100000491_sec_021_quality_controls_catalog.json"
+          ]
+        }
+      }
+    },
+    "GDPR": {
+      "full_name": "General Data Protection Regulation",
+      "applicable": true,
+      "articles": {
+        "Article_5": {
+          "description": "Principles relating to processing (storage limitation)",
+          "evidence_artifacts": [
+            "config/data_retention_policy.json",
+            ".state/retention_registry.jsonl"
+          ]
+        },
+        "Article_17": {
+          "description": "Right to erasure",
+          "evidence_artifacts": [
+            ".state/sensitive_data_registry.jsonl",
+            "config/data_classification_policy.json"
+          ]
+        },
+        "Article_30": {
+          "description": "Records of processing activities",
+          "evidence_artifacts": [
+            ".state/access_audit.jsonl",
+            ".state/incidents.jsonl"
+          ]
+        }
+      }
+    },
+    "ISO_27001": {
+      "full_name": "Information Security Management",
+      "applicable": true,
+      "controls": {
+        "A.9.4.1": {
+          "description": "Information access restriction",
+          "evidence_artifacts": [
+            ".state/access_audit.jsonl",
+            "config/data_classification_policy.json"
+          ]
+        },
+        "A.12.3.1": {
+          "description": "Information backup",
+          "evidence_artifacts": [
+            "config/dr_testing_framework.json",
+            ".state/dr_test_results.jsonl"
+          ]
+        },
+        "A.16.1.1": {
+          "description": "Incident management responsibilities",
+          "evidence_artifacts": [
+            ".state/incidents.jsonl",
+            "templates/incident_response_record.json"
+          ]
+        }
+      }
+    }
+  }
+}

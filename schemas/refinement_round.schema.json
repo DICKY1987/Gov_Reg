@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://govreg.local/schemas/refinement_round.schema.json",
+  "title": "Refinement Round Schema",
+  "description": "Record of a single plan refinement iteration",
+  "type": "object",
+  "required": [
+    "iteration",
+    "input_plan_hash",
+    "defects_targeted",
+    "proposed_patch_hash",
+    "output_plan_hash",
+    "hard_defects_before",
+    "hard_defects_after",
+    "soft_defects_before",
+    "soft_defects_after",
+    "staleness_status",
+    "resolution_summary"
+  ],
+  "properties": {
+    "iteration": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "input_plan_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "defects_targeted": {
+      "type": "array",
+      "description": "Defect IDs this iteration attempts to fix",
+      "items": {"type": "string"}
+    },
+    "proposed_patch_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "output_plan_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "hard_defects_before": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "hard_defects_after": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "soft_defects_before": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "soft_defects_after": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "staleness_status": {
+      "type": "string",
+      "enum": ["FRESH", "STALE", "UNKNOWN"],
+      "description": "Whether context is still valid"
+    },
+    "resolution_summary": {
+      "type": "object",
+      "required": ["resolved", "persists", "new_defects"],
+      "properties": {
+        "resolved": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "persists": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "new_defects": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "duration_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

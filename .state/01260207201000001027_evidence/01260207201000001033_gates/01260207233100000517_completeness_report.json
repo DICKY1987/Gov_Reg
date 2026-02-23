@@ -1,0 +1,20 @@
+{
+  "timestamp": "2026-02-06T20:46:40.596372Z",
+  "phase_id": "PH-TEST",
+  "pass": true,
+  "exit_code": 0,
+  "summary": {
+    "complete": 1,
+    "waived": 1,
+    "incomplete": 0
+  },
+  "incomplete_records": [],
+  "waived_records": [
+    {
+      "record_id": "rec-002",
+      "waiver_reason": "Feature descoped per ADR-042",
+      "waived_by": "architect"
+    }
+  ],
+  "file_id": "01260207233100000517"
+}

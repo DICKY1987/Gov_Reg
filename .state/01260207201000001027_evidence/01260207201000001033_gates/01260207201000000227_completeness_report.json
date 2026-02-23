@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-02-09T08:22:45.266115Z",
+  "phase_id": "PH-01",
+  "pass": true,
+  "exit_code": 0,
+  "summary": {
+    "complete": 1,
+    "waived": 1,
+    "incomplete": 0
+  },
+  "incomplete_records": [],
+  "waived_records": [
+    {
+      "record_id": "rec-023b",
+      "waiver_reason": "Feature descoped per ADR-042",
+      "waived_by": "architect"
+    }
+  ]
+}

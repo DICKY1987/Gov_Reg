@@ -1,0 +1,142 @@
+{
+  "timestamp": "2026-02-02T23:49:42.071376Z",
+  "gate_id": "GATE-014",
+  "gate_name": "Artifact Closure Validation",
+  "passed": false,
+  "defect_count": 19,
+  "defects": [
+    {
+      "severity": "info",
+      "category": "other",
+      "location": "/plan/phases",
+      "problem": "Artifact graph summary: 20 total, 13 produced, 9 consumed, 11 orphaned, 1 external, 0 conflicts",
+      "why_it_matters": "Summary statistics for artifact closure analysis"
+    },
+    {
+      "severity": "medium",
+      "category": "verification_gap",
+      "location": "/plan/phases",
+      "problem": "Artifact 'DEFECT_LOG_SCHEMA' is produced by ['S002'] but never consumed",
+      "why_it_matters": "Orphaned artifacts may indicate incomplete plan or unnecessary work"
+    },
+    {
+      "severity": "medium",
+      "category": "verification_gap",
+      "location": "/plan/phases",
+      "problem": "Artifact 'GATE_016_SCRIPT' is produced by ['S010'] but never consumed",
+      "why_it_matters": "Orphaned artifacts may indicate incomplete plan or unnecessary work"
+    },
+    {
+      "severity": "medium",
+      "category": "verification_gap",
+      "location": "/plan/phases",
+      "problem": "Artifact 'GATE_014_SCRIPT' is produced by ['S008'] but never consumed",
+      "why_it_matters": "Orphaned artifacts may indicate incomplete plan or unnecessary work"
+    },
+    {
+      "severity": "medium",
+      "category": "verification_gap",
+      "location": "/plan/phases",
+      "problem": "Artifact 'GATE_015_SCRIPT' is produced by ['S009'] but never consumed",
+      "why_it_matters": "Orphaned artifacts may indicate incomplete plan or unnecessary work"
+    },
+    {
+      "severity": "medium",
+      "category": "verification_gap",
+      "location": "/plan/phases",
+      "problem": "Artifact 'GATE_002_ENHANCED' is produced by ['S012'] but never consumed",
+      "why_it_matters": "Orphaned artifacts may indicate incomplete plan or unnecessary work"
+    },
+    {
+      "severity": "medium",
+      "category": "verification_gap",
+      "location": "/plan/phases",
+      "problem": "Artifact 'CRITERIA_EVALUATOR' is produced by ['S006'] but never consumed",
+      "why_it_matters": "Orphaned artifacts may indicate incomplete plan or unnecessary work"
+    },
+    {
+      "severity": "medium",
+      "category": "verification_gap",
+      "location": "/plan/phases",
+      "problem": "Artifact 'GATE_000_ENHANCED' is produced by ['S007'] but never consumed",
+      "why_it_matters": "Orphaned artifacts may indicate incomplete plan or unnecessary work"
+    },
+    {
+      "severity": "medium",
+      "category": "verification_gap",
+      "location": "/plan/phases",
+      "problem": "Artifact 'GATE_004_SCRIPT' is produced by ['S005'] but never consumed",
+      "why_it_matters": "Orphaned artifacts may indicate incomplete plan or unnecessary work"
+    },
+    {
+      "severity": "medium",
+      "category": "verification_gap",
+      "location": "/plan/phases",
+      "problem": "Artifact 'GATE_017_SCRIPT' is produced by ['S011'] but never consumed",
+      "why_it_matters": "Orphaned artifacts may indicate incomplete plan or unnecessary work"
+    },
+    {
+      "severity": "medium",
+      "category": "verification_gap",
+      "location": "/plan/phases",
+      "problem": "Artifact 'GATE_DEPS_FINAL' is produced by ['S013'] but never consumed",
+      "why_it_matters": "Orphaned artifacts may indicate incomplete plan or unnecessary work"
+    },
+    {
+      "severity": "medium",
+      "category": "verification_gap",
+      "location": "/plan/phases",
+      "problem": "Artifact 'GATE_003_SCRIPT' is produced by ['S004'] but never consumed",
+      "why_it_matters": "Orphaned artifacts may indicate incomplete plan or unnecessary work"
+    },
+    {
+      "severity": "high",
+      "category": "missing_field",
+      "location": "/plan/phases",
+      "problem": "Artifact 'GAP_ANALYSIS' consumed by ['S003'] but no producer step exists",
+      "why_it_matters": "Missing producer means step will fail when it tries to consume this artifact"
+    },
+    {
+      "severity": "high",
+      "category": "missing_field",
+      "location": "/plan/phases",
+      "problem": "Artifact 'DRAFT_DEFECT_SPEC' consumed by ['S002'] but no producer step exists",
+      "why_it_matters": "Missing producer means step will fail when it tries to consume this artifact"
+    },
+    {
+      "severity": "low",
+      "category": "verification_gap",
+      "location": "/plan/phases",
+      "problem": "Artifact 'V2_SCHEMA' consumed by ['S001'] but not produced (likely external dependency)",
+      "why_it_matters": "External dependencies should be documented in plan.assumptions"
+    },
+    {
+      "severity": "high",
+      "category": "missing_field",
+      "location": "/plan/phases",
+      "problem": "Artifact 'DRAFT_SPEC' consumed by ['S001'] but no producer step exists",
+      "why_it_matters": "Missing producer means step will fail when it tries to consume this artifact"
+    },
+    {
+      "severity": "high",
+      "category": "missing_field",
+      "location": "/plan/phases",
+      "problem": "Artifact 'GATE_000_CURRENT' consumed by ['S007'] but no producer step exists",
+      "why_it_matters": "Missing producer means step will fail when it tries to consume this artifact"
+    },
+    {
+      "severity": "high",
+      "category": "missing_field",
+      "location": "/plan/phases",
+      "problem": "Artifact 'GATE_DEPS_V2' consumed by ['S003'] but no producer step exists",
+      "why_it_matters": "Missing producer means step will fail when it tries to consume this artifact"
+    },
+    {
+      "severity": "high",
+      "category": "missing_field",
+      "location": "/plan/phases",
+      "problem": "Artifact 'GATE_002_CURRENT' consumed by ['S012'] but no producer step exists",
+      "why_it_matters": "Missing producer means step will fail when it tries to consume this artifact"
+    }
+  ]
+}

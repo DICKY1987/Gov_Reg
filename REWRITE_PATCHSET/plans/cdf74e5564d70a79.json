@@ -1,0 +1,22 @@
+{
+  "rewrite_plan_id": "cdf74e5564d70a79",
+  "target_file_id": null,
+  "target_relpath": "newPhasePlanProcess\\01260207201000000459_COMPREHENSIVE_STATUS_REPORT.md",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "809197d0053fd889462e51b49a224d69488878eba52817be1543f27374f08ac0",
+  "operations": [
+    {
+      "ref_id": "1357e9f82405a7c43593640455348c90ad313c1206be5c86fc10036da113f445",
+      "old_value": "REGISTRY/01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+      "location": "line:60"
+    },
+    {
+      "ref_id": "e6fee152c6f18f5b8662eaa6e2c366d171d392453723d5fc0825a4114557f51e",
+      "old_value": "C:\\Users\\richg\\Gov_Reg\\REGISTRY\\01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+      "new_value": "C:\\Users\\richg\\Gov_Reg\\01260207201000001250_REGISTRY\\REGISTRY\\01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+      "location": "line:75"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\cdf74e5564d70a79.diff"
+}

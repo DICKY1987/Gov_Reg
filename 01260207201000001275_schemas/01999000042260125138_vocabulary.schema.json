@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://govreg.local/schemas/vocabulary.v1.json",
+  "title": "Vocabulary Schema",
+  "description": "Schema for closed-world vocabulary files - defines allowed capability tags and component IDs",
+  "type": "object",
+  "required": [
+    "version",
+    "frozen_at",
+    "entries",
+    "file_id"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Vocabulary version (semver)",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "examples": ["1.0.0"]
+    },
+    "frozen_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when vocabulary was frozen"
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of vocabulary purpose"
+    },
+    "entries": {
+      "type": "array",
+      "description": "List of vocabulary entries",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for this entry",
+            "minLength": 1
+          },
+          "domain": {
+            "type": "string",
+            "description": "Domain category for this entry"
+          },
+          "component": {
+            "type": "string",
+            "description": "Component this entry belongs to"
+          },
+          "capability": {
+            "type": "string",
+            "description": "Capability verb"
+          },
+          "type": {
+            "type": "string",
+            "description": "Entry type (component, capability, etc.)"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable description"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "file_id": {
+      "type": "string",
+      "description": "20-digit file ID for this vocabulary file",
+      "pattern": "^[0-9]{20}$"
+    }
+  },
+  "additionalProperties": true,
+  "file_id": "01999000042260125138"
+}

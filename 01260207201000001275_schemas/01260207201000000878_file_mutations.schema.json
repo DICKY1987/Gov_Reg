@@ -1,0 +1,243 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "File Mutations Schema",
+  "description": "Defines deterministic execution methods for file modifications with hash guards and evidence requirements",
+  "type": "object",
+  "required": ["mutation_set_id", "mutations"],
+  "properties": {
+    "mutation_set_id": {
+      "type": "string",
+      "pattern": "^MUT-[A-Z0-9-]+$"
+    },
+    "plan_id": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "created_by": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["proposed", "approved", "rejected", "applied"]
+    },
+    "mutations": {
+      "type": "object",
+      "properties": {
+        "modified_files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/file_modification"
+          }
+        },
+        "created_files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["relative_path"],
+            "properties": {
+              "relative_path": { "type": "string" },
+              "execution_method": {
+                "enum": ["FULL_REWRITE", "UNIFIED_DIFF_APPLY", "AST_TRANSFORM"]
+              },
+              "method_payload": { "type": "object" },
+              "expected_after_sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "expected_after_sha256_ref": {
+                "type": "string"
+              },
+              "evidence_outputs": {
+                "$ref": "#/$defs/evidence_outputs"
+              }
+            }
+          }
+        },
+        "deleted_files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["relative_path"],
+            "properties": {
+              "relative_path": { "type": "string" },
+              "deletion_reason": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "file_modification": {
+      "type": "object",
+      "required": ["relative_path", "modification_type", "execution_method"],
+      "properties": {
+        "relative_path": {
+          "type": "string"
+        },
+        "modification_type": {
+          "type": "string",
+          "enum": ["append", "replace", "delete_section"]
+        },
+        "execution_method": {
+          "type": "string",
+          "enum": ["FULL_REWRITE", "UNIFIED_DIFF_APPLY", "AST_TRANSFORM"]
+        },
+        "method_payload": {
+          "type": "object",
+          "oneOf": [
+            { "$ref": "#/$defs/full_rewrite_payload" },
+            { "$ref": "#/$defs/unified_diff_payload" },
+            { "$ref": "#/$defs/ast_transform_payload" }
+          ]
+        },
+        "expected_before_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "expected_before_sha256_ref": {
+          "type": "string"
+        },
+        "expected_after_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "expected_after_sha256_ref": {
+          "type": "string"
+        },
+        "evidence_outputs": {
+          "$ref": "#/$defs/evidence_outputs"
+        },
+        "modifier_step_id": { "type": "string" },
+        "modifier_phase_id": { "type": "string" },
+        "change_description": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "execution_method": { "const": "FULL_REWRITE" } }
+          },
+          "then": {
+            "properties": {
+              "method_payload": { "$ref": "#/$defs/full_rewrite_payload" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "execution_method": { "const": "UNIFIED_DIFF_APPLY" } }
+          },
+          "then": {
+            "properties": {
+              "method_payload": { "$ref": "#/$defs/unified_diff_payload" }
+            }
+          }
+        }
+      ]
+    },
+    "full_rewrite_payload": {
+      "type": "object",
+      "required": ["content_source"],
+      "properties": {
+        "content_source": {
+          "type": "string",
+          "enum": ["inline", "artifact"]
+        },
+        "content_text": {
+          "type": "string"
+        },
+        "artifact_id": {
+          "type": "string"
+        },
+        "line_endings": {
+          "type": "string",
+          "enum": ["PRESERVE", "CRLF", "LF"]
+        },
+        "encoding": {
+          "type": "string",
+          "default": "utf-8"
+        }
+      },
+      "oneOf": [
+        {
+          "required": ["content_source", "content_text"],
+          "properties": { "content_source": { "const": "inline" } }
+        },
+        {
+          "required": ["content_source", "artifact_id"],
+          "properties": { "content_source": { "const": "artifact" } }
+        }
+      ]
+    },
+    "unified_diff_payload": {
+      "type": "object",
+      "required": ["patch_path", "allow_fuzz", "rejects_allowed"],
+      "properties": {
+        "patch_path": {
+          "type": "string"
+        },
+        "strip_level": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        },
+        "allow_fuzz": {
+          "type": "boolean",
+          "const": false
+        },
+        "rejects_allowed": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    },
+    "ast_transform_payload": {
+      "type": "object",
+      "required": ["transform_spec", "toolchain_identity"],
+      "properties": {
+        "transform_spec": {
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "toolchain_identity": {
+          "type": "object",
+          "required": ["tool_name", "version"],
+          "properties": {
+            "tool_name": { "type": "string" },
+            "version": { "type": "string" }
+          }
+        }
+      }
+    },
+    "evidence_outputs": {
+      "type": "object",
+      "required": [
+        "before_hash_path",
+        "after_hash_path",
+        "diff_patch_path",
+        "apply_log_path"
+      ],
+      "properties": {
+        "before_hash_path": {
+          "type": "string",
+          "pattern": "^\\.state/evidence/file_mutations/.*before\\.sha256$"
+        },
+        "after_hash_path": {
+          "type": "string",
+          "pattern": "^\\.state/evidence/file_mutations/.*after\\.sha256$"
+        },
+        "diff_patch_path": {
+          "type": "string",
+          "pattern": "^\\.state/evidence/file_mutations/.*diff\\.patch$"
+        },
+        "apply_log_path": {
+          "type": "string",
+          "pattern": "^\\.state/evidence/file_mutations/.*apply_log\\.json$"
+        }
+      }
+    }
+  }
+}

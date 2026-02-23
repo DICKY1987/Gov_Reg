@@ -1,0 +1,149 @@
+Repository Tree Structure
+Generated: 2026-02-02 20:43:42 UTC
+File ID: 01260202173939000113
+Purpose: Complete directory and file listing for C:\Users\richg\Gov_Reg\REGISTRY
+
+================================================================================
+Folder PATH listing
+Volume serial number is A430-D8A0
+C:.
+|   01260202173939000036_REGISTRY_file.yaml
+|   01260202173939000037_REGISTRY_file.yaml
+|   01260202173939000038_REGISTRY_file.json
+|   01260202173939000104_validation_file_id_20260202_134237.json
+|   01260202173939000105_validation_file_id_20260202_134247.json
+|   01260202173939000106_validation_file_id_20260202_134357.json
+|   01260202173939000107_normalization_report.json
+|   01260202173939000109_CLAUDE.md
+|   01260202173939000110_FLOW_DIAGRAM_EVIDENCE.md
+|   01260202173939000111_INGEST_SPEC_UNIFIED_REGISTRY.txt
+|   01260202173939000112_NON_AUTHORITATIVE_FILES_ANALYSIS.md
+|   01260202173939000113_repo_tree.txt
+|   01999000042260124012_Governance Registry Schema (Data + Edges).json
+|   01999000042260124026_REGISTRY_file.json
+|   01999000042260124026_REGISTRY_file.lock
+|   01999000042260124503_REGISTRY_file.json
+|   01999000042260124527_governance_registry.json
+|   2026012816000001_COLUMN_DICTIONARY.json
+|   add_missing_py_headers.py
+|   formula_sheet_classification.csv
+|
++---.pytest_cache
++---BACKUP_FILES
+|   |   01999000042260124503_governance_registry_unified.json.pre-task020-backup
+|   |   01999000042260124503_governance_registry_unified.json.pre-v2-backup.20260130_072414
+|   |   2026012816000001_COLUMN_DICTIONARY.json.pre-task016-backup
+|   |   COLUMN_TO_SCRIPT_MAPPING.md.backup_20260202_150313
+|   |
+|   \---backups
+|       |   pre_task000_backup_20260202_175652.json
+|       |
+|       +---file_id_correction_20260202_134132
+|       |       01999000042260124503_governance_registry_unified.json
+|       |       01999000042260124527_COMPLETE_SSOT.json
+|       |       2026012816000001_COLUMN_DICTIONARY.json
+|       |       id_mapping.json
+|       |       INGEST_SPEC_UNIFIED_REGISTRY.txt
+|       |
+|       +---file_id_correction_20260202_134242
+|       |   |   01999000042260124503_governance_registry_unified.json
+|       |   |   01999000042260124527_COMPLETE_SSOT.json
+|       |   |   AUDIT_REPORT.md
+|       |   |   id_mapping.json
+|       |   |
+|       |   +---.runs
+|       |   |       validation_file_id_20260202_134237.json
+|       |   |
+|       |   +---.state
+|       |   |   \---evidence
+|       |   |       \---pre_migration
+|       |   |               normalization_report.json
+|       |   |
+|       |   \---mapp_py
+|       |           DOC-INTEGRATION-MAPP-PY-REGISTRY-001__Registry_Integration.md
+|       |
+|       +---legacy_docs_20260202_175922
+|       |       FILE_ID_CORRECTION_COMPLETE_REPORT.md
+|       |
+|       \---py_columns_20260202_142006
+|               01999000042260124012_governance_registry_schema.v3.json
+|               01999000042260124503_governance_registry_unified.json
+|               01999000042260124527_COMPLETE_SSOT.json
+|               2026012816000001_COLUMN_DICTIONARY.json
+|               INGEST_SPEC_UNIFIED_REGISTRY.txt
+|               UNIFIED_SSOT_REGISTRY_DERIVATIONS.yaml
+|               UNIFIED_SSOT_REGISTRY_WRITE_POLICY.yaml
+|
++---mapp_py
+|   |   01260202173939000019_Column to Script Mapping.json
+|   |   01260202173939000020_mapp_py_file.json
+|   |   01260202173939000040_mapp_py_file.json
+|   |   01260202173939000041_mapp_py_file.json
+|   |   COLUMN_TO_SCRIPT_MAPPING.json.pre-reconciliation_20260202_161328
+|   |   COLUMN_TO_SCRIPT_MAPPING.json.v2.0_20260202_153244
+|   |   COLUMN_TO_SCRIPT_MAPPING.md
+|   |   IMPLEMENTATION_GUIDE_18_SCRIPTS.md
+|   |   pyproject.toml
+|   |   P_01260202173939000016_text_normalizer.py
+|   |   P_01260202173939000060_text_normalizer.py
+|   |   P_01260202173939000061_component_extractor.py
+|   |   P_01260202173939000062_generate_component_signature.py
+|   |   P_01260202173939000063_dependency_analyzer.py
+|   |   P_01260202173939000064_i_o_surface_visitor.py
+|   |   P_01260202173939000065_deliverable_analyzer.py
+|   |   P_01260202173939000066_structural_feature_extractor.py
+|   |   P_01260202173939000067_extract_semantic_features.py
+|   |   P_01260202173939000068_file_comparator.py
+|   |   P_01260202173939000069_analyze_tests.py
+|   |   P_01260202173939000070_run_pylint_on_file.py
+|   |   P_01260202173939000071_complexity_visitor.py
+|   |   P_01260202173939000072_cli_entry_point.py
+|   |   P_01260202173939000073_load_pre_computed_similarity_matrix.py
+|   |   P_01260202173939000074_cli_entry_point.py
+|   |   P_01260202173939000075_text_normalizer.py
+|   |   P_01260202173939000076_capability_detector.py
+|   |   P_01260202173939000077_compute_sha_256_hash_of_evidence.py
+|   |   P_01260202173939000078_text_normalizer.py
+|   |   P_01260202173939000079_analyze_file.py
+|   |   P_01260202173939000080_component_extractor.py
+|   |   P_01260202173939000081_generate_component_id.py
+|   |   P_01260202173939000082_dependency_analyzer.py
+|   |   P_01260202173939000083_i_o_surface_analyzer.py
+|   |   requirements.txt
+|   |   TECHNICAL_COMPATIBILITY_SPEC.md
+|   |   ? ? All 18 Scripts are Already in t.txt
+|   |
+|   +---.runs
+|   \---behaviors
+|           01260202173939000004_DOC-SPEC-BDD-MAPP-PY-XXX-YYY.yaml
+|
++---py_parser_files
++---REVIEW_PACKAGE_20260130_160006
+|       README.md
+|       REVIEW_CHECKLIST.md
+|
++---scripts
+|   |   P_01260202173939000030_scripts_file.py
+|   |   P_01260202173939000031_validation_result.py
+|   |   P_01260202173939000032_load_json_file.py
+|   |   P_01260202173939000033_create_backup_directory_and_save_original_files.py
+|   |   P_01260202173939000039_scripts_file.py
+|   |   P_01999000042260124027_id_allocator.py
+|   |   P_01999000042260124028_file_creator.py
+|   |   P_01999000042260124521_id_format_scanner.py
+|   |   scan_report.json
+|   |
+|   +---ci
+|   |       P_01260202173939000023_test_ci_gate_scripts_with_clarified_stub_policy.py
+|   |
+|   \---migration
+|           P_01260202173939000024_test_registry_data_pre_migration_normalization.py
+|           P_01260202173939000025_test_generate_update_policy_map_json_from_write_policy.py
+|           P_01260202173939000026_test_generate_null_policy_map_json_from_column_dictionary___write_policy.py
+|           P_01260202173939000027_test_generate_normalization_map_json_from_column_dictionary.py
+|           P_01260202173939000028_test_patch_column_dictionary_predicates.py
+|           P_01260202173939000029_test_add_column_headers_version_to_registry.py
+|
+\---tests
+        P_01260202173939000034_test_end_to_end_integration_tests.py
+        P_01260202173939000035_test_config__contract_loader_modules.py

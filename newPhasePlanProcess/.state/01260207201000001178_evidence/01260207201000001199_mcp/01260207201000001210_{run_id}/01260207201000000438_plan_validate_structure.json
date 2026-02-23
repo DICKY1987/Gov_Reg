@@ -1,0 +1,36 @@
+{
+  "tool": "plan.validate_structure",
+  "tool_version": "1.0.0",
+  "run_id": "RUN-CAPMAP01",
+  "status": "pass",
+  "exit_code": 0,
+  "summary": "======================================================================\nGATE-001: Plan Structure Validation\n======================================================================\nStatus: \u00e2\u0153\u2026 PASSED\nErrors: 0\nWarnings: 1\nEvidence: C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess\\.state\\evidence\\mcp\\{run_id}\\structure_validation.json\n======================================================================",
+  "input": {
+    "context": {
+      "repo_root": "C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess",
+      "run_id": "RUN-CAPMAP01",
+      "invoker": "human"
+    },
+    "plan_path": "C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess\\Plans_Instructions\\wobbly-purring-island_registry-integrated.plan.json",
+    "write_evidence": true,
+    "evidence_path": ".state/evidence/mcp/{run_id}/plan_validate_structure.json",
+    "timeout_s": 300
+  },
+  "defects": [
+    {
+      "severity": "low",
+      "code": "EMPTY_GATES",
+      "location": "plan.gates_by_id",
+      "message": "No gates defined"
+    }
+  ],
+  "hashes": {
+    "structure_evidence_sha256": "sha256:bc35f0194b3c5933af6ec08a46f62ea7685b8c644563bd523499d4c6a5b19570"
+  },
+  "artifacts_emitted": [
+    "C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess\\.state\\evidence\\mcp\\{run_id}\\structure_validation.json"
+  ],
+  "timestamps": {
+    "generated_at": "2026-02-11T21:42:48.162078+00:00"
+  }
+}

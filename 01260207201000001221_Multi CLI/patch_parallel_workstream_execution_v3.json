@@ -1,0 +1,423 @@
+[
+  {
+    "op": "add",
+    "path": "/parallel_workstream_execution",
+    "value": {
+      "enabled": false,
+      "enablement": {
+        "mode": "auto",
+        "triggers": {
+          "parallelism_requested": true,
+          "min_workstreams": 2
+        },
+        "decision_tree": [
+          {
+            "if": {
+              "complexity": "simple",
+              "estimated_file_writes_max": 4
+            },
+            "then": {
+              "enabled": false
+            }
+          },
+          {
+            "if": {
+              "complexity": "moderate",
+              "touches_state": true
+            },
+            "then": {
+              "enabled": true
+            }
+          },
+          {
+            "else": {
+              "enabled": true
+            }
+          }
+        ],
+        "pattern_library_hooks": {
+          "pattern_index_ref": "PATTERN_INDEX.yaml",
+          "matching_rule": "If requirement_normalized.plan_pattern_id matches a pattern with deterministic=true AND pattern.parallelizable=true, prefer parallel execution."
+        }
+      },
+      "limits": {
+        "max_parallel_workstreams": 4,
+        "max_total_worktrees": 8,
+        "per_gate_max_attempts": 3,
+        "circuit_breakers": {
+          "max_failed_workstreams": 1,
+          "max_total_failures": 3
+        }
+      },
+      "invariants": {
+        "isolation": "Each workstream executes in an isolated git worktree; no shared mutable filesystem state.",
+        "single_writer": "Only control checkout may write global state/registries; workers are forbidden from global writes.",
+        "delta_only_workers": "Workers emit deltas/patches and evidence; integration applies deltas in control checkout.",
+        "explicit_scope": "Each workstream declares read/write sets and exclusive resources before scheduling.",
+        "declared_write_enforcement": "Actual touched files must be a subset of declared writes; violations fail the run.",
+        "completion_by_evidence": "Work is complete only when required evidence artifacts exist and mandatory gates pass."
+      },
+      "artifact_interpolation": {
+        "placeholders": {
+          "{run_id}": "The orchestrator-assigned run identifier for the overall execution.",
+          "{workstream_id}": "Stable identifier of the workstream.",
+          "{worktree_id}": "Identifier of the provisioned git worktree.",
+          "{gate_id}": "Validation gate identifier."
+        },
+        "rendering_rule": "All placeholders must be resolved prior to execution; unresolved placeholders are a hard failure (preflight)."
+      },
+      "conflict_detection": {
+        "algorithm_spec": {
+          "conflict_if": [
+            "declared_writes overlap on identical file_id",
+            "declared_writes overlap on identical semantic_key",
+            "declared_writes overlap on directory prefix (when directory write claims are used)",
+            "exclusive_resources overlap",
+            "both touch global_state and global_state_writer is single-writer"
+          ],
+          "dependency_edges": [
+            "A produces artifact consumed by B",
+            "A writes a resource read by B AND ordering required"
+          ],
+          "output": "conflict_graph.json with nodes=workstreams and edges=conflicts or dependencies; plus parallel_groups.json derived by topological layering."
+        }
+      },
+      "merge_strategy": {
+        "default": "squash_merge",
+        "allowed": [
+          "squash_merge",
+          "merge_commit",
+          "rebase_merge"
+        ],
+        "ordering_rule": "Apply deltas in topological order of the dependency graph; within a layer, apply in stable lexical order by workstream_id.",
+        "rollback_rule": "Create rollback snapshot tag before applying any deltas; on any failure, reset to snapshot and emit rollback_actions.json."
+      },
+      "scheduler_policy": {
+        "policy": "topological_layers",
+        "tie_breaker": "stable_sort_by_workstream_id",
+        "serialization_rule": "Any workstream with conflicts must be scheduled after its predecessors (no same-layer execution).",
+        "no_stop_mode": true
+      },
+      "required_files_registry_ref": "required_files_gates_evidence_map",
+      "required_files": [
+        "schemas/parallel_workstreams.schema.json",
+        "schemas/write_manifest.schema.json",
+        "schemas/conflict_graph.schema.json",
+        "schemas/worktree_execution_report.schema.json",
+        "schemas/integration_report.schema.json",
+        "schemas/evidence_bundle.schema.json",
+        "policies/determinism_policy.yaml",
+        "policies/toolchain_lock.json",
+        "policies/identity_policy.yaml",
+        "policies/single_writer_policy.yaml",
+        "policies/write_policy_registry.yaml",
+        "policies/path_resolver_policy.yaml",
+        "template_extensions/parallel_workstreams.section.json",
+        "template_extensions/parallel_workstreams.gates.json",
+        "template_extensions/parallel_workstreams.artifacts.json",
+        "tools/validate_parallel_workstreams.py",
+        "tools/compute_conflict_graph.py",
+        "tools/provision_worktrees.py",
+        "tools/enforce_declared_writes.py",
+        "tools/collect_workstream_evidence.py",
+        "tools/integrate_patches.py",
+        "tools/validate_determinism.py",
+        "tools/rebuild_registries.py",
+        "tests/fixtures/parallel_workstreams_minimal_case/",
+        "tests/fixtures/conflict_case_overlap_writes/",
+        "tests/fixtures/undeclared_write_case/",
+        "tests/golden/expected_conflict_graph.json",
+        "tests/golden/expected_evidence_bundle.json",
+        "registries/worktree_run_registry.json",
+        "registries/artifact_inventory.json",
+        "registries/policy_registry.json"
+      ],
+      "profiles": {
+        "core": {
+          "description": "Minimum viable deterministic parallel execution (no golden fixtures required).",
+          "required_file_types": [
+            "schema",
+            "policy",
+            "executable"
+          ],
+          "tests_required": false,
+          "registries_required": [
+            "registries/worktree_run_registry.json"
+          ]
+        },
+        "full": {
+          "description": "Full determinism proof with golden fixtures and registry reconciliation.",
+          "required_file_types": [
+            "schema",
+            "policy",
+            "executable",
+            "test_fixture",
+            "golden_artifact",
+            "registry"
+          ],
+          "tests_required": true,
+          "registries_required": [
+            "registries/worktree_run_registry.json",
+            "registries/artifact_inventory.json",
+            "registries/policy_registry.json"
+          ]
+        }
+      },
+      "computed_artifacts": {
+        "conflict_graph": {
+          "artifact_id": "ART-CONFLICT-GRAPH-001",
+          "produced_by_gate": "GATE-PWE-003",
+          "path": "artifacts/conflict_graph/conflict_graph.json"
+        },
+        "parallel_groups": {
+          "artifact_id": "ART-PARALLEL-GROUPS-001",
+          "produced_by_gate": "GATE-PWE-004",
+          "path": "artifacts/conflict_graph/parallel_groups.json"
+        },
+        "worktree_map": {
+          "artifact_id": "ART-WORKTREE-MAP-001",
+          "produced_by_gate": "GATE-PWE-005",
+          "path": "artifacts/worktrees/worktree_map.json"
+        }
+      },
+      "execution_flow": {
+        "preflight_gates": [
+          "GATE-PWE-001",
+          "GATE-PWE-002",
+          "GATE-PWE-003",
+          "GATE-PWE-004",
+          "GATE-PWE-005"
+        ],
+        "parallel_gates": [
+          "GATE-PWE-006",
+          "GATE-PWE-007",
+          "GATE-PWE-008"
+        ],
+        "integration_gates": [
+          "GATE-PWE-009",
+          "GATE-PWE-010"
+        ],
+        "final_gates": [
+          "GATE-PWE-011",
+          "GATE-PWE-012"
+        ]
+      },
+      "gates": {
+        "mapping_note": "Gate IDs here correspond to entries added to architecture.system_layers.layer_2_validation.components[1].gate_registry."
+      },
+      "planning_determinism_enhancements": {
+        "pattern_library": {
+          "enabled": true,
+          "impact_estimate": "high",
+          "artifacts": [
+            "PATTERN_INDEX.yaml"
+          ]
+        },
+        "requirement_normalization_grammar": {
+          "enabled": false,
+          "artifact_ref": "policies/requirement_normalization.yaml"
+        },
+        "structure_decision_tree": {
+          "enabled": true
+        },
+        "golden_reference_corpus": {
+          "enabled": false,
+          "artifact_ref": "tests/golden/plan_corpus_index.json"
+        },
+        "mandatory_template_slots": {
+          "enabled": true,
+          "slots": {
+            "step_id": "ST-{phase_num}{sequence:03d}",
+            "evidence_path": ".state/evidence/{phase}/{step_id}/{artifact_type}.{ext}"
+          }
+        },
+        "constraint_inference_engine": {
+          "enabled": true,
+          "rules_ref": "AI_Implementation_Plan_Error_Prevention_Guide.rules.json"
+        },
+        "validation_driven_planning": {
+          "enabled": false,
+          "candidate_count": 3,
+          "selection_metric": "max_gate_pass_rate_then_min_entropy"
+        }
+      },
+      "cleanup_policy": {
+        "on_success": {
+          "prune_worktrees": true,
+          "retain_evidence_days": 30
+        },
+        "on_failure": {
+          "prune_worktrees": false,
+          "retain_worktrees_days": 7,
+          "retain_evidence_days": 90
+        }
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/workflows/plan_execution_workflow/steps/-",
+    "value": {
+      "step": 7,
+      "actor": "Execution Engine",
+      "action": "Optional: execute parallel workstreams with git worktrees",
+      "condition": "parallel_workstream_execution.enabled==true",
+      "tasks": [
+        "Run preflight gates in order: GATE-PWE-001..GATE-PWE-005",
+        "Execute workstreams concurrently by parallel groups (scheduler_policy)",
+        "Run per-workstream enforcement and evidence gates: GATE-PWE-007..GATE-PWE-008",
+        "Integrate deltas in control checkout: GATE-PWE-009..GATE-PWE-010",
+        "Finalize determinism and registry reconciliation: GATE-PWE-011..GATE-PWE-012"
+      ],
+      "outputs": [
+        "artifacts/conflict_graph/conflict_graph.json",
+        "artifacts/conflict_graph/parallel_groups.json",
+        "artifacts/worktrees/worktree_map.json",
+        "artifacts/integration/integration_report.json",
+        "artifacts/determinism/determinism_report.json"
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-PWE-001",
+      "name": "Parallel Workstream Schema Validate",
+      "script": "validate_parallel_workstreams.py",
+      "purpose": "Validate parallel_workstream_execution section against schema and required fields."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-PWE-002",
+      "name": "Write Manifest Validate",
+      "script": "validate_parallel_workstreams.py",
+      "purpose": "Validate per-workstream write manifests against schema and policy."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-PWE-003",
+      "name": "Conflict Graph Build",
+      "script": "compute_conflict_graph.py",
+      "purpose": "Compute deterministic conflict graph/DAG from declared writes and exclusive resources."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-PWE-004",
+      "name": "Parallel Group Authorization",
+      "script": "compute_conflict_graph.py",
+      "purpose": "Authorize parallel groups from conflict graph; enforce disjoint write/exclusive sets."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-PWE-005",
+      "name": "Worktree Provision",
+      "script": "provision_worktrees.py",
+      "purpose": "Provision isolated git worktrees deterministically; emit worktree map."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-PWE-006",
+      "name": "Workstream Execute",
+      "script": "workstream_executor.py",
+      "purpose": "Execute each workstream inside its worktree; produce deltas and execution report."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-PWE-007",
+      "name": "Declared Writes Enforcement",
+      "script": "enforce_declared_writes.py",
+      "purpose": "Enforce actual touched files subset of declared writes; fail on violations."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-PWE-008",
+      "name": "Evidence Bundle Validate",
+      "script": "collect_workstream_evidence.py",
+      "purpose": "Build and validate evidence bundle for each workstream."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-PWE-009",
+      "name": "Integration Apply Deltas",
+      "script": "integrate_patches.py",
+      "purpose": "Apply deltas/patches in control checkout with deterministic ordering; emit integration report."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-PWE-010",
+      "name": "Rollback On Failure",
+      "script": "integrate_patches.py",
+      "purpose": "Rollback control checkout to snapshot on any integration failure; emit rollback actions."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-PWE-011",
+      "name": "Registry Rebuild And Reconcile",
+      "script": "rebuild_registries.py",
+      "purpose": "Rebuild derived registries/indexes from inventory; reconcile and validate invariants."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-PWE-012",
+      "name": "Final Determinism Validate",
+      "script": "validate_determinism.py",
+      "purpose": "Validate end-to-end determinism (canonicalization, toolchain lock, stable ordering, reproducible hashes)."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/execution_phases/-",
+    "value": "parallel-workstream (GATE-PWE-001 to GATE-PWE-012, conditional when parallel_workstream_execution.enabled==true)"
+  },
+  {
+    "op": "add",
+    "path": "/extension_points/adding_new_validation_gates/steps/-",
+    "value": {
+      "step": "Register Parallel Workstream Execution gates",
+      "details": [
+        "Append GATE-PWE-001..GATE-PWE-012 to architecture.system_layers.layer_2_validation.components[1].gate_registry",
+        "If your gate dependency graph is materialized in scripts/gate_dependencies.json, add nodes/edges for the GATE-PWE-* gates",
+        "Mark these gates as conditional on parallel_workstream_execution.enabled"
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/file_structure/key_files/required_files_gates_evidence_map.json",
+    "value": "Registry mapping required files to producing/consuming gates, schemas, and evidence outputs for Parallel Workstream Execution."
+  }
+]

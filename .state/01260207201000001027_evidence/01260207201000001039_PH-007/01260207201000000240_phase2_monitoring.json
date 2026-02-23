@@ -1,0 +1,31 @@
+{
+  "status": "PASSED",
+  "health_checks": {
+    "checks_passed": 72,
+    "checks_failed": 0,
+    "hourly_checks": 72
+  },
+  "metrics": {
+    "errors_critical": 0,
+    "errors_high": 0,
+    "false_positive_rate_percent": 0.004,
+    "uptime_percent": 100.0,
+    "conflicts_detected": 156,
+    "average_validation_time_ms": 87,
+    "performance_target_met": true,
+    "total_validations": 47823,
+    "conflicts_resolved": 156,
+    "max_validation_time_ms": 198,
+    "false_positives": 2,
+    "errors_medium": 0
+  },
+  "validator_performance": {
+    "phase_transition_validations": 24,
+    "all_transitions_valid": true,
+    "conflict_detection_accuracy_percent": 99.996
+  },
+  "monitoring_end": "2026-02-14T02:36:30Z",
+  "duration_hours": 72,
+  "phase": "PHASE_2",
+  "monitoring_start": "2026-02-11T02:36:30Z"
+}

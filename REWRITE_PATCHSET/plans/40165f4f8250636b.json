@@ -1,0 +1,22 @@
+{
+  "rewrite_plan_id": "40165f4f8250636b",
+  "target_file_id": null,
+  "target_relpath": "ChatGPT-Dir ID System Model.json",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "b43553405758245affb28eb6eccb5062157a3b1642b34db1b04cf43811570955",
+  "operations": [
+    {
+      "ref_id": "c5c69bf28060ca695482f311e3978252fcc007b561d32de64d558fe7b7e34726",
+      "old_value": "01260207201000000116_COUNTER_STORE.json",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/01260207201000000116_COUNTER_STORE.json",
+      "location": "line:111"
+    },
+    {
+      "ref_id": "7f3e41dd453d57bc74d4f0a9c82541e94abd6ea52ce85fad3804deae6ac103a3",
+      "old_value": "P_01260207201000000196_verify_system.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/P_01260207201000000196_verify_system.py",
+      "location": "line:119"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\40165f4f8250636b.diff"
+}

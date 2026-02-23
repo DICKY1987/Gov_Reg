@@ -1,0 +1,31 @@
+{
+  "task_id": "TASK-DOC-1",
+  "safe_task_id": "TASK_DOC_1",
+  "summary": "Write README",
+  "depends_on": [
+    "TASK-CLI-2"
+  ],
+  "write_operations": [
+    {
+      "type": "create",
+      "path": "README.md",
+      "backup_required": false
+    }
+  ],
+  "acceptance_tests": [
+    {
+      "command": "test -f README.md",
+      "expected_exit_code": 0
+    }
+  ],
+  "rollback_operations": [
+    {
+      "type": "delete",
+      "path": "README.md",
+      "backup_ref": null,
+      "sha256_before": null
+    }
+  ],
+  "estimated_duration_seconds": 60,
+  "retries_allowed": 0
+}

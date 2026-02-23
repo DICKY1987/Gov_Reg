@@ -1,0 +1,79 @@
+---
+# BDD Spec Template for mapp_py
+# Copy this template when creating new BDD specifications
+# Follow the format exactly for proper gate validation
+
+doc_id: DOC-SPEC-BDD-MAPP-PY-XXX-YYY  # Assign via DOC_ID system
+spec_id: BDD-MAPP-PY-XXX               # Sequential: BDD-MAPP-PY-001, 002, etc.
+stable_id: R-MAPP-PY-XXX               # Requirement ID: R-MAPP-PY-001, 002, etc.
+title: "[Brief description of behavior]"
+category: [python_introspection|similarity|component_extraction|evidence_collection]
+priority: [critical|high|medium|low]
+status: [active|draft|deprecated]
+work_id: WORK-MAPP-PY-001
+
+description: |
+  Clear description of the behavior being specified.
+  What does this feature/function/module do?
+  Why is it important?
+
+given:
+  - "Precondition 1 (setup state)"
+  - "Precondition 2 (input data)"
+  - "Precondition 3 (configuration)"
+
+when:
+  - "Action 1 (what the system does)"
+  - "Action 2 (trigger or operation)"
+
+then:
+  - "Expected outcome 1 (success criteria)"
+  - "Expected outcome 2 (observable result)"
+  - "Expected outcome 3 (side effects)"
+  - "Expected outcome 4 (error handling if applicable)"
+
+acceptance_criteria:
+  - criterion: "Specific measurable outcome"
+    verification: "How to verify this criterion is met"
+  - criterion: "Performance requirement"
+    verification: "Benchmark or timing constraint"
+  - criterion: "Error handling behavior"
+    verification: "Expected exception or error return"
+
+test_reference: "mapp_py/tests/unit/test_module_name.py::test_function_name"
+
+alignment:
+  - governance_layer: "Layer 2 (Quality) - BDD-first TDD"
+  - contract: "mapp_py/DIR_CONTRACT.yaml - behavioral_contracts.module_name"
+  - requirement: "mapp_py/MAPP_py_identify_soultion.yml - [rule_id]"
+
+metadata:
+  phase: [phase_1|phase_2|phase_3|phase_4|phase_5|phase_6|phase_7]
+  complexity: [low|medium|high]
+  dependencies: []  # List of other R-MAPP-PY-XXX IDs
+
+created_utc: "YYYY-MM-DDTHH:MM:SSZ"
+updated_utc: "YYYY-MM-DDTHH:MM:SSZ"
+
+---
+
+## Implementation Notes
+
+[Optional: Technical notes, design decisions, references to algorithms or papers]
+
+## Test Strategy
+
+[Optional: Specific testing approach, fixtures needed, edge cases to cover]
+
+## Examples
+
+[Optional: Code examples showing expected usage]
+
+```python
+# Example usage
+from mapp_py import ModuleName
+
+result = module_function(input_data)
+assert result.success == True
+assert result.value == expected_output
+```

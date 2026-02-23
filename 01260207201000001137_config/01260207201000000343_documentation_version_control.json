@@ -1,0 +1,28 @@
+{
+  "versioning_policy": {
+    "version_format": "MAJOR.MINOR.PATCH",
+    "major_increment": "Breaking changes, major restructure",
+    "minor_increment": "New sections, significant additions",
+    "patch_increment": "Corrections, clarifications, formatting",
+    "approval_required": {
+      "major": "L3_CRITICAL",
+      "minor": "L2_SIGNIFICANT",
+      "patch": "L1_ROUTINE"
+    }
+  },
+  "change_tracking": {
+    "enabled": true,
+    "registry_path": ".state/doc_versions.jsonl",
+    "retention_period": "PERMANENT"
+  },
+  "drift_detection": {
+    "enabled": true,
+    "check_frequency": "daily",
+    "alert_threshold": "7_days_without_update"
+  },
+  "review_cycle": {
+    "operational_docs": "quarterly",
+    "architecture_docs": "semi-annually",
+    "policy_docs": "annually"
+  }
+}

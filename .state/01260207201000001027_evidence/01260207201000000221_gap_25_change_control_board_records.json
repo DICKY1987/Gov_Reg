@@ -1,0 +1,33 @@
+{
+  "gap_id": "GAP-025",
+  "gap_name": "Change Control Board Records",
+  "verification_timestamp": "2026-02-12T17:19:04.982010+00:00",
+  "status": "VERIFIED",
+  "checks": [
+    {
+      "check_id": "CHECK-025-001",
+      "description": "CCB meetings registry initialized",
+      "status": "PASS",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\.state\\ccb_meetings.jsonl",
+        "exists": true,
+        "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+      }
+    },
+    {
+      "check_id": "CHECK-025-002",
+      "description": "Approval framework integration (GAP #15)",
+      "status": "PASS",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\.state\\approvals.jsonl",
+        "exists": true,
+        "sha256": "B66ECC494C17303A5F6E7F9FDA6A9094431426918E7FAB5E4471536C519A2A17"
+      }
+    }
+  ],
+  "cryptographic_proof": {
+    "algorithm": "SHA256",
+    "hash": "A49079130794662F4EB1E9EB3DD6C6FC980160A0A48EEE922249AC4161B03681",
+    "timestamp": "2026-02-12T17:19:04.982010+00:00"
+  }
+}

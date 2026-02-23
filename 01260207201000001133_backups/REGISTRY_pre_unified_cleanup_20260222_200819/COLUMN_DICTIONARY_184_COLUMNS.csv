@@ -1,0 +1,186 @@
+column,represents,record_kinds_in,entity_kinds_in,value_type,presence,derivation_mode,derivation_sources,normalization
+absolute_path,Absolute filesystem path to the file at scan time.,entity,file,string|null,OPTIONAL,EXTRACTED,FILESYSTEM:scan_event.absolute_path,NORMALIZE_SLASHES
+allocated_at,UTC timestamp when the file_id was allocated.,entity,file,string,REQUIRED,SYSTEM,ENV:runtime.timestamp,
+anchor_file_id,File_id used as the anchor/primary key for a parent record/document context.,*,*,string|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+artifact_kind,"Artifact category (e.g., doc, schema, script, config, report).",*,*,string|null,OPTIONAL,INPUT,COLUMN:artifact_kind,
+asset_family,Asset grouping/family label (for non-code assets).,entity,asset,string|null,CONDITIONAL,INPUT,COLUMN:asset_family,LOWERCASE
+asset_id,Identifier for an asset entity (when the record represents an asset).,entity,asset,string|null,CONDITIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",UPPERCASE
+asset_version,Version string/number for an asset.,entity,asset,string|null,OPTIONAL,INPUT,COLUMN:asset_version,
+build_report_entity_id,Field `build_report_entity_id` (project-defined).,generator,*,string|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+bundle_id,16-digit numeric identifier for bundle grouping,entity,file,string|null,OPTIONAL,SYSTEM,ENV:bundle_allocator.next_id,
+bundle_key,"Human-readable stable bundle name (e.g., GATE_AGGREGATE, ID_REGISTRY)",entity,file,string|null,OPTIONAL,INPUT,COLUMN:bundle_key,UPPERCASE
+bundle_role,Role this file plays within its bundle,entity,file,string|null,CONDITIONAL,INPUT,COLUMN:bundle_role,UPPERCASE
+bundle_version,"Optional bundle version string (e.g., v2.5.3, 1.0.0-alpha)",entity,file,string|null,OPTIONAL,INPUT,COLUMN:bundle_version,
+canonical_path,Normalized/canonicalized path (normalized slashes + canonical rules).,entity,"asset,file",string|null,OPTIONAL,EXTRACTED,FILESYSTEM:scan_event.canonical_path,"NORMALIZE_SLASHES,CANONICALIZE_PATH"
+canonicality,Canonicality status (canonical vs duplicate/alias).,*,*,string|null,OPTIONAL,INPUT,COLUMN:canonicality,
+collected_by,Tool/process identifier that collected or produced the record/field.,*,*,string|null,OPTIONAL,INPUT,COLUMN:collected_by,
+column_headers,List of column headers present in a structured document/registry payload.,*,*,array|null,OPTIONAL,INPUT,COLUMN:column_headers,
+confidence,Confidence score for an edge/relationship assertion.,edge,*,number|null,CONDITIONAL,INPUT,COLUMN:confidence,
+content_type,Content/type classification (often extension/MIME-like or format class).,entity,file,string|null,OPTIONAL,INPUT,COLUMN:content_type,LOWERCASE
+contracts_consumed,Contracts/specs this entity/process consumed as inputs.,entity,file,array|null,OPTIONAL,INPUT,COLUMN:contracts_consumed,
+contracts_produced,Contracts/specs this entity/process produced as outputs.,entity,file,array|null,OPTIONAL,INPUT,COLUMN:contracts_produced,
+coverage_status,Test/coverage status label for the file/module.,entity,file,string|null,OPTIONAL,INPUT,COLUMN:coverage_status,UPPERCASE
+created_by,Field `created_by` (project-defined).,"core,entity,edge,generator",*,string,REQUIRED,INPUT,COLUMN:created_by,
+created_utc,Field `created_utc` (project-defined).,"core,entity,edge,generator",*,string,REQUIRED,INPUT,COLUMN:created_utc,
+data_transformation,Transformation descriptor (reserved/placeholder for transformation pipeline metadata).,entity,file,boolean|string|null,OPTIONAL,DERIVED,COLUMN:to_be_specified,
+declared_dependencies,"Dependencies explicitly declared by the artifact (e.g., imports, requires).",generator,*,array|null,OPTIONAL,INPUT,COLUMN:declared_dependencies,
+deliverables,Deliverables produced/owned by this entity/process (IDs or descriptors).,*,*,array|null,OPTIONAL,INPUT,COLUMN:deliverables,
+depends_on_file_ids,List of file_ids this entity depends on.,*,*,array|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+description,Human-readable description of the entity/record.,*,*,string|null,OPTIONAL,INPUT,COLUMN:description,TRIM
+directionality,Directionality of an edge (source→target semantics).,edge,*,string|null,CONDITIONAL,INPUT,COLUMN:directionality,LOWERCASE
+directory_path,Directory portion of the file path.,entity,file,string|null,OPTIONAL,INPUT,COLUMN:directory_path,NORMALIZE_SLASHES
+dir_id,20-digit directory identifier read from parent directory .dir_id file.,entity,file,string|null,OPTIONAL,EXTRACTED,FILESYSTEM:parent_directory/.dir_id,
+edge_flags,"Flags/markers on an edge (e.g., inferred, manual, low_confidence).",edge,*,array|null,OPTIONAL,INPUT,COLUMN:edge_flags,
+edge_id,Unique identifier for an edge record.,edge,*,string|null,CONDITIONAL,SYSTEM,ENV:runtime.edge_id,
+edge_type,Edge/relationship type classifier (high-level).,*,*,string|null,OPTIONAL,INPUT,COLUMN:edge_type,UPPERCASE
+edges,Collection of edge records associated with an entity.,*,*,array|null,OPTIONAL,INPUT,COLUMN:edges,
+enforced_by,Human-readable/enumerated enforcement reference (who enforces this).,*,*,string|null,OPTIONAL,INPUT,COLUMN:enforced_by,
+enforced_by_file_ids,File_ids of enforcers (validators/runners) for this entity.,*,*,array|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+enforces,Human-readable/enumerated enforcement target (what this enforces).,*,*,string|null,OPTIONAL,INPUT,COLUMN:enforces,
+enforces_rule_ids,Rule IDs enforced by this artifact.,*,*,array|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+entity_id,"Internal entity record identifier (registry record ID, not the 20-digit file_id).",entity,*,string|null,CONDITIONAL,SYSTEM,ENV:runtime.entity_id,
+entity_kind,"Kind of entity (file, asset, transient, external, etc.).",entity,*,string|null,CONDITIONAL,INPUT,COLUMN:entity_kind,LOWERCASE
+entries,Collection of ‘entries’ records (often registry sub-section).,*,*,array|null,OPTIONAL,INPUT,COLUMN:entries,
+entrypoint_flag,Flag indicating the file is an executable entrypoint (CLI/main/etc.).,entity,file,boolean|null,OPTIONAL,DERIVED,COLUMN:to_be_specified,
+evidence,Evidence object/structure supporting a claim/field/edge.,*,*,string|null,OPTIONAL,INPUT,COLUMN:evidence,
+evidence_locator,Pointer/locator to the evidence artifact (path/id).,edge,*,string|null,OPTIONAL,INPUT,COLUMN:evidence_locator,
+evidence_method,"How evidence was obtained (scanner, parser, manual, etc.).",edge,*,string|null,OPTIONAL,INPUT,COLUMN:evidence_method,LOWERCASE
+evidence_only,Boolean indicating the artifact/GEU is evidence-only (not enforcement logic).,entity,file,boolean|null,OPTIONAL,DERIVED,COLUMN:to_be_specified,
+evidence_outputs,Evidence artifacts produced by a run/process.,*,*,array|null,OPTIONAL,INPUT,COLUMN:evidence_outputs,
+evidence_snippet,Short snippet/summary excerpt captured as evidence (if allowed).,edge,*,string|null,OPTIONAL,INPUT,COLUMN:evidence_snippet,
+evidence_type,Type/class of evidence artifact.,*,*,string|null,OPTIONAL,INPUT,COLUMN:evidence_type,
+expires_utc,UTC expiration timestamp (primarily for transient records).,entity,transient,string|null,OPTIONAL,INPUT,COLUMN:expires_utc,
+extension,Lowercased file extension (without path).,entity,file,string|null,OPTIONAL,EXTRACTED,FILESYSTEM:scan_event.extension,LOWERCASE
+external_ref,Reference/identifier in an external system.,entity,external,string|null,CONDITIONAL,INPUT,COLUMN:external_ref,
+external_system,Name of the external system the reference belongs to.,entity,external,string|null,OPTIONAL,INPUT,COLUMN:external_system,LOWERCASE
+extract,Extracted structured payload produced from parsing/analysis.,*,*,string|null,OPTIONAL,INPUT,COLUMN:extract,
+file_id,Stable 20-digit identifier assigned to the file.,"entity,edge,generator","file,asset",string|null,REQUIRED,SYSTEM,"REGISTRY:01999000042260124026_ID_COUNTER.json, TOOL_OUTPUT:P_01999000042260124027_id_allocator.py",
+filename,File name (typically including the ID prefix in your system).,entity,file,string|null,CONDITIONAL,INPUT,COLUMN:filename,
+files,Collection of ‘files’ records (often registry sub-section).,*,*,array|null,OPTIONAL,INPUT,COLUMN:files,
+first_seen_utc,First time (UTC) the file was observed in scans.,entity,*,string|null,OPTIONAL,INPUT,COLUMN:first_seen_utc,
+function_code_1,Functional classification code 1 (project-specific taxonomy).,entity,file,string|null,OPTIONAL,INPUT,COLUMN:function_code_1,
+function_code_2,Functional classification code 2 (project-specific taxonomy).,entity,file,string|null,OPTIONAL,INPUT,COLUMN:function_code_2,
+function_code_3,Functional classification code 3 (project-specific taxonomy).,entity,file,string|null,OPTIONAL,INPUT,COLUMN:function_code_3,
+generated,Generated content/payload marker or generated section.,*,*,boolean|null,OPTIONAL,DERIVED,COLUMN:to_be_specified,
+generated_at,UTC timestamp when a generated artifact/section was produced.,*,*,string|null,OPTIONAL,INPUT,COLUMN:generated_at,
+generated_by_file_id,File_id of the generator script/tool that produced this artifact.,*,*,string|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+generator_id,Identifier of a generator record (build/emitter).,generator,*,string|null,CONDITIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+generator_name,Human-readable generator name.,generator,*,string|null,CONDITIONAL,INPUT,COLUMN:generator_name,
+generator_version,Generator version string.,generator,*,string|null,CONDITIONAL,INPUT,COLUMN:generator_version,
+geu_ids,List of GEU IDs this file/entity participates in.,entity,file,array|null,OPTIONAL,LOOKUP,"COLUMN:file_id, REGISTRY:governance/geu_registry.json",
+geu_role,GEU role assigned to the file within a GEU.,entity,file,string|null,CONDITIONAL,LOOKUP,"COLUMN:file_id, REGISTRY:governance/geu_registry.json",UPPERCASE
+geu_role_definitions,Role definitions (looked up from GEU registry) relevant to this file/GEU.,entity,file,object|null,OPTIONAL,LOOKUP,"COLUMN:file_id, REGISTRY:governance/geu_registry.json",
+geu_type_slot_matrix,Definition of required/optional roles per GEU type (slot matrix).,entity,file,object|null,OPTIONAL,LOOKUP,"COLUMN:file_id, REGISTRY:governance/geu_registry.json",
+governance_domain,"Governance domain/category for the entity (e.g., REGISTRY/ID/CLI/etc.).",entity,file,string|null,OPTIONAL,LOOKUP,"COLUMN:file_id, REGISTRY:governance/geu_registry.json",LOWERCASE
+has_tests,Boolean indicating whether the file has associated tests.,entity,file,boolean|null,OPTIONAL,DERIVED,COLUMN:to_be_specified,
+input_filters,Filters used by a generator/validator to select inputs.,generator,*,object|null,OPTIONAL,INPUT,COLUMN:input_filters,
+inputs,Input artifacts/refs for a process/generator.,*,*,array|null,OPTIONAL,INPUT,COLUMN:inputs,
+is_directory,Boolean flag indicating the entity is a directory.,*,*,boolean|null,OPTIONAL,DERIVED,COLUMN:to_be_specified,
+is_generated,Boolean indicating the file/artifact is generated (non-handwritten) output.,*,*,boolean|null,OPTIONAL,DERIVED,COLUMN:to_be_specified,
+is_shared,Boolean indicating shared/common artifact across modules/domains.,*,*,boolean|null,OPTIONAL,DERIVED,COLUMN:to_be_specified,
+last_build_utc,UTC time of last generator/build producing the output.,generator,*,string|null,OPTIONAL,INPUT,COLUMN:last_build_utc,
+last_seen_utc,Most recent time (UTC) the file was observed in scans.,entity,*,string|null,OPTIONAL,INPUT,COLUMN:last_seen_utc,
+layer,Architecture layer classification (project-specific).,*,*,string|null,OPTIONAL,INPUT,COLUMN:layer,
+metadata,Freeform metadata object (structured key/value).,entity,file,object|null,OPTIONAL,INPUT,COLUMN:metadata,
+module_id,Assigned module identifier for the file.,entity,file,string|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",UPPERCASE
+module_id_override,Manual override for module assignment.,entity,file,string|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",UPPERCASE
+module_id_source,Where module_id came from (rule/override/inferred/etc.).,entity,file,string|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+mtime_utc,Filesystem last-modified time (UTC).,entity,file,string|null,OPTIONAL,INPUT,COLUMN:mtime_utc,
+notes,Freeform notes for humans/analysts.,"core,entity,edge,generator",*,string|null,OPTIONAL,INPUT,COLUMN:notes,TRIM
+ns_code,Namespace code used by the ID system (project-specific).,entity,file,string|null,OPTIONAL,INPUT,COLUMN:ns_code,
+observed_utc,UTC time an edge/relationship observation was made.,edge,*,string|null,OPTIONAL,INPUT,COLUMN:observed_utc,
+one_line_purpose,Single-line purpose statement for the file.,*,*,string|null,OPTIONAL,INPUT,COLUMN:one_line_purpose,TRIM
+optional_roles,List of optional roles for a GEU type or requirement set.,entity,file,array|null,OPTIONAL,INPUT,COLUMN:optional_roles,
+output_hash,Hash of generator output (integrity/determinism).,generator,*,string|null,OPTIONAL,INPUT,COLUMN:output_hash,LOWERCASE
+output_kind,Output artifact kind/type produced by a generator.,generator,*,string|null,OPTIONAL,INPUT,COLUMN:output_kind,LOWERCASE
+output_path,Path where a generator wrote an output artifact.,generator,*,string|null,OPTIONAL,INPUT,COLUMN:output_path,NORMALIZE_SLASHES
+output_path_pattern,Pattern/template for output paths used by a generator.,generator,*,string|null,OPTIONAL,INPUT,COLUMN:output_path_pattern,NORMALIZE_SLASHES
+outputs,Output artifacts/refs for a process/generator.,*,*,array|null,OPTIONAL,INPUT,COLUMN:outputs,
+owner_geu_id,GEU ID that ‘owns’ the file (primary ownership assignment).,entity,file,string|null,CONDITIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+path_aliases,Alternate/previous paths for the file (renames/moves).,*,*,array|null,OPTIONAL,INPUT,COLUMN:path_aliases,
+primary_geu_id,Primary GEU assignment (main GEU for the file).,entity,file,string|null,CONDITIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+process_id,"Process identifier associated with the file (e.g., phase/workstream process).",entity,file,string|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+process_step_id,Identifier of the process step associated with the file.,entity,file,string|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+process_step_role,Role of the file in a specific process step.,entity,file,string|null,OPTIONAL,INPUT,COLUMN:process_step_role,
+py_analysis_run_id,Unique identifier for the Python analysis run,entity,file,string|null,OPTIONAL,,,
+py_analysis_success,Whether Python analysis completed successfully,entity,file,boolean|null,OPTIONAL,,,
+py_analyzed_at_utc,Timestamp when Python analysis was performed,entity,file,string|null,OPTIONAL,,,
+py_ast_dump_hash,Hash of Python AST dump,entity,file,string|null,OPTIONAL,,,
+py_ast_parse_ok,Whether Python AST parsing succeeded,entity,file,boolean|null,OPTIONAL,,,
+py_canonical_candidate_score,Score for canonical candidate selection,entity,file,number|null,OPTIONAL,,,
+py_canonical_text_hash,Hash of canonical Python text,entity,file,string|null,OPTIONAL,,,
+py_capability_facts_hash,Hash of capability facts extracted from Python code,entity,file,string|null,OPTIONAL,,,
+py_capability_tags,Capability tags for Python code,entity,file,array|null,OPTIONAL,,,
+py_complexity_cyclomatic,Cyclomatic complexity of Python code,entity,file,number|null,OPTIONAL,,,
+py_component_artifact_path,Path to component artifact,entity,file,string|null,OPTIONAL,,,NORMALIZE_SLASHES
+py_component_count,Count of Python components,entity,file,integer|null,OPTIONAL,,,
+py_component_ids,IDs of Python components,entity,file,array|null,OPTIONAL,,,
+py_coverage_percent,Test coverage percentage,entity,file,number|null,OPTIONAL,,,
+py_defs_classes_count,Count of class definitions,entity,file,integer|null,OPTIONAL,,,
+py_defs_functions_count,Count of function definitions,entity,file,integer|null,OPTIONAL,,,
+py_defs_public_api_hash,Hash of public API definitions,entity,file,string|null,OPTIONAL,,,
+py_deliverable_inputs,Input deliverables for Python component,entity,file,array|null,OPTIONAL,,,
+py_deliverable_interfaces,Interface deliverables for Python component,entity,file,array|null,OPTIONAL,,,
+py_deliverable_kinds,Kinds of deliverables produced,entity,file,array|null,OPTIONAL,,,
+py_deliverable_outputs,Output deliverables for Python component,entity,file,array|null,OPTIONAL,,,
+py_deliverable_signature_hash,Hash of deliverable signature,entity,file,string|null,OPTIONAL,,,
+py_imports_hash,Hash of all imports,entity,file,string|null,OPTIONAL,,,
+py_imports_local,Local/project imports,entity,file,array|null,OPTIONAL,,,
+py_imports_stdlib,Standard library imports,entity,file,array|null,OPTIONAL,,,
+py_imports_third_party,Third-party imports,entity,file,array|null,OPTIONAL,,,
+py_io_surface_flags,I/O surface flags for security analysis,entity,file,array|null,OPTIONAL,,,
+py_overlap_best_match_file_id,File ID of best overlap match,entity,file,string|null,OPTIONAL,,,
+py_overlap_group_id,Group ID for overlapping files,entity,file,string|null,OPTIONAL,,,
+py_overlap_similarity_max,Maximum similarity score for overlaps,entity,file,number|null,OPTIONAL,,,
+py_pytest_exit_code,pytest exit code,entity,file,integer|null,OPTIONAL,,,
+py_quality_score,Quality score for Python code,entity,file,number|null,OPTIONAL,,,
+py_security_risk_flags,Security risk flags,entity,file,array|null,OPTIONAL,,,
+py_static_issues_count,Count of static analysis issues,entity,file,integer|null,OPTIONAL,,,
+py_tests_executed,Number of tests executed,entity,file,integer|null,OPTIONAL,,,
+py_tool_versions,Versions of Python analysis tools,entity,file,object|null,OPTIONAL,,,
+py_toolchain_id,Toolchain identifier for Python analysis,entity,file,string|null,OPTIONAL,,,
+record_id,Unique record identifier across record kinds.,"core,entity,edge,generator",*,string,REQUIRED,SYSTEM,ENV:runtime.record_id,
+record_kind,Record kind discriminator (entity/edge/generator/etc.).,"core,entity,edge,generator",*,string,REQUIRED,INPUT,COLUMN:record_kind,LOWERCASE
+rel_type,"Relationship type (edge semantic type, e.g., DEPENDS_ON/VALIDATES).",edge,*,string|null,CONDITIONAL,INPUT,COLUMN:rel_type,UPPERCASE
+relative_path,Repo-relative path to the file.,entity,file,string|null,CONDITIONAL,EXTRACTED,FILESYSTEM:scan_event.relative_path,NORMALIZE_SLASHES
+repo_root_id,Identifier for the repository root/context this record belongs to.,*,*,string|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+report_outputs,Report artifacts produced (paths/IDs).,*,*,array|null,OPTIONAL,INPUT,COLUMN:report_outputs,
+required_roles,List of required roles for a GEU type or requirement set.,entity,file,array|null,OPTIONAL,INPUT,COLUMN:required_roles,
+required_suite_key,Key identifying a required test/validation suite.,entity,file,string|null,OPTIONAL,LOOKUP,"COLUMN:file_id, REGISTRY:governance/geu_registry.json",UPPERCASE
+resolver_hint,Hint used by resolvers/mappers for disambiguation/linking.,entity,external,string|null,OPTIONAL,INPUT,COLUMN:resolver_hint,
+role,Role label for the file/entity (project taxonomy).,entity,file,string|null,OPTIONAL,INPUT,COLUMN:role,LOWERCASE
+role_code,Role code for the file/entity (project taxonomy).,entity,file,string|null,OPTIONAL,INPUT,COLUMN:role_code,LOWERCASE
+rule_based,Boolean/flag indicating enforcement is rule-based.,entity,file,boolean|null,OPTIONAL,DERIVED,COLUMN:to_be_specified,
+runner_based,Boolean/flag indicating enforcement is runner/executor-based.,entity,file,boolean|null,OPTIONAL,DERIVED,COLUMN:to_be_specified,
+scan_id,Identifier of the scan run that produced/updated the record.,entity,*,string|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+schema_based,Boolean/flag indicating enforcement is schema-based.,entity,file,boolean|null,OPTIONAL,DERIVED,COLUMN:to_be_specified,
+schema_version,Schema version identifier used for validation/structure.,*,*,string|null,OPTIONAL,INPUT,COLUMN:schema_version,
+scope,Scope definition for where a field applies (record/entity kinds).,*,*,string|null,OPTIONAL,INPUT,COLUMN:scope,
+sha256,SHA-256 hash of the file contents.,entity,"file,asset",string|null,CONDITIONAL,EXTRACTED,FILESYSTEM:scan_event.sha256,LOWERCASE
+short_description,Short description (compact summary).,entity,*,string|null,OPTIONAL,INPUT,COLUMN:short_description,TRIM
+size_bytes,File size in bytes.,entity,file,integer|null,OPTIONAL,EXTRACTED,FILESYSTEM:scan_event.size_bytes,
+sort_keys,List of keys used to deterministically sort outputs (tables/records).,generator,*,array|null,OPTIONAL,INPUT,COLUMN:sort_keys,
+sort_rule_id,Identifier of the sorting rule applied.,generator,*,string|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+source_entity_id,Source-side entity_id for an edge relationship.,"entity,edge",*,string|null,CONDITIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+source_file_id,Source-side file_id for an edge relationship.,*,*,string|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+source_registry_hash,Hash of the source registry snapshot used as input.,generator,*,string|null,OPTIONAL,INPUT,COLUMN:source_registry_hash,LOWERCASE
+source_registry_scan_id,Scan/build ID corresponding to the source registry snapshot.,generator,*,string|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+status,Lifecycle status (active/deprecated/archived/etc.).,"core,entity,edge,generator",*,string,REQUIRED,INPUT,COLUMN:status,LOWERCASE
+step_refs,References/IDs of steps (phase/workstream/gate steps) linked to the file.,entity,file,array|null,OPTIONAL,INPUT,COLUMN:step_refs,
+superseded_by,Identifier of the artifact that supersedes this one.,*,*,string|null,OPTIONAL,INPUT,COLUMN:superseded_by,
+supersedes_entity_id,Entity_id that this artifact supersedes (version lineage).,entity,*,string|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+tags,Tags/labels (searchable categorical metadata).,"core,entity,edge,generator",*,array|null,OPTIONAL,INPUT,COLUMN:tags,
+target_entity_id,Target-side entity_id for an edge relationship.,edge,*,string|null,CONDITIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+target_file_id,Target-side file_id for an edge relationship.,*,*,string|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+target_schema_id,Schema identifier referenced/targeted by the entity/edge.,*,*,string|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+template_ref_entity_id,Entity_id reference to a template record used/produced.,generator,*,string|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+test_file_ids,File_ids of test files associated with the entity.,*,*,array|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+tool_version,Version of the tool that produced the record/edge.,edge,*,string|null,OPTIONAL,INPUT,COLUMN:tool_version,
+transient_id,Identifier for a transient record (non-permanent entity).,entity,transient,string|null,CONDITIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",
+transient_type,Type/class of transient record.,entity,transient,string|null,OPTIONAL,INPUT,COLUMN:transient_type,LOWERCASE
+ttl_seconds,Time-to-live in seconds for a transient record.,entity,transient,integer|null,OPTIONAL,INPUT,COLUMN:ttl_seconds,
+type_code,Type code used by the ID system (project-specific).,entity,file,string|null,OPTIONAL,INPUT,COLUMN:type_code,
+updated_by,Field `updated_by` (project-defined).,"core,entity,edge,generator",*,string,REQUIRED,INPUT,COLUMN:updated_by,
+updated_utc,Field `updated_utc` (project-defined).,"core,entity,edge,generator",*,string,REQUIRED,INPUT,COLUMN:updated_utc,
+validation_rules,Validation rule set applied/required (often on generator records).,generator,*,object|null,OPTIONAL,INPUT,COLUMN:validation_rules,
+validator_id,Identifier of a validator record/tool.,generator,*,string|null,OPTIONAL,LOOKUP,"COLUMN:primary_key, REGISTRY:registry/main.json",

@@ -1,0 +1,54 @@
+{
+  "section_id": "sec_008_worktree_isolation",
+  "title": "Worktree Isolation + Merge Strategy",
+  "required": false,
+  "instructions_file": "sections/sec_008_worktree_isolation.inst.md",
+  "worktree_isolation": {
+    "enabled": "{{true|false}}",
+    "strategy": {
+      "mode": "per_workstream",
+      "base_branch": "main",
+      "max_parallel_workers": 3,
+      "naming_patterns": {
+        "worktree_dir": ".worktrees/wt-${workstream_id}-${phase_id}",
+        "branch_name": "feature/${phase_id}-${workstream_id}"
+      },
+      "multi_worktree_enabled": false,
+      "worker_declarations": [
+        {
+          "worker_id": "WT-001",
+          "scope": [
+            "src/**/*.py"
+          ],
+          "branch_pattern": "feature/${phase_id}-${workstream_id}-${worker_id}"
+        },
+        {
+          "worker_id": "WT-002",
+          "scope": [
+            "tests/**/*.py"
+          ],
+          "branch_pattern": "feature/${phase_id}-${workstream_id}-${worker_id}"
+        }
+      ]
+    },
+    "merge_strategy": {
+      "method": "squash-merge",
+      "conflict_policy": "abort_and_escalate",
+      "pre_merge_validations": [
+        "All tests pass in worktree",
+        "No scope violations detected",
+        "Diff size <= 1000 lines (or waiver required)"
+      ],
+      "post_merge_validations": [
+        "All tests pass in target branch",
+        "No new lint errors introduced"
+      ]
+    },
+    "isolation_rules": [
+      "Each worktree writes ONLY to its root",
+      "No cross-worktree file references",
+      "Shared state via .state/ directory (read-only from worktrees)"
+    ]
+  },
+  "file_id": "01260207233100000478"
+}

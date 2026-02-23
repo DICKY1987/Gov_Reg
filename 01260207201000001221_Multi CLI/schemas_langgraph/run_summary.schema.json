@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "acms.run_summary.v1",
+  "title": "Run Summary v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "schema_version",
+    "run_id",
+    "status",
+    "started_at",
+    "completed_at",
+    "iterations",
+    "final_plan_path"
+  ],
+  "properties": {
+    "schema_id": {
+      "type": "string",
+      "const": "acms.run_summary.v1"
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^RUN_"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["CONVERGED", "FAILED_TO_CONVERGE", "ERROR"]
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "iterations": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "final_plan_path": {
+      "type": "string"
+    },
+    "exit_code": {
+      "type": "integer"
+    },
+    "last_failure": {
+      "type": "object",
+      "properties": {
+        "phase": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "exit_code": {
+          "type": "integer"
+        }
+      }
+    },
+    "retry_statistics": {
+      "type": "object",
+      "properties": {
+        "total_retries": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retries_by_phase": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "telemetry": {
+      "type": "object",
+      "properties": {
+        "usage_status": {
+          "type": "string",
+          "enum": ["AVAILABLE", "UNAVAILABLE"]
+        },
+        "total_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total_cost_usd": {
+          "type": "number",
+          "minimum": 0
+        },
+        "by_tool": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "tool_name": {
+                "type": "string"
+              },
+              "tokens": {
+                "type": "integer"
+              },
+              "cost_usd": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

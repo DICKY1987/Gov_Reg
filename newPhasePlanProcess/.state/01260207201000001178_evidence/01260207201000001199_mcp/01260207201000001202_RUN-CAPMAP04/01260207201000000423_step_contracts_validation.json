@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-02-11T22:12:32.976015Z",
+  "gate_id": "GATE-003",
+  "gate_name": "Step Contracts Validation",
+  "passed": false,
+  "defect_count": 4,
+  "defects": [
+    {
+      "severity": "low",
+      "category": "rollback_gap",
+      "location": "/plan/phases/0/steps/0/rollback/strategy",
+      "problem": "rollback strategy is 'manual' (requires human intervention)",
+      "why_it_matters": "Manual rollback cannot be automated; consider automated alternatives"
+    },
+    {
+      "severity": "low",
+      "category": "rollback_gap",
+      "location": "/plan/phases/1/steps/0/rollback/strategy",
+      "problem": "rollback strategy is 'manual' (requires human intervention)",
+      "why_it_matters": "Manual rollback cannot be automated; consider automated alternatives"
+    },
+    {
+      "severity": "low",
+      "category": "rollback_gap",
+      "location": "/plan/phases/2/steps/0/rollback/strategy",
+      "problem": "rollback strategy is 'manual' (requires human intervention)",
+      "why_it_matters": "Manual rollback cannot be automated; consider automated alternatives"
+    },
+    {
+      "severity": "low",
+      "category": "rollback_gap",
+      "location": "/plan/phases/3/steps/0/rollback/strategy",
+      "problem": "rollback strategy is 'manual' (requires human intervention)",
+      "why_it_matters": "Manual rollback cannot be automated; consider automated alternatives"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "task_id": "TASK-CLI-2",
+  "safe_task_id": "TASK_CLI_2",
+  "summary": "Add command routing",
+  "depends_on": [
+    "TASK-CLI-1"
+  ],
+  "write_operations": [
+    {
+      "type": "create",
+      "path": "src/commands/__init__.py",
+      "backup_required": false
+    }
+  ],
+  "acceptance_tests": [
+    {
+      "command": "python -m pytest tests/test_routing.py",
+      "expected_exit_code": 0
+    }
+  ],
+  "rollback_operations": [
+    {
+      "type": "delete",
+      "path": "src/commands/__init__.py",
+      "backup_ref": null,
+      "sha256_before": null
+    }
+  ],
+  "estimated_duration_seconds": 180,
+  "retries_allowed": 0
+}

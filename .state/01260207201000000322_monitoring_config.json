@@ -1,0 +1,45 @@
+{
+  "monitoring_version": "1.0",
+  "enabled": true,
+  "continuous_monitoring": {
+    "enabled": true,
+    "check_interval_minutes": 15,
+    "alert_channels": ["email", "slack"],
+    "escalation_policy": {
+      "warning": "notify_team",
+      "critical": "page_oncall"
+    }
+  },
+  "monitors": {
+    "registry_integrity": {
+      "enabled": true,
+      "check": "chain_hash_verification",
+      "frequency": "hourly",
+      "target": ".state/access_audit.jsonl"
+    },
+    "approval_timeliness": {
+      "enabled": true,
+      "check": "pending_approvals",
+      "frequency": "daily",
+      "threshold_days": 3
+    },
+    "incident_response_time": {
+      "enabled": true,
+      "check": "time_to_resolution",
+      "frequency": "realtime",
+      "target_hours": 24
+    },
+    "compliance_evidence_freshness": {
+      "enabled": true,
+      "check": "evidence_age",
+      "frequency": "weekly",
+      "threshold_days": 90
+    },
+    "performance_degradation": {
+      "enabled": true,
+      "check": "baseline_comparison",
+      "frequency": "continuous",
+      "source": ".state/performance_baselines.json"
+    }
+  }
+}

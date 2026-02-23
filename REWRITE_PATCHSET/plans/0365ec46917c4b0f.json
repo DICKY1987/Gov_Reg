@@ -1,0 +1,34 @@
+{
+  "rewrite_plan_id": "0365ec46917c4b0f",
+  "target_file_id": null,
+  "target_relpath": "REGISTRY_DIR_ID_INTEGRATION_REPORT.md",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "5d0152ccef9ad637fac8b36b3c8d6955910d1399132faca43e5c1d3325110e07",
+  "operations": [
+    {
+      "ref_id": "e654401010893f01cb0645efa2397a68cf0347a4421cdcfdfe34b57cfcb4bd30",
+      "old_value": "REGISTRY/01999000042260124012_governance_registry_schema.v3.json",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/01999000042260124012_governance_registry_schema.v3.json",
+      "location": "line:20"
+    },
+    {
+      "ref_id": "1a76877b7b3092b1805ff9dc89b59da1a7a78197861358d92724b44d553a364d",
+      "old_value": "REGISTRY/01999000042260124012_governance_registry_schema.v3.json",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/01999000042260124012_governance_registry_schema.v3.json",
+      "location": "line:238"
+    },
+    {
+      "ref_id": "469d41f8e1315d3961f6c2044d30e9ced3c8e755d0da191b991e8b63e503570e",
+      "old_value": "REGISTRY/01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+      "location": "line:239"
+    },
+    {
+      "ref_id": "7f54929b031304499f48b7a284921a8676567e2c0a506686c4aa2f4024232731",
+      "old_value": "REGISTRY/01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+      "location": "line:34"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\0365ec46917c4b0f.diff"
+}

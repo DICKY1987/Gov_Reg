@@ -1,0 +1,34 @@
+{
+  "rewrite_plan_id": "5550abd313186cee",
+  "target_file_id": null,
+  "target_relpath": "01260207201000001288_sections\\01260207201000000975_sec_021_quality_controls_catalog.inst.md",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "d2dce71c1f80481095478100867c0d1ea3dd4b49000f6ec5b59014cabdae664c",
+  "operations": [
+    {
+      "ref_id": "d12e3656af4ef65406e52468da1c16cc5725677d590d4b67ed9f73dbf0d44cf1",
+      "old_value": "validators/validate_sec_021.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/validators/validate_sec_021.py",
+      "location": "line:59"
+    },
+    {
+      "ref_id": "2a84346fc319cd76c4cfd2ea0f97e10e7066e7c74b9e8f9e7f0c4955efa0a4ea",
+      "old_value": "sections/sec_021_quality_controls_catalog.json",
+      "new_value": "01260207201000001221_Multi CLI/sections/sec_021_quality_controls_catalog.json",
+      "location": "line:59"
+    },
+    {
+      "ref_id": "cd776aa3cd3c1a99b767f37146bbef8b356c43333c6896fcfeac968f3dcb1faf",
+      "old_value": "validators/validate_sec_021.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/validators/validate_sec_021.py",
+      "location": "line:65"
+    },
+    {
+      "ref_id": "62003140096accfa3df65e2c3b2e36a90671159837ea7aa901e72a98380b71a2",
+      "old_value": "sections/sec_021_quality_controls_catalog.json",
+      "new_value": "01260207201000001221_Multi CLI/sections/sec_021_quality_controls_catalog.json",
+      "location": "line:65"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\5550abd313186cee.diff"
+}

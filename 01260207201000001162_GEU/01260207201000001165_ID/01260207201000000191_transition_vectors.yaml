@@ -1,0 +1,417 @@
+# Test Vectors v2.0 - Comprehensive Coverage (23 vectors)
+
+test_vectors:
+  # Happy path (5 vectors)
+  - vector_id: VEC-001
+    category: happy_path
+    description: "PLANNED → PRESENT via exact path match"
+    initial_state:
+      record_id: "rec-001"
+      lifecycle_state: PLANNED
+      canonical_path: "src/test.py"
+      identity_resolved: true
+      no_conflicts: true
+    action:
+      transition: PLANNED_to_PRESENT
+      observed_path: "src/test.py"
+    expected:
+      lifecycle_state: PRESENT
+      match_kind: exact_path
+      errors: []
+  
+  - vector_id: VEC-002
+    category: happy_path
+    description: "PRESENT → DEPRECATED with replacement"
+    initial_state:
+      record_id: "rec-002"
+      lifecycle_state: PRESENT
+      deprecation_reason: "obsolete"
+      replacement_id: "rec-003"
+    action:
+      transition: PRESENT_to_DEPRECATED
+    expected:
+      lifecycle_state: DEPRECATED
+      errors: []
+  
+  - vector_id: VEC-003
+    category: happy_path
+    description: "DEPRECATED → DELETED after retention"
+    initial_state:
+      record_id: "rec-003"
+      lifecycle_state: DEPRECATED
+      no_active_references: true
+      retention_elapsed: true
+    action:
+      transition: DEPRECATED_to_DELETED
+    expected:
+      lifecycle_state: DELETED
+      errors: []
+  
+  - vector_id: VEC-004
+    category: happy_path
+    description: "PLANNED → PRESENT via rename-intent match"
+    initial_state:
+      record_id: "rec-004"
+      lifecycle_state: PLANNED
+      canonical_path: "src/new.py"
+      path_history: ["src/old.py"]
+      identity_resolved: true
+      no_conflicts: true
+    action:
+      transition: PLANNED_to_PRESENT
+      observed_path: "src/old.py"
+    expected:
+      lifecycle_state: PRESENT
+      match_kind: rename_intent
+      errors: []
+  
+  - vector_id: VEC-005
+    category: happy_path
+    description: "PLANNED → PRESENT via strong identity (file_id prefix)"
+    initial_state:
+      record_id: "rec-005"
+      file_id: "01999000042260124001"
+      lifecycle_state: PLANNED
+      canonical_path: "src/module.py"
+      identity_resolved: true
+      no_conflicts: true
+    action:
+      transition: PLANNED_to_PRESENT
+      observed_path: "src/P_01999000042260124001_module.py"
+    expected:
+      lifecycle_state: PRESENT
+      match_kind: strong_identity
+      errors: []
+  
+  # Blocked transitions (2 vectors)
+  - vector_id: VEC-006
+    category: blocked
+    description: "PLANNED → PRESENT blocked (identity not resolved)"
+    initial_state:
+      record_id: "rec-006"
+      lifecycle_state: PLANNED
+      identity_resolved: false
+      no_conflicts: true
+    action:
+      transition: PLANNED_to_PRESENT
+    expected:
+      lifecycle_state: PLANNED
+      success: false
+      errors: ["Condition failed: identity_resolved eq true"]
+  
+  - vector_id: VEC-007
+    category: blocked
+    description: "PLANNED → DELETED rejected (no_skip_states rule)"
+    initial_state:
+      record_id: "rec-007"
+      lifecycle_state: PLANNED
+    action:
+      transition: PLANNED_to_DELETED
+    expected:
+      lifecycle_state: PLANNED
+      success: false
+      errors: ["No valid transition from PLANNED to DELETED"]
+  
+  # Conflict scenarios (4 vectors)
+  - vector_id: VEC-008
+    category: conflict
+    description: "MULTI_MATCH: two plans match one observed file"
+    initial_state:
+      - record_id: "rec-008a"
+        lifecycle_state: PLANNED
+        canonical_path: "src/shared.py"
+      - record_id: "rec-008b"
+        lifecycle_state: PLANNED
+        canonical_path: "src/shared.py"
+    action:
+      resolve_identity:
+        observed_files:
+          - observed_path: "src/shared.py"
+    expected:
+      match_kind: conflict
+      conflict_kind: MULTI_MATCH
+      candidates: ["rec-008a", "rec-008b"]
+  
+  - vector_id: VEC-009
+    category: conflict
+    description: "DUPLICATE_PLANS: two plans for same path"
+    initial_state:
+      - record_id: "rec-009a"
+        lifecycle_state: PLANNED
+        canonical_path: "src/dup.py"
+      - record_id: "rec-009b"
+        lifecycle_state: PLANNED
+        canonical_path: "src/dup.py"
+    action:
+      detect_conflicts: true
+    expected:
+      conflict_kind: DUPLICATE_PLANS
+      conflict_detected: true
+  
+  - vector_id: VEC-010
+    category: conflict
+    description: "PATH_COLLISION: rename collides with existing path"
+    initial_state:
+      - record_id: "rec-010a"
+        lifecycle_state: PLANNED
+        canonical_path: "src/target.py"
+      - record_id: "rec-010b"
+        lifecycle_state: PLANNED
+        canonical_path: "src/source.py"
+        path_history: ["src/target.py"]
+    action:
+      resolve_identity:
+        observed_files:
+          - observed_path: "src/target.py"
+    expected:
+      match_kind: conflict
+      conflict_kind: PATH_COLLISION
+  
+  - vector_id: VEC-011
+    category: conflict
+    description: "ID_COLLISION: two files embed same file_id prefix"
+    initial_state:
+      record_id: "rec-011"
+      file_id: "01999000042260124999"
+      lifecycle_state: PLANNED
+      canonical_path: "src/file1.py"
+    action:
+      resolve_identity:
+        observed_files:
+          - observed_path: "src/P_01999000042260124999_file1.py"
+          - observed_path: "lib/P_01999000042260124999_file2.py"
+    expected:
+      match_kind: conflict
+      conflict_kind: ID_COLLISION
+  
+  # Quarantine flows (3 vectors)
+  - vector_id: VEC-012
+    category: quarantine
+    description: "Unmatched file → ORPHANED"
+    initial_state:
+      record_id: "rec-012"
+      lifecycle_state: PLANNED
+      canonical_path: "src/planned.py"
+    action:
+      resolve_identity:
+        observed_files:
+          - observed_path: "src/unknown_orphan.py"
+    expected:
+      match_kind: orphaned
+      lifecycle_state: ORPHANED
+  
+  - vector_id: VEC-013
+    category: quarantine
+    description: "ORPHANED → PLANNED via manual reclassification"
+    initial_state:
+      record_id: "rec-013"
+      lifecycle_state: ORPHANED
+      manual_reclassification: true
+    action:
+      transition: ORPHANED_to_PLANNED
+    expected:
+      lifecycle_state: PLANNED
+      errors: []
+  
+  - vector_id: VEC-014
+    category: quarantine
+    description: "CONFLICT → PRESENT after adjudication"
+    initial_state:
+      record_id: "rec-014"
+      lifecycle_state: CONFLICT
+      adjudication_complete: true
+    action:
+      transition: CONFLICT_to_PRESENT
+    expected:
+      lifecycle_state: PRESENT
+      errors: []
+  
+  # Field precedence (3 vectors)
+  - vector_id: VEC-015
+    category: field_precedence
+    description: "scan_authoritative (size_bytes) overwrites planned null"
+    initial_state:
+      record_id: "rec-015"
+      lifecycle_state: PLANNED
+      size_bytes: null
+      identity_resolved: true
+      no_conflicts: true
+    action:
+      transition: PLANNED_to_PRESENT
+      scan_data:
+        size_bytes: 2048
+        sha256: "abc123def456"
+    expected:
+      lifecycle_state: PRESENT
+      size_bytes: 2048
+      sha256: "abc123def456"
+  
+  - vector_id: VEC-016
+    category: field_precedence
+    description: "immutable (file_id) conflict with scan → CONFLICT state"
+    initial_state:
+      record_id: "rec-016"
+      file_id: "01999000042260124001"
+      lifecycle_state: PLANNED
+      identity_resolved: true
+      no_conflicts: true
+    action:
+      transition: PLANNED_to_PRESENT
+      scan_data:
+        file_id: "01999000042260124999"
+    expected:
+      exception: ImmutableConflict
+      field: file_id
+      planned_value: "01999000042260124001"
+      scan_value: "01999000042260124999"
+  
+  - vector_id: VEC-017
+    category: field_precedence
+    description: "scan_inferred (artifact_kind) preserved from plan, warning emitted"
+    initial_state:
+      record_id: "rec-017"
+      lifecycle_state: PLANNED
+      artifact_kind: "source_code"
+      identity_resolved: true
+      no_conflicts: true
+    action:
+      transition: PLANNED_to_PRESENT
+      scan_data:
+        artifact_kind: "test_code"
+        size_bytes: 1024
+    expected:
+      lifecycle_state: PRESENT
+      artifact_kind: "source_code"
+      warning_emitted: true
+      warnings:
+        - category: inference_mismatch
+          field: artifact_kind
+  
+  # Gate scenarios (4 vectors)
+  - vector_id: VEC-018
+    category: gate
+    description: "Completeness gate passes (all planned → PRESENT)"
+    initial_state:
+      - record_id: "rec-018a"
+        lifecycle_state: PRESENT
+        planned_by_phase_id: "PH-01"
+        required: true
+      - record_id: "rec-018b"
+        lifecycle_state: PRESENT
+        planned_by_phase_id: "PH-01"
+        required: true
+    action:
+      gate: completeness
+      phase_id: "PH-01"
+    expected:
+      pass: true
+      exit_code: 0
+      summary:
+        complete: 2
+        incomplete: 0
+  
+  - vector_id: VEC-019
+    category: gate
+    description: "Completeness gate fails (one still PLANNED)"
+    initial_state:
+      - record_id: "rec-019a"
+        lifecycle_state: PRESENT
+        planned_by_phase_id: "PH-01"
+        required: true
+      - record_id: "rec-019b"
+        lifecycle_state: PLANNED
+        planned_by_phase_id: "PH-01"
+        required: true
+    action:
+      gate: completeness
+      phase_id: "PH-01"
+    expected:
+      pass: false
+      exit_code: 10
+      summary:
+        complete: 1
+        incomplete: 1
+  
+  - vector_id: VEC-020
+    category: gate
+    description: "Validity gate passes"
+    initial_state:
+      - record_id: "rec-020"
+        file_id: "01999000042260124001"
+        created_utc: "2026-01-30T00:00:00Z"
+        depends_on_file_ids: []
+    action:
+      gate: validity
+    expected:
+      pass: true
+      exit_code: 0
+      violations: []
+  
+  - vector_id: VEC-021
+    category: gate
+    description: "Validity gate fails (null in forbid_null column)"
+    initial_state:
+      - record_id: "rec-021"
+        file_id: null
+        created_utc: "2026-01-30T00:00:00Z"
+    action:
+      gate: validity
+    expected:
+      pass: false
+      exit_code: 11
+      violations:
+        - type: missing_immutable
+          field: file_id
+  
+  # Batch processing (1 vector)
+  - vector_id: VEC-022
+    category: batch
+    description: "3 files resolved, 1 orphaned, 1 conflict"
+    initial_state:
+      - record_id: "rec-022a"
+        lifecycle_state: PLANNED
+        canonical_path: "src/file1.py"
+      - record_id: "rec-022b"
+        lifecycle_state: PLANNED
+        canonical_path: "src/file2.py"
+      - record_id: "rec-022c"
+        lifecycle_state: PLANNED
+        canonical_path: "src/file3.py"
+    action:
+      resolve_batch:
+        - observed_path: "src/file1.py"
+        - observed_path: "src/file2.py"
+        - observed_path: "src/file3.py"
+        - observed_path: "src/orphan.py"
+        - observed_path: "src/file1.py"  # Duplicate observation
+    expected:
+      resolved_count: 3
+      orphaned_count: 1
+      conflict_count: 1
+  
+  # Waiver mechanism (1 vector)
+  - vector_id: VEC-023
+    category: waiver
+    description: "Completeness passes with DEPRECATED + waiver"
+    initial_state:
+      - record_id: "rec-023a"
+        lifecycle_state: PRESENT
+        planned_by_phase_id: "PH-01"
+        required: true
+      - record_id: "rec-023b"
+        lifecycle_state: DEPRECATED
+        planned_by_phase_id: "PH-01"
+        required: true
+        waived_by: "architect"
+    action:
+      gate: completeness
+      phase_id: "PH-01"
+      waivers:
+        rec-023b: "Feature descoped per ADR-042"
+    expected:
+      pass: true
+      exit_code: 0
+      summary:
+        complete: 1
+        waived: 1
+        incomplete: 0

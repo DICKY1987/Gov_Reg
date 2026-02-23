@@ -1,0 +1,16 @@
+{
+  "rewrite_plan_id": "0e832f62c9ad90d1",
+  "target_file_id": null,
+  "target_relpath": "01260207201000001276_scripts\\01260207201000001282_migration\\P_01260207233100000298_execute_phases_3_4_5.py",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "bd9c17b629e956154f1bfae592871c1e209d3f678f3734ca55aa90e0cb9f2b73",
+  "operations": [
+    {
+      "ref_id": "f79c3f025b0ed4710bcf47975983e33d7ed692327a4dc47dab453626052832fd",
+      "old_value": "REGISTRY/01999000042260124503_governance_registry_unified.json",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/01999000042260124503_governance_registry_unified.json",
+      "location": "line:72"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\0e832f62c9ad90d1.diff"
+}

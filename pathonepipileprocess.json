@@ -1,0 +1,954 @@
+[
+  {
+    "op": "add",
+    "path": "/governance_enforcement/gate_runner_interface",
+    "value": {
+      "script_path": "GOVERNANCE\\gates\\gate_runner.py",
+      "command_examples": {
+        "powershell": "python GOVERNANCE\\gates\\gate_runner.py --policy GOVERNANCE\\policies\\DOC-CONFIG-DEFINITION-OF-DONE-953__definition_of_done.yaml --evidence-dir evidence --layer layer_1_process"
+      },
+      "args": {
+        "--policy": {
+          "default": "GOVERNANCE\\policies\\DOC-CONFIG-DEFINITION-OF-DONE-953__definition_of_done.yaml"
+        },
+        "--evidence-dir": {
+          "default": "evidence"
+        },
+        "--layer": {
+          "optional": true
+        },
+        "--gate": {
+          "optional": true
+        },
+        "--shell": {
+          "optional": true,
+          "description": "run command with shell=True"
+        }
+      },
+      "exit_codes": {
+        "0": "success",
+        "2": "gate failure",
+        "3": "runtime error"
+      },
+      "stdout_contracts": {
+        "success": {
+          "status": "ok",
+          "run_id": "RUN-20260124T031111Z-a1b2c3d4",
+          "manifest": "evidence\\RUN-20260124T031111Z-a1b2c3d4\\manifest.json"
+        },
+        "failure": {
+          "status": "failed",
+          "run_id": "RUN-20260124T031111Z-a1b2c3d4",
+          "gate_id": "work_id",
+          "evidence_path": "evidence\\RUN-...\\gates\\layer_1_process__work_id.json",
+          "error": "Gate failed: layer_1_process/work_id (exit 1)"
+        }
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/schemas/GateEvidence",
+    "value": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "GateEvidence",
+      "type": "object",
+      "required": [
+        "run_id",
+        "layer_id",
+        "gate_id",
+        "command",
+        "cwd",
+        "timestamp",
+        "duration_s",
+        "exit_code",
+        "stdout_path",
+        "stderr_path",
+        "git"
+      ],
+      "properties": {
+        "run_id": {
+          "type": "string"
+        },
+        "layer_id": {
+          "type": "string"
+        },
+        "gate_id": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "command": {
+          "type": "string"
+        },
+        "cwd": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string"
+        },
+        "duration_s": {
+          "type": "number"
+        },
+        "exit_code": {
+          "type": "integer"
+        },
+        "stdout_path": {
+          "type": "string"
+        },
+        "stderr_path": {
+          "type": "string"
+        },
+        "git": {
+          "type": "object",
+          "required": [
+            "git_branch",
+            "git_head",
+            "git_status_porcelain",
+            "git_errors"
+          ],
+          "properties": {
+            "git_branch": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "git_head": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "git_status_porcelain": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "git_errors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "evidence_path": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/schemas/GateManifest",
+    "value": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "GateManifest",
+      "type": "object",
+      "required": [
+        "run_id",
+        "policy_path",
+        "cwd",
+        "timestamp",
+        "use_shell",
+        "results"
+      ],
+      "properties": {
+        "run_id": {
+          "type": "string"
+        },
+        "policy_path": {
+          "type": "string"
+        },
+        "cwd": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string"
+        },
+        "use_shell": {
+          "type": "boolean"
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/GateEvidence"
+          }
+        }
+      },
+      "definitions": {
+        "GateEvidence": {}
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/schemas/Event",
+    "value": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Event",
+      "type": "object",
+      "required": [
+        "event_id",
+        "timestamp",
+        "subsystem",
+        "step_id",
+        "subject",
+        "summary",
+        "severity",
+        "details"
+      ],
+      "properties": {
+        "event_id": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string"
+        },
+        "subsystem": {
+          "type": "string",
+          "enum": [
+            "SUB_DOC_ID",
+            "PHASE_5_EXECUTION",
+            "SUB_GITHUB"
+          ]
+        },
+        "step_id": {
+          "type": "string"
+        },
+        "subject": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "INFO"
+          ]
+        },
+        "details": {
+          "type": "object"
+        }
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/enums/severity",
+    "value": {
+      "type": "string",
+      "enum": [
+        "INFO"
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/components/GOVERNANCE/event_infrastructure",
+    "value": {
+      "event_schema_ref": "#/schemas/Event",
+      "known_subsystems": [
+        "SUB_DOC_ID",
+        "PHASE_5_EXECUTION",
+        "SUB_GITHUB"
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/configuration/governance",
+    "value": {
+      "config_files": {
+        "policy": "GOVERNANCE\\policies\\DOC-CONFIG-DEFINITION-OF-DONE-953__definition_of_done.yaml",
+        "gate_registry": "GOVERNANCE\\gates\\DOC-REGISTRY-GATE-ID-001__GATE_REGISTRY.yaml",
+        "event_config": "ssot\\SSOT_System\\SSOT_SYS_tools\\event_config.yaml",
+        "alert_config": "ssot\\SSOT_System\\SSOT_SYS_tools\\alert_config.yaml"
+      },
+      "alert_config_keys": [
+        "alert_engine.enabled",
+        "alert_engine.min_severity",
+        "alert_engine.dedup_window_seconds",
+        "channels.console.enabled",
+        "channels.file.enabled",
+        "channels.file.path"
+      ],
+      "environment_variables": [
+        "SLACK_WEBHOOK_URL"
+      ],
+      "notes": {
+        "event_config_file_presence": "documented; file presence TBD",
+        "alert_config_file_presence": "documented; file presence TBD"
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/identity_system/dir_id/gates",
+    "value": {
+      "G": {
+        "gate_id": "G",
+        "name": "Directory Identity Validation",
+        "purpose": "Validates .dir_id files are correct and complete",
+        "script": "GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_enforcement\\DOC-SCRIPT-GATE-DIR-ID-001__validate_dir_ids.py",
+        "status": "BLOCKING",
+        "performance": "< 5 seconds"
+      },
+      "H": {
+        "gate_id": "H",
+        "name": "Path Compliance",
+        "purpose": "Detects hardcoded paths in Python code",
+        "script": "scripts\\dev\\DOC-SCRIPT-LINT-HARDCODED-PATHS-001__lint_hardcoded_paths.py",
+        "status": "ENFORCED",
+        "performance": "< 10 seconds"
+      },
+      "I": {
+        "gate_id": "I",
+        "name": "Semantic Key Coverage",
+        "purpose": "Ensures important directories have semantic keys",
+        "script": "scripts\\dev\\DOC-SCRIPT-VALIDATE-SEMANTIC-KEYS-001__validate_semantic_key_coverage.py",
+        "status": "BLOCKING",
+        "performance": "< 5 seconds"
+      },
+      "J": {
+        "gate_id": "J",
+        "name": "Documentation Compliance",
+        "purpose": "Detects basename-only directory references in docs",
+        "script": "scripts\\dev\\DOC-SCRIPT-LINT-BASENAME-REFS-001__lint_basename_refs.py",
+        "status": "INFORMATIONAL",
+        "performance": "< 10 seconds"
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/identity_system/dir_id/dir_id_anchor_file_contract",
+    "value": {
+      "filename": ".dir_id",
+      "format": "JSON",
+      "example": {
+        "dir_id": "01999000042260124550",
+        "allocator_version": "1.0.0",
+        "allocated_at_utc": "2026-02-13T06:12:00Z",
+        "project_root_id": "01999000042260124068",
+        "relative_path": "src/module_a",
+        "depth": 2,
+        "zone": "governed",
+        "parent_dir_id": "01999000042260124549"
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/identity_system/semantic_keys",
+    "value": {
+      "description": "Semantic keys map human-stable keys to directory paths.",
+      "examples": {
+        "root_level_directories": {
+          "automation:root": "automation",
+          "modules:root": "modules",
+          "scripts:root": "scripts",
+          "data:root": "data",
+          "docs:root": "docs",
+          "tests:root": "tests",
+          "core:root": "core"
+        }
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/components/RUNTIME/component_catalog",
+    "value": [
+      {
+        "name": "Router",
+        "files": "engine/.../router.py",
+        "responsibility": "Classifies execution packets; assigns adapter + workstream routing decisions",
+        "primary_inputs": "Execution Packet JSON",
+        "primary_outputs": "routing_decisions.json, adapter_assignments.json"
+      },
+      {
+        "name": "Scheduler",
+        "files": "engine/.../scheduler.py",
+        "responsibility": "Orders DAG steps across workstreams; manages concurrency limits",
+        "primary_inputs": "Routing decisions, DAG definition",
+        "primary_outputs": "Ordered step queue"
+      },
+      {
+        "name": "Phase Coordinator",
+        "files": "engine/.../phase_coordinator.py",
+        "responsibility": "Manages cross-phase transitions; gates phase advancement",
+        "primary_inputs": "Step completion events",
+        "primary_outputs": "Phase transition signals"
+      },
+      {
+        "name": "State Machine",
+        "files": "engine/.../state_machine.py",
+        "responsibility": "Tracks per-run lifecycle state (PENDING \u2192 RUNNING \u2192 PAUSED \u2192 COMPLETE/FAILED)",
+        "primary_inputs": "Phase signals, executor events",
+        "primary_outputs": "State files in runs/"
+      },
+      {
+        "name": "Executor",
+        "files": "engine/.../executor.py",
+        "responsibility": "Dispatches individual steps to AI backend; wraps with circuit breaker",
+        "primary_inputs": "Step spec, prompt template",
+        "primary_outputs": "Raw LLM response, execution result"
+      },
+      {
+        "name": "Prompt Engine",
+        "files": "engine/.../prompt_engine.py",
+        "responsibility": "Builds prompts from templates + context bundles; enforces token limits",
+        "primary_inputs": "Prompt template, context bundle",
+        "primary_outputs": "Provider-ready prompt payload"
+      },
+      {
+        "name": "Patch Ledger",
+        "files": "engine/.../patch_ledger.py",
+        "responsibility": "Accumulates RFC-6902 JSON patches from LLM outputs during a run",
+        "primary_inputs": "Raw LLM diffs",
+        "primary_outputs": "Ordered patch log"
+      },
+      {
+        "name": "Patch Converter",
+        "files": "engine/.../patch_converter.py",
+        "responsibility": "Materializes ledger patches into filesystem artifacts (files, JSON, patches, reports)",
+        "primary_inputs": "Patch log, materialization rules",
+        "primary_outputs": "Filesystem artifacts under runs/"
+      },
+      {
+        "name": "Circuit Breaker",
+        "files": "engine/.../circuit_breaker.py",
+        "responsibility": "Stops repeated failures; enforces retry ceilings and cooldown windows",
+        "primary_inputs": "Execution failures, thresholds",
+        "primary_outputs": "Trip/open state, retry allowed/blocked"
+      },
+      {
+        "name": "Context Estimator",
+        "files": "engine/.../context_estimator.py",
+        "responsibility": "Estimates token budget and selects context slices",
+        "primary_inputs": "Context candidates, token limits",
+        "primary_outputs": "Chosen context bundle"
+      },
+      {
+        "name": "Recovery",
+        "files": "engine/.../recovery.py",
+        "responsibility": "Handles rollback/retry flows; routes to safe recovery steps",
+        "primary_inputs": "Failure fingerprints, state",
+        "primary_outputs": "Recovery decisions, rollback artifacts"
+      },
+      {
+        "name": "Monitoring",
+        "files": "engine/.../monitoring.py",
+        "responsibility": "Emits metrics/traces/events for run execution",
+        "primary_inputs": "Run events",
+        "primary_outputs": "Metrics, traces, event records"
+      },
+      {
+        "name": "Hooks",
+        "files": "process_steps/.../hooks.py",
+        "responsibility": "Pre/post step hooks for instrumentation and enforcement",
+        "primary_inputs": "Step lifecycle events",
+        "primary_outputs": "Hook events, additional artifacts"
+      },
+      {
+        "name": "Artifacts Manager",
+        "files": "runs/.../artifacts.py",
+        "responsibility": "Manages run-scoped artifact paths and writing",
+        "primary_inputs": "Artifact payloads",
+        "primary_outputs": "Artifacts on disk"
+      },
+      {
+        "name": "Registries Adapter",
+        "files": "registries/.../adapter.py",
+        "responsibility": "Reads/writes registry snapshots and indexes for the run",
+        "primary_inputs": "Registry paths, artifacts",
+        "primary_outputs": "Registry snapshots, index updates"
+      },
+      {
+        "name": "DocID Subsystem",
+        "files": "doc_id/.../subsystem.py",
+        "responsibility": "Generates and validates Doc IDs, patterns, and relationships",
+        "primary_inputs": "Docs and registry context",
+        "primary_outputs": "Doc IDs, relationship artifacts"
+      },
+      {
+        "name": "Relationship Index",
+        "files": "relationship_index/.../index.py",
+        "responsibility": "Maintains graph of relationships between entities",
+        "primary_inputs": "Edges from artifacts",
+        "primary_outputs": "Indexed relationships"
+      },
+      {
+        "name": "Pipelines",
+        "files": "pipelines/.../*.py",
+        "responsibility": "Defines end-to-end pipeline compositions",
+        "primary_inputs": "Execution packets",
+        "primary_outputs": "Run outputs"
+      },
+      {
+        "name": "Process Steps",
+        "files": "process_steps/.../*.py",
+        "responsibility": "Defines step-level operations used by pipelines",
+        "primary_inputs": "Step specs",
+        "primary_outputs": "Step artifacts"
+      },
+      {
+        "name": "CLI Entrypoint",
+        "files": "cli/.../main.py",
+        "responsibility": "CLI submission of execution packets; run orchestration bootstrap",
+        "primary_inputs": "CLI args",
+        "primary_outputs": "Run initialization + submission"
+      }
+    ]
+  },
+  {
+    "op": "add",
+    "path": "/components/RUNTIME/patching",
+    "value": {
+      "patch_ledger": {
+        "component": "Patch Ledger",
+        "responsibility": "Accumulates RFC-6902 JSON patches from LLM outputs during a run",
+        "primary_output": "Ordered patch log"
+      },
+      "patch_converter": {
+        "component": "Patch Converter",
+        "responsibility": "Materializes ledger patches into filesystem artifacts"
+      },
+      "note": "This describes run-internal patch accumulation/materialization."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/registry_promotion/patch_types",
+    "value": {
+      "registry_rfc6902_patch": "stage5_promotion/registry_patch.json"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/components/MINI_PIPE/adaptor_contract",
+    "value": {
+      "execution_loop_steps": [
+        "Guardrails.pre_execution_check(task) — validates pattern, scope, tools",
+        "Router.resolve(task.operation_kind) → tool_id + profile",
+        "Executor dispatches task to ToolsAdapter (parallel workers)",
+        "ToolsAdapter builds command, spawns subprocess, captures output",
+        "On failure: CircuitBreaker evaluates; RetryPolicy computes backoff; RecoveryOrchestrator decides retry/skip/escalate",
+        "Guardrails.post_execution_check(task, result) — validates output",
+        "Executor persists result to execution_results.json"
+      ],
+      "guardrails": [
+        "pre_execution_check",
+        "post_execution_check"
+      ],
+      "resilience_components": [
+        "CircuitBreaker",
+        "RetryPolicy",
+        "RecoveryOrchestrator"
+      ],
+      "artifacts": [
+        "execution_results.json",
+        "summary_report.json",
+        "acms_state.json"
+      ],
+      "modes": [
+        "analyze_only",
+        "plan_only",
+        "full"
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/canonical_run_directory_tree/tree/compat/acms",
+    "value": {
+      "root": ".acms_runs/{run_id}/",
+      "stage4_execution_artifacts": [
+        "execution_results.json"
+      ],
+      "stage5_promotion": {
+        "registry_patch": "stage5_promotion/registry_patch.json",
+        "registry_dry_run_report": "stage5_promotion/registry_dry_run_report.json",
+        "registry_apply_report": "stage5_promotion/registry_apply_report.json",
+        "registry_after_snapshot_optional": "stage5_promotion/registry_after.json"
+      },
+      "stage6_rollups_dir": "stage6_rollups/"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/registry_promotion/write_policy_enforcement",
+    "value": {
+      "write_policy_source": "01260207201000000193_UNIFIED_SSOT_REGISTRY_WRITE_POLICY.yaml",
+      "per_column_policy_fields": [
+        "writable_by",
+        "update_policy",
+        "merge_strategy",
+        "null_policy"
+      ],
+      "validation_rules": {
+        "consistency": {
+          "filesystem_primitives": [
+            "size_bytes",
+            "mtime_utc",
+            "sha256"
+          ],
+          "rule": "Columns with recompute_on_* must have derivation entry OR be filesystem primitive",
+          "on_violation": "fail"
+        },
+        "completeness": {
+          "rule": "Every column in registry schema must have exactly one entry",
+          "on_violation": "fail"
+        },
+        "alignment": {
+          "rule": "Derived columns must be writable_by: tool_only",
+          "exceptions": [
+            "entity_kind",
+            "layer",
+            "bundle_role",
+            "bundle_key",
+            "artifact_kind",
+            "canonicality",
+            "status"
+          ],
+          "on_violation": "warn"
+        }
+      },
+      "enums": {
+        "null_policy": [
+          "allow",
+          "deny",
+          "deny_if_blank_string",
+          "coerce_blank_to_null"
+        ],
+        "update_policy": [
+          "never",
+          "on_create_only",
+          "overwrite",
+          "append_only",
+          "patch_only"
+        ],
+        "writable_by": [
+          "human_only",
+          "tool_only",
+          "human_or_tool"
+        ],
+        "merge_strategy": [
+          "last_write_wins",
+          "first_write_wins",
+          "append_unique",
+          "merge_object_shallow",
+          "merge_object_deep"
+        ]
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/registry_promotion/derivation_engine",
+    "value": {
+      "derivations_source": "01260207201000000192_UNIFIED_SSOT_REGISTRY_DERIVATIONS.yaml",
+      "dsl": {
+        "allowed_functions": [
+          "BASENAME",
+          "DIRNAME",
+          "EXTENSION",
+          "NORMALIZE_PATH",
+          "JOIN_PATH",
+          "RELATIVE_TO",
+          "UPPER",
+          "LOWER",
+          "TRIM",
+          "CONCAT",
+          "SUBSTRING",
+          "REPLACE",
+          "SPLIT",
+          "MATCH",
+          "EXTRACT",
+          "EXTRACT_20_DIGIT_PREFIX",
+          "GENERATE_ID",
+          "ALLOCATE_FILE_ID",
+          "ALLOCATE_DIR_ID",
+          "WALK_UP_FIND_DIR_ID",
+          "MATCHES_ANY",
+          "NOW_UTC",
+          "ADD_SECONDS",
+          "FORMAT_ISO8601",
+          "PARSE_TIMESTAMP",
+          "SHA256_BYTES",
+          "SHA256_STRING",
+          "HASH_STABLE",
+          "READ_BYTES",
+          "FILE_SIZE",
+          "FILE_MTIME",
+          "FILE_EXISTS",
+          "IS_DIRECTORY",
+          "LOOKUP_CONFIG",
+          "LOOKUP_REGISTRY",
+          "LOOKUP_COLUMN",
+          "FIND_BY_PATH",
+          "FIND_BY_ID",
+          "MATCH_REPO_ROOT",
+          "INFER_ARTIFACT_KIND",
+          "INFER_LAYER",
+          "INFER_GOVERNANCE_DOMAIN",
+          "INFER_MODULE",
+          "IF",
+          "AND",
+          "OR",
+          "NOT",
+          "COALESCE",
+          "IS_NULL",
+          "EQUALS",
+          "CONTAINS",
+          "STARTS_WITH",
+          "ENDS_WITH",
+          "FIRST",
+          "LAST",
+          "COUNT",
+          "FILTER",
+          "MAP",
+          "UNIQUE",
+          "SORT",
+          "FLATTEN"
+        ],
+        "forbidden_patterns": [
+          "eval",
+          "exec",
+          "import",
+          "__",
+          "lambda",
+          "subprocess",
+          "os.system",
+          "open("
+        ],
+        "description": "Deterministic, sandboxed expression language for field derivation",
+        "version": "1.0.0"
+      },
+      "derived_column_model_sample": {
+        "depends_on": [],
+        "error_policy": "fail",
+        "type": "string",
+        "trigger": "on_create_only",
+        "null_behavior": "fail",
+        "formula": "ALLOCATE_FILE_ID()",
+        "rationale": "20-digit unique ID from allocator pool",
+        "evidence": [
+          "allocator_state_before",
+          "allocator_state_after",
+          "allocated_id"
+        ]
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/required_artifacts_by_stage/allocator_evidence",
+    "value": {
+      "evidence_items": [
+        "allocator_state_before",
+        "allocator_state_after",
+        "allocated_id"
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/facts_and_mapping/registry_targets",
+    "value": {
+      "facts": {
+        "imports": [
+          "py_imports_stdlib",
+          "py_imports_third_party",
+          "py_imports_local",
+          "py_imports_hash"
+        ],
+        "ast": [
+          "py_ast_dump_hash",
+          "py_ast_parse_ok"
+        ],
+        "canonical_text": [
+          "py_canonical_text_hash"
+        ],
+        "analysis": [
+          "py_analysis_run_id",
+          "py_analyzed_at_utc",
+          "py_analysis_success",
+          "py_toolchain_id",
+          "py_tool_versions"
+        ]
+      },
+      "mapping": {
+        "components": [
+          "py_component_ids",
+          "py_component_count",
+          "py_component_artifact_path"
+        ],
+        "capabilities": [
+          "py_capability_tags",
+          "py_capability_facts_hash"
+        ],
+        "deliverables": [
+          "py_deliverable_kinds",
+          "py_deliverable_signature_hash",
+          "py_deliverable_inputs",
+          "py_deliverable_outputs",
+          "py_deliverable_interfaces"
+        ]
+      },
+      "overlap": [
+        "py_overlap_group_id",
+        "py_overlap_similarity_max",
+        "py_overlap_best_match_file_id",
+        "py_canonical_candidate_score"
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/canonicalization",
+    "value": {
+      "version": "HASH_V1",
+      "rules": {
+        "json_serialization": {
+          "sort_keys": true,
+          "separators": [
+            ",",
+            ":"
+          ],
+          "ensure_ascii": true
+        },
+        "list_ordering": "alphabetical_unless_semantic",
+        "ast_dump": {
+          "annotate_fields": false,
+          "include_attributes": false
+        }
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/compatibility_requirements",
+    "value": {
+      "python_version_min": "3.9",
+      "python_version_max": "3.12",
+      "python_version_tested": [
+        "3.9",
+        "3.10",
+        "3.11"
+      ],
+      "encoding": "UTF-8",
+      "platform": "cross-platform (Windows, Linux, macOS)",
+      "registry_file_format": "JSON",
+      "registry_schema_version": "v3",
+      "column_dictionary_min_version": "4.1.1",
+      "encoding_policy": {
+        "strategy": "stdlib_only_with_fallback",
+        "primary_encoding": "utf-8",
+        "fallback_chain": [
+          "utf-8",
+          "utf-8-sig",
+          "latin-1",
+          "cp1252",
+          "iso-8859-1"
+        ],
+        "error_handling": "replace_with_audit",
+        "determinism": "guaranteed_per_input_bytes"
+      },
+      "error_handling_policy": {
+        "fatal_errors": [
+          "file_not_found",
+          "invalid_file_id",
+          "registry_corruption",
+          "lock_timeout"
+        ],
+        "recoverable_errors": [
+          "syntax_error",
+          "encoding_replacement",
+          "invalid_ast"
+        ],
+        "warnings": [
+          "ambiguous_pattern",
+          "low_confidence_tag",
+          "performance_degradation"
+        ]
+      },
+      "required_stdlib": [
+        "ast",
+        "hashlib",
+        "json",
+        "pathlib",
+        "re",
+        "sys"
+      ],
+      "optional_external": {
+        "pytest": ">=7.4.0",
+        "pytest-cov": ">=4.1.0",
+        "ruff": ">=0.1.0",
+        "mypy": ">=1.7.0",
+        "radon": ">=6.0.0"
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/components/GOVERNANCE/governance_registry",
+    "value": {
+      "schema_ref": "01999000042260124012_governance_registry_schema.v3.json",
+      "top_level_fields": [
+        "schema_version",
+        "files",
+        "edges"
+      ],
+      "edge_type_enum": [
+        "VALIDATES",
+        "EXECUTES",
+        "ENFORCES",
+        "USES_SCHEMA",
+        "GENERATES",
+        "DEPENDS_ON",
+        "TESTS",
+        "DOCUMENTS",
+        "EMITS_EVENT",
+        "COLLECTS_EVIDENCE",
+        "PRODUCES_REPORT",
+        "DERIVES",
+        "PATCHES",
+        "ATTESTS",
+        "EMITS_EVIDENCE_FOR"
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/stage_model/stages/STAGE2/scanner_choice",
+    "value": {
+      "bundle_contains_two_scanner_systems": [
+        {
+          "name": "Enhanced Scanner Service (governance compliance scanner)",
+          "note": "represented mostly by documentation plus test harnesses; production implementation lives elsewhere in govreg_core"
+        },
+        {
+          "name": "Enhanced File Scanner v2.0 (generic inventory scanner)",
+          "note": "standalone implementation in this file set"
+        }
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/components/SCANNER_FACTS_MAPPER_PROMOTER_CHAIN/scanner_authority",
+    "value": {
+      "inventory_scanner": "Enhanced File Scanner v2.0 (generic inventory scanner)",
+      "governance_compliance_scanner": "Enhanced Scanner Service (governance compliance scanner) — docs/tests in this set; implementation elsewhere in govreg_core"
+    }
+  }
+]

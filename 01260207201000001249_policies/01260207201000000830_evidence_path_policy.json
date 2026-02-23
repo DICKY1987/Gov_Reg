@@ -1,0 +1,143 @@
+{
+  "version": "1.0.0",
+  "description": "Deterministic evidence path formulas for quality controls enforcement",
+  "last_updated": "2026-01-28T17:04:10.413Z",
+  "path_formulas": {
+    "root": {
+      "formula": "evidence/{plan_id}/{run_id}/",
+      "description": "Root evidence directory for a specific plan execution",
+      "variables": {
+        "plan_id": "Unique plan identifier (sanitized, lowercase, no spaces)",
+        "run_id": "Execution run timestamp or UUID (format: YYYYMMDD_HHMMSS or UUID)"
+      },
+      "example": "evidence/plan-qc-001/20260128_170410/"
+    },
+    "gate": {
+      "formula": "evidence/{plan_id}/{run_id}/gates/{gate_id}/",
+      "description": "Evidence directory for a specific validation gate",
+      "variables": {
+        "plan_id": "Unique plan identifier",
+        "run_id": "Execution run timestamp or UUID",
+        "gate_id": "Gate identifier (e.g., GATE-QC-001, G-CTRL-001)"
+      },
+      "example": "evidence/plan-qc-001/20260128_170410/gates/G-CTRL-001/"
+    },
+    "control": {
+      "formula": "evidence/{plan_id}/{run_id}/controls/{control_id}/",
+      "description": "Evidence directory for a specific control validation",
+      "variables": {
+        "plan_id": "Unique plan identifier",
+        "run_id": "Execution run timestamp or UUID",
+        "control_id": "Control identifier (e.g., CTRL-SEC-001, DBG-0019)"
+      },
+      "example": "evidence/plan-qc-001/20260128_170410/controls/CTRL-SEC-001/"
+    },
+    "phase": {
+      "formula": "evidence/{plan_id}/{run_id}/phases/{phase_id}/",
+      "description": "Evidence directory for a specific phase execution",
+      "variables": {
+        "plan_id": "Unique plan identifier",
+        "run_id": "Execution run timestamp or UUID",
+        "phase_id": "Phase identifier (e.g., PH-01, PH-02)"
+      },
+      "example": "evidence/plan-qc-001/20260128_170410/phases/PH-01/"
+    }
+  },
+  "required_reports": {
+    "gate_report": {
+      "path": "evidence/{plan_id}/{run_id}/gates/{gate_id}/report.json",
+      "description": "Gate execution report (status, timestamps, violations)",
+      "required_fields": [
+        "gate_id",
+        "status",
+        "start_timestamp",
+        "end_timestamp",
+        "duration_sec",
+        "exit_code",
+        "stdout_snippet",
+        "stderr_snippet"
+      ]
+    },
+    "control_coverage": {
+      "path": "evidence/{plan_id}/{run_id}/controls/{control_id}/coverage.json",
+      "description": "Control coverage report (satisfied gates, evidence, artifacts, tests)",
+      "required_fields": [
+        "control_id",
+        "required",
+        "satisfied",
+        "satisfying_gates",
+        "evidence_paths",
+        "required_artifacts",
+        "required_tests"
+      ]
+    },
+    "phase_summary": {
+      "path": "evidence/{plan_id}/{run_id}/phases/{phase_id}/summary.json",
+      "description": "Phase execution summary",
+      "required_fields": [
+        "phase_id",
+        "start_timestamp",
+        "end_timestamp",
+        "duration_sec",
+        "gates_passed",
+        "gates_failed",
+        "files_created",
+        "files_modified"
+      ]
+    }
+  },
+  "collision_rules": {
+    "strategy": "content_hash_check",
+    "description": "Prevent overwrite of different content; allow identical content",
+    "rules": [
+      {
+        "rule": "same_path_same_run",
+        "action": "If same path written twice in same run with different content, FAIL with error code EVID_COLLISION"
+      },
+      {
+        "rule": "same_path_same_content",
+        "action": "If same path written twice with identical content hash, allow (idempotent)"
+      },
+      {
+        "rule": "gate_id_disambiguation",
+        "action": "Gates must use gate_id in filenames if multiple gates write to same category"
+      }
+    ]
+  },
+  "sanitization_rules": {
+    "plan_id": {
+      "allowed_chars": "a-z0-9-_",
+      "transform": "lowercase, replace spaces with hyphens, remove special chars",
+      "max_length": 64,
+      "example": "PLAN-QC-001 -> plan-qc-001"
+    },
+    "run_id": {
+      "format": "YYYYMMDD_HHMMSS or UUID",
+      "allowed_chars": "0-9a-f-_",
+      "example": "20260128_170410 or 550e8400-e29b-41d4-a716-446655440000"
+    },
+    "gate_id": {
+      "allowed_chars": "A-Z0-9-",
+      "format": "GATE-{NAME}-{NNN} or G-{NAME}-{NNN}",
+      "example": "GATE-QC-001, G-CTRL-001"
+    },
+    "control_id": {
+      "allowed_chars": "A-Z0-9-",
+      "format": "CTRL-{CLASS}-{NNN} or DBG-{NNNN}",
+      "example": "CTRL-SEC-001, DBG-0019"
+    },
+    "phase_id": {
+      "allowed_chars": "A-Z0-9-",
+      "format": "PH-{NN} or PH-{NNA}",
+      "example": "PH-01, PH-03A"
+    }
+  },
+  "validation": {
+    "determinism_check": {
+      "description": "Same inputs must produce identical paths across multiple runs",
+      "test_command": "pytest tests/test_evidence_path_determinism.py -v",
+      "success_criteria": "100% path determinism score"
+    }
+  },
+  "file_id": "01260207233100000462"
+}

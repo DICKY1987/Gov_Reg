@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://newphaseplanprocess.schemas/purpose_mapping/FILE_INVENTORY.record.schema.v1.json",
+  "title": "Purpose Mapping - FILE_INVENTORY.jsonl Record Schema v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "path",
+    "ext",
+    "classification",
+    "size_bytes",
+    "sha256",
+    "is_executable_candidate",
+    "references"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "path": { "$ref": "#/$defs/repo_path" },
+    "ext": { "type": "string", "minLength": 1, "maxLength": 20 },
+    "classification": {
+      "type": "string",
+      "enum": [
+        "python_entrypoint",
+        "python_module",
+        "schema_json",
+        "template_json",
+        "spec_doc",
+        "doc",
+        "data",
+        "config",
+        "unknown"
+      ]
+    },
+    "size_bytes": { "type": "integer", "minimum": 0 },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "is_executable_candidate": { "type": "boolean" },
+    "imports": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 200 },
+      "uniqueItems": true
+    },
+    "defines": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 200 },
+      "uniqueItems": true
+    },
+    "argparse_commands": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 100 },
+      "uniqueItems": true
+    },
+    "subprocess_calls": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 2000 }
+    },
+    "path_literals": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 600 },
+      "uniqueItems": true
+    },
+    "json_parseable": { "type": "boolean" },
+    "schema_id": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "title": { "type": "string", "minLength": 1, "maxLength": 300 },
+    "references": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/reference" }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "classification": { "const": "python_entrypoint" } },
+        "required": ["classification"]
+      },
+      "then": {
+        "properties": {
+          "imports": { "minItems": 0 },
+          "defines": { "minItems": 0 }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref_path", "ref_type", "required_exists_guess"],
+      "properties": {
+        "ref_path": { "$ref": "#/$defs/repo_path" },
+        "ref_type": {
+          "type": "string",
+          "enum": ["schema", "config", "data", "evidence", "output", "unknown"]
+        },
+        "required_exists_guess": { "type": "boolean" }
+      }
+    },
+    "repo_path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 600,
+      "pattern": "^(?!/)(?!.*\\.{2})(?!.*\\\\\\\\)(?!.*//)[^\\0]+$"
+    }
+  }
+}

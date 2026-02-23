@@ -1,0 +1,38 @@
+{
+  "tool": "plan.validate_step_contracts",
+  "tool_version": "1.0.0",
+  "run_id": "RUN-CAPMAP03",
+  "status": "fail",
+  "exit_code": 1,
+  "summary": "Evidence written to: C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess\\.state\\evidence\\mcp\\RUN-CAPMAP03\\step_contracts_validation.json\n\u00e2\u0153\u2014 GATE-003 FAILED: 1 defects found\n  [critical] /plan/phases: No phases defined in plan",
+  "input": {
+    "context": {
+      "repo_root": "C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess",
+      "run_id": "RUN-CAPMAP03",
+      "invoker": "human"
+    },
+    "plan_path": "C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess\\Plans_Instructions\\wobbly-purring-island_registry-integrated.plan.json",
+    "phase_filter": [],
+    "write_evidence": true,
+    "evidence_path": ".state/evidence/mcp/{run_id}/plan_validate_step_contracts.json",
+    "timeout_s": 300
+  },
+  "defects": [
+    {
+      "severity": "critical",
+      "code": "NO_PHASES_DEFINED",
+      "location": "/plan/phases",
+      "message": "No phases defined in plan",
+      "why_it_matters": "Plan must have at least one phase with steps"
+    }
+  ],
+  "hashes": {
+    "step_contracts_evidence_sha256": "sha256:e0521315e95efb54e90f41afe76da9294724e6e964de0777d45d0fa496ca18a9"
+  },
+  "artifacts_emitted": [
+    "C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess\\.state\\evidence\\mcp\\RUN-CAPMAP03\\step_contracts_validation.json"
+  ],
+  "timestamps": {
+    "generated_at": "2026-02-11T21:52:50.537680+00:00"
+  }
+}

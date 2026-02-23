@@ -1,0 +1,52 @@
+{
+  "rewrite_plan_id": "52eaf989940ca408",
+  "target_file_id": null,
+  "target_relpath": "REWRITE_PATCHSET\\plans\\d18c0f2402eae17e.json",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "898e470960113aa24544084682a8e60d92461e6b53930260d9ed718655af5eea",
+  "operations": [
+    {
+      "ref_id": "5ccc0e6551fbad292adf1e2cfcea42edf65bbbbcd9f5084948d7edebd7e8b7af",
+      "old_value": "01260207201000000143_ID_CANONICALITY_COMPLETE_SOLUTION.md",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/01260207201000000143_ID_CANONICALITY_COMPLETE_SOLUTION.md",
+      "location": "line:4"
+    },
+    {
+      "ref_id": "82679fddf1b75fcf87c33a12f078f0ad4db97e404b4acb664233ee15047874be",
+      "old_value": "scripts/P_01999000042260124999_id_canonicality_enforcer.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124999_id_canonicality_enforcer.py",
+      "location": "line:52"
+    },
+    {
+      "ref_id": "c1dbf791a96e1a3d24437e21b61d929677d903ed69d2ce6200886c95152ecaa9",
+      "old_value": "scripts/P_01999000042260124999_id_canonicality_enforcer.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/scripts/P_01999000042260124999_id_canonicality_enforcer.py",
+      "location": "line:53"
+    },
+    {
+      "ref_id": "dedfeb25e23b718c3fd8f9c6a8b24fae439c3ed0ac5a0171786ef5be95ccbc4a",
+      "old_value": "gates/P_01999000042260125000_gate_id_canonicality.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/gates/P_01999000042260125000_gate_id_canonicality.py",
+      "location": "line:58"
+    },
+    {
+      "ref_id": "e83ff83416d8b83dc74899173ffeb260b1b6d3396528cdd134c0b63a2880a6f5",
+      "old_value": "gates/P_01999000042260125000_gate_id_canonicality.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/gates/P_01999000042260125000_gate_id_canonicality.py",
+      "location": "line:59"
+    },
+    {
+      "ref_id": "4c7149a9032e6b4aaeead5aa25a8b900e53b0f6aec8f43d2fcdb6bec3f098bb4",
+      "old_value": "govreg_core/P_01999000042260125002_canonical_id_patterns.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01999000042260125002_canonical_id_patterns.py",
+      "location": "line:64"
+    },
+    {
+      "ref_id": "da376389fb8c9eaa02c012ff4d9a4e6b10d0b8f01fb1b15974eac60377fb656f",
+      "old_value": "govreg_core/P_01999000042260125002_canonical_id_patterns.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01999000042260125002_canonical_id_patterns.py",
+      "location": "line:65"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\52eaf989940ca408.diff"
+}

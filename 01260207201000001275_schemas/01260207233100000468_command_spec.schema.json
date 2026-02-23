@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://gov-reg.local/schemas/command_spec.schema.json",
+  "title": "Structured Command Specification Schema",
+  "description": "Enforces structured command format (no free-form strings) for gates, tools, and validators",
+  "type": "object",
+  "required": [
+    "exe",
+    "args"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "exe": {
+      "type": "string",
+      "description": "Executable name or path (must be non-empty)",
+      "minLength": 1,
+      "examples": [
+        "python",
+        "pytest",
+        "bandit",
+        "git"
+      ]
+    },
+    "args": {
+      "type": "array",
+      "description": "Command arguments as array of strings",
+      "items": {
+        "type": "string"
+      },
+      "examples": [
+        [
+          "-m",
+          "pytest",
+          "tests/",
+          "-v"
+        ],
+        [
+          "--version"
+        ],
+        [
+          "-r",
+          "src/",
+          "-f",
+          "json",
+          "-o",
+          "output.json"
+        ]
+      ]
+    },
+    "cwd": {
+      "type": "string",
+      "description": "Working directory for command execution",
+      "default": "."
+    },
+    "env": {
+      "type": "object",
+      "description": "Environment variables (key-value pairs)",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "examples": [
+        {
+          "PYTHONPATH": "src/",
+          "DEBUG": "1"
+        }
+      ]
+    },
+    "timeout_sec": {
+      "type": "integer",
+      "description": "Command timeout in seconds",
+      "default": 600,
+      "minimum": 1,
+      "maximum": 7200
+    },
+    "shell": {
+      "type": "boolean",
+      "description": "Execute via shell (security risk, use sparingly)",
+      "default": false
+    },
+    "expected_exit_codes": {
+      "type": "array",
+      "description": "List of exit codes considered successful",
+      "items": {
+        "type": "integer"
+      },
+      "default": [
+        0
+      ],
+      "examples": [
+        [
+          0
+        ],
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    "stdout_capture": {
+      "type": "boolean",
+      "description": "Capture stdout to evidence",
+      "default": true
+    },
+    "stderr_capture": {
+      "type": "boolean",
+      "description": "Capture stderr to evidence",
+      "default": true
+    }
+  },
+  "examples": [
+    {
+      "exe": "python",
+      "args": [
+        "-m",
+        "pytest",
+        "tests/",
+        "-v",
+        "--cov=src"
+      ],
+      "cwd": ".",
+      "timeout_sec": 300,
+      "expected_exit_codes": [
+        0
+      ]
+    },
+    {
+      "exe": "bandit",
+      "args": [
+        "-r",
+        "src/",
+        "-f",
+        "json",
+        "-o",
+        ".state/evidence/security.json"
+      ],
+      "timeout_sec": 120,
+      "expected_exit_codes": [
+        0
+      ]
+    }
+  ],
+  "file_id": "01260207233100000468"
+}

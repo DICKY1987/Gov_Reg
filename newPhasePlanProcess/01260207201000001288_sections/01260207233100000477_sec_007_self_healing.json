@@ -1,0 +1,142 @@
+{
+  "section_id": "sec_007_self_healing",
+  "title": "Self-Healing Rules + Circuit Breakers",
+  "required": true,
+  "instructions_file": "sections/sec_007_self_healing.inst.md",
+  "self_healing": {
+    "enabled": true,
+    "description": "Bounded, auditable retry logic with convergence detection",
+    "failure_taxonomy": [
+      {
+        "failure_type": "DEP_INSTALL_FAIL",
+        "allowed_actions": [
+          "retry with --force-reinstall",
+          "clear pip cache",
+          "use alternate mirror",
+          "pin to last-known-good version"
+        ],
+        "max_retry_budget": 2,
+        "abort_conditions": [
+          {
+            "regex": "/ConnectionError.*unable to reach/i",
+            "reason": "Network unreachable"
+          },
+          {
+            "regex": "/PermissionError/i",
+            "reason": "Insufficient permissions"
+          }
+        ],
+        "evidence_per_attempt": ".runs/fix_loop/dep_install_attempt_{{N}}.log"
+      },
+      {
+        "failure_type": "TEST_FAIL",
+        "allowed_actions": [
+          "rerun tests with --lf (last failed)",
+          "apply deterministic fix pattern from test output",
+          "update test fixtures if data contract changed",
+          "skip flaky test with waiver justification"
+        ],
+        "max_retry_budget": 2,
+        "abort_conditions": [
+          {
+            "regex": "/FAILED.*AssertionError.*expected.*got/i",
+            "reason": "Logic error (not transient)"
+          }
+        ],
+        "evidence_per_attempt": ".runs/fix_loop/test_fail_attempt_{{N}}.log"
+      },
+      {
+        "failure_type": "LINT_FAIL",
+        "allowed_actions": [
+          "run formatter (black/ruff format)",
+          "apply auto-fixes (ruff --fix)",
+          "add # noqa comment with justification"
+        ],
+        "max_retry_budget": 1,
+        "abort_conditions": [
+          {
+            "regex": "/SyntaxError/i",
+            "reason": "Fundamental syntax error"
+          }
+        ],
+        "evidence_per_attempt": ".runs/fix_loop/lint_fail_attempt_{{N}}.log"
+      },
+      {
+        "failure_type": "TYPE_CHECK_FAIL",
+        "allowed_actions": [
+          "add type annotations",
+          "add # type: ignore with justification",
+          "update stub files"
+        ],
+        "max_retry_budget": 2,
+        "abort_conditions": [
+          {
+            "regex": "/incompatible types.*Expected.*Got/i",
+            "reason": "Type contract violation"
+          }
+        ],
+        "evidence_per_attempt": ".runs/fix_loop/type_check_attempt_{{N}}.log"
+      },
+      {
+        "failure_type": "INTEGRATION_TEST_FAIL",
+        "allowed_actions": [
+          "verify external service availability",
+          "update integration test mocks",
+          "adjust timeout values",
+          "mark as known flaky with tracking issue"
+        ],
+        "max_retry_budget": 2,
+        "abort_conditions": [
+          {
+            "regex": "/HTTP 403|HTTP 401/i",
+            "reason": "Authentication failure"
+          }
+        ],
+        "evidence_per_attempt": ".runs/fix_loop/integration_fail_attempt_{{N}}.log"
+      },
+      {
+        "failure_type": "CONTROL_VIOLATION",
+        "allowed_actions": [
+          "apply deterministic auto-fix if control allows",
+          "generate waiver request with evidence",
+          "escalate to human review"
+        ],
+        "max_retry_budget": 1,
+        "abort_conditions": [
+          {
+            "regex": "/CTRL001_MISSING_SATISFYING_GATE/i",
+            "reason": "Control violation requires gate implementation"
+          }
+        ],
+        "evidence_per_attempt": ".runs/fix_loop/control_violation_{{control_id}}_{{N}}.log"
+      }
+    ],
+    "convergence_detection": {
+      "enabled": true,
+      "description": "Detect when changes stabilize (stop thrashing)",
+      "window_size": 3,
+      "stability_threshold": 0.9,
+      "max_total_attempts_per_phase": 5
+    },
+    "circuit_breakers": {
+      "enabled": true,
+      "config_file": "config/circuit_breakers.yaml",
+      "defaults": {
+        "oscillation_window": 3,
+        "oscillation_threshold": 2,
+        "on_breaker_trip": "mark_phase_failed"
+      },
+      "behavior": {
+        "on_first_failure": "invoke_fix_pattern",
+        "on_subsequent_failure": "re-run-base-step",
+        "on_breaker_trip": "mark_phase_failed"
+      },
+      "applies_to_steps": [
+        "step-03-static-checks",
+        "step-04-runtime-tests",
+        "step-05-integration-tests"
+      ]
+    }
+  },
+  "file_id": "01260207233100000477"
+}

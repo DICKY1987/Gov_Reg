@@ -1,0 +1,169 @@
+{
+  "section_id": "sec_012_validation_gates",
+  "title": "Global Validation Gates",
+  "required": true,
+  "instructions_file": "sections/sec_012_validation_gates.inst.md",
+  "validation_gates": {
+    "description": "Global gates that apply across phases. Phase-specific validations are in phase contracts.",
+    "gates": [
+      {
+        "gate_id": "GATE-STRUCTURE-001",
+        "name": "Directory Structure Validation",
+        "description": "Required directories exist",
+        "command": {
+          "exe": "python",
+          "args": [
+            "scripts/validate_structure.py",
+            "--schema",
+            "schemas/dir_structure.json"
+          ],
+          "timeout_seconds": 600,
+          "expected_exit_codes": [
+            0
+          ]
+        },
+        "timeout_seconds": 10,
+        "success_criteria": {
+          "exit_code": 0,
+          "expect_stdout_regex": [
+            "/all_required_dirs_present: true/"
+          ],
+          "forbid_stdout_regex": [
+            "missing_dir"
+          ]
+        },
+        "evidence_path": ".runs/global_gates/structure.log",
+        "must_pass": true,
+        "run_after_phase": null
+      },
+      {
+        "gate_id": "GATE-COVERAGE-001",
+        "name": "Global Coverage Threshold",
+        "description": "Minimum coverage across all modules",
+        "command": {
+          "exe": "pytest",
+          "args": [
+            "--cov=src",
+            "--cov-report=term",
+            "|",
+            "grep",
+            "TOTAL"
+          ],
+          "timeout_seconds": 600,
+          "expected_exit_codes": [
+            0
+          ]
+        },
+        "timeout_seconds": 300,
+        "success_criteria": {
+          "exit_code": 0,
+          "expect_stdout_regex": [
+            "/TOTAL.*9[5-9]|100%/"
+          ]
+        },
+        "evidence_path": ".runs/global_gates/coverage.log",
+        "must_pass": true,
+        "run_after_phase": "PH-IMPLEMENT"
+      },
+      {
+        "gate_id": "GATE-SECURITY-001",
+        "name": "Security Scan",
+        "description": "No high/critical vulnerabilities",
+        "command": {
+          "exe": "bandit",
+          "args": [
+            "-r",
+            "src/",
+            "-f",
+            "json",
+            "-o",
+            ".runs/global_gates/security.json",
+            "-ll"
+          ],
+          "timeout_seconds": 600,
+          "expected_exit_codes": [
+            0
+          ]
+        },
+        "timeout_seconds": 120,
+        "success_criteria": {
+          "exit_code": 0,
+          "file_content_assertions": [
+            {
+              "path": ".runs/global_gates/security.json",
+              "json_path": "$.results",
+              "expect_value": "[]"
+            }
+          ]
+        },
+        "evidence_path": ".runs/global_gates/security.log",
+        "must_pass": true,
+        "run_after_phase": "PH-HARDENING"
+      },
+      {
+        "gate_id": "GATE-DETERMINISM-001",
+        "name": "Determinism Verification",
+        "description": "Outputs stable across 3 runs",
+        "command": {
+          "exe": "python",
+          "args": [
+            "scripts/test_determinism.py",
+            "--runs",
+            "3",
+            "--compare-outputs"
+          ],
+          "timeout_seconds": 600,
+          "expected_exit_codes": [
+            0
+          ]
+        },
+        "timeout_seconds": 600,
+        "success_criteria": {
+          "exit_code": 0,
+          "expect_stdout_regex": [
+            "/determinism_score: (0\\.[9][5-9]|1\\.0)/"
+          ]
+        },
+        "evidence_path": ".runs/global_gates/determinism.log",
+        "must_pass": true,
+        "run_after_phase": "PH-PACKAGE"
+      },
+      {
+        "gate_id": "G-CTRL-001",
+        "name": "Control Coverage Enforcement",
+        "description": "All required quality controls have complete mappings (gates + evidence + artifacts + tests)",
+        "command": {
+          "exe": "python",
+          "args": [
+            "validators/validate_control_coverage.py"
+          ],
+          "timeout_seconds": 600,
+          "expected_exit_codes": [
+            0
+          ]
+        },
+        "timeout_seconds": 60,
+        "success_criteria": {
+          "exit_code": 0,
+          "expect_stdout_regex": [
+            "/all_required_controls_satisfied: true/"
+          ]
+        },
+        "evidence_path": ".state/evidence/gates/G-CTRL-001/report.json",
+        "evidence_outputs": [
+          ".state/evidence/gates/G-CTRL-001/report.json"
+        ],
+        "controls_satisfied": [],
+        "must_pass": true,
+        "run_after_phase": null
+      }
+    ],
+    "gate_execution_policy": {
+      "run_all_after_each_phase": false,
+      "run_specific_after_phases": true,
+      "fail_fast": true,
+      "parallel_execution": false
+    }
+  },
+  "file_id": "01260207233100000482"
+}

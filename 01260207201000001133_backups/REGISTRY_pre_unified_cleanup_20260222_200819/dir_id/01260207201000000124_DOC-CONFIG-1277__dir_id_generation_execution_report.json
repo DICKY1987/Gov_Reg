@@ -1,0 +1,578 @@
+{
+  "timestamp": "2026-01-10T15:51:53.416773",
+  "generator_version": "1.0.0",
+  "summary": {
+    "total_processed": 522,
+    "successful": 522,
+    "errors": 0,
+    "collisions": 0
+  },
+  "generated": [
+    {
+      "path": "automation",
+      "dir_id": "DIR-automation-365d3777",
+      "semantic_keys": [
+        "automation:root"
+      ]
+    },
+    {
+      "path": "BUILD\\logs\\SUB_LOGS",
+      "dir_id": "DIR-build-logs-sub-logs-b838ce77",
+      "semantic_keys": []
+    },
+    {
+      "path": "core",
+      "dir_id": "DIR-core-ba213070",
+      "semantic_keys": []
+    },
+    {
+      "path": "data",
+      "dir_id": "DIR-data-089d3619",
+      "semantic_keys": [
+        "data:root"
+      ]
+    },
+    {
+      "path": "docs",
+      "dir_id": "DIR-docs-ca9a2342",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE",
+      "dir_id": "DIR-governance-c91efde4",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\conflicts",
+      "dir_id": "DIR-governance-conflicts-e7a22ea7",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\contracts",
+      "dir_id": "DIR-governance-contracts-74b360ae",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\decision_elimination",
+      "dir_id": "DIR-governance-decision-elimination-0371838e",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\decision_elimination\\SUB_DECISION_ELIMINATION",
+      "dir_id": "DIR-governance-decision-elimination-sub-decision-elimination-6c1a8f5f",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\gates",
+      "dir_id": "DIR-governance-gates-36ba372c",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\lifecycle",
+      "dir_id": "DIR-governance-lifecycle-c58ce92c",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\lifecycle\\governance",
+      "dir_id": "DIR-governance-lifecycle-governance-ffcd953b",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\lifecycle\\v2.5.3",
+      "dir_id": "DIR-governance-lifecycle-v253-a91c0d8e",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\policies",
+      "dir_id": "DIR-governance-policies-0de8ae95",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\precedents",
+      "dir_id": "DIR-governance-precedents-3e4b5907",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\registries",
+      "dir_id": "DIR-governance-registries-44765795",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\rules",
+      "dir_id": "DIR-governance-rules-912af35f",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot",
+      "dir_id": "DIR-governance-ssot-f049ae5d",
+      "semantic_keys": [
+        "GOVERNANCE_SSOT"
+      ]
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System",
+      "dir_id": "DIR-governance-ssot-ssot-system-9c9cae8d",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\automation",
+      "dir_id": "DIR-governance-ssot-ssot-system-automation-b2b58c52",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\diagrams",
+      "dir_id": "DIR-governance-ssot-ssot-system-diagrams-84d70aa7",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\diagrams\\exports",
+      "dir_id": "DIR-governance-ssot-ssot-system-diagrams-exports-ff77c6b0",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\diagrams\\exports\\ssot",
+      "dir_id": "DIR-governance-ssot-ssot-system-diagrams-exports-ssot-13e56a1c",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\diagrams\\exports\\ssot\\mmd",
+      "dir_id": "DIR-governance-ssot-ssot-system-diagrams-exports-ssot-mmd-6cd6da52",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\diagrams\\exports\\ssot\\png",
+      "dir_id": "DIR-governance-ssot-ssot-system-diagrams-exports-ssot-png-85afbdca",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\diagrams\\exports\\ssot\\svg",
+      "dir_id": "DIR-governance-ssot-ssot-system-diagrams-exports-ssot-svg-f0ef1b90",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\policies",
+      "dir_id": "DIR-governance-ssot-ssot-system-policies-2ad5d5ed",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\relationship_indexes",
+      "dir_id": "DIR-governance-ssot-ssot-system-relationship-indexes-c22c3d73",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_baselines",
+      "dir_id": "DIR-governance-ssot-ssot-system-ssot-sys-baselines-3b00c2c0",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_ci",
+      "dir_id": "DIR-governance-ssot-ssot-system-ssot-sys-ci-184149bb",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_data",
+      "dir_id": "DIR-governance-ssot-ssot-system-ssot-sys-data-380c3e4d",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_docs",
+      "dir_id": "DIR-governance-ssot-ssot-system-ssot-sys-docs-c11a7d78",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_docs\\e2e",
+      "dir_id": "DIR-governance-ssot-ssot-system-ssot-sys-docs-e2e-9413faa0",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_docs\\e2e\\diagrams",
+      "dir_id": "DIR-governance-ssot-ssot-system-ssot-sys-docs-e2e-diagrams-3d9111e0",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_docs\\e2e\\phases",
+      "dir_id": "DIR-governance-ssot-ssot-system-ssot-sys-docs-e2e-phases-dd871545",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_docs\\e2e\\workflows",
+      "dir_id": "DIR-governance-ssot-ssot-system-ssot-sys-docs-e2e-workflows-93562ddf",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_docs\\historical_snapshots",
+      "dir_id": "DIR-governance-ssot-ssot-system-ssot-sys-docs-historical-snapshots-16f995d8",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_enforcement",
+      "dir_id": "DIR-governance-ssot-ssot-system-ssot-sys-enforcement-b8b2ad55",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_patches",
+      "dir_id": "DIR-governance-ssot-ssot-system-ssot-sys-patches-38a73995",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_repo_scaffolding",
+      "dir_id": "DIR-governance-ssot-ssot-system-ssot-sys-repo-scaffolding-71a39580",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_schemas",
+      "dir_id": "DIR-governance-ssot-ssot-system-ssot-sys-schemas-df360f02",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tests",
+      "dir_id": "DIR-governance-ssot-ssot-system-ssot-sys-tests-8fcf2ff1",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tests\\automation",
+      "dir_id": "DIR-governance-ssot-ssot-system-ssot-sys-tests-automation-44988248",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tests\\integration",
+      "dir_id": "DIR-governance-ssot-ssot-system-ssot-sys-tests-integration-169f4982",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tests\\phase_0",
+      "dir_id": "DIR-governance-ssot-ssot-system-ssot-sys-tests-phase-0-3ee08b35",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tests\\unit",
+      "dir_id": "DIR-governance-ssot-ssot-system-ssot-sys-tests-unit-d57d0af0",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tools",
+      "dir_id": "DIR-governance-ssot-ssot-system-ssot-sys-tools-ac021f02",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\ssot\\SSOT_System\\templates",
+      "dir_id": "DIR-governance-ssot-ssot-system-templates-37f3ff70",
+      "semantic_keys": []
+    },
+    {
+      "path": "modules",
+      "dir_id": "DIR-modules-dfa9e6ec",
+      "semantic_keys": [
+        "modules:root"
+      ]
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS",
+      "dir_id": "DIR-reference-patterns-sub-patterns-296c715a",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\automation",
+      "dir_id": "DIR-reference-patterns-sub-patterns-automation-ef137242",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\automation\\analyzers",
+      "dir_id": "DIR-reference-patterns-sub-patterns-automation-analyzers-60bd81ad",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\automation\\config",
+      "dir_id": "DIR-reference-patterns-sub-patterns-automation-config-09dc6097",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\automation\\detectors",
+      "dir_id": "DIR-reference-patterns-sub-patterns-automation-detectors-b9423d46",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\automation\\discovery",
+      "dir_id": "DIR-reference-patterns-sub-patterns-automation-discovery-02daa1fb",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\automation\\generators",
+      "dir_id": "DIR-reference-patterns-sub-patterns-automation-generators-cdd57b89",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\automation\\helpers",
+      "dir_id": "DIR-reference-patterns-sub-patterns-automation-helpers-995f4079",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\automation\\hooks",
+      "dir_id": "DIR-reference-patterns-sub-patterns-automation-hooks-5f3af231",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\automation\\integration",
+      "dir_id": "DIR-reference-patterns-sub-patterns-automation-integration-1448d0da",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\automation\\monitoring",
+      "dir_id": "DIR-reference-patterns-sub-patterns-automation-monitoring-658ef97b",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\automation\\runtime",
+      "dir_id": "DIR-reference-patterns-sub-patterns-automation-runtime-33046508",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\automation\\tests",
+      "dir_id": "DIR-reference-patterns-sub-patterns-automation-tests-e8330b81",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\automation\\tests\\integration",
+      "dir_id": "DIR-reference-patterns-sub-patterns-automation-tests-integration-a6762e8d",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\automation\\validators",
+      "dir_id": "DIR-reference-patterns-sub-patterns-automation-validators-4161708d",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\behavioral",
+      "dir_id": "DIR-reference-patterns-sub-patterns-behavioral-01a873e0",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\cli",
+      "dir_id": "DIR-reference-patterns-sub-patterns-cli-65716d60",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\decisions",
+      "dir_id": "DIR-reference-patterns-sub-patterns-decisions-0a9164a8",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\decisions\\examples",
+      "dir_id": "DIR-reference-patterns-sub-patterns-decisions-examples-8ee234f6",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\docs",
+      "dir_id": "DIR-reference-patterns-sub-patterns-docs-126fdf09",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-4685f8ba",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\atomic_create",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-atomic-create-1faecf0c",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\atomic_create_001",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-atomic-create-001-db1a3aba",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\atomic_create_template",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-atomic-create-template-b18fe9bc",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\atomic_create_template_001",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-atomic-create-template-001-6d36ae3f",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\batch_create",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-batch-create-fd5b429b",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\batch_create_001",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-batch-create-001-4675478d",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\batch_file_creation",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-batch-file-creation-cfff14cc",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\batch_file_gen_001",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-batch-file-gen-001-4f70dd69",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\code_cleanup_archival",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-code-cleanup-archival-7dbbad72",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\config_setup_001",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-config-setup-001-c484098c",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\create_test_commit",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-create-test-commit-f6c4c0c2",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\database_setup_001",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-database-setup-001-c80a089d",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\decision_elimination_bootstrap",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-decision-elimination-bootstrap-b30bb570",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\e2e_validation_001",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-e2e-validation-001-b13131b3",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\glossary",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-glossary-e5e360f2",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\grep_view_edit",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-grep-view-edit-884d4eb8",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\integration_hook_001",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-integration-hook-001-9cdf67bb",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\module_creation",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-module-creation-bc852e0e",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\module_creation_001",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-module-creation-001-a906227e",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\module_creation_convergence",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-module-creation-convergence-b8166a01",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\multi_workstream_doc_suite_gen_001",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-multi-workstream-doc-suite-gen-001-da50c442",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\phase_discovery_001",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-phase-discovery-001-48fcc06c",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\preflight_verify",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-preflight-verify-9b130b4d",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\pytest_green_verify",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-pytest-green-verify-489b9808",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\refactor_patch",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-refactor-patch-f9cb0da1",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\refactor_patch_001",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-refactor-patch-001-39bb31c7",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\view_edit_verify",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-view-edit-verify-b3d66410",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\examples\\worktree_lifecycle",
+      "dir_id": "DIR-reference-patterns-sub-patterns-examples-worktree-lifecycle-c8a84da1",
+      "semantic_keys": []
+    },
+    {
+      "path": "REFERENCE\\patterns\\SUB_PATTERNS\\execution",
+      "dir_id": "DIR-reference-patterns-sub-patterns-execution-a47fd9c8",
+      "semantic_keys": []
+    }
+  ],
+  "errors": [],
+  "sample_dir_ids": [
+    {
+      "path": "automation",
+      "dir_id": "DIR-automation-365d3777",
+      "semantic_keys": [
+        "automation:root"
+      ]
+    },
+    {
+      "path": "BUILD\\logs\\SUB_LOGS",
+      "dir_id": "DIR-build-logs-sub-logs-b838ce77",
+      "semantic_keys": []
+    },
+    {
+      "path": "core",
+      "dir_id": "DIR-core-ba213070",
+      "semantic_keys": []
+    },
+    {
+      "path": "data",
+      "dir_id": "DIR-data-089d3619",
+      "semantic_keys": [
+        "data:root"
+      ]
+    },
+    {
+      "path": "docs",
+      "dir_id": "DIR-docs-ca9a2342",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE",
+      "dir_id": "DIR-governance-c91efde4",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\conflicts",
+      "dir_id": "DIR-governance-conflicts-e7a22ea7",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\contracts",
+      "dir_id": "DIR-governance-contracts-74b360ae",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\decision_elimination",
+      "dir_id": "DIR-governance-decision-elimination-0371838e",
+      "semantic_keys": []
+    },
+    {
+      "path": "GOVERNANCE\\decision_elimination\\SUB_DECISION_ELIMINATION",
+      "dir_id": "DIR-governance-decision-elimination-sub-decision-elimination-6c1a8f5f",
+      "semantic_keys": []
+    }
+  ],
+  "doc_id": "DOC-CONFIG-1277"
+}

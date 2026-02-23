@@ -1,0 +1,58 @@
+{
+  "rewrite_plan_id": "11ad914d181dd5af",
+  "target_file_id": null,
+  "target_relpath": "REWRITE_PATCHSET\\plans\\a82ce4b2a91c9c2e.json",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "9cd58048c02ee29bc6fb5eabf9d75379181b71fb98ce4ee4ac8a3736c2fe8656",
+  "operations": [
+    {
+      "ref_id": "b18f0259a35f7332d9e936523b7fdfdd1d531ed3d75ad5406e0774ef759a47d1",
+      "old_value": "REGISTRY/01999000042260124012_governance_registry_schema.v3.json",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/01999000042260124012_governance_registry_schema.v3.json",
+      "location": "line:10"
+    },
+    {
+      "ref_id": "14eb09bc1aca9972b86c03f42995eff319fa4b419f7bac908ec3e6a7552f049b",
+      "old_value": "REGISTRY/01999000042260124012_governance_registry_schema.v3.json",
+      "new_value": "01260207201000001250_REGISTRY/REGISTRY/01999000042260124012_governance_registry_schema.v3.json",
+      "location": "line:11"
+    },
+    {
+      "ref_id": "9ee03cd6da2cdf70fcdd2f4863f71ad41014c5ad2f91a59b20242843e3677c49",
+      "old_value": "validators/migrate_remove_doc_id_from_data.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/validators/migrate_remove_doc_id_from_data.py",
+      "location": "line:16"
+    },
+    {
+      "ref_id": "2ebf537f222f8a25bc6b1ecaa3edc2db9dc4d04ae7c064df4135f499a63dddb6",
+      "old_value": "validators/migrate_remove_doc_id_from_data.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/validators/migrate_remove_doc_id_from_data.py",
+      "location": "line:17"
+    },
+    {
+      "ref_id": "1e9e77ba61ca3e6d435f997e5e82b57ac26403c7154b0f80cf74dd3da2a4fca9",
+      "old_value": "validators/migrate_remove_doc_id_from_data.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/validators/migrate_remove_doc_id_from_data.py",
+      "location": "line:22"
+    },
+    {
+      "ref_id": "a43bc63ee2134b68dd96bfd4b46c7e25318291b122e0fd873bbc50a7f8989fce",
+      "old_value": "validators/migrate_remove_doc_id_from_data.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/validators/migrate_remove_doc_id_from_data.py",
+      "location": "line:23"
+    },
+    {
+      "ref_id": "63f10b9b0ef43707bc1c40f3563efc5b45fde8d66a5fea1401c2581f1dd2788f",
+      "old_value": "validators/migrate_remove_doc_id_from_data.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/validators/migrate_remove_doc_id_from_data.py",
+      "location": "line:28"
+    },
+    {
+      "ref_id": "78f099a0f2725cc1028662e142605eb253f0d374d5a5974511d657c9dd23039e",
+      "old_value": "validators/migrate_remove_doc_id_from_data.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/validators/migrate_remove_doc_id_from_data.py",
+      "location": "line:29"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\11ad914d181dd5af.diff"
+}

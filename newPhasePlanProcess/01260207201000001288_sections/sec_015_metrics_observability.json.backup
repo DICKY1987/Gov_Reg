@@ -1,0 +1,127 @@
+{
+  "section_id": "sec_015_metrics_observability",
+  "title": "Metrics + Observability",
+  "required": true,
+  "instructions_file": "sections/sec_015_metrics_observability.inst.md",
+  "metrics_observability": {
+    "metrics_tracking": {
+      "enabled": true,
+      "description": "Quantified progress measurement with targets",
+      "storage": {
+        "format": "jsonl",
+        "path": ".state/metrics.jsonl",
+        "rotation_policy": "size_based",
+        "max_size_mb": 100,
+        "keep_files": 10
+      },
+      "tracked_metrics": [
+        {
+          "metric_id": "MET-001",
+          "metric_name": "test_coverage_percentage",
+          "target_value": 95,
+          "target_operator": ">=",
+          "current_value": null,
+          "unit": "percent",
+          "collection_command": "pytest --cov=src --cov-report=json:.runs/coverage.json && jq '.totals.percent_covered' .runs/coverage.json"
+        },
+        {
+          "metric_id": "MET-002",
+          "metric_name": "lint_errors",
+          "target_value": 0,
+          "target_operator": "==",
+          "current_value": null,
+          "unit": "count",
+          "collection_command": "ruff check src/ --output-format json | jq 'length'"
+        },
+        {
+          "metric_id": "MET-003",
+          "metric_name": "type_coverage_percentage",
+          "target_value": 90,
+          "target_operator": ">=",
+          "current_value": null,
+          "unit": "percent",
+          "collection_command": "mypy src/ --txt-report .runs/mypy-report && grep 'success' .runs/mypy-report/index.txt | awk '{print $2}'"
+        },
+        {
+          "metric_id": "MET-004",
+          "metric_name": "build_time_seconds",
+          "target_value": 60,
+          "target_operator": "<=",
+          "current_value": null,
+          "unit": "seconds",
+          "collection_command": "time python -m build | grep 'real' | awk '{print $2}'"
+        },
+        {
+          "metric_id": "MET-005",
+          "metric_name": "test_execution_time_seconds",
+          "target_value": 300,
+          "target_operator": "<=",
+          "current_value": null,
+          "unit": "seconds",
+          "collection_command": "pytest --durations=0 -q | grep 'seconds' | awk '{print $1}'"
+        },
+        {
+          "metric_id": "MET-006",
+          "metric_name": "security_issues_high_critical",
+          "target_value": 0,
+          "target_operator": "==",
+          "current_value": null,
+          "unit": "count",
+          "collection_command": "bandit -r src/ -f json | jq '[.results[] | select(.issue_severity | IN(\"HIGH\", \"CRITICAL\"))] | length'"
+        },
+        {
+          "metric_id": "MET-007",
+          "metric_name": "documentation_coverage_percentage",
+          "target_value": 80,
+          "target_operator": ">=",
+          "current_value": null,
+          "unit": "percent",
+          "collection_command": "python scripts/check_doc_coverage.py src/"
+        },
+        {
+          "metric_id": "MET-008",
+          "metric_name": "determinism_score",
+          "target_value": 0.95,
+          "target_operator": ">=",
+          "current_value": null,
+          "unit": "ratio",
+          "collection_command": "python scripts/test_determinism.py --runs 3"
+        }
+      ],
+      "per_phase_summaries": {
+        "required": true,
+        "summary_command": "python scripts/generate_phase_metrics_summary.py {{PHASE_ID}}",
+        "output_path": ".runs/{{PHASE_ID}}/metrics_summary.json"
+      }
+    },
+    "observability": {
+      "event_logging": {
+        "enabled": true,
+        "format": "jsonl",
+        "path": ".state/events.jsonl",
+        "event_tags": [
+          "phase:${phase_id}",
+          "workstream:${workstream_id}",
+          "phase_type:${phase_type}",
+          "environment:${target_os}"
+        ]
+      },
+      "record_settings": {
+        "record_durations": true,
+        "record_attempt_counts": true,
+        "record_fix_loop_stats": true,
+        "record_validation_results": true
+      },
+      "telemetry": {
+        "enabled": false,
+        "endpoint": null,
+        "api_key_env_var": null
+      }
+    },
+    "validation_summary_command": {
+      "command": "python scripts/validate_metrics.py .state/metrics.jsonl",
+      "expect_exit_code": 0,
+      "expect_stdout_regex": ["/all_targets_met: true/"]
+    }
+  }
+}

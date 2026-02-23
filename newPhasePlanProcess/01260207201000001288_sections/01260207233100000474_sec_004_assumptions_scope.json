@@ -1,0 +1,60 @@
+{
+  "section_id": "sec_004_assumptions_scope",
+  "title": "Assumptions & Scope Contract",
+  "required": true,
+  "instructions_file": "sections/sec_004_assumptions_scope.inst.md",
+  "assumptions_scope": {
+    "assumptions_ledger": {
+      "assumptions": [
+        {
+          "assumption_id": "ASM-001",
+          "statement": "{{ASSUMPTION_STATEMENT}}",
+          "impact_score": "{{1-10}}",
+          "confidence": "{{HIGH|MEDIUM|LOW}}",
+          "validation_method": "{{HOW_TO_VERIFY}}",
+          "validation_command": "{{EXECUTABLE_COMMAND}}",
+          "expect_exit_code": 0,
+          "expect_stdout_regex": [
+            "/{{PATTERN}}/"
+          ],
+          "not_automatable": false
+        }
+      ],
+      "storage": {
+        "format": "jsonl",
+        "path": ".state/assumptions.jsonl",
+        "rotation_policy": "append_only"
+      },
+      "validation_batch_command": "python scripts/validate_assumptions.py .state/assumptions.jsonl --impact-min=7"
+    },
+    "scope_contract": {
+      "in_scope": [
+        "{{IN_SCOPE_ITEM_1}}",
+        "{{IN_SCOPE_ITEM_2}}"
+      ],
+      "out_of_scope": [
+        "{{EXPLICIT_EXCLUSION_1}}",
+        "{{EXPLICIT_EXCLUSION_2}}"
+      ],
+      "non_goals": [
+        "{{NON_GOAL_1}}",
+        "{{NON_GOAL_2}}"
+      ],
+      "constraints": {
+        "time_budget": "{{OPTIONAL}}",
+        "security_compliance": "{{OPTIONAL}}",
+        "performance_targets": "{{OPTIONAL}}",
+        "regulatory": "{{OPTIONAL}}"
+      }
+    },
+    "global_definition_of_done": [
+      "Outputs are schema-valid (where schemas exist)",
+      "Deterministic outputs stable across 3 runs",
+      "Unit + integration tests pass (100%)",
+      "All 'must_pass' validations pass in every phase contract",
+      "Audit/evidence logs exist at declared locations",
+      "{{ADDITIONAL_DOD_CRITERION}}"
+    ]
+  },
+  "file_id": "01260207233100000474"
+}

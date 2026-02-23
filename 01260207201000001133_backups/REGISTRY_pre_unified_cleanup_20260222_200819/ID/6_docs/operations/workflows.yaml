@@ -1,0 +1,410 @@
+workflows:
+  generate_directory_ids:
+    id: "WF001"
+    name: "Generate Directory IDs"
+    purpose: "Create .dir_id files for all governed directories"
+    priority: "HIGH"
+    
+    triggers:
+      - "New governed directory created"
+      - "Manual execution requested"
+      - "Initial system setup"
+    
+    preconditions:
+      - check: "config_file_exists"
+        file: ".idpkg/config.json"
+        error: "Run: initialize IDPKG configuration first"
+      
+      - check: "counter_store_accessible"
+        file: "%APPDATA%/GovReg/IdAllocator/COUNTER_STORE.json"
+        error: "Counter store not accessible or corrupted"
+      
+      - check: "python_version"
+        minimum: "3.8"
+        error: "Python 3.8+ required"
+    
+    steps:
+      - step: 1
+        name: "Scan directories"
+        tool: "2_cli_tools/dir_id/P_01999000042260125100_generate_dir_ids_gov_reg.py"
+        command: "python 2_cli_tools/dir_id/P_01999000042260125100_generate_dir_ids_gov_reg.py --config .idpkg/config.json"
+        output: "List of directories needing .dir_id files"
+        expected_time: "5-30 seconds depending on tree size"
+      
+      - step: 2
+        name: "Classify governance zones"
+        module: "1_runtime/validators/P_01999000042260125067_zone_classifier.py"
+        function: "classify_directory(path)"
+        for_each: "directory in scanned_directories"
+        zones:
+          - "governed: Requires .dir_id"
+          - "staging: No .dir_id"
+          - "excluded: No .dir_id"
+      
+      - step: 3
+        name: "Allocate directory IDs"
+        module: "1_runtime/allocators/P_01999000042260124031_unified_id_allocator.py"
+        function: "allocate_id(zone='governed')"
+        condition: "zone == 'governed'"
+        output: "20-digit dir_id per governed directory"
+      
+      - step: 4
+        name: "Prepare metadata"
+        action: "Collect directory metadata"
+        fields:
+          - "allocated_at_utc: ISO 8601 timestamp"
+          - "allocator_version: '1.0.0'"
+          - "project_root_id: From config"
+          - "relative_path: Path from project root"
+          - "depth: Directory depth"
+          - "zone: 'governed'"
+      
+      - step: 5
+        name: "Write .dir_id files"
+        module: "1_runtime/handlers/P_01999000042260125068_dir_id_handler.py"
+        function: "write_dir_id(path, dir_id, metadata)"
+        for_each: "directory with allocated ID"
+        output: ".dir_id JSON file in each directory"
+      
+      - step: 6
+        name: "Validate generated files"
+        tool: "2_cli_tools/dir_id/P_01999000042260125101_validate_dir_ids.py"
+        command: "python 2_cli_tools/dir_id/P_01999000042260125101_validate_dir_ids.py"
+        validation:
+          - "Schema compliance"
+          - "No duplicate dir_ids"
+          - "All required fields present"
+    
+    success_criteria:
+      - "All governed directories have .dir_id files"
+      - "All .dir_id files pass schema validation"
+      - "No duplicate dir_id values"
+      - "relative_path matches actual filesystem location"
+    
+    failure_modes:
+      - error: "AllocationError"
+        cause: "Counter store locked or corrupted"
+        resolution: "operations/troubleshooting.yaml#counter_store_locked"
+      
+      - error: "ValidationError"
+        cause: "Malformed .dir_id file"
+        resolution: "operations/troubleshooting.yaml#malformed_dir_id"
+      
+      - error: "PermissionError"
+        cause: "Cannot write to directory"
+        resolution: "Check permissions, run with elevated privileges"
+    
+    rollback:
+      - "List all newly created .dir_id files"
+      - "Delete .dir_id files created in this run"
+      - "Restore counter store from backup if incremented"
+    
+    monitoring:
+      - "Check logs: .state/idpkg/logs/generate_dir_ids.log"
+      - "Review summary report at end of execution"
+      - "Verify count matches expected"
+
+  add_file_ids_recursive:
+    id: "WF002"
+    name: "Add File IDs Recursively"
+    purpose: "Assign 20-digit IDs to all files in directory tree"
+    priority: "HIGH"
+    
+    triggers:
+      - "New files added to repository"
+      - "Initial setup"
+      - "Migration from non-ID system"
+    
+    steps:
+      - step: 1
+        name: "Scan for files without IDs"
+        tool: "2_cli_tools/file_id/P_01260207201000000198_add_ids_recursive.py"
+        command: "python 2_cli_tools/file_id/P_01260207201000000198_add_ids_recursive.py --root ."
+        output: "List of files needing IDs"
+      
+      - step: 2
+        name: "Allocate batch of IDs"
+        module: "1_runtime/allocators/P_01999000042260124031_unified_id_allocator.py"
+        function: "allocate_batch(count=N)"
+        optimization: "Batch allocation reduces lock overhead"
+      
+      - step: 3
+        name: "Rename files with ID prefix"
+        action: "Rename files"
+        patterns:
+          python_files: "{basename}.py → P_{file_id}_{basename}.py"
+          other_files: "{basename}.{ext} → {file_id}_{basename}.{ext}"
+      
+      - step: 4
+        name: "Update references"
+        action: "Update import statements if needed"
+        scope: "Python files only"
+      
+      - step: 5
+        name: "Validate renamed files"
+        module: "1_runtime/validators/P_01999000042260124521_id_format_scanner.py"
+        function: "validate_filename(filename)"
+    
+    success_criteria:
+      - "All files have valid ID prefixes"
+      - "No duplicate file_ids"
+      - "Import statements updated"
+    
+    safety:
+      - "Dry-run mode available: --dry-run flag"
+      - "Backup created before renaming"
+      - "Rollback on error"
+
+  repair_corrupted_dir_ids:
+    id: "WF003"
+    name: "Auto-Repair Corrupted .dir_id Files"
+    purpose: "Detect and repair malformed .dir_id files"
+    priority: "MEDIUM"
+    
+    triggers:
+      - "ValidationError during read"
+      - "Scheduled maintenance"
+      - "Manual execution"
+    
+    steps:
+      - step: 1
+        name: "Scan for corrupted files"
+        module: "1_runtime/watchers/P_01999000042260125104_dir_id_auto_repair.py"
+        function: "scan_and_repair(root_path, quarantine=True)"
+      
+      - step: 2
+        name: "Quarantine corrupted files"
+        action: "Move to .state/quarantine/dir_id/"
+        naming: "{original_name}.{timestamp}.backup"
+      
+      - step: 3
+        name: "Attempt repair"
+        repairs:
+          - "Fix JSON syntax errors"
+          - "Correct relative_path"
+          - "Fix project_root_id"
+          - "Validate against schema"
+      
+      - step: 4
+        name: "Write repaired file"
+        action: "Replace original .dir_id"
+        validation: "Schema validation after write"
+      
+      - step: 5
+        name: "Generate evidence"
+        output: "01260207201000001148_evidence/repairs/"
+        format: "JSON with before/after state"
+    
+    success_criteria:
+      - "Corrupted files backed up to quarantine"
+      - "Repaired files pass schema validation"
+      - "Evidence generated for audit"
+    
+    failure_handling:
+      - "If unrepairable: Keep in quarantine"
+      - "Log failure reason"
+      - "Notify for manual review"
+
+  validate_system_health:
+    id: "WF004"
+    name: "Validate System Health"
+    purpose: "Comprehensive validation of ID system integrity"
+    priority: "MEDIUM"
+    
+    triggers:
+      - "Nightly scheduled run"
+      - "Pre-deployment check"
+      - "Manual execution"
+    
+    steps:
+      - step: 1
+        name: "Validate all .dir_id files"
+        tool: "2_cli_tools/dir_id/P_01999000042260125101_validate_dir_ids.py"
+        checks:
+          - "Schema compliance"
+          - "No duplicate dir_ids"
+          - "relative_path accuracy"
+      
+      - step: 2
+        name: "Scan file ID formats"
+        module: "1_runtime/validators/P_01999000042260124521_id_format_scanner.py"
+        function: "scan_directory(root, recursive=True)"
+      
+      - step: 3
+        name: "Check counter store"
+        validations:
+          - "File exists and readable"
+          - "No stale locks"
+          - "Counter value reasonable"
+      
+      - step: 4
+        name: "Scan for orphans"
+        module: "1_runtime/watchers/P_01999000042260125111_orphan_purger.py"
+        function: "scan_orphans(registry_path)"
+      
+      - step: 5
+        name: "Run full health check"
+        tool: "2_cli_tools/maintenance/P_01999000042260125113_healthcheck.py"
+        command: "python 2_cli_tools/maintenance/P_01999000042260125113_healthcheck.py --full"
+    
+    output:
+      report_file: "health_check_{timestamp}.json"
+      location: "01260207201000001148_evidence/health_checks/"
+      format: "JSON with detailed metrics"
+    
+    metrics:
+      - "Total directories scanned"
+      - "Valid .dir_id count"
+      - "Invalid .dir_id count"
+      - "Orphaned entries"
+      - "Compliance rate"
+
+  install_automation:
+    id: "WF005"
+    name: "Install Automation Components"
+    purpose: "Set up git hooks, watchers, and scheduled tasks"
+    priority: "LOW"
+    
+    steps:
+      - step: 1
+        name: "Run installer"
+        tool: "2_cli_tools/maintenance/install_automation.py"
+        command: "python 2_cli_tools/maintenance/install_automation.py"
+      
+      - step: 2
+        name: "Install git hooks"
+        actions:
+          - "Copy pre-commit hook to .git/hooks/"
+          - "Copy pre-push hook to .git/hooks/"
+          - "Set executable permissions"
+      
+      - step: 3
+        name: "Configure watcher"
+        optional: true
+        service: "dir_id_watcher"
+        command: "python 1_runtime/watchers/P_01999000042260125105_dir_id_watcher.py --daemon"
+      
+      - step: 4
+        name: "Schedule health checks"
+        optional: true
+        schedule: "Nightly at 2 AM"
+        task: "healthcheck.py"
+    
+    verification:
+      - "Check .git/hooks/pre-commit exists"
+      - "Check .git/hooks/pre-push exists"
+      - "Test commit with ID violation (should block)"
+
+  cleanup_orphans:
+    id: "WF006"
+    name: "Cleanup Orphaned Registry Entries"
+    purpose: "Remove dead entries from registry"
+    priority: "LOW"
+    
+    steps:
+      - step: 1
+        name: "Scan for orphans"
+        module: "1_runtime/watchers/P_01999000042260125111_orphan_purger.py"
+        function: "scan_orphans(registry_path)"
+      
+      - step: 2
+        name: "Review orphan list"
+        action: "Manual review recommended"
+        output: "List of orphaned dir_ids and file_ids"
+      
+      - step: 3
+        name: "Backup registry"
+        action: "Create timestamped backup"
+        location: "01260207201000001133_backups/"
+      
+      - step: 4
+        name: "Purge orphans"
+        function: "purge_orphans(orphan_list, dry_run=False)"
+        safety: "dry_run=True by default"
+      
+      - step: 5
+        name: "Verify registry integrity"
+        action: "Validate registry after purge"
+    
+    safety_measures:
+      - "Default dry_run=True"
+      - "Backup before purge"
+      - "Manual confirmation required"
+
+common_patterns:
+  error_recovery:
+    pattern: "Try operation → Catch error → Log → Rollback → Report"
+    applies_to: "All workflows"
+  
+  validation_chain:
+    pattern: "Generate → Validate → Report violations → Fix → Re-validate"
+    applies_to: ["WF001", "WF002", "WF004"]
+  
+  batch_processing:
+    pattern: "Scan → Batch allocate → Process batch → Validate batch"
+    optimization: "Reduces lock contention"
+    applies_to: ["WF001", "WF002"]
+
+execution_modes:
+  interactive:
+    description: "User confirms each step"
+    use_when: "First-time setup, sensitive operations"
+  
+  automatic:
+    description: "No user intervention"
+    use_when: "Scheduled tasks, CI/CD pipelines"
+  
+  dry_run:
+    description: "Simulate without changes"
+    use_when: "Testing, verification"
+
+monitoring:
+  logs:
+    location: ".state/idpkg/logs/"
+    files:
+      - "generate_dir_ids.log"
+      - "add_file_ids.log"
+      - "auto_repair.log"
+      - "healthcheck.log"
+  
+  evidence:
+    location: "01260207201000001148_evidence/"
+    subdirs:
+      - "repairs/"
+      - "health_checks/"
+      - "allocations/"
+  
+  metrics:
+    - "Execution time"
+    - "Success/failure rate"
+    - "Items processed"
+    - "Errors encountered"
+
+integration_points:
+  with_cli_tools:
+    - "Workflows execute CLI tools as primary interface"
+    - "CLI tools call runtime modules"
+  
+  with_runtime:
+    - "Runtime modules provide core functionality"
+    - "Workflows orchestrate runtime calls"
+  
+  with_git:
+    - "Git hooks enforce pre-commit validation"
+    - "Workflows triggered by git operations"
+
+best_practices:
+  before_workflow:
+    - "Backup critical data"
+    - "Verify preconditions"
+    - "Run dry-run if available"
+  
+  during_workflow:
+    - "Monitor logs in real-time"
+    - "Check progress reports"
+    - "Be ready to interrupt if errors"
+  
+  after_workflow:
+    - "Validate results"
+    - "Review evidence files"
+    - "Document any manual interventions"

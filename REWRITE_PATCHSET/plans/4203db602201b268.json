@@ -1,0 +1,46 @@
+{
+  "rewrite_plan_id": "4203db602201b268",
+  "target_file_id": null,
+  "target_relpath": "REWRITE_PATCHSET\\plans\\7ccc4b3b7d59b115.json",
+  "strategy": "TEXT_REPLACE_SET",
+  "pre_hash_sha256": "45608f398de1e0d7c5ea7bb527f547ea89003f870eadf6392676f2e44ff7b3b8",
+  "operations": [
+    {
+      "ref_id": "8e02e787d2775608d7989e7546ef0881e8484a2a11c4491f0fb2a96bbb6f6f77",
+      "old_value": "LP_LONG_PLAN/newPhasePlanProcess/schemas/01260207233100000675_NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json",
+      "new_value": "01260207201000001221_Multi CLI/LP_LONG_PLAN/newPhasePlanProcess/schemas/01260207233100000675_NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json",
+      "location": "line:10"
+    },
+    {
+      "ref_id": "bded829dcb864c87ee21804cae578d208d4731773a52db0318a437794493b9c1",
+      "old_value": "LP_LONG_PLAN/newPhasePlanProcess/schemas/01260207233100000675_NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json",
+      "new_value": "01260207201000001221_Multi CLI/LP_LONG_PLAN/newPhasePlanProcess/schemas/01260207233100000675_NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json",
+      "location": "line:11"
+    },
+    {
+      "ref_id": "744d9e540b34cc6b75815f6a0a3b2c9aa48cfff3ab3d5718b55d9a8ed2daf41b",
+      "old_value": "govreg_core/P_01260207233100000011_conflict_validator.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01260207233100000011_conflict_validator.py",
+      "location": "line:16"
+    },
+    {
+      "ref_id": "f21c6c7cb818fb888d47938491d3f2369f157305bec6e6c6faa2f4220dd91636",
+      "old_value": "govreg_core/P_01260207233100000011_conflict_validator.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01260207233100000011_conflict_validator.py",
+      "location": "line:17"
+    },
+    {
+      "ref_id": "3c298e327433fbbf1a2da6cd204cb8674b9302559918400fa0c103935d4afa47",
+      "old_value": "govreg_core/P_01260207233100000016_pfms_ingestor.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01260207233100000016_pfms_ingestor.py",
+      "location": "line:22"
+    },
+    {
+      "ref_id": "f5f86f987b29cb97e62f7f2351d69a32e3d08a87360e1c7f61f5e48498391eaf",
+      "old_value": "govreg_core/P_01260207233100000016_pfms_ingestor.py",
+      "new_value": "01260207201000001162_GEU/01260207201000001165_ID/govreg_core/P_01260207233100000016_pfms_ingestor.py",
+      "location": "line:23"
+    }
+  ],
+  "dry_run_output_path": "C:\\Users\\richg\\Gov_Reg\\EVIDENCE_BUNDLE\\diffs\\rewrite_diffs\\4203db602201b268.diff"
+}

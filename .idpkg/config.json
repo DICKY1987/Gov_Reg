@@ -1,0 +1,36 @@
+{
+  "project_root_id": "01999000042260124068",
+  "project_root_path": "C:\\Users\\richg\\Gov_Reg",
+  "governance": {
+    "staging_depth": 0,
+    "governed_min_depth": 1
+  },
+  "exclusions": {
+    "patterns": [
+      ".git/**",
+      ".venv/**",
+      "**/__pycache__/**",
+      "**/node_modules/**",
+      "**/.pytest_cache/**",
+      "**/.mypy_cache/**",
+      "**/.ruff_cache/**",
+      "**/build/**",
+      "**/dist/**",
+      ".state/**",
+      ".state_temp/**",
+      ".idpkg/**"
+    ]
+  },
+  "naming": {
+    "separator": "__",
+    "python_prefix": "P_"
+  },
+  "registry": {
+    "registry_path": "01260207201000001250_REGISTRY\\01999000042260124503_REGISTRY_file.json",
+    "patch_output_dir": ".state\\idpkg\\patches"
+  },
+  "allocator": {
+    "allocator_store_path": "%APPDATA%\\GovReg\\IdAllocator\\COUNTER_STORE.json",
+    "lock_timeout_ms": 5000
+  }
+}

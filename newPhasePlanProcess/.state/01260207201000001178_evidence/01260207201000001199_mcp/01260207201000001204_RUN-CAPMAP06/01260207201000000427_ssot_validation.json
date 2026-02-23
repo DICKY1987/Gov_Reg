@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-02-11T22:19:55.373786Z",
+  "gate_id": "GATE-017",
+  "gate_name": "Single Source of Truth Validation",
+  "passed": true,
+  "defect_count": 1,
+  "defects": [
+    {
+      "severity": "info",
+      "category": "other",
+      "location": "/plan",
+      "problem": "SSOT summary: 4 path facts (0 duplicated), 0 version facts (0 duplicated)",
+      "why_it_matters": "Summary statistics for SSOT analysis"
+    }
+  ]
+}

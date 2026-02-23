@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-02-11T21:52:50.518252Z",
+  "gate_id": "GATE-003",
+  "gate_name": "Step Contracts Validation",
+  "passed": false,
+  "defect_count": 1,
+  "defects": [
+    {
+      "severity": "critical",
+      "category": "missing_field",
+      "location": "/plan/phases",
+      "problem": "No phases defined in plan",
+      "why_it_matters": "Plan must have at least one phase with steps"
+    }
+  ]
+}

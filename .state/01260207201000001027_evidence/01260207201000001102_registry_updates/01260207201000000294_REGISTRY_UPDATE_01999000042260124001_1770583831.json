@@ -1,0 +1,28 @@
+{
+  "event_type": "REGISTRY_UPDATE",
+  "file_id": "01999000042260124001",
+  "history_entry": {
+    "timestamp": "2026-02-08T14:50:31.977221",
+    "changed_fields": {
+      "content_hash": {
+        "old": "old_hash",
+        "new": "f62325f509a9489c4039c79c734d99d1b1d91fb9dfaff61f43f27262c70e21e1"
+      },
+      "observed_at": {
+        "old": null,
+        "new": "2026-02-08T14:50:31.977221"
+      },
+      "source_plan_id": {
+        "old": null,
+        "new": "PLAN-002"
+      },
+      "source_mutation_set_id": {
+        "old": null,
+        "new": "01999000042260124001"
+      }
+    },
+    "reason": "PFMS modification from plan PLAN-002",
+    "source": "pfms_ingestor"
+  },
+  "recorded_at": "2026-02-08T14:50:31.977221"
+}

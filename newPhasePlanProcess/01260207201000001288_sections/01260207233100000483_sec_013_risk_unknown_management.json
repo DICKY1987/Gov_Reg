@@ -1,0 +1,68 @@
+{
+  "section_id": "sec_013_risk_unknown_management",
+  "title": "Risk + Unknown Management",
+  "required": true,
+  "instructions_file": "sections/sec_013_risk_unknown_management.inst.md",
+  "risk_unknown_management": {
+    "risk_register": {
+      "description": "Centralized risk tracking across all phases",
+      "risks": [
+        {
+          "risk_id": "RISK-001",
+          "type": "risk",
+          "category": "{{technical|process|resource|external}}",
+          "description": "{{RISK_DESCRIPTION}}",
+          "impact": "{{HIGH|MEDIUM|LOW}}",
+          "probability": "{{HIGH|MEDIUM|LOW}}",
+          "risk_score": "{{1-10}}",
+          "mitigation": "{{MITIGATION_STRATEGY}}",
+          "fallback": "{{FALLBACK_PLAN}}",
+          "detection_signal": "{{WHAT_WOULD_YOU_OBSERVE}}",
+          "owner": "{{DRI}}",
+          "status": "{{open|mitigated|closed|accepted}}"
+        }
+      ]
+    },
+    "unknown_register": {
+      "description": "Explicit tracking of uncertainty",
+      "unknowns": [
+        {
+          "unknown_id": "UNK-001",
+          "type": "unknown",
+          "category": "{{technical|requirements|data|integration}}",
+          "description": "{{WHAT_IS_UNKNOWN}}",
+          "impact": "{{HIGH|MEDIUM|LOW}}",
+          "investigation_plan": "{{HOW_TO_LEARN_MORE}}",
+          "investigation_budget": "{{HOURS_OR_DAYS}}",
+          "fallback": "{{IF_REMAINS_UNKNOWN}}",
+          "detection_signal": "{{WHAT_WOULD_YOU_OBSERVE}}",
+          "owner": "{{DRI}}",
+          "status": "{{open|investigating|resolved|accepted}}"
+        }
+      ]
+    },
+    "open_questions": {
+      "questions": [
+        {
+          "question_id": "Q-001",
+          "question": "{{QUESTION_TEXT}}",
+          "why_it_matters": "{{IMPACT_ON_PLAN}}",
+          "options": [
+            "{{OPTION1}}",
+            "{{OPTION2}}"
+          ],
+          "resolution_step": "{{HOW_TO_ANSWER}}",
+          "blocking": "{{YES|NO}}",
+          "owner": "{{DRI}}",
+          "status": "{{open|answered|deferred}}"
+        }
+      ]
+    },
+    "phase_specific_deltas": {
+      "description": "Phases can add phase-specific risks/unknowns via extensions.optional.risks_delta[] in phase contract",
+      "aggregation_command": "python scripts/aggregate_phase_risks.py {{PLAN_FILE}}",
+      "expect_exit_code": 0
+    }
+  },
+  "file_id": "01260207233100000483"
+}

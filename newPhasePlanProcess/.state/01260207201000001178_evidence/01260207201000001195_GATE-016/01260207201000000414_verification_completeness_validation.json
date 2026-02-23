@@ -1,0 +1,114 @@
+{
+  "timestamp": "2026-02-02T23:49:42.310247Z",
+  "gate_id": "GATE-016",
+  "gate_name": "Verification Completeness Validation",
+  "passed": true,
+  "defect_count": 15,
+  "defects": [
+    {
+      "severity": "info",
+      "category": "other",
+      "location": "/plan/phases",
+      "problem": "Verification summary: 13 total steps, 13 with outputs, 0 insufficient verification, 0 missing evidence paths",
+      "why_it_matters": "Summary statistics for verification completeness analysis"
+    },
+    {
+      "severity": "low",
+      "category": "verification_gap",
+      "location": "/plan/phases/0/steps/0/postconditions",
+      "problem": "Step S001 has no change detection postconditions (diff_empty, hash_equals, or not_exists)",
+      "why_it_matters": "Change detection helps catch unintended side effects"
+    },
+    {
+      "severity": "low",
+      "category": "verification_gap",
+      "location": "/plan/phases/0/steps/1/postconditions",
+      "problem": "Step S002 has no change detection postconditions (diff_empty, hash_equals, or not_exists)",
+      "why_it_matters": "Change detection helps catch unintended side effects"
+    },
+    {
+      "severity": "low",
+      "category": "verification_gap",
+      "location": "/plan/phases/0/steps/2/postconditions",
+      "problem": "Step S003 has no change detection postconditions (diff_empty, hash_equals, or not_exists)",
+      "why_it_matters": "Change detection helps catch unintended side effects"
+    },
+    {
+      "severity": "low",
+      "category": "verification_gap",
+      "location": "/plan/phases/1/steps/0/postconditions",
+      "problem": "Step S004 has no change detection postconditions (diff_empty, hash_equals, or not_exists)",
+      "why_it_matters": "Change detection helps catch unintended side effects"
+    },
+    {
+      "severity": "low",
+      "category": "verification_gap",
+      "location": "/plan/phases/1/steps/1/postconditions",
+      "problem": "Step S005 has no change detection postconditions (diff_empty, hash_equals, or not_exists)",
+      "why_it_matters": "Change detection helps catch unintended side effects"
+    },
+    {
+      "severity": "low",
+      "category": "verification_gap",
+      "location": "/plan/phases/1/steps/2/postconditions",
+      "problem": "Step S006 has no change detection postconditions (diff_empty, hash_equals, or not_exists)",
+      "why_it_matters": "Change detection helps catch unintended side effects"
+    },
+    {
+      "severity": "low",
+      "category": "verification_gap",
+      "location": "/plan/phases/1/steps/3/postconditions",
+      "problem": "Step S007 has no change detection postconditions (diff_empty, hash_equals, or not_exists)",
+      "why_it_matters": "Change detection helps catch unintended side effects"
+    },
+    {
+      "severity": "low",
+      "category": "verification_gap",
+      "location": "/plan/phases/2/steps/0/postconditions",
+      "problem": "Step S008 has no change detection postconditions (diff_empty, hash_equals, or not_exists)",
+      "why_it_matters": "Change detection helps catch unintended side effects"
+    },
+    {
+      "severity": "low",
+      "category": "verification_gap",
+      "location": "/plan/phases/2/steps/1/postconditions",
+      "problem": "Step S009 has no change detection postconditions (diff_empty, hash_equals, or not_exists)",
+      "why_it_matters": "Change detection helps catch unintended side effects"
+    },
+    {
+      "severity": "low",
+      "category": "verification_gap",
+      "location": "/plan/phases/2/steps/2/postconditions",
+      "problem": "Step S010 has no change detection postconditions (diff_empty, hash_equals, or not_exists)",
+      "why_it_matters": "Change detection helps catch unintended side effects"
+    },
+    {
+      "severity": "low",
+      "category": "verification_gap",
+      "location": "/plan/phases/3/steps/0/postconditions",
+      "problem": "Step S011 has no change detection postconditions (diff_empty, hash_equals, or not_exists)",
+      "why_it_matters": "Change detection helps catch unintended side effects"
+    },
+    {
+      "severity": "low",
+      "category": "verification_gap",
+      "location": "/plan/phases/3/steps/1/postconditions",
+      "problem": "Step S012 has no change detection postconditions (diff_empty, hash_equals, or not_exists)",
+      "why_it_matters": "Change detection helps catch unintended side effects"
+    },
+    {
+      "severity": "low",
+      "category": "verification_gap",
+      "location": "/plan/phases/3/steps/2/postconditions",
+      "problem": "Step S013 has no change detection postconditions (diff_empty, hash_equals, or not_exists)",
+      "why_it_matters": "Change detection helps catch unintended side effects"
+    },
+    {
+      "severity": "medium",
+      "category": "verification_gap",
+      "location": "/plan/phases/3/steps/2/postconditions",
+      "problem": "Step S013 produces JSON files but has no json_valid or schema_valid postcondition",
+      "why_it_matters": "JSON outputs should be validated for correctness"
+    }
+  ]
+}

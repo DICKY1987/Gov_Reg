@@ -1,0 +1,49 @@
+{
+  "gap_id": "GAP-015",
+  "gap_name": "Stakeholder Approval Documentation",
+  "verification_timestamp": "2026-02-12T17:13:07.926538+00:00",
+  "status": "PARTIAL",
+  "checks": [
+    {
+      "check_id": "CHECK-015-001",
+      "description": "Approval record schema exists",
+      "status": "FAIL",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\scripts\\schemas\\approval_record.schema.json",
+        "exists": false
+      }
+    },
+    {
+      "check_id": "CHECK-015-002",
+      "description": "Approval registry initialized",
+      "status": "FAIL",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\scripts\\.state\\approvals.jsonl",
+        "exists": false
+      }
+    },
+    {
+      "check_id": "CHECK-015-003",
+      "description": "Impact assessment template exists",
+      "status": "FAIL",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\scripts\\templates\\change_impact_assessment.json",
+        "exists": false
+      }
+    },
+    {
+      "check_id": "CHECK-015-004",
+      "description": "Impact assessments registry initialized",
+      "status": "FAIL",
+      "evidence": {
+        "path": "C:\\Users\\richg\\Gov_Reg\\scripts\\.state\\impact_assessments.jsonl",
+        "exists": false
+      }
+    }
+  ],
+  "cryptographic_proof": {
+    "algorithm": "SHA256",
+    "hash": "6BD3373A91A4291D355B781850807B47CBBDB33838C81EA3EEB575C1C0DAFF29",
+    "timestamp": "2026-02-12T17:13:07.926538+00:00"
+  }
+}

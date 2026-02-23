@@ -1,0 +1,303 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://gov-reg.local/schemas/sec_021_quality_controls_catalog.schema.json",
+  "title": "SEC-021 Quality Controls Catalog Schema",
+  "description": "Schema for validating the quality controls catalog section",
+  "type": "object",
+  "required": [
+    "section_id",
+    "title",
+    "required",
+    "instructions_file",
+    "quality_controls_catalog"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "section_id": {
+      "type": "string",
+      "const": "sec_021_quality_controls_catalog"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "required": {
+      "type": "boolean"
+    },
+    "instructions_file": {
+      "type": "string",
+      "pattern": "^sections/sec_021_quality_controls_catalog\\.inst\\.md$"
+    },
+    "quality_controls_catalog": {
+      "type": "object",
+      "required": [
+        "version",
+        "description",
+        "control_classes",
+        "controls",
+        "control_mappings",
+        "enforcement_policy"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "control_classes": {
+          "type": "object",
+          "required": [
+            "enum",
+            "description"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "enum": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "security",
+                  "testing",
+                  "validation",
+                  "architecture",
+                  "observability",
+                  "deployment",
+                  "documentation"
+                ]
+              },
+              "uniqueItems": true,
+              "minItems": 1
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        },
+        "controls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/control"
+          },
+          "minItems": 0
+        },
+        "control_mappings": {
+          "type": "object",
+          "required": [
+            "description",
+            "by_phase",
+            "by_gate"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "by_phase": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^CTRL-[A-Z]{3}-\\d{3}$"
+                }
+              }
+            },
+            "by_gate": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^CTRL-[A-Z]{3}-\\d{3}$"
+                }
+              }
+            }
+          }
+        },
+        "enforcement_policy": {
+          "type": "object",
+          "required": [
+            "gate_id",
+            "description",
+            "algorithm",
+            "error_codes",
+            "validation_command",
+            "expect_exit_code",
+            "expect_stdout_regex"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "gate_id": {
+              "type": "string",
+              "pattern": "^G-CTRL-\\d{3}$"
+            },
+            "description": {
+              "type": "string"
+            },
+            "algorithm": {
+              "type": "string"
+            },
+            "error_codes": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "propertyNames": {
+                "pattern": "^CTRL\\d{3}_[A-Z_]+$"
+              }
+            },
+            "validation_command": {
+              "$ref": "#/$defs/command_spec"
+            },
+            "expect_exit_code": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "expect_stdout_regex": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "command_spec": {
+      "type": "object",
+      "required": [
+        "exe",
+        "args"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "exe": {
+          "type": "string",
+          "minLength": 1
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "control": {
+      "type": "object",
+      "required": [
+        "control_id",
+        "class",
+        "name",
+        "description",
+        "enforcement",
+        "evidence_requirements",
+        "severity"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "control_id": {
+          "type": "string",
+          "pattern": "^CTRL-[A-Z]{3}-\\d{3}$"
+        },
+        "class": {
+          "type": "string",
+          "enum": [
+            "security",
+            "testing",
+            "validation",
+            "architecture",
+            "observability",
+            "deployment",
+            "documentation"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "derived_from_dbg": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^DBG-\\d{4}$"
+        },
+        "enforcement": {
+          "type": "object",
+          "required": [
+            "gate_id",
+            "validation_command",
+            "expect_exit_code",
+            "expect_stdout_regex"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "gate_id": {
+              "type": "string",
+              "pattern": "^G-[A-Z0-9-]+$"
+            },
+            "validation_command": {
+              "$ref": "#/$defs/command_spec"
+            },
+            "expect_exit_code": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "expect_stdout_regex": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "evidence_requirements": {
+          "type": "object",
+          "required": [
+            "artifacts",
+            "path_formula"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "artifacts": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            },
+            "path_formula": {
+              "type": "string",
+              "pattern": "\\{\\{[A-Z_]+\\}\\}"
+            }
+          }
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "critical",
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "auto_remediable": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "file_id": "01260207233100000469"
+}

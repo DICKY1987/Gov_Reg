@@ -1,0 +1,66 @@
+{
+  "tool": "plan.validate_ssot",
+  "tool_version": "1.0.0",
+  "run_id": "RUN-CAPMAP11",
+  "status": "pass",
+  "exit_code": 0,
+  "summary": "Evidence written to: C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess\\.state\\evidence\\mcp\\RUN-CAPMAP11\\ssot_validation.json\nSSOT summary: 6 path facts (3 duplicated), 0 version facts (0 duplicated)\n\u00e2\u0153\u201c GATE-017 PASSED: Single source of truth validated\n  (3 warnings - see evidence file)",
+  "input": {
+    "context": {
+      "repo_root": "C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess",
+      "run_id": "RUN-CAPMAP11",
+      "invoker": "human"
+    },
+    "plan_path": "C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess\\Plans_Instructions\\wobbly-purring-island_registry-integrated.plan.json",
+    "ignore_common_paths": [
+      ".",
+      "..",
+      "/",
+      "scripts",
+      "schemas",
+      ".state"
+    ],
+    "write_evidence": true,
+    "evidence_path": ".state/evidence/mcp/{run_id}/plan_validate_ssot.json",
+    "timeout_s": 300
+  },
+  "defects": [
+    {
+      "severity": "info",
+      "code": "SSOT_CONTRADICTION",
+      "location": "/plan",
+      "message": "SSOT summary: 6 path facts (3 duplicated), 0 version facts (0 duplicated)",
+      "why_it_matters": "Summary statistics for SSOT analysis"
+    },
+    {
+      "severity": "medium",
+      "code": "SSOT_DUPLICATE_PATH_FACT",
+      "location": "/plan/phases/0/steps/0/outputs/0/path, /plan/phases/1/steps/0/inputs/0/path, /plan/phases/2/steps/0/inputs/0/path",
+      "message": "Path '{{CAPABILITIES_JSON}}' appears in 3 locations: ['/plan/phases/0/steps/0/outputs/0/path', '/plan/phases/1/steps/0/inputs/0/path', '/plan/phases/2/steps/0/inputs/0/path']",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "code": "SSOT_DUPLICATE_PATH_FACT",
+      "location": "/plan/phases/1/steps/0/outputs/0/path, /plan/phases/2/steps/0/inputs/1/path",
+      "message": "Path '{{FILE_INVENTORY_JSONL}}' appears in 2 locations: ['/plan/phases/1/steps/0/outputs/0/path', '/plan/phases/2/steps/0/inputs/1/path']",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    },
+    {
+      "severity": "medium",
+      "code": "SSOT_DUPLICATE_PATH_FACT",
+      "location": "/plan/phases/2/steps/0/outputs/0/path, /plan/phases/3/steps/0/inputs/0/path",
+      "message": "Path '{{FILE_PURPOSE_REGISTRY_JSON}}' appears in 2 locations: ['/plan/phases/2/steps/0/outputs/0/path', '/plan/phases/3/steps/0/inputs/0/path']",
+      "why_it_matters": "Duplicate paths should be extracted to single authoritative source (e.g., plan.artifacts.paths)"
+    }
+  ],
+  "hashes": {
+    "ssot_evidence_sha256": "sha256:96781fb27b3237e04423adc1d3e85535c9e2e7adf54db3bc192610743d155a70"
+  },
+  "artifacts_emitted": [
+    "C:\\Users\\richg\\Gov_Reg\\LP_LONG_PLAN\\newPhasePlanProcess\\.state\\evidence\\mcp\\RUN-CAPMAP11\\ssot_validation.json"
+  ],
+  "timestamps": {
+    "generated_at": "2026-02-12T00:15:33.890319+00:00"
+  }
+}

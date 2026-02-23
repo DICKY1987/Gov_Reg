@@ -1,0 +1,272 @@
+---
+transition_vectors_id: DIR_ID_TRANSITION_VECTORS
+version: 1.0.0
+status: authoritative
+generated_utc: "2026-02-13T14:48:27Z"
+applies_to: directory_identity_system
+purpose: Define valid directory lifecycle state transitions
+
+zones:
+  staging:
+    description: "Project root (depth=0), no identity enforcement"
+    governance_level: minimal
+    required_artifacts: []
+    
+  governed:
+    description: "Subdirectories (depth>=1), mandatory .dir_id"
+    governance_level: strict
+    required_artifacts: [".dir_id", "registry_entry"]
+    
+  excluded:
+    description: "System directories (.git, .venv, __pycache__, node_modules)"
+    governance_level: none
+    required_artifacts: []
+
+state_transitions:
+  - transition_id: DIR-TRANS-001
+    name: CREATE_IN_STAGING
+    from_state: [nonexistent]
+    to_state: staging
+    trigger: "mkdir at depth=0"
+    preconditions:
+      - "parent is project root"
+      - "depth == 0"
+    actions:
+      - "create directory on filesystem"
+      - "no .dir_id allocation"
+      - "no registry entry"
+    postconditions:
+      - "directory exists"
+      - "zone == 'staging'"
+    evidence:
+      - ".state/evidence/dir_transitions/{path}/create_staging.json"
+    
+  - transition_id: DIR-TRANS-002
+    name: CREATE_IN_GOVERNED
+    from_state: [nonexistent]
+    to_state: governed
+    trigger: "mkdir at depth>=1"
+    preconditions:
+      - "depth >= 1"
+      - "parent exists"
+      - "not in excluded patterns"
+    actions:
+      - "create directory on filesystem"
+      - "allocate dir_id via allocator"
+      - "write .dir_id file"
+      - "derive parent_dir_id by walking up tree"
+      - "create registry entry"
+      - "emit evidence"
+    postconditions:
+      - "directory exists"
+      - ".dir_id file exists and valid"
+      - "registry contains dir_id record"
+      - "zone == 'governed'"
+    evidence:
+      - ".state/evidence/dir_transitions/{dir_id}/allocate.json"
+      - ".state/evidence/dir_transitions/{dir_id}/dir_id_file.json"
+      - ".state/evidence/dir_transitions/{dir_id}/registry_patch.json"
+    
+  - transition_id: DIR-TRANS-003
+    name: PROMOTE_STAGING_TO_GOVERNED
+    from_state: [staging]
+    to_state: governed
+    trigger: "user manually promotes OR policy change"
+    preconditions:
+      - "directory exists in staging"
+      - "no .dir_id exists"
+    actions:
+      - "allocate dir_id"
+      - "write .dir_id file"
+      - "create registry entry"
+      - "update zone to 'governed'"
+    postconditions:
+      - ".dir_id file exists"
+      - "registry entry exists"
+      - "zone == 'governed'"
+    evidence:
+      - ".state/evidence/dir_transitions/{dir_id}/promote.json"
+    allowed: true
+    
+  - transition_id: DIR-TRANS-004
+    name: DEMOTE_GOVERNED_TO_STAGING
+    from_state: [governed]
+    to_state: staging
+    trigger: "MANUAL ONLY - requires governance approval"
+    preconditions:
+      - "directory is governed"
+      - "depth changes to 0 (moved to root)"
+    actions:
+      - "archive .dir_id to .state/demoted_dir_ids/"
+      - "mark registry entry as demoted"
+      - "update zone to 'staging'"
+    postconditions:
+      - ".dir_id archived"
+      - "registry status == 'demoted'"
+      - "zone == 'staging'"
+    evidence:
+      - ".state/evidence/dir_transitions/{dir_id}/demote.json"
+    allowed: false
+    rationale: "Identity immutability: once governed, always governed (even if moved)"
+    
+  - transition_id: DIR-TRANS-005
+    name: MOVE_WITHIN_GOVERNED
+    from_state: [governed]
+    to_state: governed
+    trigger: "mv or rename operation"
+    preconditions:
+      - "directory is governed"
+      - "new location is also governed (depth>=1)"
+    actions:
+      - "move directory on filesystem"
+      - "update .dir_id relative_path field"
+      - "recompute parent_dir_id"
+      - "update registry relative_path"
+      - "preserve dir_id unchanged"
+    postconditions:
+      - "directory at new location"
+      - "dir_id unchanged"
+      - ".dir_id relative_path updated"
+      - "registry relative_path updated"
+      - "parent_dir_id updated if parent changed"
+    evidence:
+      - ".state/evidence/dir_transitions/{dir_id}/move.json"
+    
+  - transition_id: DIR-TRANS-006
+    name: RENAME_GOVERNED
+    from_state: [governed]
+    to_state: governed
+    trigger: "rename operation (same parent)"
+    preconditions:
+      - "directory is governed"
+      - "parent unchanged"
+    actions:
+      - "rename directory on filesystem"
+      - "update .dir_id relative_path field"
+      - "update registry relative_path"
+      - "preserve dir_id unchanged"
+      - "preserve parent_dir_id unchanged"
+    postconditions:
+      - "directory has new name"
+      - "dir_id unchanged"
+      - "parent_dir_id unchanged"
+      - ".dir_id relative_path updated"
+    evidence:
+      - ".state/evidence/dir_transitions/{dir_id}/rename.json"
+    
+  - transition_id: DIR-TRANS-007
+    name: DELETE_GOVERNED
+    from_state: [governed]
+    to_state: deleted
+    trigger: "rmdir or rm -rf operation"
+    preconditions:
+      - "directory is governed"
+      - "directory is empty OR user forces deletion"
+    actions:
+      - "archive .dir_id to .state/deleted_dir_ids/{dir_id}/"
+      - "delete directory on filesystem"
+      - "update registry status to 'deleted'"
+      - "set registry last_seen_utc to deletion time"
+      - "do NOT reuse dir_id"
+    postconditions:
+      - "directory does not exist on filesystem"
+      - ".dir_id archived"
+      - "registry status == 'deleted'"
+    evidence:
+      - ".state/evidence/dir_transitions/{dir_id}/delete.json"
+      - ".state/deleted_dir_ids/{dir_id}/.dir_id"
+    
+  - transition_id: DIR-TRANS-008
+    name: RESTORE_DELETED
+    from_state: [deleted]
+    to_state: governed
+    trigger: "Manual restore operation"
+    preconditions:
+      - "directory was deleted"
+      - "registry entry with status='deleted' exists"
+      - "archived .dir_id exists"
+    actions:
+      - "recreate directory on filesystem"
+      - "restore .dir_id from archive"
+      - "update registry status to 'active'"
+      - "update last_seen_utc"
+    postconditions:
+      - "directory exists"
+      - ".dir_id restored"
+      - "registry status == 'active'"
+      - "dir_id matches original"
+    evidence:
+      - ".state/evidence/dir_transitions/{dir_id}/restore.json"
+    allowed: true
+    
+  - transition_id: DIR-TRANS-009
+    name: MOVE_TO_EXCLUDED
+    from_state: [staging, governed]
+    to_state: excluded
+    trigger: "Directory matches exclusion pattern"
+    preconditions:
+      - "path matches .git/**, .venv/**, __pycache__/**, etc."
+    actions:
+      - "if governed: archive .dir_id"
+      - "remove registry entry OR mark as excluded"
+      - "set zone to 'excluded'"
+    postconditions:
+      - "zone == 'excluded'"
+      - "no active governance"
+    evidence:
+      - ".state/evidence/dir_transitions/{path}/exclude.json"
+    
+  - transition_id: DIR-TRANS-010
+    name: REPAIR_MISSING_DIRID
+    from_state: [governed_invalid]
+    to_state: governed
+    trigger: "Scanner --fix mode detects missing .dir_id"
+    preconditions:
+      - "directory is in governed zone (depth>=1)"
+      - ".dir_id file missing"
+      - "registry may or may not have record"
+    actions:
+      - "if registry has record: restore .dir_id from registry"
+      - "if no registry record: allocate new dir_id + ingest"
+      - "validate .dir_id format"
+      - "emit repair evidence"
+    postconditions:
+      - ".dir_id exists and valid"
+      - "registry entry exists"
+      - "zone == 'governed'"
+    evidence:
+      - ".state/evidence/dir_repairs/{dir_id}/repair_missing.json"
+
+forbidden_transitions:
+  - from: governed
+    to: staging
+    reason: "Identity immutability violated"
+    violation_code: "DIR-IDENTITY-008"
+    
+  - from: excluded
+    to: governed
+    reason: "Excluded directories cannot be governed"
+    violation_code: "DIR-IDENTITY-009"
+    
+  - from: deleted
+    to: staging
+    reason: "Deleted directories cannot become staging"
+    violation_code: "DIR-IDENTITY-010"
+
+enforcement:
+  watcher:
+    monitors: ["CREATE", "MOVE", "DELETE", "RENAME"]
+    converts_to: "ingest_envelope + transition_event"
+    
+  scanner:
+    detects: ["missing_.dir_id", "invalid_format", "orphan_registry", "zone_mismatch"]
+    repairs: ["allocate_new", "restore_from_registry", "archive_invalid"]
+    
+  gates:
+    blocks: ["forbidden_transitions", "dir_id_mutations", "zone_violations"]
+    validates: ["transition_preconditions", "postconditions", "evidence"]
+
+validation:
+  rule: "All transitions must have explicit trigger + preconditions + postconditions + evidence"
+  validator_command: "python scripts/P_*_validate_transition_vectors.py contracts/DIR_ID_TRANSITION_VECTORS.yaml"
+  expect_exit_code: 0

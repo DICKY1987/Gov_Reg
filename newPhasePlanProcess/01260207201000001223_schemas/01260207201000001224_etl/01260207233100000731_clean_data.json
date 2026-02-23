@@ -1,0 +1,446 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://newphaseplanprocess.schemas/etl/01260207233100000731_clean_data.json",
+  "title": "ETL Clean Data Schema",
+  "description": "Schema for cleaned and transformed data in ETL pipeline after validation and transformation. Represents validated, normalized data ready for loading.",
+  "version": "1.0.0",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "transformation_metadata",
+    "validated_phases",
+    "validated_artifacts",
+    "resolved_dependencies",
+    "validation_results"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Version of this clean data schema",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "examples": ["1.0.0"]
+    },
+    "transformation_metadata": {
+      "type": "object",
+      "description": "Metadata about the transformation process",
+      "required": [
+        "transformed_at",
+        "source_schema_version",
+        "transformer_version"
+      ],
+      "properties": {
+        "transformed_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of transformation"
+        },
+        "source_schema_version": {
+          "type": "string",
+          "description": "Version of raw_data schema used",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "transformer_version": {
+          "type": "string",
+          "description": "Version of transformation tool",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "transformation_rules_applied": {
+          "type": "array",
+          "description": "List of transformation rules applied",
+          "items": {
+            "type": "string"
+          }
+        },
+        "data_quality_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Overall data quality score (0-100)"
+        }
+      }
+    },
+    "validated_phases": {
+      "type": "array",
+      "description": "Validated and cleaned phase data",
+      "items": {
+        "type": "object",
+        "required": [
+          "phase_id",
+          "phase_name",
+          "validation_status"
+        ],
+        "properties": {
+          "phase_id": {
+            "type": "string",
+            "description": "Unique phase identifier",
+            "pattern": "^PH-\\d{2,4}$"
+          },
+          "phase_name": {
+            "type": "string",
+            "description": "Cleaned and validated phase name",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string",
+            "description": "Cleaned phase description"
+          },
+          "resolved_dependencies": {
+            "type": "array",
+            "description": "Validated and resolved phase dependencies",
+            "items": {
+              "type": "object",
+              "required": ["phase_id", "dependency_type"],
+              "properties": {
+                "phase_id": {
+                  "type": "string",
+                  "pattern": "^PH-\\d{2,4}$"
+                },
+                "dependency_type": {
+                  "type": "string",
+                  "enum": ["required", "optional", "conditional"],
+                  "description": "Type of dependency"
+                },
+                "validation_status": {
+                  "type": "string",
+                  "enum": ["valid", "warning", "error"],
+                  "description": "Dependency validation result"
+                }
+              }
+            }
+          },
+          "validated_gates": {
+            "type": "array",
+            "description": "Validated gate IDs for this phase",
+            "items": {
+              "type": "string",
+              "pattern": "^GATE-\\d{3}$"
+            }
+          },
+          "complexity": {
+            "type": "string",
+            "enum": ["trivial", "simple", "moderate", "complex", "critical"],
+            "description": "Validated complexity level"
+          },
+          "estimated_duration_hours": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Validated duration estimate"
+          },
+          "validation_status": {
+            "type": "string",
+            "enum": ["valid", "valid_with_warnings", "invalid"],
+            "description": "Overall phase validation status"
+          },
+          "validation_warnings": {
+            "type": "array",
+            "description": "Warnings encountered during validation",
+            "items": {
+              "type": "string"
+            }
+          },
+          "validation_errors": {
+            "type": "array",
+            "description": "Errors encountered during validation",
+            "items": {
+              "type": "string"
+            }
+          },
+          "execution_order": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Calculated execution order in DAG"
+          },
+          "can_parallelize": {
+            "type": "boolean",
+            "description": "Whether phase can execute in parallel"
+          }
+        }
+      }
+    },
+    "validated_artifacts": {
+      "type": "array",
+      "description": "Validated and cleaned artifact data",
+      "items": {
+        "type": "object",
+        "required": [
+          "artifact_id",
+          "artifact_type",
+          "validation_status"
+        ],
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "description": "Unique artifact identifier"
+          },
+          "artifact_type": {
+            "type": "string",
+            "enum": [
+              "source_file",
+              "test_file",
+              "config_file",
+              "documentation",
+              "schema",
+              "script",
+              "evidence",
+              "report",
+              "data_file"
+            ],
+            "description": "Validated artifact type"
+          },
+          "artifact_path": {
+            "type": "string",
+            "description": "Normalized file path"
+          },
+          "producer_phase": {
+            "type": "string",
+            "description": "Validated producer phase ID",
+            "pattern": "^PH-\\d{2,4}$"
+          },
+          "producer_validation": {
+            "type": "object",
+            "description": "Producer validation results",
+            "properties": {
+              "producer_exists": {
+                "type": "boolean"
+              },
+              "single_writer": {
+                "type": "boolean",
+                "description": "Validates single-writer principle"
+              },
+              "producer_reachable": {
+                "type": "boolean"
+              }
+            }
+          },
+          "consumer_phases": {
+            "type": "array",
+            "description": "Validated consumer phase IDs",
+            "items": {
+              "type": "string",
+              "pattern": "^PH-\\d{2,4}$"
+            }
+          },
+          "consumer_validation": {
+            "type": "object",
+            "description": "Consumer validation results",
+            "properties": {
+              "all_consumers_exist": {
+                "type": "boolean"
+              },
+              "consumers_reachable": {
+                "type": "boolean"
+              },
+              "consumer_count": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "write_method": {
+            "type": "string",
+            "enum": ["create", "update", "append", "delete"],
+            "description": "Validated write method"
+          },
+          "schema_ref": {
+            "type": "string",
+            "description": "Reference to validated schema"
+          },
+          "schema_validation": {
+            "type": "object",
+            "description": "Schema validation results",
+            "properties": {
+              "schema_exists": {
+                "type": "boolean"
+              },
+              "schema_valid": {
+                "type": "boolean"
+              }
+            }
+          },
+          "validation_status": {
+            "type": "string",
+            "enum": ["valid", "valid_with_warnings", "invalid"],
+            "description": "Overall artifact validation status"
+          },
+          "validation_warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "validation_errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "is_orphaned": {
+            "type": "boolean",
+            "description": "True if artifact is produced but never consumed (FM-01)"
+          },
+          "is_dead": {
+            "type": "boolean",
+            "description": "True if artifact is consumed but never produced (FM-04)"
+          }
+        }
+      }
+    },
+    "resolved_dependencies": {
+      "type": "object",
+      "description": "Resolved dependency graph",
+      "properties": {
+        "dependency_graph": {
+          "type": "object",
+          "description": "Complete dependency graph as adjacency list",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "execution_order": {
+          "type": "array",
+          "description": "Topologically sorted execution order",
+          "items": {
+            "type": "string",
+            "pattern": "^PH-\\d{2,4}$"
+          }
+        },
+        "cycles_detected": {
+          "type": "array",
+          "description": "Detected circular dependencies (FM-06)",
+          "items": {
+            "type": "object",
+            "properties": {
+              "cycle_phases": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "severity": {
+                "type": "string",
+                "enum": ["warning", "error", "critical"]
+              }
+            }
+          }
+        },
+        "critical_path": {
+          "type": "array",
+          "description": "Critical path through the dependency graph",
+          "items": {
+            "type": "string",
+            "pattern": "^PH-\\d{2,4}$"
+          }
+        },
+        "parallel_execution_groups": {
+          "type": "array",
+          "description": "Groups of phases that can execute in parallel",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^PH-\\d{2,4}$"
+            }
+          }
+        }
+      }
+    },
+    "validation_results": {
+      "type": "object",
+      "description": "Overall validation results",
+      "required": ["overall_status", "total_validations"],
+      "properties": {
+        "overall_status": {
+          "type": "string",
+          "enum": ["valid", "valid_with_warnings", "invalid"],
+          "description": "Overall validation status"
+        },
+        "total_validations": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of validations performed"
+        },
+        "passed_validations": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "warnings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "errors": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "data_quality_issues": {
+          "type": "array",
+          "description": "Identified data quality issues",
+          "items": {
+            "type": "object",
+            "properties": {
+              "issue_type": {
+                "type": "string",
+                "enum": [
+                  "missing_required_field",
+                  "invalid_format",
+                  "constraint_violation",
+                  "orphaned_artifact",
+                  "dead_artifact",
+                  "circular_dependency",
+                  "missing_producer",
+                  "write_conflict"
+                ]
+              },
+              "severity": {
+                "type": "string",
+                "enum": ["low", "medium", "high", "critical"]
+              },
+              "location": {
+                "type": "string",
+                "description": "Where the issue was found"
+              },
+              "description": {
+                "type": "string"
+              },
+              "suggested_fix": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "transformation_statistics": {
+      "type": "object",
+      "description": "Statistics about transformation process",
+      "properties": {
+        "records_processed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "records_cleaned": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "records_rejected": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "transformation_duration_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Time taken for transformation in milliseconds"
+        },
+        "data_reduction_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Ratio of clean data size to raw data size"
+        }
+      }
+    }
+  }
+}
