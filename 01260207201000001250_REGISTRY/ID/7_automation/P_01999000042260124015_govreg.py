@@ -32,10 +32,10 @@ def import_module_from_file(module_name, file_path):
 
 # Get paths to module files
 script_dir = Path(__file__).parent
-core_dir = script_dir / "govreg_core"
+core_dir = script_dir.parent.parent.parent.parent / "01260207201000001173_govreg_core"
 
 # Import modules with ID-prefixed filenames (P_ prefix for Python files)
-scanner_mod = import_module_from_file("scanner", core_dir / "P_01999000042260124023_scanner.py")
+scanner_mod = import_module_from_file("scanner", Path(__file__).parent / "P_01999000042260124023_scanner.py")
 validator_mod = import_module_from_file("validator", core_dir / "P_01999000042260124024_validator.py")
 reporter_mod = import_module_from_file("reporter", core_dir / "P_01999000042260124022_reporter.py")
 config_mod = import_module_from_file("config", core_dir / "P_01999000042260124021_config.py")

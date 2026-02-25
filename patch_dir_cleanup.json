@@ -1,0 +1,327 @@
+{
+  "doc_type": "DIR_CLEANUP_TASK_INDEX_DELTA_PATCHSET",
+  "target_doc_type": "DIR_CLEANUP_TASK_INDEX",
+  "target_version_from": "1.1.0",
+  "target_version_to": "1.2.0",
+  "patch_format": "rfc6902",
+  "patches": [
+    {
+      "op": "replace",
+      "path": "/version",
+      "value": "1.2.0"
+    },
+
+    {
+      "op": "add",
+      "path": "/principles/-",
+      "value": "Registry-policy aware: never write immutable or scan-derived registry fields via patch intent; require post-move scan/recompute to refresh recompute_on_scan fields."
+    },
+    {
+      "op": "add",
+      "path": "/principles/-",
+      "value": "Protect directory identity anchors: .dir_id artifacts must remain co-located with their directory; never move .dir_id independently."
+    },
+    {
+      "op": "add",
+      "path": "/principles/-",
+      "value": "Identity resolution uses the standard resolver chain (path match -> rename intent -> strong identity -> orphan/conflict). Malformed ID-like prefixes are not treated as gaps."
+    },
+
+    {
+      "op": "add",
+      "path": "/globals/registry_integration_defaults/trigger_recompute_on_scan_post_move",
+      "value": true
+    },
+    {
+      "op": "add",
+      "path": "/globals/registry_integration_defaults/registry_assisted_classification_default",
+      "value": true
+    },
+    {
+      "op": "add",
+      "path": "/globals/registry_integration_defaults/protect_dir_id_files_default",
+      "value": true
+    },
+    {
+      "op": "add",
+      "path": "/globals/registry_integration_defaults/identity_resolution_chain_default",
+      "value": "path_exact -> rename_intent -> strong_identity_prefix -> orphan_or_conflict"
+    },
+
+    {
+      "op": "add",
+      "path": "/inputs/optional/-",
+      "value": {
+        "name": "PROTECT_DIR_ID_FILES",
+        "type": "boolean",
+        "default": true,
+        "rules": [
+          "if_true_dir_id_files_must_be_keep_in_place",
+          "block_any_move_action_for_dir_id_files",
+          "block_any_plan_that_separates_dir_id_from_its_directory"
+        ]
+      }
+    },
+    {
+      "op": "add",
+      "path": "/inputs/optional/-",
+      "value": {
+        "name": "DIR_ID_FILE_NAMES",
+        "type": "array",
+        "default": [".dir_id", ".dir_id.json"],
+        "rules": ["used_by_inventory_and_guards"]
+      }
+    },
+    {
+      "op": "add",
+      "path": "/inputs/optional/-",
+      "value": {
+        "name": "IDENTITY_RESOLUTION_MODE",
+        "type": "enum",
+        "values": ["simple", "govreg_chain"],
+        "default": "govreg_chain"
+      }
+    },
+    {
+      "op": "add",
+      "path": "/inputs/optional/-",
+      "value": {
+        "name": "REGISTRY_ASSISTED_CLASSIFICATION",
+        "type": "boolean",
+        "default": true,
+        "rules": [
+          "if_true_geu_role_and_lifecycle_override_extension_heuristics",
+          "if_false_extension_path_heuristics_only"
+        ]
+      }
+    },
+    {
+      "op": "add",
+      "path": "/inputs/optional/-",
+      "value": {
+        "name": "LIFECYCLE_AWARE_CLASSIFICATION",
+        "type": "boolean",
+        "default": true,
+        "rules": [
+          "if_true_registry_lifecycle_state_is_first_priority_signal",
+          "planned_state_missing_on_disk_must_emit_reconciliation_rows"
+        ]
+      }
+    },
+    {
+      "op": "add",
+      "path": "/inputs/optional/-",
+      "value": {
+        "name": "POST_MOVE_SCAN_REQUIRED",
+        "type": "boolean",
+        "default": true,
+        "rules": [
+          "if_true_and_any_move_executed_then_post_move_scan_must_run_or_run_fails_verification"
+        ]
+      }
+    },
+    {
+      "op": "add",
+      "path": "/inputs/optional/-",
+      "value": {
+        "name": "WRITE_POLICY_ENFORCEMENT",
+        "type": "enum",
+        "values": ["off", "validate_patch_intent_only", "validate_and_block"],
+        "default": "validate_and_block",
+        "rules": [
+          "immutable_and_never_writable_fields_must_be_excluded",
+          "manual_patch_only_fields_only_in_patch_intent"
+        ]
+      }
+    },
+
+    {
+      "op": "add",
+      "path": "/artifacts/files/-",
+      "value": {
+        "name": "00_IDENTITY_RESOLUTION_REPORT.csv",
+        "purpose": "Per-item identity resolution outcome using the resolver chain: resolved_by, file_id_candidate, prefix_validity, conflict_class, and recommended action (keep/quarantine/review)."
+      }
+    },
+    {
+      "op": "add",
+      "path": "/artifacts/files/-",
+      "value": {
+        "name": "00_PLANNED_VS_PRESENT_RECONCILIATION.csv",
+        "purpose": "Registry PLANNED entries missing on disk, disk-present files missing in registry, and conflicts/orphans; used to prevent silent drift."
+      }
+    },
+    {
+      "op": "add",
+      "path": "/artifacts/files/-",
+      "value": {
+        "name": "00_POST_MOVE_SCAN_QUEUE.csv",
+        "purpose": "List of file_ids/paths requiring scan/recompute refresh after execution; consumed by reconciler/watchers."
+      }
+    },
+    {
+      "op": "add",
+      "path": "/artifacts/files/-",
+      "value": {
+        "name": "00_WRITE_POLICY_VALIDATION_REPORT.md",
+        "purpose": "Validation result of any generated patch intent against the registry write policy (immutable/recompute/manual_patch_only)."
+      }
+    },
+
+    {
+      "op": "replace",
+      "path": "/schemas/move_map_csv_columns",
+      "value": [
+        "group",
+        "src_rel",
+        "dst_rel",
+        "action",
+        "reason_code",
+        "reason_detail",
+        "confidence",
+        "notes",
+        "file_id",
+        "owning_dir_id",
+        "proposed_file_id",
+        "proposed_dir_id",
+        "lifecycle_state",
+        "geu_role",
+        "identity_resolution",
+        "prefix_validity"
+      ]
+    },
+    {
+      "op": "replace",
+      "path": "/schemas/inventory_csv_columns",
+      "value": [
+        "src_rel",
+        "size_bytes",
+        "mtime_utc",
+        "ext",
+        "sha256",
+        "flags",
+        "hints",
+        "file_id",
+        "owning_dir_id",
+        "dir_id_anchor_detected",
+        "lifecycle_state",
+        "geu_role"
+      ]
+    },
+
+    {
+      "op": "add",
+      "path": "/task_index/3",
+      "value": {
+        "task_id": "T02A",
+        "name": "Identity Resolution (Gov_Reg Chain)",
+        "phase": "1_discovery",
+        "depends_on": ["T01"],
+        "objective": "Resolve stable identity for each inventory row using the standard resolver chain and classify malformed/duplicate ID-like prefixes.",
+        "actions": [
+          "If IDENTITY_RESOLUTION_MODE=govreg_chain: resolve identity using chain: path_exact -> rename_intent -> strong_identity_prefix -> orphan_or_conflict.",
+          "Validate any detected 20-digit prefixes; classify malformed prefixes as prefix_invalid (recommended action quarantine/review).",
+          "Detect duplicate prefix collisions and mark as conflict.",
+          "Emit 00_IDENTITY_RESOLUTION_REPORT.csv and enrich 00_INVENTORY.csv with identity_resolution + prefix_validity + file_id (when resolved)."
+        ],
+        "outputs": ["00_IDENTITY_RESOLUTION_REPORT.csv", "00_INVENTORY.csv"],
+        "acceptance": [
+          "Every inventory row has identity_resolution outcome",
+          "Malformed prefix cases are not labeled as 'missing id'"
+        ],
+        "failure_modes": [
+          "Registry unreadable (if enabled)",
+          "Resolver cannot disambiguate conflicts"
+        ]
+      }
+    },
+
+    {
+      "op": "replace",
+      "path": "/task_index/4/depends_on",
+      "value": ["T01", "T02A"]
+    },
+
+    {
+      "op": "replace",
+      "path": "/task_index/5/depends_on",
+      "value": ["T01", "T02", "T02A"]
+    },
+
+    {
+      "op": "replace",
+      "path": "/task_index/7/depends_on",
+      "value": ["T01", "T04", "T03A", "T02A"]
+    },
+
+    {
+      "op": "replace",
+      "path": "/task_index/7/actions",
+      "value": [
+        "For each group in GROUPS in order: filter inventory using GROUP_FILTERS[group].",
+        "If REGISTRY_ASSISTED_CLASSIFICATION=true: enrich each row with registry lifecycle_state + geu_role + artifact_kind (when available).",
+        "If LIFECYCLE_AWARE_CLASSIFICATION=true: apply lifecycle precedence rules before extension/path heuristics (e.g., DEPRECATED -> archive/export default; CONFLICT/ORPHAN -> quarantine/review default).",
+        "Apply classification heuristics: extension, folder hints, naming patterns, reference scanning (optional), authority rules.",
+        "If ACTIVE_ONLY_POLICY=true: default non-active to export unless explicitly kept or needs_review.",
+        "If identity_resolution indicates prefix_invalid or conflict: default to quarantine/review; never auto-assign IDs for these rows.",
+        "Mark uncertain items as needs_review and default to keep (fail-safe).",
+        "Generate group Move Map subset (either separate file per group or one combined map with group column).",
+        "If PAPER_MOVE_MAP_ONLY=true: also generate 00_PAPER_MOVE_MAP.csv with proposed final destinations (no execution).",
+        "If registry entries exist in PLANNED state but missing on disk: emit 00_PLANNED_VS_PRESENT_RECONCILIATION.csv rows."
+      ]
+    },
+
+    {
+      "op": "replace",
+      "path": "/task_index/8/actions",
+      "value": [
+        "For each group in order: validate all src exist and are within allowed scope.",
+        "If PROTECT_DIR_ID_FILES=true: detect any Move Map row whose src_rel matches DIR_ID_FILE_NAMES or whose dst_rel would relocate a dir_id anchor independently; block execution for that group and emit conflicts.",
+        "Verify destination rules: by default dst must be within TARGET_DIR; if ALLOW_CROSS_ROOT_MOVES=true then dst may be in allowlisted RELATED_DIRS.",
+        "Detect collisions: case-insensitive duplicates, existing dst, path-length overflow.",
+        "Write 00_CONFLICTS.csv; if conflicts exist, halt unless override rules exist."
+      ]
+    },
+
+    {
+      "op": "replace",
+      "path": "/task_index/11/actions",
+      "value": [
+        "If PAPER_MOVE_MAP_ONLY=true: do not modify filesystem; write an execution log event indicating 'paper_only'.",
+        "Else if DRY_RUN=true: simulate actions; write logs; do not modify filesystem.",
+        "Else: for each group in stable order: for each Move Map row in stable order: perform move/export/keep/quarantine.",
+        "Preserve relative path when exporting; avoid overwrites; on conflict skip + log.",
+        "Emit 00_EXPORT_LOG.csv and append event logs.",
+        "If any move/export executed and POST_MOVE_SCAN_REQUIRED=true: emit 00_POST_MOVE_SCAN_QUEUE.csv listing affected file_ids/paths.",
+        "If INVENTORY_REFRESH_PER_GROUP=true and not DRY_RUN and not PAPER_MOVE_MAP_ONLY: re-run inventory (T01) after each group completes."
+      ]
+    },
+
+    {
+      "op": "replace",
+      "path": "/task_index/13/actions",
+      "value": [
+        "Compute post-inventory in TARGET_DIR.",
+        "Compute exported_count from export log.",
+        "Check reconciliation math; record results.",
+        "If HASH_MODE=sha256 and DRY_RUN=false: spot-check or full-check moved file hashes where feasible.",
+        "If FINALIZATION_MODE=final: run DIR_TYPE checks (code: import/test smoke; docs: link check; schema: schema validation if configured).",
+        "If FINALIZATION_MODE=staging: skip mandatory reference rewrite checks and skip registry/ledger commitments; record as deferred in report.",
+        "If POST_MOVE_SCAN_REQUIRED=true and any moves executed: require that post-move scan/recompute was run (or is explicitly queued with a consumed queue marker); otherwise fail verification as 'registry_drift_risk'.",
+        "Write 00_VERIFY_REPORT.md."
+      ]
+    },
+
+    {
+      "op": "replace",
+      "path": "/task_index/16/actions",
+      "value": [
+        "If ID_MODE=enforce_and_rename: perform file_id and dir_id renames as planned; update Move Map and logs.",
+        "Perform reference rewrites (imports/includes/manifests/CI) as required and log changes.",
+        "If REGISTRY_MODE=full: perform required registry/ledger updates (reservations/commitments) and record evidence.",
+        "If WRITE_POLICY_ENFORCEMENT in {validate_patch_intent_only, validate_and_block}: validate any generated patch intent against the registry write policy and exclude immutable/never-writable/recompute_on_scan fields; emit 00_WRITE_POLICY_VALIDATION_REPORT.md.",
+        "Re-run verification checks with final mode requirements."
+      ]
+    }
+  ]
+}

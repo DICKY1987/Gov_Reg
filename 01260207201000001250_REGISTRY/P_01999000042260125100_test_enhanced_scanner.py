@@ -13,6 +13,9 @@ from datetime import datetime, timezone
 sys.path.insert(0, str(Path(__file__).parent / "01260207201000001173_govreg_core"))
 
 # Import enhanced dataclasses
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent / "ID" / "7_automation"))
 from P_01260207233100000071_scanner_service import (
     FileScanMetrics,
     ZoneDistributionMetrics,

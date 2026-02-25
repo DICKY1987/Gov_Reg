@@ -107,6 +107,9 @@ class HealthCheckScheduler:
             
             try:
                 # Import here to avoid circular dependency
+                import sys
+                from pathlib import Path
+                sys.path.insert(0, str(Path(__file__).parent.parent / "01260207201000001250_REGISTRY" / "ID" / "7_automation"))
                 from P_01999000042260125106_registry_filesystem_reconciler import reconcile_registry_filesystem
                 
                 registry_path = self.project_root / "01260207201000001250_REGISTRY" / "01999000042260124503_REGISTRY_file.json"
