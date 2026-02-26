@@ -43,7 +43,10 @@
           "description": "SHA256 of file contents"
         },
         "dir_id": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "pattern": "^[0-9]{20}$",
           "description": "Directory ID - 20-digit ID of the parent directory from .dir_id file"
         },
@@ -117,20 +120,32 @@
           "description": "Logical layer"
         },
         "required_suite_key": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Suite slot key"
         },
         "bundle_id": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "pattern": "^[0-9]{16}$",
           "description": "16-digit ID for bundle grouping (separate namespace from file_id)"
         },
         "bundle_key": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Human-readable stable bundle name (e.g., GATE_AGGREGATE, ID_REGISTRY)"
         },
         "bundle_role": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "enum": [
             "SCHEMA",
             "VALIDATOR",
@@ -148,11 +163,17 @@
           "description": "Role within bundle"
         },
         "bundle_version": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Optional bundle version string (e.g., v2.5.3)"
         },
         "anchor_file_id": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "pattern": "^[0-9]{20}$",
           "description": "file_id of the bundle anchor (schema/SSOT)"
         },
@@ -259,7 +280,10 @@
           "description": "Deliverables produced"
         },
         "coverage_status": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "enum": [
             "PRESENT",
             "MISSING",
@@ -270,7 +294,10 @@
           "description": "Bundle completeness status"
         },
         "superseded_by": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "pattern": "^[0-9]{20}$",
           "description": "file_id of replacement (for duplicates)"
         },
@@ -335,6 +362,142 @@
             "null"
           ],
           "description": "Primary GEU ID responsible for this file, or null if not assigned"
+        },
+        "absolute_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "artifact_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "created_time": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "created_utc": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "entity_kind": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "file",
+            "directory",
+            null
+          ]
+        },
+        "extension": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "file_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "filename": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "modified_time": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "module_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "py_capability_facts_hash": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}\\$"
+        },
+        "py_capability_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "record_kind": {
+          "type": "string",
+          "enum": [
+            "entity",
+            "edge",
+            "metadata",
+            "generator"
+          ]
+        },
+        "registered_by": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "registration_time": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "size_bytes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "active",
+            "archived",
+            "deprecated",
+            "legacy_read_only",
+            null
+          ]
+        },
+        "updated_utc": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
         }
       },
       "required": [
