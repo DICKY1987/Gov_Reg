@@ -1456,3 +1456,12 @@ validation:
     null_behavior: allow
     formula: COALESCE(INPUT.target_file_id, NULL)
     rationale: Target file reference; immutable after creation
+
+  path_aliases:
+    depends_on: []
+    error_policy: set_null
+    type: array
+    trigger: manual_patch_only
+    null_behavior: set_empty_array
+    formula: COALESCE(INPUT.path_aliases, [])
+    rationale: Alternate file paths or symlinks; manually maintained
