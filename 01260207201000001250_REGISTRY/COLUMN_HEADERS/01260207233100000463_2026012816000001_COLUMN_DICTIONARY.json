@@ -8481,7 +8481,8 @@
         "type": [
           "string",
           "null"
-        ]
+        ],
+        "pattern": "^[0-9a-f]{64}$"
       },
       "scope": {
         "record_kinds_in": [
@@ -8501,7 +8502,12 @@
       "validation": {
         "rules": []
       },
-      "description": "Hash of capability facts extracted from Python code"
+      "description": "SHA-256 hash of capability facts extracted from Python file for change detection",
+      "source": "computed",
+      "producer": "mapp_py.capability_detector.py + compute_sha_256_hash_of_evidence.py",
+      "derivation_policy": "recompute_on_build",
+      "null_meaning": "Not a Python file or analysis not run",
+      "cross_reference": "See 01260207220000001318_mapp_py/01260202173939000019_Column to Script Mapping.json for producer details"
     },
     "py_capability_tags": {
       "value_schema": {
@@ -8531,7 +8537,21 @@
       "validation": {
         "rules": []
       },
-      "description": "Capability tags for Python code"
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
+        }
+      },
+      "description": "Controlled vocabulary capability tags derived from Python code analysis",
+      "source": "computed",
+      "producer": "mapp_py.capability_detector.py",
+      "derivation_policy": "recompute_on_build",
+      "null_meaning": "Not a Python file or analysis not run",
+      "controlled_vocabulary": ["data_processing", "api", "cli", "database", "testing", "async", "ml_ai", "web_scraping", "file_io", "logging", "configuration", "security"],
+      "precedence_group": "python_analysis",
+      "cross_reference": "See 01260207220000001318_mapp_py/01260202173939000019_Column to Script Mapping.json for producer details"
     },
     "py_complexity_cyclomatic": {
       "value_schema": {
