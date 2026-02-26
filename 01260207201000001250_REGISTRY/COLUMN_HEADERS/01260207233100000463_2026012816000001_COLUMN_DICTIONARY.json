@@ -670,6 +670,13 @@
           "evidence_keys": [],
           "artifacts": []
         }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
+        }
       }
     },
     "confidence": {
@@ -841,6 +848,13 @@
           "evidence_keys": [],
           "artifacts": []
         }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
+        }
       }
     },
     "contracts_produced": {
@@ -894,6 +908,13 @@
         "evidence": {
           "evidence_keys": [],
           "artifacts": []
+        }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
         }
       }
     },
@@ -1054,7 +1075,6 @@
     "data_transformation": {
       "value_schema": {
         "type": [
-          "boolean",
           "string",
           "null"
         ]
@@ -1160,6 +1180,13 @@
           "evidence_keys": [],
           "artifacts": []
         }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
+        }
       }
     },
     "deliverables": {
@@ -1204,6 +1231,13 @@
         "evidence": {
           "evidence_keys": [],
           "artifacts": []
+        }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
         }
       }
     },
@@ -1264,6 +1298,13 @@
           "artifacts": [
             "EVIDENCE_REGISTRY_SNAPSHOT"
           ]
+        }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
         }
       }
     },
@@ -1698,6 +1739,13 @@
           "evidence_keys": [],
           "artifacts": []
         }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
+        }
       }
     },
     "enforced_by": {
@@ -1799,6 +1847,13 @@
           "artifacts": [
             "EVIDENCE_REGISTRY_SNAPSHOT"
           ]
+        }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
         }
       }
     },
@@ -1902,6 +1957,13 @@
             "EVIDENCE_REGISTRY_SNAPSHOT"
           ]
         }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
+        }
       }
     },
     "entries": {
@@ -1946,6 +2008,13 @@
         "evidence": {
           "evidence_keys": [],
           "artifacts": []
+        }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
         }
       }
     },
@@ -2188,6 +2257,12 @@
           "evidence_keys": [],
           "artifacts": []
         }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_object_string",
+          "max_display_length": 500
+        }
       }
     },
     "evidence_locator": {
@@ -2389,6 +2464,13 @@
         "evidence": {
           "evidence_keys": [],
           "artifacts": []
+        }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
         }
       }
     },
@@ -2752,6 +2834,12 @@
           "evidence_keys": [],
           "artifacts": []
         }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_object_string",
+          "max_display_length": 500
+        }
       }
     },
     "file_id": {
@@ -2927,6 +3015,13 @@
         "evidence": {
           "evidence_keys": [],
           "artifacts": []
+        }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
         }
       }
     },
@@ -3557,6 +3652,13 @@
             "EVIDENCE_REGISTRY_SNAPSHOT"
           ]
         }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
+        }
       }
     },
     "geu_role": {
@@ -4002,6 +4104,13 @@
         "evidence": {
           "evidence_keys": [],
           "artifacts": []
+        }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
         }
       }
     },
@@ -5117,6 +5226,13 @@
           "evidence_keys": [],
           "artifacts": []
         }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
+        }
       }
     },
     "owner_geu_id": {
@@ -5241,6 +5357,13 @@
         "evidence": {
           "evidence_keys": [],
           "artifacts": []
+        }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
         }
       }
     },
@@ -5867,6 +5990,13 @@
         "evidence": {
           "evidence_keys": [],
           "artifacts": []
+        }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
         }
       }
     },
@@ -6496,6 +6626,12 @@
         "evidence": {
           "evidence_keys": [],
           "artifacts": []
+        }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_object_string",
+          "max_display_length": 500
         }
       }
     },
@@ -7317,6 +7453,13 @@
           "evidence_keys": [],
           "artifacts": []
         }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
+        }
       }
     },
     "target_entity_id": {
@@ -7630,6 +7773,13 @@
           "artifacts": [
             "EVIDENCE_REGISTRY_SNAPSHOT"
           ]
+        }
+      },
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
         }
       }
     },
@@ -8760,7 +8910,14 @@
       "validation": {
         "rules": []
       },
-      "description": "IDs of Python components"
+      "description": "IDs of Python components",
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
+        }
+      }
     },
     "py_coverage_percent": {
       "value_schema": {
@@ -8898,7 +9055,14 @@
       "validation": {
         "rules": []
       },
-      "description": "Input deliverables for Python component"
+      "description": "Input deliverables for Python component",
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
+        }
+      }
     },
     "py_deliverable_interfaces": {
       "value_schema": {
@@ -8958,7 +9122,14 @@
       "validation": {
         "rules": []
       },
-      "description": "Kinds of deliverables produced"
+      "description": "Kinds of deliverables produced",
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
+        }
+      }
     },
     "py_deliverable_outputs": {
       "value_schema": {
@@ -8988,7 +9159,14 @@
       "validation": {
         "rules": []
       },
-      "description": "Output deliverables for Python component"
+      "description": "Output deliverables for Python component",
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 200
+        }
+      }
     },
     "py_deliverable_signature_hash": {
       "value_schema": {
@@ -9072,7 +9250,14 @@
       "validation": {
         "rules": []
       },
-      "description": "Local/project imports"
+      "description": "Local/project imports",
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 500
+        }
+      }
     },
     "py_imports_stdlib": {
       "value_schema": {
@@ -9102,7 +9287,14 @@
       "validation": {
         "rules": []
       },
-      "description": "Standard library imports"
+      "description": "Standard library imports",
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 500
+        }
+      }
     },
     "py_imports_third_party": {
       "value_schema": {
@@ -9132,7 +9324,14 @@
       "validation": {
         "rules": []
       },
-      "description": "Third-party imports"
+      "description": "Third-party imports",
+      "serialization": {
+        "flat_table": {
+          "strategy": "json_array_string",
+          "separator": ",",
+          "max_display_length": 500
+        }
+      }
     },
     "py_io_surface_flags": {
       "value_schema": {
