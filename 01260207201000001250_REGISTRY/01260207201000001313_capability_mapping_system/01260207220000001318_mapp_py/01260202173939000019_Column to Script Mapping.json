@@ -7,6 +7,18 @@
   "generated_at": "2026-02-02T22:13:00Z",
   "changelog": "v2.2: Reconciliation patch - fixed text_normalizer.py status/location, added encoding policy, established error handling policy",
 
+  "_metadata": {
+    "description": "Mapping of registry columns to mapp_py producer scripts",
+    "cross_reference": "This file defines production pipeline metadata. For schema validation, scope, and serialization rules, see ../../COLUMN_HEADERS/01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+    "authority": {
+      "producer_scripts": "this_file",
+      "schema_validation": "COLUMN_DICTIONARY.json",
+      "write_policy": "UNIFIED_SSOT_REGISTRY_WRITE_POLICY.yaml",
+      "derivation_formulas": "UNIFIED_SSOT_REGISTRY_DERIVATIONS.yaml"
+    },
+    "last_updated": "2026-02-26T09:20:00Z"
+  },
+
   "compatibility_requirements": {
     "python_version_min": "3.9",
     "python_version_max": "3.12",
