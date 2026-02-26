@@ -1375,3 +1375,84 @@ validation:
     null_behavior: set_empty_array
     formula: COALESCE(INPUT.py_capability_tags, [])
     rationale: Provided directly by Python analysis tool; null for non-Python files
+
+  created_by:
+    depends_on: []
+    error_policy: set_null
+    type: string
+    trigger: on_create_only
+    null_behavior: allow
+    formula: COALESCE(INPUT.created_by, NULL)
+    rationale: User or tool that created the record; set at creation time only
+
+  directionality:
+    depends_on: []
+    error_policy: set_null
+    type: string
+    trigger: on_create_only
+    null_behavior: allow
+    formula: COALESCE(INPUT.directionality, NULL)
+    rationale: Edge direction; immutable after creation
+
+  edge_type:
+    depends_on: []
+    error_policy: fail
+    type: string
+    trigger: on_create_only
+    null_behavior: error
+    formula: INPUT.edge_type
+    rationale: Required edge relationship type; immutable after creation
+
+  record_kind:
+    depends_on: []
+    error_policy: fail
+    type: string
+    trigger: on_create_only
+    null_behavior: error
+    formula: INPUT.record_kind
+    rationale: Required record type; immutable after creation
+
+  rel_type:
+    depends_on: []
+    error_policy: set_null
+    type: string
+    trigger: on_create_only
+    null_behavior: allow
+    formula: COALESCE(INPUT.rel_type, NULL)
+    rationale: Relationship type (deprecated in favor of edge_type); immutable
+
+  source_entity_id:
+    depends_on: []
+    error_policy: set_null
+    type: string
+    trigger: on_create_only
+    null_behavior: allow
+    formula: COALESCE(INPUT.source_entity_id, NULL)
+    rationale: Source entity reference; immutable after creation
+
+  source_file_id:
+    depends_on: []
+    error_policy: set_null
+    type: string
+    trigger: on_create_only
+    null_behavior: allow
+    formula: COALESCE(INPUT.source_file_id, NULL)
+    rationale: Source file reference; immutable after creation
+
+  target_entity_id:
+    depends_on: []
+    error_policy: set_null
+    type: string
+    trigger: on_create_only
+    null_behavior: allow
+    formula: COALESCE(INPUT.target_entity_id, NULL)
+    rationale: Target entity reference; immutable after creation
+
+  target_file_id:
+    depends_on: []
+    error_policy: set_null
+    type: string
+    trigger: on_create_only
+    null_behavior: allow
+    formula: COALESCE(INPUT.target_file_id, NULL)
+    rationale: Target file reference; immutable after creation
