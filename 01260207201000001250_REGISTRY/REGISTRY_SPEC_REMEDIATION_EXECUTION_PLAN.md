@@ -1,8 +1,40 @@
 # Registry Specification Remediation - Execution Plan
 **Created:** 2026-02-26T07:40:19Z  
-**Status:** Ready for execution  
+**Updated:** 2026-02-26T09:26:00Z  
+**Status:** Ready for execution (Pre-requisites completed ✅)  
 **Estimated Duration:** 3-4 hours  
 **Risk Level:** LOW (all changes are additive or corrective)
+
+---
+
+## ⚠️ PRE-REQUISITE: DIRECTORY REORGANIZATION MUST BE COMMITTED FIRST
+
+**STOP:** Before executing this plan, verify the following:
+
+1. ✅ COLUMN_HEADERS/ directory exists and is git-tracked
+2. ✅ No files showing as "D" (deleted) in root that plan references
+3. ✅ `git status` shows clean or only COUNTER_STORE.json/unrelated files modified
+4. ✅ PRE_REMEDIATION_FIX_REQUIRED.md Steps 1-5 completed
+
+**To verify:**
+```powershell
+cd C:\Users\richg\Gov_Reg\01260207201000001250_REGISTRY
+git status --short | Select-String "^D.*UNIFIED_SSOT"
+# Should return NOTHING (0 results)
+
+Test-Path "COLUMN_HEADERS\01260207201000000193_UNIFIED_SSOT_REGISTRY_WRITE_POLICY.yaml"
+# Should return True
+```
+
+**If verification fails:** Execute PRE_REMEDIATION_FIX_REQUIRED.md first.
+
+**Pre-Requisite Status:**
+- [x] Step 1: Directory reorganization committed (commit ac63f85)
+- [x] Step 2: capability_mapper imports verified
+- [x] Step 3: py_capability_* enhanced in COLUMN_DICTIONARY (commit 72c2fda)
+- [x] Step 4: Cross-reference added to Column to Script Mapping (commit e656e83)
+- [x] Step 5: Backup hierarchy documented (commit 10563f9)
+- [x] Step 6: This warning added
 
 ---
 
