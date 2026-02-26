@@ -106,7 +106,7 @@ columns:
   description:
     rationale: Full description
     null_policy: allow_null
-    update_policy: manual_or_automated
+    update_policy: manual_patch_only
     writable_by: both
   source_registry_scan_id:
     rationale: Source scan for derived artifacts
@@ -136,12 +136,12 @@ columns:
   one_line_purpose:
     rationale: Single-line purpose statement
     null_policy: allow_null
-    update_policy: manual_or_automated
+    update_policy: manual_patch_only
     writable_by: both
   superseded_by:
     rationale: Superseding entity reference
     null_policy: allow_null
-    update_policy: manual_or_automated
+    update_policy: manual_patch_only
     writable_by: both
   bundle_role_source:
     rationale: Shadow column computed from derivation
@@ -276,7 +276,7 @@ columns:
   bundle_version:
     rationale: Bundle version
     null_policy: conditional
-    update_policy: manual_or_automated
+    update_policy: manual_patch_only
     writable_by: both
   file_id:
     rationale: 20-digit unique file identifier, allocated once at discovery
@@ -371,7 +371,7 @@ columns:
   supersedes_entity_id:
     rationale: Entity this supersedes
     null_policy: allow_null
-    update_policy: manual_or_automated
+    update_policy: manual_patch_only
     writable_by: tool_only
   step_refs:
     rationale: Manual patching required for complex field
@@ -810,7 +810,7 @@ columns:
   short_description:
     rationale: Brief description
     null_policy: allow_null
-    update_policy: manual_or_automated
+    update_policy: manual_patch_only
     writable_by: both
   evidence_locator:
     rationale: Evidence location reference
@@ -873,7 +873,7 @@ columns:
   canonicality:
     rationale: Canonical vs derived/copy status
     null_policy: allow_null
-    update_policy: manual_or_automated
+    update_policy: manual_patch_only
     writable_by: both
 
   py_capability_facts_hash:
