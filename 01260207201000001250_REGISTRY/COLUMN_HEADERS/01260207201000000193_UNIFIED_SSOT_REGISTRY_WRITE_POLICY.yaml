@@ -875,3 +875,16 @@ columns:
     null_policy: allow_null
     update_policy: manual_or_automated
     writable_by: both
+
+  py_capability_facts_hash:
+    rationale: SHA-256 hash of capability facts extracted from Python file
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_capability_tags:
+    rationale: Capability tags derived from Python code analysis
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+    merge_strategy: set_union

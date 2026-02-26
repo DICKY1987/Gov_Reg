@@ -1357,3 +1357,21 @@ validation:
   type_consistency:
     rule: Formula output type must match declared type
     on_violation: fail
+
+  py_capability_facts_hash:
+    depends_on: []
+    error_policy: set_null
+    type: string
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: COALESCE(INPUT.py_capability_facts_hash, NULL)
+    rationale: Provided directly by Python analysis tool; null for non-Python files
+
+  py_capability_tags:
+    depends_on: []
+    error_policy: set_null
+    type: array
+    trigger: recompute_on_build
+    null_behavior: set_empty_array
+    formula: COALESCE(INPUT.py_capability_tags, [])
+    rationale: Provided directly by Python analysis tool; null for non-Python files
