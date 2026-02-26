@@ -126,7 +126,9 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -181,7 +183,9 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -547,7 +551,9 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -587,7 +593,9 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -630,7 +638,9 @@
         }
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -952,7 +962,6 @@
       },
       "scope": {
         "record_kinds_in": [
-          "core",
           "entity",
           "edge",
           "generator"
@@ -1001,7 +1010,6 @@
       },
       "scope": {
         "record_kinds_in": [
-          "core",
           "entity",
           "edge",
           "generator"
@@ -1165,7 +1173,9 @@
         }
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -1208,7 +1218,9 @@
         }
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -1263,7 +1275,12 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ],
+        "entity_kinds_in": [
+          "file"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -1602,7 +1619,9 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "edge"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -1647,7 +1666,9 @@
         }
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -1687,7 +1708,9 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -1730,7 +1753,9 @@
         }
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -1785,7 +1810,9 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -1828,7 +1855,9 @@
         }
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -1886,7 +1915,9 @@
         }
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -2125,7 +2156,9 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -2325,7 +2358,9 @@
         }
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -2413,7 +2448,9 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -2683,7 +2720,9 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -2857,7 +2896,9 @@
         }
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -3099,7 +3140,9 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -3148,7 +3191,9 @@
         "format": "date-time"
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -3194,7 +3239,9 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -3924,7 +3971,9 @@
         }
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -3964,7 +4013,12 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ],
+        "entity_kinds_in": [
+          "file"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -4012,7 +4066,9 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -4060,7 +4116,12 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ],
+        "entity_kinds_in": [
+          "file"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -4206,7 +4267,9 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -4552,7 +4615,6 @@
       },
       "scope": {
         "record_kinds_in": [
-          "core",
           "entity",
           "edge",
           "generator"
@@ -4705,7 +4767,12 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ],
+        "entity_kinds_in": [
+          "file"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -5018,7 +5085,9 @@
         }
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -5141,7 +5210,9 @@
         }
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -5442,7 +5513,6 @@
       },
       "scope": {
         "record_kinds_in": [
-          "core",
           "entity",
           "edge",
           "generator"
@@ -5499,7 +5569,6 @@
       },
       "scope": {
         "record_kinds_in": [
-          "core",
           "entity",
           "edge",
           "generator"
@@ -5707,7 +5776,9 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -5765,7 +5836,9 @@
         }
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -6338,7 +6411,9 @@
         "pattern": "^[0-9]+\\.[0-9]+$"
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -6384,7 +6459,9 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -6807,7 +6884,9 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "edge"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -6985,7 +7064,6 @@
       },
       "scope": {
         "record_kinds_in": [
-          "core",
           "entity",
           "edge",
           "generator"
@@ -7091,7 +7169,9 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -7198,7 +7278,6 @@
       },
       "scope": {
         "record_kinds_in": [
-          "core",
           "entity",
           "edge",
           "generator"
@@ -7325,7 +7404,9 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "edge"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -7380,7 +7461,9 @@
         ]
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -7501,7 +7584,9 @@
         }
       },
       "scope": {
-        "record_kinds_in": []
+        "record_kinds_in": [
+          "entity"
+        ]
       },
       "presence": {
         "policy": "OPTIONAL",
@@ -7839,7 +7924,6 @@
       },
       "scope": {
         "record_kinds_in": [
-          "core",
           "entity",
           "edge",
           "generator"
@@ -7888,7 +7972,6 @@
       },
       "scope": {
         "record_kinds_in": [
-          "core",
           "entity",
           "edge",
           "generator"
@@ -8549,7 +8632,20 @@
       "producer": "mapp_py.capability_detector.py",
       "derivation_policy": "recompute_on_build",
       "null_meaning": "Not a Python file or analysis not run",
-      "controlled_vocabulary": ["data_processing", "api", "cli", "database", "testing", "async", "ml_ai", "web_scraping", "file_io", "logging", "configuration", "security"],
+      "controlled_vocabulary": [
+        "data_processing",
+        "api",
+        "cli",
+        "database",
+        "testing",
+        "async",
+        "ml_ai",
+        "web_scraping",
+        "file_io",
+        "logging",
+        "configuration",
+        "security"
+      ],
       "precedence_group": "python_analysis",
       "cross_reference": "See 01260207220000001318_mapp_py/01260202173939000019_Column to Script Mapping.json for producer details"
     },
