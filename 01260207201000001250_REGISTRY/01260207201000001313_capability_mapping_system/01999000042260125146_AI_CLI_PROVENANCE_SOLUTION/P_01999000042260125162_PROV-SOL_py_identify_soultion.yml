@@ -1,0 +1,704 @@
+# DOC_LINK: DOC-CONFIG-AI-CLI-PY-IDENTIFY-SOLUTION-001
+doc_id: DOC-CONFIG-AI-CLI-PY-IDENTIFY-SOLUTION-001
+IDENTIFICATION_CRITERIA:
+  constraints:
+    no_prose: true
+    no_subject_fields: true
+    output_form: rule_objects_only
+
+  versioning:
+    merged_from:
+      - base: IDENTIFICATION_CRITERIA_V1
+      - patch: PATCH_ID_CRITERIA_ADD_333_V1
+      - addendum: CONCEPTS_444_INTEGRATION_V1
+
+  rule_sets:
+
+    - rule_set_id: RS_ACTIVE_DETERMINATION_V1
+      rules:
+        - rule_id: R_ACTIVE_001
+          decision: ACTIVE
+          type: hard_stop
+          requires_all:
+            - evidence.edge.inbound.from_root_prod.exists: true
+              evidence.edge.inbound.from_root_prod.min_confidence: 0.80
+
+        - rule_id: R_ACTIVE_002
+          decision: ACTIVE
+          type: hard_stop
+          requires_all:
+            - evidence.entrypoint.is_entrypoint: true
+              evidence.entrypoint.min_confidence: 0.80
+
+        - rule_id: R_ACTIVE_003
+          decision: ACTIVE_TEST_ONLY
+          type: classification
+          requires_all:
+            - evidence.edge.inbound.from_root_prod.exists: false
+            - evidence.edge.inbound.from_root_test.exists: true
+              evidence.edge.inbound.from_root_test.min_confidence: 0.80
+
+        - rule_id: R_ACTIVE_004
+          decision: UNKNOWN
+          type: classification
+          requires_all:
+            - evidence.graph.coverage_ratio.lt: 0.85
+
+        - rule_id: R_ACTIVE_005
+          decision: ACTIVE
+          type: hard_stop
+          requires_any:
+            - evidence.infra.trigger.confirmed: true
+              evidence.infra.trigger.min_confidence: 0.75
+            - evidence.runtime.executed.confirmed: true
+              evidence.runtime.executed.min_confidence: 0.85
+
+        - rule_id: R_ACTIVE_006
+          decision: ACTIVE
+          type: hard_stop
+          requires_any:
+            - evidence.codeql.reachable_from_prod_root.exists: true
+              evidence.codeql.reachable_from_prod_root.min_confidence: 0.85
+            - evidence.codeql.calls_from_prod_root.exists: true
+              evidence.codeql.calls_from_prod_root.min_confidence: 0.85
+
+    - rule_set_id: RS_OBSOLETE_CANDIDATE_GATING_V1
+      rules:
+        - rule_id: R_OBS_001
+          decision: DO_NOT_QUARANTINE
+          type: hard_stop
+          requires_any:
+            - evidence.edge.inbound.from_root_prod.exists: true
+              evidence.edge.inbound.from_root_prod.min_confidence: 0.60
+            - evidence.entrypoint.is_entrypoint: true
+              evidence.entrypoint.min_confidence: 0.60
+            - evidence.api.is_public_surface: true
+              evidence.api.min_confidence: 0.70
+            - evidence.codeql.reachable_from_prod_root.exists: true
+              evidence.codeql.reachable_from_prod_root.min_confidence: 0.70
+
+        - rule_id: R_OBS_002
+          decision: OBSOLETE_CANDIDATE
+          type: gate
+          requires_all:
+            - evidence.graph.reachable_from_any_root.exists: false
+              evidence.graph.reachable_from_any_root.min_confidence: 0.85
+            - evidence.edge.inbound.total_count.eq: 0
+            - evidence.redundancy.best_match.exists: true
+              evidence.redundancy.best_match.min_similarity: 0.90
+              evidence.redundancy.best_match.min_confidence: 0.80
+            - evidence.redundancy.best_match.canonical_candidate: true
+            - evidence.unique_exports.exists: false
+              evidence.unique_exports.min_confidence: 0.80
+
+        - rule_id: R_OBS_003
+          decision: QUARANTINE_ELIGIBLE
+          type: gate
+          requires_all:
+            - evidence.status.current.eq: OBSOLETE_CANDIDATE
+            - evidence.quarantine.previous_attempts.eq: 0
+            - evidence.rollback.plan_exists: true
+            - evidence.registry.update_plan_exists: true
+
+        - rule_id: R_OBS_004
+          decision: OBSOLETE_CANDIDATE
+          type: gate
+          requires_all:
+            - evidence.graph.reachable_from_any_root.exists: false
+              evidence.graph.reachable_from_any_root.min_confidence: 0.85
+            - evidence.infra.trigger.confirmed: false
+            - evidence.runtime.executed.confirmed: false
+            - evidence.redundancy.best_match.exists: true
+              evidence.redundancy.best_match.min_similarity: 0.90
+              evidence.redundancy.best_match.min_confidence: 0.80
+            - evidence.scream_test.performed: true
+            - evidence.scream_test.break_detected: false
+              evidence.scream_test.min_confidence: 0.80
+
+        - rule_id: R_OBS_005
+          decision: UNKNOWN
+          type: classification
+          requires_any:
+            - evidence.interproc.tier.eq: "T2_REQUIRED"
+            - evidence.codeql.database_available: false
+            - evidence.interproc.coverage_ratio.lt: 0.75
+
+    - rule_set_id: RS_REDUNDANCY_DETECTION_V1
+      rules:
+        - rule_id: R_RED_001
+          decision: DUPLICATE_SET_CANDIDATE
+          type: detection
+          requires_all:
+            - evidence.similarity.structural.ge: 0.92
+            - evidence.similarity.semantic.ge: 0.85
+            - evidence.context.dependency_overlap.jaccard.ge: 0.60
+
+        - rule_id: R_RED_002
+          decision: CANONICAL_PREFERENCE
+          type: ranking
+          score:
+            formula: weighted_sum
+            weights:
+              usage.reachability.prod_root: 0.40
+              quality.maintainability: 0.15
+              freshness.meaningful_edit_recency: 0.10
+              tests.footprint: 0.10
+              redundancy.replacement_strength: 0.25
+            gates:
+              - gate_id: G_CAN_001
+                disqualify_if_any:
+                  - evidence.lint.fails: true
+                  - evidence.syntax.invalid: true
+
+        - rule_id: R_RED_003
+          decision: DUPLICATE_SET_CANDIDATE
+          type: detection
+          requires_all:
+            - evidence.similarity.structural.ge: 0.92
+            - evidence.similarity.semantic.ge: 0.85
+            - evidence.context.dependency_overlap.jaccard.ge: 0.60
+            - evidence.io.surface_overlap.jaccard.ge: 0.50
+
+        - rule_id: R_RED_004
+          decision: CANONICAL_PREFERENCE
+          type: ranking
+          score:
+            formula: weighted_sum
+            weights:
+              usage.reachability.prod_root: 0.35
+              runtime.executed.confirmed: 0.10
+              graph.centrality.betweenness: 0.05
+              quality.maintainability: 0.15
+              freshness.meaningful_edit_recency: 0.10
+              tests.footprint: 0.10
+              redundancy.replacement_strength: 0.15
+            gates:
+              - gate_id: G_CAN_002
+                disqualify_if_any:
+                  - evidence.infra.trigger.confirmed: true
+                    evidence.infra.trigger.min_confidence: 0.75
+                  - evidence.runtime.executed.confirmed: true
+                    evidence.runtime.executed.min_confidence: 0.85
+                  - evidence.scream_test.break_detected: true
+                    evidence.scream_test.min_confidence: 0.80
+
+        - rule_id: R_RED_005
+          decision: DUPLICATE_SET_CANDIDATE
+          type: detection
+          requires_all:
+            - evidence.semgrep.capability_fingerprint_overlap.jaccard.ge: 0.60
+            - evidence.similarity.structural.ge: 0.88
+
+    - rule_set_id: RS_COMPONENT_BREAKDOWN_V1
+      rules:
+        - rule_id: R_COMP_001
+          decision: COMPONENT_INDEX_REQUIRED
+          type: extraction_requirement
+          applies_to:
+            file_extension_in: [".py"]
+          requires_all:
+            - evidence.parse.ast_success: true
+            - evidence.component.count.ge: 1
+
+        - rule_id: R_COMP_002
+          decision: COMPONENT_ID_DERIVATION
+          type: id_derivation
+          id_fields:
+            component_id:
+              derivation: deterministic_hash
+              inputs:
+                - doc_id
+                - component.scope_qualname
+                - component.signature_normalized
+                - component.kind
+              normalization:
+                signature_normalized:
+                  remove_whitespace: true
+                  remove_comments: true
+                  normalize_identifiers: false
+                  normalize_literals: true
+
+        - rule_id: R_COMP_003
+          decision: CAPABILITY_TAGS_REQUIRED
+          type: extraction_requirement
+          requires_any:
+            - evidence.semgrep.matches.exists: true
+            - evidence.codeql.tags.exists: true
+
+    - rule_set_id: RS_TRACEABILITY_MAPPING_V1
+      rules:
+        - rule_id: R_MAP_001
+          decision: MODULE_MAPPING_CONFIDENT
+          type: mapping
+          requires_all:
+            - evidence.cluster.graph_community.exists: true
+              evidence.cluster.graph_community.min_confidence: 0.75
+            - evidence.domain.label.exists: true
+              evidence.domain.label.min_confidence: 0.75
+            - evidence.path.convention.match: true
+              evidence.path.convention.min_confidence: 0.60
+
+        - rule_id: R_MAP_002
+          decision: MODULE_MAPPING_TENTATIVE
+          type: mapping
+          requires_all:
+            - evidence.cluster.semantic.exists: true
+              evidence.cluster.semantic.min_confidence: 0.60
+            - evidence.domain.label.exists: true
+              evidence.domain.label.min_confidence: 0.60
+
+        - rule_id: R_MAP_003
+          decision: MODULE_MAPPING_CONFIDENT
+          type: mapping
+          requires_any:
+            - evidence.codeql.module_namespace.exists: true
+              evidence.codeql.module_namespace.min_confidence: 0.75
+            - evidence.semgrep.domain_rule_hit.exists: true
+              evidence.semgrep.domain_rule_hit.min_confidence: 0.70
+
+    - rule_set_id: RS_ARTIFACT_OUTPUT_MINIMUMS_V1
+      rules:
+        - rule_id: R_OUT_001
+          decision: FILE_METADATA_REQUIRED
+          type: output_requirement
+          requires_all:
+            - output.file_summary.exists: true
+            - output.relationships.exists: true
+            - output.status.exists: true
+            - output.confidence.exists: true
+            - output.evidence_refs.exists: true
+
+        - rule_id: R_OUT_002
+          decision: COMPONENT_METADATA_REQUIRED
+          type: output_requirement
+          requires_all:
+            - output.components.exists: true
+            - output.components[].signature.exists: true
+            - output.components[].purpose_tags.exists: true
+            - output.components[].similarity_links.exists: true
+            - output.components[].confidence.exists: true
+
+        - rule_id: R_OUT_003
+          decision: PROVENANCE_METADATA_REQUIRED
+          type: output_requirement
+          requires_all:
+            - output.provenance.exists: true
+            - output.provenance.timeline_refs.exists: true
+            - output.provenance.confidence.exists: true
+
+    - rule_set_id: RS_INFRA_TRIGGER_EVIDENCE_V1
+      rules:
+        - rule_id: R_INFRA_001
+          decision: ENTRYPOINT_CONFIRMED
+          type: evidence_channel
+          requires_any:
+            - evidence.infra.cron.references_doc_id.exists: true
+            - evidence.infra.ci.references_doc_id.exists: true
+            - evidence.infra.service.references_doc_id.exists: true
+            - evidence.infra.scheduler.references_doc_id.exists: true
+          confidence:
+            min: 0.75
+
+        - rule_id: R_INFRA_002
+          decision: ENTRYPOINT_CONFIRMED
+          type: evidence_channel
+          requires_any:
+            - evidence.infra.cron.references_path.exists: true
+            - evidence.infra.ci.references_path.exists: true
+            - evidence.infra.service.references_path.exists: true
+            - evidence.infra.scheduler.references_path.exists: true
+          confidence:
+            min: 0.70
+
+    - rule_set_id: RS_RUNTIME_EXECUTION_EVIDENCE_V1
+      rules:
+        - rule_id: R_RUN_001
+          decision: ACTIVE
+          type: hard_stop
+          requires_any:
+            - evidence.runtime.coverage.executed_file.exists: true
+              evidence.runtime.coverage.min_confidence: 0.85
+            - evidence.runtime.trace.executed_file.exists: true
+              evidence.runtime.trace.min_confidence: 0.85
+
+        - rule_id: R_RUN_002
+          decision: ACTIVE_TEST_ONLY
+          type: classification
+          requires_all:
+            - evidence.runtime.coverage.executed_file.exists: true
+            - evidence.runtime.coverage.executed_under_test_harness: true
+            - evidence.edge.inbound.from_root_prod.exists: false
+
+    - rule_set_id: RS_DEAD_CODE_SIGNALS_V1
+      rules:
+        - rule_id: R_DEAD_001
+          decision: UNUSED_SYMBOLS_PRESENT
+          type: detection
+          requires_all:
+            - evidence.deadcode.vulture.unused_symbols_count.gt: 0
+          confidence:
+            min: 0.70
+
+        - rule_id: R_DEAD_002
+          decision: NO_ENTRYPOINT_REACHABILITY
+          type: detection
+          requires_all:
+            - evidence.reachability.modulefinder.reachable_from_prod_roots.contains_doc_id: false
+          confidence:
+            min: 0.80
+
+    - rule_set_id: RS_ARCHAEOLOGY_HEURISTICS_V1
+      rules:
+        - rule_id: R_ARCH_001
+          decision: LEGACY_INDICATOR_PRESENT
+          type: detection
+          requires_any:
+            - evidence.archaeology.python2_syntax.detected: true
+            - evidence.archaeology.legacy_dependency.detected: true
+            - evidence.archaeology.no_type_hints.detected: true
+            - evidence.archaeology.shebang.legacy.detected: true
+          confidence:
+            min: 0.60
+
+    - rule_set_id: RS_GRAPH_CENTRALITY_SIGNALS_V1
+      rules:
+        - rule_id: R_CENT_001
+          decision: CRITICALITY_HIGH
+          type: ranking_signal
+          requires_all:
+            - evidence.graph.centrality.betweenness.ge: 0.80
+          confidence:
+            min: 0.70
+
+        - rule_id: R_CENT_002
+          decision: CRITICALITY_LOW
+          type: ranking_signal
+          requires_all:
+            - evidence.graph.centrality.betweenness.le: 0.20
+            - evidence.edge.inbound.total_count.le: 1
+          confidence:
+            min: 0.70
+
+    - rule_set_id: RS_DEPENDENCY_HYGIENE_SIGNALS_V1
+      rules:
+        - rule_id: R_DEP_001
+          decision: DEPENDENCY_MISMATCH_PRESENT
+          type: detection
+          requires_any:
+            - evidence.deps.fawltydeps.missing_deps_count.gt: 0
+            - evidence.deps.fawltydeps.unused_deps_count.gt: 0
+          confidence:
+            min: 0.65
+
+        - rule_id: R_DEP_002
+          decision: ABANDONMENT_SIGNAL
+          type: detection
+          requires_all:
+            - evidence.deps.requirements_mentions_module.exists: false
+            - evidence.deps.imports_third_party.exists: true
+          confidence:
+            min: 0.60
+
+    - rule_set_id: RS_SCREAM_TEST_EVIDENCE_V1
+      rules:
+        - rule_id: R_SCREAM_001
+          decision: QUARANTINE_BLOCKED
+          type: hard_stop
+          requires_any:
+            - evidence.scream_test.break_detected: true
+              evidence.scream_test.min_confidence: 0.80
+
+        - rule_id: R_SCREAM_002
+          decision: QUARANTINE_SUPPORTED
+          type: gate
+          requires_all:
+            - evidence.scream_test.performed: true
+            - evidence.scream_test.break_detected: false
+            - evidence.scream_test.min_confidence: 0.80
+
+    - rule_set_id: RS_SAFE_EXECUTION_HARNESS_V1
+      rules:
+        - rule_id: R_SAFE_001
+          decision: SAFE_BEHAVIOR_DISCOVERY_ELIGIBLE
+          type: gate
+          requires_all:
+            - evidence.sandbox.pyfakefs.available: true
+            - evidence.sandbox.network_blocked: true
+            - evidence.sandbox.subprocess_blocked: true
+
+        - rule_id: R_SAFE_002
+          decision: IO_SURFACE_EXTRACTABLE
+          type: extraction_requirement
+          requires_any:
+            - evidence.io.argparse.detected: true
+            - evidence.io.click.detected: true
+            - evidence.io.envvars.detected: true
+            - evidence.io.file_reads.detected: true
+            - evidence.io.file_writes.detected: true
+            - evidence.io.network_calls.detected: true
+
+    - rule_set_id: RS_SEMGREP_CAPABILITY_FINGERPRINTS_V1
+      rules:
+        - rule_id: R_SG_001
+          decision: CAPABILITY_FINGERPRINT_PRESENT
+          type: evidence_channel
+          requires_all:
+            - evidence.semgrep.matches.exists: true
+            - evidence.semgrep.matches.rule_count.ge: 1
+          confidence:
+            min: 0.70
+
+        - rule_id: R_SG_002
+          decision: DOMAIN_TAG_ASSIGNED
+          type: mapping
+          requires_all:
+            - evidence.semgrep.domain_rule_hit.exists: true
+            - evidence.semgrep.domain_rule_hit.min_confidence: 0.70
+
+        - rule_id: R_SG_003
+          decision: SECURITY_OR_RISK_TAG_ASSIGNED
+          type: detection
+          requires_any:
+            - evidence.semgrep.risk_rule_hit.exists: true
+            - evidence.semgrep.security_rule_hit.exists: true
+          confidence:
+            min: 0.70
+
+    - rule_set_id: RS_CODEQL_GRAPH_TRUTH_LAYER_V1
+      rules:
+        - rule_id: R_CQ_001
+          decision: INTERPROC_GRAPH_AVAILABLE
+          type: gate
+          requires_all:
+            - evidence.codeql.database_available: true
+            - evidence.codeql.query_pack_available: true
+
+        - rule_id: R_CQ_002
+          decision: REACHABILITY_CONFIRMED
+          type: evidence_channel
+          requires_any:
+            - evidence.codeql.reachable_from_prod_root.exists: true
+            - evidence.codeql.reachable_from_test_root.exists: true
+          confidence:
+            min: 0.80
+
+        - rule_id: R_CQ_003
+          decision: DATAFLOW_DEPENDENCY_CONFIRMED
+          type: evidence_channel
+          requires_all:
+            - evidence.codeql.dataflow_link.exists: true
+          confidence:
+            min: 0.75
+
+    - rule_set_id: RS_INTERPROCEDURAL_TIERING_V1
+      rules:
+        - rule_id: R_IP_001
+          decision: INTERPROC_TIER_ASSIGNED
+          type: classification
+          requires_all:
+            - evidence.interproc.tier.in: ["T0_FILE_ONLY", "T1_IMPORT_GRAPH", "T2_CALL_GRAPH", "T3_DATAFLOW"]
+            - evidence.interproc.tier_confidence.ge: 0.70
+
+        - rule_id: R_IP_002
+          decision: T2_REQUIRED_FOR_OBSOLETE
+          type: gate
+          requires_all:
+            - evidence.status.proposed.eq: OBSOLETE_CANDIDATE
+            - evidence.interproc.tier.in: ["T2_CALL_GRAPH", "T3_DATAFLOW"]
+            - evidence.interproc.tier_confidence.ge: 0.75
+
+    - rule_set_id: RS_PROVENANCE_TIMELINE_EVIDENCE_V1
+      rules:
+        - rule_id: R_PROV_001
+          decision: PROVENANCE_TIMELINE_AVAILABLE
+          type: evidence_channel
+          requires_any:
+            - evidence.provenance.git.timeline.exists: true
+            - evidence.provenance.ntfs.usn_journal.timeline.exists: true
+            - evidence.provenance.ai_cli_logs.timeline.exists: true
+          confidence:
+            min: 0.70
+
+        - rule_id: R_PROV_002
+          decision: SUPERSESSION_INDICATOR_PRESENT
+          type: detection
+          requires_all:
+            - evidence.provenance.supersession_event.exists: true
+          confidence:
+            min: 0.70
+
+        - rule_id: R_PROV_003
+          decision: DEPRECATION_INTENT_PRESENT
+          type: detection
+          requires_any:
+            - evidence.provenance.commit_message.deprecates.exists: true
+            - evidence.provenance.issue_or_pr.deprecates.exists: true
+            - evidence.provenance.release_notes.deprecates.exists: true
+          confidence:
+            min: 0.65
+
+    # ========================================================================
+    # AI CLI PROVENANCE RULE SETS (Phase 2.5 Addition - 2026-01-04)
+    # ========================================================================
+
+    - rule_set_id: RS_AI_PROVENANCE_SIGNALS_V1
+      description: "Detection of AI CLI activity and usage patterns"
+      rules:
+        - rule_id: R_AI_PROV_001
+          decision: AI_GENERATED_HIGH_ACTIVITY
+          type: detection
+          requires_all:
+            - provenance.ai_cli_logs.timeline.session_count.ge: 5
+            - provenance.ai_cli_logs.timeline.tool_use_count.edit.ge: 3
+          confidence:
+            min: 0.75
+          notes: "High AI activity: 5+ sessions, 3+ edits"
+
+        - rule_id: R_AI_PROV_002
+          decision: AI_GENERATED_MODERATE_ACTIVITY
+          type: detection
+          requires_all:
+            - provenance.ai_cli_logs.timeline.session_count.ge: 2
+            - provenance.ai_cli_logs.timeline.tool_use_count.view.ge: 1
+          confidence:
+            min: 0.70
+          notes: "Moderate AI activity: 2+ sessions, 1+ view"
+
+        - rule_id: R_AI_PROV_003
+          decision: AI_GENERATED_RECENT_TOUCH
+          type: ranking_signal
+          score:
+            formula: weighted_sum
+            weights:
+              provenance.ai_cli_logs.timeline.session_count: 0.40
+              provenance.ai_cli_logs.timeline.tool_use_count.edit: 0.30
+              provenance.ai_cli_logs.timeline.tool_use_count.create: 0.20
+              provenance.ai_cli_logs.timeline.tool_use_count.view: 0.10
+          notes: "Composite AI activity score for ranking"
+
+        - rule_id: R_AI_PROV_004
+          decision: AI_CREATED_FILE
+          type: detection
+          requires_all:
+            - provenance.ai_cli_logs.timeline.tool_use_count.create.ge: 1
+            - provenance.ai_cli_logs.timeline.session_count.ge: 1
+          confidence:
+            min: 0.80
+          notes: "File created by AI CLI"
+
+    - rule_set_id: RS_HUMAN_TOUCH_SIGNALS_V1
+      description: "Human vs AI activity comparison"
+      rules:
+        - rule_id: R_HUMAN_001
+          decision: HUMAN_TOUCH_RECENT
+          type: ranking_signal
+          score:
+            formula: weighted_sum
+            weights:
+              provenance.git.timeline.human_commit_count: 0.50
+              provenance.git.timeline.human_to_ai_ratio: 0.50
+          notes: "Recent human activity indicator"
+
+        - rule_id: R_HUMAN_002
+          decision: AI_DOMINATED_FILE
+          type: detection
+          requires_all:
+            - provenance.git.timeline.ai_commit_count.ge: 5
+            - provenance.git.timeline.human_to_ai_ratio.le: 0.2
+          confidence:
+            min: 0.70
+          notes: "File is primarily AI-modified (AI commits >> human)"
+
+        - rule_id: R_HUMAN_003
+          decision: HUMAN_DOMINATED_FILE
+          type: detection
+          requires_all:
+            - provenance.git.timeline.human_commit_count.ge: 5
+            - provenance.git.timeline.human_to_ai_ratio.ge: 5.0
+          confidence:
+            min: 0.75
+          notes: "File is primarily human-modified (human >> AI)"
+
+    - rule_set_id: RS_SUPERSESSION_INTENT_V1
+      description: "Detection of migration, deprecation, and removal intents from AI prompts"
+      rules:
+        - rule_id: R_INTENT_001
+          decision: MIGRATION_INTENT_DETECTED
+          type: detection
+          requires_all:
+            - provenance.ai_cli_logs.intent_signals.migration_intent: true
+          confidence:
+            min: 0.65
+          notes: "Migration keywords detected in AI prompts"
+
+        - rule_id: R_INTENT_002
+          decision: DEPRECATION_INTENT_DETECTED
+          type: detection
+          requires_all:
+            - provenance.ai_cli_logs.intent_signals.deprecation_intent: true
+          confidence:
+            min: 0.65
+          notes: "Deprecation keywords detected in AI prompts"
+
+        - rule_id: R_INTENT_003
+          decision: REMOVAL_INTENT_DETECTED
+          type: detection
+          requires_all:
+            - provenance.ai_cli_logs.intent_signals.removal_intent: true
+          confidence:
+            min: 0.70
+          notes: "Removal/cleanup keywords detected in AI prompts"
+
+        - rule_id: R_INTENT_004
+          decision: SUPERSESSION_INTENT_STRONG
+          type: ranking_signal
+          requires_any:
+            - provenance.ai_cli_logs.intent_signals.migration_intent: true
+            - provenance.ai_cli_logs.intent_signals.deprecation_intent: true
+            - provenance.ai_cli_logs.intent_signals.removal_intent: true
+          confidence:
+            min: 0.60
+          notes: "Any supersession intent (migration/deprecation/removal)"
+
+        - rule_id: R_INTENT_005
+          decision: SUPERSESSION_INTENT_CRITICAL
+          type: ranking_signal
+          requires_all:
+            - provenance.ai_cli_logs.intent_signals.migration_intent: true
+            - provenance.ai_cli_logs.intent_signals.deprecation_intent: true
+          confidence:
+            min: 0.75
+          notes: "Multiple supersession intents detected (stronger signal)"
+
+    - rule_set_id: RS_AI_PROVENANCE_PRIORITY_BOOST_V1
+      description: "Use AI provenance to boost priority scores for investigation queues"
+      rules:
+        - rule_id: R_PRIORITY_001
+          decision: INVESTIGATION_PRIORITY_HIGH
+          type: ranking
+          score:
+            formula: weighted_sum
+            weights:
+              provenance.ai_cli_logs.timeline.session_count: 0.25
+              provenance.ai_cli_logs.intent_signals.migration_intent: 0.30
+              provenance.ai_cli_logs.intent_signals.deprecation_intent: 0.25
+              provenance.ai_cli_logs.intent_signals.removal_intent: 0.20
+            gates:
+              - gate_id: G_PRIORITY_001
+                disqualify_if_any:
+                  - evidence.edge.inbound.from_root_prod.exists: true
+                    evidence.edge.inbound.from_root_prod.min_confidence: 0.80
+                  - evidence.runtime.executed.confirmed: true
+                    evidence.runtime.executed.min_confidence: 0.85
+          notes: "High priority for review if AI intent signals + not actively used"
+
+        - rule_id: R_PRIORITY_002
+          decision: INVESTIGATION_PRIORITY_MEDIUM
+          type: ranking
+          score:
+            formula: weighted_sum
+            weights:
+              provenance.ai_cli_logs.timeline.session_count: 0.40
+              provenance.ai_cli_logs.timeline.tool_use_count.edit: 0.30
+              provenance.git.timeline.human_to_ai_ratio: 0.30
+          notes: "Medium priority based on AI activity level and human involvement"

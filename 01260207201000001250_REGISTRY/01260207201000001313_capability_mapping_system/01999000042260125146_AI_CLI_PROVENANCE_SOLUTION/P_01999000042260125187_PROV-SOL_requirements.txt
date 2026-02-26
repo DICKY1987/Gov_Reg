@@ -1,0 +1,12 @@
+# AI CLI Provenance Solution - Python Dependencies
+
+# Core dependencies
+pyyaml>=6.0
+
+# Testing
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# Optional (Phase 6 - NLP intent detection)
+# spacy>=3.0.0
+# en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.0.0/en_core_web_sm-3.0.0.tar.gz

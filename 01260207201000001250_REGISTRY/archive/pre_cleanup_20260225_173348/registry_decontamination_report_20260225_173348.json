@@ -1,0 +1,124 @@
+{
+  "timestamp_utc": "2026-02-25T17:33:48.822998Z",
+  "archive_dir": "C:\\Users\\richg\\Gov_Reg\\01260207201000001250_REGISTRY\\archive\\pre_cleanup_20260225_173348",
+  "registry_file": "C:\\Users\\richg\\Gov_Reg\\01260207201000001250_REGISTRY\\01999000042260124503_REGISTRY_file.json",
+  "geu_sets_file": "C:\\Users\\richg\\Gov_Reg\\01260207201000001250_REGISTRY\\01260207233100000466_geu_sets.regenerated.json",
+  "entries": {
+    "before_count": 363,
+    "after_count": 252,
+    "normalized_file_id_count": 76,
+    "duplicates_removed": 111,
+    "invalid_file_ids": [],
+    "conflicts": [
+      {
+        "file_id": "01999000042260124026",
+        "paths": [
+          "01999000042260124026_ID_COUNTER.json",
+          "01999000042260124026_ID_COUNTER.json.lock"
+        ],
+        "count": 2
+      },
+      {
+        "file_id": "01999000042260125046",
+        "paths": [
+          "C:\\Users\\richg\\ALL_AI\\LP_LONG_PLAN\\PHASE_1_PLANNING\\pipeline\\src\\core\\DOC-CORE-CORE-DETERMINISM-1005__determinism.py",
+          "FILE WATCHER/Gov_Reg/LP_LONG_PLAN/PHASE_1_PLANNING/DOC-CORE-CORE-DETERMINISM-1005__determinism.py"
+        ],
+        "count": 2
+      },
+      {
+        "file_id": "01999000042260125047",
+        "paths": [
+          "C:\\Users\\richg\\ALL_AI\\LP_LONG_PLAN\\PHASE_1_PLANNING\\pipeline\\src\\core\\DOC-CORE-CORE-TRACE-STORAGE-1009__trace_storage.py",
+          "FILE WATCHER/Gov_Reg/LP_LONG_PLAN/PHASE_1_PLANNING/DOC-CORE-CORE-TRACE-STORAGE-1009__trace_storage.py"
+        ],
+        "count": 2
+      }
+    ]
+  },
+  "files_duplicates": [
+    {
+      "file_id": "01999000042260125003",
+      "paths": [
+        "01260207201000001178_evidence/01260207201000001167_historical/01999000042260125003_DIRECTORY_SYNC_PLAN.md",
+        "01260207201000001302_src/01260207201000001298_repo_autoops/01260207201000001299_automation_descriptor/01999000042260125003___init__.py"
+      ],
+      "count": 2
+    }
+  ],
+  "geu_sets": {
+    "normalized_file_id_count": 76,
+    "duplicates_removed": 187,
+    "geu_conflicts": [
+      {
+        "geu_id": "99990000000000000003",
+        "file_id": "01999000042260125046",
+        "paths": [
+          "C:\\Users\\richg\\ALL_AI\\LP_LONG_PLAN\\PHASE_1_PLANNING\\pipeline\\src\\core\\DOC-CORE-CORE-DETERMINISM-1005__determinism.py",
+          "FILE WATCHER/Gov_Reg/LP_LONG_PLAN/PHASE_1_PLANNING/DOC-CORE-CORE-DETERMINISM-1005__determinism.py"
+        ],
+        "count": 2
+      },
+      {
+        "geu_id": "99990000000000000003",
+        "file_id": "01999000042260125047",
+        "paths": [
+          "C:\\Users\\richg\\ALL_AI\\LP_LONG_PLAN\\PHASE_1_PLANNING\\pipeline\\src\\core\\DOC-CORE-CORE-TRACE-STORAGE-1009__trace_storage.py",
+          "FILE WATCHER/Gov_Reg/LP_LONG_PLAN/PHASE_1_PLANNING/DOC-CORE-CORE-TRACE-STORAGE-1009__trace_storage.py"
+        ],
+        "count": 2
+      }
+    ],
+    "unassigned_conflicts": [
+      {
+        "file_id": "01999000042260124012",
+        "paths": [
+          "01999000042260124012_governance_registry_schema.v3.json",
+          "REGISTRY/01999000042260124012_governance_registry_schema.v3.json"
+        ],
+        "count": 2
+      },
+      {
+        "file_id": "01999000042260124503",
+        "paths": [
+          "01999000042260124503_governance_registry_unified.json",
+          "REGISTRY/01999000042260124503_governance_registry_unified.json"
+        ],
+        "count": 2
+      },
+      {
+        "file_id": "01999000042260125003",
+        "paths": [
+          "evidence/historical/01999000042260125003_DIRECTORY_SYNC_PLAN.md",
+          "src/repo_autoops/automation_descriptor/01999000042260125003___init__.py"
+        ],
+        "count": 2
+      },
+      {
+        "file_id": "01999000042260125000",
+        "paths": [
+          "01999000042260125000_ID_FORMAT_STANDARD.md",
+          "src/repo_autoops/01999000042260125000___init__.py"
+        ],
+        "count": 2
+      },
+      {
+        "file_id": "01999000042260125001",
+        "paths": [
+          "scripts/P_01999000042260125001_migrate_geu_to_20digit.py",
+          "src/repo_autoops/01999000042260125001___main__.py"
+        ],
+        "count": 2
+      },
+      {
+        "file_id": "01999000042260124026",
+        "paths": [
+          "01999000042260124026_ID_COUNTER.json",
+          "01999000042260124026_ID_COUNTER.json.lock"
+        ],
+        "count": 2
+      }
+    ]
+  },
+  "notes": []
+}

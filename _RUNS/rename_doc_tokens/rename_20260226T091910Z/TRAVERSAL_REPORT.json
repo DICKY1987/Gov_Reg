@@ -1,0 +1,72 @@
+{
+  "run_id": "rename_20260226T091910Z",
+  "created_utc": "20260226T091910Z",
+  "config_path": "rename_doc_tokens_config.yml",
+  "config_echo_path": "C:\\Users\\richg\\Gov_Reg\\_RUNS\\rename_doc_tokens\\rename_20260226T091910Z\\CONFIG_ECHO.yml",
+  "config": {
+    "version": 1,
+    "run": {
+      "run_id": "AUTO",
+      "output_dir": "C:\\Users\\richg\\Gov_Reg\\_RUNS\\rename_doc_tokens",
+      "finalization_mode": "staging",
+      "dry_run": true,
+      "proceed_gate_file": "PROCEED.txt",
+      "proceed_gate_line": "PROCEED_RENAME=YES"
+    },
+    "scan": {
+      "roots": [
+        "C:\\Users\\richg\\Gov_Reg\\01260207201000001250_REGISTRY",
+        "C:\\Users\\richg\\Gov_Reg\\SOME_OTHER_ROOT"
+      ],
+      "recursive": true,
+      "follow_symlinks": false,
+      "include_extensions": [],
+      "exclude_dirs": [
+        ".git",
+        "__pycache__",
+        "node_modules"
+      ],
+      "exclude_path_contains": [
+        "\\_ARCHIVE\\"
+      ],
+      "emit_full_inventory": true
+    },
+    "rename": {
+      "keep_prefix": "P_",
+      "rule": {
+        "match_regex": "^(P_\\d{20})_DOC-.*?__+(.+)$",
+        "replace_with": "\\1_\\2"
+      }
+    },
+    "collisions": {
+      "mode": "append_deterministic_suffix",
+      "suffix_format": "__dup{hash8}",
+      "hash_algo": "sha256",
+      "hash_truncation": 8,
+      "hash_input": "old_relative_path",
+      "winner_sort_key": "old_relative_path"
+    },
+    "governance": {
+      "strict_registry_check": false,
+      "no_overwrite": true,
+      "atomic_rename_same_dir": true
+    }
+  },
+  "metrics": {
+    "dirs_visited": 55,
+    "files_visited_total": 238,
+    "files_matched": 0,
+    "collisions_resolved": 0,
+    "executed": 0,
+    "failed": 0,
+    "skipped_reasons": {
+      "no_match": 238,
+      "missing_root": 1
+    },
+    "files_skipped_reason_counts": {
+      "no_match": 238,
+      "missing_root": 1
+    },
+    "elapsed_ms": 19
+  }
+}

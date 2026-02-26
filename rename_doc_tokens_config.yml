@@ -1,0 +1,43 @@
+version: 1
+
+run:
+  run_id: "AUTO"                  # AUTO -> timestamp-based
+  output_dir: "C:\\Users\\richg\\Gov_Reg\\_RUNS\\rename_doc_tokens"
+  finalization_mode: "staging"    # staging|final
+  dry_run: true
+  proceed_gate_file: "PROCEED.txt"
+  proceed_gate_line: "PROCEED_RENAME=YES"
+
+scan:
+  roots:
+    - "C:\\Users\\richg\\Gov_Reg\\01260207201000001250_REGISTRY"
+    - "C:\\Users\\richg\\Gov_Reg\\SOME_OTHER_ROOT"
+  recursive: true
+  follow_symlinks: false
+  include_extensions: []          # empty => all
+  exclude_dirs:
+    - ".git"
+    - "__pycache__"
+    - "node_modules"
+  exclude_path_contains:
+    - "\\_ARCHIVE\\"
+  emit_full_inventory: true       # proves full traversal
+
+rename:
+  keep_prefix: "P_"               # required (your decision)
+  rule:
+    match_regex: "^(P_\\d{20})_DOC-.*?__+(.+)$"
+    replace_with: "\\1_\\2"
+
+collisions:
+  mode: "append_deterministic_suffix"
+  suffix_format: "__dup{hash8}"
+  hash_algo: "sha256"
+  hash_truncation: 8
+  hash_input: "old_relative_path"  # stable and unique
+  winner_sort_key: "old_relative_path"
+
+governance:
+  strict_registry_check: false     # optional future: require registry membership before rename
+  no_overwrite: true
+  atomic_rename_same_dir: true

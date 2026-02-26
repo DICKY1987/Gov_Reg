@@ -1,0 +1,46 @@
+# AI CLI Provenance Solution - .gitignore
+
+# SQLite databases
+2_COLLECTORS/ai_cli_log_index.db
+2_COLLECTORS/**/*.db
+
+# Python cache
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.Python
+
+# Test artifacts
+4_TESTS/.pytest_cache/
+4_TESTS/htmlcov/
+4_TESTS/.coverage
+4_TESTS/**/*.pyc
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+
+# Generated outputs
+8_EXAMPLES/*.json
+8_EXAMPLES/*.csv
+8_EXAMPLES/*.html
+!8_EXAMPLES/sample_*.json
+!8_EXAMPLES/sample_*.csv
+!8_EXAMPLES/sample_*.html
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log

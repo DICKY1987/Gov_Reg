@@ -1,0 +1,4 @@
+{"type":"tool_use","messageId":"msg-001","timestamp":"2026-01-01T10:00:00.000Z","tool":{"name":"read_file","input":{"file_path":"C:\\Users\\richg\\ALL_AI\\RUNTIME\\test\\sample_file.py"}}}
+{"type":"tool_use","messageId":"msg-002","timestamp":"2026-01-01T10:05:00.000Z","tool":{"name":"edit_file","input":{"file_path":"C:\\Users\\richg\\ALL_AI\\RUNTIME\\test\\sample_file.py","old_string":"def old()","new_string":"def new()"}}}
+{"type":"tool_use","messageId":"msg-003","timestamp":"2026-01-01T10:10:00.000Z","tool":{"name":"write_file","input":{"file_path":"C:\\Users\\richg\\ALL_AI\\RUNTIME\\test\\new_file.py","content":"# New file"}}}
+{"type":"file-history-snapshot","messageId":"msg-004","snapshot":{"timestamp":"2026-01-01T10:15:00.000Z"}}

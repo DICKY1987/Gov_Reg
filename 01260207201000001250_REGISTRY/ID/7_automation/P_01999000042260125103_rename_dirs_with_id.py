@@ -17,9 +17,9 @@ from pathlib import Path
 from typing import List, Tuple
 import shutil
 
-# Add govreg_core to path
-govreg_core_path = Path(__file__).parent.parent / "govreg_core"
-sys.path.insert(0, str(govreg_core_path))
+# Add handlers path for dir_id_handler
+handlers_path = Path(__file__).parent.parent / "1_runtime" / "handlers"
+sys.path.insert(0, str(handlers_path))
 
 from P_01999000042260125068_dir_id_handler import DirIdManager
 

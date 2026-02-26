@@ -1,5 +1,5 @@
 {
-  "generated": "2026-02-25T17:33:48.822998Z",
+  "generated": "2026-02-02T23:14:18.5721836-06:00",
   "schema_version": "4.0",
   "description": "Unified SSOT registry combining governance metadata AND Python source code tracking",
   "column_headers": {
@@ -12248,28 +12248,28 @@
       "dir_id": null
     },
     {
-      "file_id": "01999000042260125190",
-      "relative_path": "01260207201000001302_src/01260207201000001298_repo_autoops/01999000042260125190___init__.py",
-      "filename": "01999000042260125190___init__.py",
+      "file_id": "01999000042260125000",
+      "relative_path": "01260207201000001302_src/01260207201000001298_repo_autoops/01999000042260125000___init__.py",
+      "filename": "01999000042260125000___init__.py",
       "extension": "py",
       "repo_root_id": "01",
       "record_kind": "entity",
       "has_tests": false,
       "created_utc": "2026-01-31T22:50:21.712239Z",
-      "updated_utc": "2026-02-25T19:51:09Z",
+      "updated_utc": "2026-01-31T22:50:21.712239Z",
       "entity_kind": "file",
       "dir_id": "01260207201000001298"
     },
     {
-      "file_id": "01999000042260125191",
-      "relative_path": "01260207201000001302_src/01260207201000001298_repo_autoops/01999000042260125191___main__.py",
-      "filename": "01999000042260125191___main__.py",
+      "file_id": "01999000042260125001",
+      "relative_path": "01260207201000001302_src/01260207201000001298_repo_autoops/01999000042260125001___main__.py",
+      "filename": "01999000042260125001___main__.py",
       "extension": "py",
       "repo_root_id": "01",
       "record_kind": "entity",
       "has_tests": false,
       "created_utc": "2026-01-31T22:50:21.712239Z",
-      "updated_utc": "2026-02-25T19:51:09Z",
+      "updated_utc": "2026-01-31T22:50:21.712239Z",
       "entity_kind": "file",
       "dir_id": "01260207201000001298"
     },
@@ -12287,15 +12287,15 @@
       "dir_id": "01260207201000001299"
     },
     {
-      "file_id": "01999000042260125192",
-      "relative_path": "01260207201000001302_src/01260207201000001298_repo_autoops/01260207201000001299_automation_descriptor/01999000042260125192___init__.py",
-      "filename": "01999000042260125192___init__.py",
+      "file_id": "01999000042260125003",
+      "relative_path": "01260207201000001302_src/01260207201000001298_repo_autoops/01260207201000001299_automation_descriptor/01999000042260125003___init__.py",
+      "filename": "01999000042260125003___init__.py",
       "extension": "py",
       "repo_root_id": "01",
       "record_kind": "entity",
       "has_tests": false,
       "created_utc": "2026-01-31T22:50:21.712239Z",
-      "updated_utc": "2026-02-25T19:52:20Z",
+      "updated_utc": "2026-01-31T22:50:21.712239Z",
       "entity_kind": "file",
       "superseded_by": "01999000042260125003",
       "canonicality": "SUPERSEDED",
@@ -31469,6 +31469,16 @@
   ],
   "entries": [
     {
+      "file_id": "01999000042260124012",
+      "relative_path": "01999000042260124012_governance_registry_schema.v3.json",
+      "geu_ids": null,
+      "is_shared": false,
+      "layer": "CORE",
+      "artifact_kind": "SCHEMA",
+      "superseded_by": "01999000042260124012",
+      "canonicality": "SUPERSEDED"
+    },
+    {
       "file_id": "01999000042260124018",
       "relative_path": "01999000042260124018_README.md",
       "geu_ids": null,
@@ -31534,6 +31544,16 @@
       "layer": "CORE",
       "artifact_kind": "MARKDOWN_DOC",
       "superseded_by": "01999000042260124502",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124503",
+      "relative_path": "01999000042260124503_governance_registry_unified.json",
+      "geu_ids": null,
+      "is_shared": false,
+      "layer": "CORE",
+      "artifact_kind": "JSON_CONFIG",
+      "superseded_by": "01999000042260124503",
       "canonicality": "SUPERSEDED"
     },
     {
@@ -31832,9 +31852,7 @@
       "geu_ids": null,
       "is_shared": false,
       "layer": "CORE",
-      "artifact_kind": "YAML_CONFIG",
-      "superseded_by": "00199900004226012451",
-      "canonicality": "SUPERSEDED"
+      "artifact_kind": "YAML_CONFIG"
     },
     {
       "file_id": "00199900004226012467",
@@ -31842,9 +31860,7 @@
       "geu_ids": null,
       "is_shared": false,
       "layer": "CORE",
-      "artifact_kind": "TEXT_DOC",
-      "superseded_by": "00199900004226012467",
-      "canonicality": "SUPERSEDED"
+      "artifact_kind": "TEXT_DOC"
     },
     {
       "file_id": "00199900004226012469",
@@ -31852,9 +31868,7 @@
       "geu_ids": null,
       "is_shared": false,
       "layer": "EVIDENCE",
-      "artifact_kind": "JSON_CONFIG",
-      "superseded_by": "00199900004226012469",
-      "canonicality": "SUPERSEDED"
+      "artifact_kind": "JSON_CONFIG"
     },
     {
       "file_id": "00199900004226012470",
@@ -31862,9 +31876,7 @@
       "geu_ids": null,
       "is_shared": false,
       "layer": "EVIDENCE",
-      "artifact_kind": "MARKDOWN_DOC",
-      "superseded_by": "00199900004226012470",
-      "canonicality": "SUPERSEDED"
+      "artifact_kind": "MARKDOWN_DOC"
     },
     {
       "file_id": "00199900004226012472",
@@ -31872,9 +31884,7 @@
       "geu_ids": null,
       "is_shared": false,
       "layer": "GOVERNANCE",
-      "artifact_kind": "MARKDOWN_DOC",
-      "superseded_by": "00199900004226012472",
-      "canonicality": "SUPERSEDED"
+      "artifact_kind": "MARKDOWN_DOC"
     },
     {
       "file_id": "00199900004226012473",
@@ -31882,9 +31892,7 @@
       "geu_ids": null,
       "is_shared": false,
       "layer": "GOVERNANCE",
-      "artifact_kind": "JSON_CONFIG",
-      "superseded_by": "00199900004226012473",
-      "canonicality": "SUPERSEDED"
+      "artifact_kind": "JSON_CONFIG"
     },
     {
       "file_id": "00199900004226012474",
@@ -31892,9 +31900,7 @@
       "geu_ids": null,
       "is_shared": false,
       "layer": "GOVERNANCE",
-      "artifact_kind": "MARKDOWN_DOC",
-      "superseded_by": "00199900004226012474",
-      "canonicality": "SUPERSEDED"
+      "artifact_kind": "MARKDOWN_DOC"
     },
     {
       "file_id": "00199900004226012477",
@@ -31902,9 +31908,7 @@
       "geu_ids": null,
       "is_shared": false,
       "layer": "GOVERNANCE",
-      "artifact_kind": "JSON_CONFIG",
-      "superseded_by": "00199900004226012477",
-      "canonicality": "SUPERSEDED"
+      "artifact_kind": "JSON_CONFIG"
     },
     {
       "file_id": "00199900004226012478",
@@ -31912,9 +31916,7 @@
       "geu_ids": null,
       "is_shared": false,
       "layer": "GOVERNANCE",
-      "artifact_kind": "JSON_CONFIG",
-      "superseded_by": "00199900004226012478",
-      "canonicality": "SUPERSEDED"
+      "artifact_kind": "JSON_CONFIG"
     },
     {
       "file_id": "00199900004226012479",
@@ -31922,9 +31924,7 @@
       "geu_ids": null,
       "is_shared": false,
       "layer": "GOVERNANCE",
-      "artifact_kind": "JSON_CONFIG",
-      "superseded_by": "00199900004226012479",
-      "canonicality": "SUPERSEDED"
+      "artifact_kind": "JSON_CONFIG"
     },
     {
       "file_id": "00199900004226012480",
@@ -31932,9 +31932,7 @@
       "geu_ids": null,
       "is_shared": false,
       "layer": "GOVERNANCE",
-      "artifact_kind": "JSON_CONFIG",
-      "superseded_by": "00199900004226012480",
-      "canonicality": "SUPERSEDED"
+      "artifact_kind": "JSON_CONFIG"
     },
     {
       "file_id": "00199900004226012481",
@@ -31942,9 +31940,7 @@
       "geu_ids": null,
       "is_shared": false,
       "layer": "GOVERNANCE",
-      "artifact_kind": "JSON_CONFIG",
-      "superseded_by": "00199900004226012481",
-      "canonicality": "SUPERSEDED"
+      "artifact_kind": "JSON_CONFIG"
     },
     {
       "file_id": "00199900004226012482",
@@ -31952,9 +31948,7 @@
       "geu_ids": null,
       "is_shared": false,
       "layer": "GOVERNANCE",
-      "artifact_kind": "JSON_CONFIG",
-      "superseded_by": "00199900004226012482",
-      "canonicality": "SUPERSEDED"
+      "artifact_kind": "JSON_CONFIG"
     },
     {
       "file_id": "01999000042260125006",
@@ -31968,8 +31962,7 @@
       "primary_geu_id": "99990000000000000002",
       "geu_role": "VALIDATOR",
       "superseded_by": "01999000042260125006",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "VALIDATOR"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125007",
@@ -31983,8 +31976,7 @@
       "primary_geu_id": "99990000000000000002",
       "geu_role": "RUNNER",
       "superseded_by": "01999000042260125007",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "RUNNER"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125008",
@@ -31998,8 +31990,7 @@
       "primary_geu_id": "99990000000000000004",
       "geu_role": "RULE",
       "superseded_by": "01999000042260125008",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "RULE"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125009",
@@ -32013,8 +32004,7 @@
       "primary_geu_id": "99990000000000000002",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125009",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125010",
@@ -32028,8 +32018,7 @@
       "primary_geu_id": "99990000000000000002",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125010",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125011",
@@ -32043,8 +32032,7 @@
       "primary_geu_id": "99990000000000000002",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125011",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125012",
@@ -32058,8 +32046,7 @@
       "primary_geu_id": "99990000000000000002",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125012",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125013",
@@ -32073,8 +32060,7 @@
       "primary_geu_id": "99990000000000000005",
       "geu_role": "RUNNER",
       "superseded_by": "01999000042260125013",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "RUNNER"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125014",
@@ -32088,8 +32074,7 @@
       "primary_geu_id": "99990000000000000001",
       "geu_role": "SCHEMA",
       "superseded_by": "01999000042260125014",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SCHEMA"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125015",
@@ -32103,8 +32088,7 @@
       "primary_geu_id": "99990000000000000001",
       "geu_role": "SCHEMA",
       "superseded_by": "01999000042260125015",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SCHEMA"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125016",
@@ -32118,8 +32102,7 @@
       "primary_geu_id": "99990000000000000001",
       "geu_role": "SCHEMA",
       "superseded_by": "01999000042260125016",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SCHEMA"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125017",
@@ -32133,8 +32116,7 @@
       "primary_geu_id": "99990000000000000001",
       "geu_role": "SCHEMA",
       "superseded_by": "01999000042260125017",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SCHEMA"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125018",
@@ -32148,8 +32130,7 @@
       "primary_geu_id": "99990000000000000003",
       "geu_role": "VALIDATOR",
       "superseded_by": "01999000042260125018",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "VALIDATOR"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125019",
@@ -32163,8 +32144,7 @@
       "primary_geu_id": "99990000000000000004",
       "geu_role": "RULE",
       "superseded_by": "01999000042260125019",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "RULE"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125020",
@@ -32178,8 +32158,7 @@
       "primary_geu_id": "99990000000000000004",
       "geu_role": "RULE",
       "superseded_by": "01999000042260125020",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "RULE"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125021",
@@ -32193,8 +32172,7 @@
       "primary_geu_id": "99990000000000000001",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125021",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125022",
@@ -32208,8 +32186,7 @@
       "primary_geu_id": "99990000000000000010",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125022",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125023",
@@ -32223,8 +32200,7 @@
       "primary_geu_id": "99990000000000000001",
       "geu_role": "SCHEMA",
       "superseded_by": "01999000042260125023",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SCHEMA"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125024",
@@ -32238,8 +32214,7 @@
       "primary_geu_id": "99990000000000000002",
       "geu_role": "TEST",
       "superseded_by": "01999000042260125024",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "TEST"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125025",
@@ -32253,8 +32228,7 @@
       "primary_geu_id": "99990000000000000002",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125025",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125026",
@@ -32268,8 +32242,7 @@
       "primary_geu_id": "99990000000000000003",
       "geu_role": "TEST",
       "superseded_by": "01999000042260125026",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "TEST"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125027",
@@ -32283,8 +32256,7 @@
       "primary_geu_id": "99990000000000000004",
       "geu_role": "TEST",
       "superseded_by": "01999000042260125027",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "TEST"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125028",
@@ -32298,8 +32270,7 @@
       "primary_geu_id": "99990000000000000003",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125028",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125029",
@@ -32313,8 +32284,7 @@
       "primary_geu_id": "99990000000000000004",
       "geu_role": "RULE",
       "superseded_by": "01999000042260125029",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "RULE"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125030",
@@ -32328,8 +32298,7 @@
       "primary_geu_id": "99990000000000000003",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125030",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125031",
@@ -32343,8 +32312,7 @@
       "primary_geu_id": "99990000000000000005",
       "geu_role": "VALIDATOR",
       "superseded_by": "01999000042260125031",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "VALIDATOR"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125032",
@@ -32358,8 +32326,7 @@
       "primary_geu_id": "99990000000000000005",
       "geu_role": "VALIDATOR",
       "superseded_by": "01999000042260125032",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "VALIDATOR"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125033",
@@ -32373,8 +32340,7 @@
       "primary_geu_id": "99990000000000000002",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125033",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125034",
@@ -32388,8 +32354,7 @@
       "primary_geu_id": "99990000000000000002",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125034",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125035",
@@ -32403,8 +32368,7 @@
       "primary_geu_id": "99990000000000000002",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125035",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125036",
@@ -32418,8 +32382,7 @@
       "primary_geu_id": "99990000000000000004",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125036",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125037",
@@ -32433,8 +32396,7 @@
       "primary_geu_id": "99990000000000000003",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125037",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125038",
@@ -32448,8 +32410,7 @@
       "primary_geu_id": "99990000000000000005",
       "geu_role": "VALIDATOR",
       "superseded_by": "01999000042260125038",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "VALIDATOR"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125039",
@@ -32463,8 +32424,7 @@
       "primary_geu_id": "99990000000000000005",
       "geu_role": "VALIDATOR",
       "superseded_by": "01999000042260125039",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "VALIDATOR"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125040",
@@ -32478,8 +32438,7 @@
       "primary_geu_id": "99990000000000000005",
       "geu_role": "VALIDATOR",
       "superseded_by": "01999000042260125040",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "VALIDATOR"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125041",
@@ -32493,8 +32452,7 @@
       "primary_geu_id": "99990000000000000005",
       "geu_role": "VALIDATOR",
       "superseded_by": "01999000042260125041",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "VALIDATOR"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125042",
@@ -32508,8 +32466,7 @@
       "primary_geu_id": "99990000000000000005",
       "geu_role": "VALIDATOR",
       "superseded_by": "01999000042260125042",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "VALIDATOR"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125043",
@@ -32523,8 +32480,7 @@
       "primary_geu_id": "99990000000000000002",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125043",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125044",
@@ -32538,8 +32494,7 @@
       "primary_geu_id": "99990000000000000002",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125044",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125045",
@@ -32553,8 +32508,35 @@
       "primary_geu_id": "99990000000000000002",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125045",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260125046",
+      "relative_path": "FILE WATCHER/Gov_Reg/LP_LONG_PLAN/PHASE_1_PLANNING/DOC-CORE-CORE-DETERMINISM-1005__determinism.py",
+      "geu_ids": [
+        "99990000000000000003"
+      ],
+      "is_shared": false,
+      "layer": "CORE",
+      "artifact_kind": "PYTHON_MODULE",
+      "primary_geu_id": "99990000000000000003",
+      "geu_role": "VALIDATOR",
+      "superseded_by": "01999000042260125046",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260125047",
+      "relative_path": "FILE WATCHER/Gov_Reg/LP_LONG_PLAN/PHASE_1_PLANNING/DOC-CORE-CORE-TRACE-STORAGE-1009__trace_storage.py",
+      "geu_ids": [
+        "99990000000000000003"
+      ],
+      "is_shared": false,
+      "layer": "CORE",
+      "artifact_kind": "PYTHON_MODULE",
+      "primary_geu_id": "99990000000000000003",
+      "geu_role": "EVIDENCE",
+      "superseded_by": "01999000042260125047",
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125048",
@@ -32568,8 +32550,7 @@
       "primary_geu_id": "99990000000000000001",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125048",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125049",
@@ -32583,8 +32564,7 @@
       "primary_geu_id": "99990000000000000004",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125049",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125050",
@@ -32598,8 +32578,7 @@
       "primary_geu_id": "99990000000000000004",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125050",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125051",
@@ -32613,8 +32592,7 @@
       "primary_geu_id": "99990000000000000004",
       "geu_role": "RULE",
       "superseded_by": "01999000042260125051",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "RULE"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125052",
@@ -32628,8 +32606,7 @@
       "primary_geu_id": "99990000000000000004",
       "geu_role": "RULE",
       "superseded_by": "01999000042260125052",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "RULE"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125053",
@@ -32643,8 +32620,7 @@
       "primary_geu_id": "99990000000000000004",
       "geu_role": "RULE",
       "superseded_by": "01999000042260125053",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "RULE"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125054",
@@ -32658,8 +32634,7 @@
       "primary_geu_id": "99990000000000000004",
       "geu_role": "RULE",
       "superseded_by": "01999000042260125054",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "RULE"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125055",
@@ -32673,8 +32648,7 @@
       "primary_geu_id": "99990000000000000003",
       "geu_role": "EVIDENCE",
       "superseded_by": "01999000042260125055",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "EVIDENCE"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125056",
@@ -32688,8 +32662,7 @@
       "primary_geu_id": "99990000000000000002",
       "geu_role": "EVIDENCE",
       "superseded_by": "01999000042260125056",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "EVIDENCE"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125057",
@@ -32703,8 +32676,7 @@
       "primary_geu_id": "99990000000000000004",
       "geu_role": "TEST",
       "superseded_by": "01999000042260125057",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "TEST"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125058",
@@ -32718,8 +32690,7 @@
       "primary_geu_id": "99990000000000000004",
       "geu_role": "TEST",
       "superseded_by": "01999000042260125058",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "TEST"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125059",
@@ -32733,8 +32704,7 @@
       "primary_geu_id": "99990000000000000003",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125059",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125060",
@@ -32748,8 +32718,7 @@
       "primary_geu_id": "99990000000000000003",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125060",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125061",
@@ -32763,8 +32732,7 @@
       "primary_geu_id": "99990000000000000005",
       "geu_role": "RUNNER",
       "superseded_by": "01999000042260125061",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "RUNNER"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125062",
@@ -32778,8 +32746,7 @@
       "primary_geu_id": "99990000000000000010",
       "geu_role": "SHARED_LIB",
       "superseded_by": "01999000042260125062",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "SHARED_LIB"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125063",
@@ -32793,8 +32760,7 @@
       "primary_geu_id": "99990000000000000005",
       "geu_role": "VALIDATOR",
       "superseded_by": "01999000042260125063",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "VALIDATOR"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125064",
@@ -32808,8 +32774,7 @@
       "primary_geu_id": "99990000000000000005",
       "geu_role": "VALIDATOR",
       "superseded_by": "01999000042260125064",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "VALIDATOR"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125065",
@@ -32823,8 +32788,7 @@
       "primary_geu_id": "99990000000000000005",
       "geu_role": "VALIDATOR",
       "superseded_by": "01999000042260125065",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "VALIDATOR"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125066",
@@ -32838,8 +32802,7 @@
       "primary_geu_id": "99990000000000000005",
       "geu_role": "VALIDATOR",
       "superseded_by": "01999000042260125066",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "VALIDATOR"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125067",
@@ -32853,8 +32816,7 @@
       "primary_geu_id": "99990000000000000005",
       "geu_role": "VALIDATOR",
       "superseded_by": "01999000042260125067",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "VALIDATOR"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260125068",
@@ -32868,8 +32830,7 @@
       "primary_geu_id": "99990000000000000004",
       "geu_role": "VALIDATOR",
       "superseded_by": "01999000042260125068",
-      "canonicality": "SUPERSEDED",
-      "bundle_role": "VALIDATOR"
+      "canonicality": "SUPERSEDED"
     },
     {
       "file_id": "01999000042260124517",
@@ -34355,13 +34316,2375 @@
       "coverage_status": "NEEDS_GEU",
       "superseded_by": "00202601301634220120",
       "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124012",
+      "relative_path": "01999000042260124012_governance_registry_schema.v3.json",
+      "layer": "CORE",
+      "artifact_kind": "SCHEMA",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124012",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124018",
+      "relative_path": "01999000042260124018_README.md",
+      "layer": "CORE",
+      "artifact_kind": "MARKDOWN_DOC",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124018",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124019",
+      "relative_path": "01999000042260124019_repo_roots.json",
+      "layer": "CORE",
+      "artifact_kind": "JSON_CONFIG",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124019",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124026",
+      "relative_path": "01999000042260124026_ID_COUNTER.json",
+      "layer": "CORE",
+      "artifact_kind": "JSON_CONFIG",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null
+    },
+    {
+      "file_id": "01999000042260124026",
+      "relative_path": "01999000042260124026_ID_COUNTER.json.lock",
+      "layer": "CORE",
+      "artifact_kind": "UNKNOWN",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124026",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124500",
+      "relative_path": "01999000042260124500_AI_PROD_PIPELINE_DETAILED_SUBSYSTEM_MAP.md",
+      "layer": "CORE",
+      "artifact_kind": "MARKDOWN_DOC",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124500",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124501",
+      "relative_path": "01999000042260124501_Files_Involved_in_the_Governance_Enforcement_Chain.md",
+      "layer": "CORE",
+      "artifact_kind": "MARKDOWN_DOC",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124501",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124502",
+      "relative_path": "01999000042260124502_GEU_DOCUMENTATION.md",
+      "layer": "CORE",
+      "artifact_kind": "MARKDOWN_DOC",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124502",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124503",
+      "relative_path": "01999000042260124503_governance_registry_unified.json",
+      "layer": "CORE",
+      "artifact_kind": "JSON_CONFIG",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124503",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124504",
+      "relative_path": "01999000042260124504_PROACTIVE_ID_SOLUTION_FILE_LIST.md",
+      "layer": "CORE",
+      "artifact_kind": "MARKDOWN_DOC",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124504",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124505",
+      "relative_path": "01999000042260124505_SYSTEM_REFERENCE.md",
+      "layer": "CORE",
+      "artifact_kind": "MARKDOWN_DOC",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124505",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260125000",
+      "relative_path": "01999000042260125000_ID_FORMAT_STANDARD.md",
+      "layer": "CORE",
+      "artifact_kind": "MARKDOWN_DOC",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260125000",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260120497",
+      "relative_path": "P_01999000042260120497_test_example.py",
+      "layer": "TESTING",
+      "artifact_kind": "TEST",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260120497",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124015",
+      "relative_path": "P_01999000042260124015_govreg.py",
+      "layer": "CORE",
+      "artifact_kind": "PYTHON_MODULE",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124015",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124027",
+      "relative_path": "P_01999000042260124027_id_allocator.py",
+      "layer": "CORE",
+      "artifact_kind": "PYTHON_MODULE",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124027",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124028",
+      "relative_path": "P_01999000042260124028_file_creator.py",
+      "layer": "CORE",
+      "artifact_kind": "PYTHON_MODULE",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124028",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124030",
+      "relative_path": "P_01999000042260124030_shared_utils.py",
+      "layer": "CORE",
+      "artifact_kind": "PYTHON_MODULE",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124030",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124468",
+      "relative_path": "P_01999000042260124468_run_all.py",
+      "layer": "CORE",
+      "artifact_kind": "PYTHON_MODULE",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124468",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124506",
+      "relative_path": ".claude/01999000042260124506_settings.local.json",
+      "layer": "TOOLING",
+      "artifact_kind": "JSON_CONFIG",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124506",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124021",
+      "relative_path": "govreg_core/P_01999000042260124021_config.py",
+      "layer": "CORE",
+      "artifact_kind": "CONFIG",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124021",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124022",
+      "relative_path": "govreg_core/P_01999000042260124022_reporter.py",
+      "layer": "CORE",
+      "artifact_kind": "PYTHON_MODULE",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124022",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124023",
+      "relative_path": "govreg_core/P_01999000042260124023_scanner.py",
+      "layer": "CORE",
+      "artifact_kind": "PYTHON_MODULE",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124023",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124024",
+      "relative_path": "govreg_core/P_01999000042260124024_validator.py",
+      "layer": "CORE",
+      "artifact_kind": "PYTHON_MODULE",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124024",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124025",
+      "relative_path": "govreg_core/P_01999000042260124025___init__.py",
+      "layer": "CORE",
+      "artifact_kind": "PYTHON_MODULE",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124025",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124483",
+      "relative_path": "scripts/P_01999000042260124483_seed_geu_entries.py",
+      "layer": "AUTOMATION",
+      "artifact_kind": "PYTHON_MODULE",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124483",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260125001",
+      "relative_path": "scripts/P_01999000042260125001_migrate_geu_to_20digit.py",
+      "layer": "AUTOMATION",
+      "artifact_kind": "PYTHON_MODULE",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260125001",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124029",
+      "relative_path": "tests/P_01999000042260124029_test_id_allocator.py",
+      "layer": "TESTING",
+      "artifact_kind": "TEST",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124029",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124493",
+      "relative_path": "tests/P_01999000042260124493_test_validate_geu_registry.py",
+      "layer": "TESTING",
+      "artifact_kind": "TEST",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124493",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124507",
+      "relative_path": "governance/geu-registry/01999000042260124507_geu_edges.jsonl",
+      "layer": "GOVERNANCE",
+      "artifact_kind": "JSONL_DATA",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124507",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124484",
+      "relative_path": "src/P_01999000042260124484_geu_governance/P_01999000042260124484___init__.py",
+      "layer": "CORE",
+      "artifact_kind": "PYTHON_MODULE",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124484",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124485",
+      "relative_path": "src/P_01999000042260124484_geu_governance/P_01999000042260124485___main__.py",
+      "layer": "CORE",
+      "artifact_kind": "PYTHON_MODULE",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124485",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124486",
+      "relative_path": "src/P_01999000042260124484_geu_governance/P_01999000042260124486_cli.py",
+      "layer": "CORE",
+      "artifact_kind": "PYTHON_MODULE",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124486",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124487",
+      "relative_path": "src/P_01999000042260124484_geu_governance/P_01999000042260124487_constants.py",
+      "layer": "CORE",
+      "artifact_kind": "PYTHON_MODULE",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124487",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124488",
+      "relative_path": "src/P_01999000042260124484_geu_governance/P_01999000042260124488_generate.py",
+      "layer": "CORE",
+      "artifact_kind": "PYTHON_MODULE",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124488",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124489",
+      "relative_path": "src/P_01999000042260124484_geu_governance/P_01999000042260124489_id_scheme.py",
+      "layer": "CORE",
+      "artifact_kind": "PYTHON_MODULE",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124489",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124490",
+      "relative_path": "src/P_01999000042260124484_geu_governance/P_01999000042260124490_io_utils.py",
+      "layer": "CORE",
+      "artifact_kind": "PYTHON_MODULE",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124490",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124491",
+      "relative_path": "src/P_01999000042260124484_geu_governance/P_01999000042260124491_report.py",
+      "layer": "CORE",
+      "artifact_kind": "PYTHON_MODULE",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124491",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "01999000042260124492",
+      "relative_path": "src/P_01999000042260124484_geu_governance/P_01999000042260124492_validation.py",
+      "layer": "CORE",
+      "artifact_kind": "PYTHON_MODULE",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "01999000042260124492",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "0199900004226012451",
+      "relative_path": "0199900004226012451_.pre-commit-config.yaml",
+      "layer": "CORE",
+      "artifact_kind": "YAML_CONFIG",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "00199900004226012451",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "0199900004226012467",
+      "relative_path": "0199900004226012467_requirements-geu.txt",
+      "layer": "CORE",
+      "artifact_kind": "TEXT_DOC",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "00199900004226012467",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "0199900004226012469",
+      "relative_path": "evidence/0199900004226012469_geu_validation_report.json",
+      "layer": "EVIDENCE",
+      "artifact_kind": "JSON_CONFIG",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "00199900004226012469",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "0199900004226012470",
+      "relative_path": "evidence/0199900004226012470_geu_validation_report.md",
+      "layer": "EVIDENCE",
+      "artifact_kind": "MARKDOWN_DOC",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "00199900004226012470",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "0199900004226012472",
+      "relative_path": "governance/geu-registry/0199900004226012472_DECISIONS.md",
+      "layer": "GOVERNANCE",
+      "artifact_kind": "MARKDOWN_DOC",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "00199900004226012472",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "0199900004226012473",
+      "relative_path": "governance/geu-registry/0199900004226012473_geu_index.json",
+      "layer": "GOVERNANCE",
+      "artifact_kind": "JSON_CONFIG",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "00199900004226012473",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "0199900004226012474",
+      "relative_path": "governance/geu-registry/0199900004226012474_README.md",
+      "layer": "GOVERNANCE",
+      "artifact_kind": "MARKDOWN_DOC",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "00199900004226012474",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "0199900004226012477",
+      "relative_path": "governance/geu-registry/entries/0199900004226012477_seed_report.json",
+      "layer": "GOVERNANCE",
+      "artifact_kind": "JSON_CONFIG",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "00199900004226012477",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "0199900004226012478",
+      "relative_path": "governance/geu-registry/schema/0199900004226012478_geu_edge.schema.json",
+      "layer": "GOVERNANCE",
+      "artifact_kind": "JSON_CONFIG",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "00199900004226012478",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "0199900004226012479",
+      "relative_path": "governance/geu-registry/schema/0199900004226012479_geu_entry.schema.json",
+      "layer": "GOVERNANCE",
+      "artifact_kind": "JSON_CONFIG",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "00199900004226012479",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "0199900004226012480",
+      "relative_path": "governance/geu-registry/ssot/0199900004226012480_geu_type_codes.json",
+      "layer": "GOVERNANCE",
+      "artifact_kind": "JSON_CONFIG",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "00199900004226012480",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "0199900004226012481",
+      "relative_path": "governance/geu-registry/ssot/0199900004226012481_role_slots.json",
+      "layer": "GOVERNANCE",
+      "artifact_kind": "JSON_CONFIG",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "00199900004226012481",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "file_id": "0199900004226012482",
+      "relative_path": "governance/geu-registry/ssot/0199900004226012482_slot_matrix.json",
+      "layer": "GOVERNANCE",
+      "artifact_kind": "JSON_CONFIG",
+      "geu_ids": [],
+      "is_shared": false,
+      "owner_geu_id": null,
+      "primary_geu_id": null,
+      "geu_role": null,
+      "superseded_by": "00199900004226012482",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125006",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000002",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000002"
+      ],
+      "bundle_role": "VALIDATOR",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\AI_CLI_PROVENANCE_SOLUTION\\DOC-SCRIPT-0993__PROV-SOL_validate_evidence_schema.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "VALIDATION",
+      "file_id": "1999000042260125006",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "VALIDATOR",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125007",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000002",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000002"
+      ],
+      "bundle_role": "RUNNER",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\automation\\test_runner\\DOC-TEST-TEST-RUNNER-RUNNER-524__runner.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "TESTING",
+      "file_id": "1999000042260125007",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "RUNNER",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125008",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000004",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000004"
+      ],
+      "bundle_role": "RULE",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\data\\DOC-CONFIG-ID-REGISTRY-435__id_registry.json",
+      "artifact_kind": "JSON_CONFIG",
+      "layer": "CORE",
+      "file_id": "1999000042260125008",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "RULE",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125009",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000002",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000002"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\DOC-SCRIPT-1217__event_emitter.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "CORE",
+      "file_id": "1999000042260125009",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125010",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000002",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000002"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\DOC-SCRIPT-1218__event_router.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "CORE",
+      "file_id": "1999000042260125010",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125011",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000002",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000002"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\DOC-SCRIPT-1219__event_sinks.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "CORE",
+      "file_id": "1999000042260125011",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125012",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000002",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000002"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\gates\\enforcement_bridge.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125012",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125013",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000005",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000005"
+      ],
+      "bundle_role": "RUNNER",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\gates\\gate_runner.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125013",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "RUNNER",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125014",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000001",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000001"
+      ],
+      "bundle_role": "SCHEMA",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\lifecycle\\v2.5.3\\DOC-CONFIG-GATE-AGGREGATE-SCHEMA-492__gate_aggregate.schema.json",
+      "artifact_kind": "JSON_CONFIG",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125014",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SCHEMA",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125015",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000001",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000001"
+      ],
+      "bundle_role": "SCHEMA",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\lifecycle\\v2.5.3\\DOC-CONFIG-SYSTEM-MANIFEST-SCHEMA-494__system_manifest.schema.json",
+      "artifact_kind": "JSON_CONFIG",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125015",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SCHEMA",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125016",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000001",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000001"
+      ],
+      "bundle_role": "SCHEMA",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\lifecycle\\v2.5.3\\DOC-CONFIG-UNIVERSAL-REGISTRY-ENTRY-SCHEMA-495__universal_registry_entry.schema.json",
+      "artifact_kind": "JSON_CONFIG",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125016",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SCHEMA",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125017",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000001",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000001"
+      ],
+      "bundle_role": "SCHEMA",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\lifecycle\\v2.5.3\\DOC-CONFIG-VALIDATOR-CATALOG-SCHEMA-496__validator_catalog.schema.json",
+      "artifact_kind": "JSON_CONFIG",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125017",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SCHEMA",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125018",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000003",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000003"
+      ],
+      "bundle_role": "VALIDATOR",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\lifecycle\\v2.5.3\\DOC-CORE-LIFECYCLE-V2-5-3-CONSOLIDATED-CROSS-402__cross_reference_validator.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125018",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "VALIDATOR",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125019",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000004",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000004"
+      ],
+      "bundle_role": "RULE",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\DOC-CONFIG-SSOT-CURRENT-APPROACH-505__SSOT_CURRENT_APPROACH.json",
+      "artifact_kind": "JSON_CONFIG",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125019",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "RULE",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125020",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000004",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000004"
+      ],
+      "bundle_role": "RULE",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\DOC-CONFIG-SYSTEM-MANIFEST-506__SYSTEM_MANIFEST.json",
+      "artifact_kind": "JSON_CONFIG",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125020",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "RULE",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125021",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000001",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000001"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\modules\\types.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125021",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125022",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000010",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000010"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_ci\\DOC-CORE-SSOT-SYS-CI-CI-GATE-1095__ci_gate.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125022",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125023",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000001",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000001"
+      ],
+      "bundle_role": "SCHEMA",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_schemas\\DOC-CONFIG-SSOT-CURRENT-APPROACH-SCHEMA-845__ssot_current_approach.schema.json",
+      "artifact_kind": "JSON_CONFIG",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125023",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SCHEMA",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125024",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000002",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000002"
+      ],
+      "bundle_role": "TEST",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tests\\DOC-TEST-EVENT-INFRASTRUCTURE-E2E-001__test_e2e_event_infrastructure.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125024",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "TEST",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125025",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000002",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000002"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tests\\unit\\DOC-CORE-SSOT-SYS-TESTS-UNIT-TEST-EVENT-EMITTER-1113__test_event_emitter.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125025",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125026",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000003",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000003"
+      ],
+      "bundle_role": "TEST",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tests\\unit\\DOC-TEST-UNIT-TEST-DETERMINISM-VALIDATION-640__test_determinism_validation.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125026",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "TEST",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125027",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000004",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000004"
+      ],
+      "bundle_role": "TEST",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tests\\unit\\DOC-TEST-UNIT-TEST-ID-REGISTRY-641__test_id_registry.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125027",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "TEST",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125028",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000003",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000003"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tests\\unit\\DOC-TEST-UNIT-TEST-TRACE-CONTEXT-001__test_trace_context.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125028",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125029",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000004",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000004"
+      ],
+      "bundle_role": "RULE",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tools\\DOC-CONFIG-ID-REGISTRY-847__id_registry.json",
+      "artifact_kind": "JSON_CONFIG",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125029",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "RULE",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125030",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000003",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000003"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tools\\DOC-CORE-1265__trace_context.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125030",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125031",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000005",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000005"
+      ],
+      "bundle_role": "VALIDATOR",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tools\\DOC-CORE-SSOT-SYS-TOOLS-AUTHORITY-CHAIN-ENFORCER-1097__authority_chain_enforcer.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125031",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "VALIDATOR",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125032",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000005",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000005"
+      ],
+      "bundle_role": "VALIDATOR",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tools\\DOC-CORE-SSOT-SYS-TOOLS-DEEP-EVIDENCE-VALIDATOR-1100__deep_evidence_validator.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125032",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "VALIDATOR",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125033",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000002",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000002"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tools\\DOC-CORE-SSOT-SYS-TOOLS-EVENT-EMITTER-1109__event_emitter.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125033",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125034",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000002",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000002"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tools\\DOC-CORE-SSOT-SYS-TOOLS-EVENT-ROUTER-1110__event_router.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125034",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125035",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000002",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000002"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tools\\DOC-CORE-SSOT-SYS-TOOLS-EVENT-SINKS-1111__event_sinks.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125035",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125036",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000004",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000004"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tools\\DOC-CORE-SSOT-SYS-TOOLS-ID-REGISTRY-1105__id_registry.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125036",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125037",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000003",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000003"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tools\\DOC-CORE-SSOT-SYS-TOOLS-TRACE-CONTEXT-1108__trace_context.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125037",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125038",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000005",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000005"
+      ],
+      "bundle_role": "VALIDATOR",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tools\\DOC-CORE-SSOT-SYS-TOOLS-VALIDATE-AUTOMATION-SPEC-518__validate_automation_spec.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125038",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "VALIDATOR",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125039",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000005",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000005"
+      ],
+      "bundle_role": "VALIDATOR",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tools\\DOC-CORE-SSOT-SYS-TOOLS-VALIDATE-MANIFEST-1109__validate_manifest.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125039",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "VALIDATOR",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125040",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000005",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000005"
+      ],
+      "bundle_role": "VALIDATOR",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tools\\DOC-CORE-SSOT-SYS-TOOLS-VALIDATE-MANIFEST-1110__validate_manifest_coverage.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125040",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "VALIDATOR",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125041",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000005",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000005"
+      ],
+      "bundle_role": "VALIDATOR",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tools\\DOC-CORE-SSOT-SYS-TOOLS-VALIDATE-SOLUTIONS-1111__validate_solutions.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125041",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "VALIDATOR",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125042",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000005",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000005"
+      ],
+      "bundle_role": "VALIDATOR",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\ssot\\SSOT_System\\SSOT_SYS_tools\\DOC-CORE-SSOT-SYS-TOOLS-VALIDATE-SSOT-1112__validate_ssot.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "GOVERNANCE",
+      "file_id": "1999000042260125042",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "VALIDATOR",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125043",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000002",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000002"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\LP_LONG_PLAN\\event_emitter.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "CORE",
+      "file_id": "1999000042260125043",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125044",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000002",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000002"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\LP_LONG_PLAN\\event_router.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "CORE",
+      "file_id": "1999000042260125044",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125045",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000002",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000002"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\LP_LONG_PLAN\\event_sinks.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "CORE",
+      "file_id": "1999000042260125045",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125046",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000003",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000003"
+      ],
+      "bundle_role": "VALIDATOR",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\LP_LONG_PLAN\\PHASE_1_PLANNING\\pipeline\\src\\core\\DOC-CORE-CORE-DETERMINISM-1005__determinism.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "CORE",
+      "file_id": "1999000042260125046",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "VALIDATOR",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125047",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000003",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000003"
+      ],
+      "bundle_role": "EVIDENCE",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\LP_LONG_PLAN\\PHASE_1_PLANNING\\pipeline\\src\\core\\DOC-CORE-CORE-TRACE-STORAGE-1009__trace_storage.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "CORE",
+      "file_id": "1999000042260125047",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "EVIDENCE",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125048",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000001",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000001"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\modules\\DOC-CORE-MODULES-TYPES-410__types.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "CORE",
+      "file_id": "1999000042260125048",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125049",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000004",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000004"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\modules\\path_abstraction\\DOC-CORE-PATH-ABSTRACTION-PATH-REGISTRY-192__path_registry.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "CORE",
+      "file_id": "1999000042260125049",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125050",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000004",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000004"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\modules\\path_abstraction\\DOC-SCRIPT-1320__path_registry.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "CORE",
+      "file_id": "1999000042260125050",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125051",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000004",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000004"
+      ],
+      "bundle_role": "RULE",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\REGISTRY_A_FILE_ID.json",
+      "artifact_kind": "JSON_CONFIG",
+      "layer": "REGISTRY",
+      "file_id": "1999000042260125051",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "RULE",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125052",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000004",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000004"
+      ],
+      "bundle_role": "RULE",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\REGISTRY_B_ASSET_ID.json",
+      "artifact_kind": "JSON_CONFIG",
+      "layer": "REGISTRY",
+      "file_id": "1999000042260125052",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "RULE",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125053",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000004",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000004"
+      ],
+      "bundle_role": "RULE",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\REGISTRY_C_TRANSIENT_ID.json",
+      "artifact_kind": "JSON_CONFIG",
+      "layer": "REGISTRY",
+      "file_id": "1999000042260125053",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "RULE",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125054",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000004",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000004"
+      ],
+      "bundle_role": "RULE",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\REGISTRY_D_EDGE_RELATION.json",
+      "artifact_kind": "JSON_CONFIG",
+      "layer": "REGISTRY",
+      "file_id": "1999000042260125054",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "RULE",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125055",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000003",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000003"
+      ],
+      "bundle_role": "EVIDENCE",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\RUNTIME\\cli\\SUB_CLP\\deterministic_debug_audit\\src\\core\\DOC-CORE-CORE-TRACE-STORAGE-1151__trace_storage.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "CORE",
+      "file_id": "1999000042260125055",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "EVIDENCE",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125056",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000002",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000002"
+      ],
+      "bundle_role": "EVIDENCE",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\RUNTIME\\doc_id\\SUB_DOC_ID\\4_REPORTING_MONITORING\\DOC-CORE-4-REPORTING-MONITORING-GENERATE-1167__generate_evidence_bundle.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "CORE",
+      "file_id": "1999000042260125056",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "EVIDENCE",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125057",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000004",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000004"
+      ],
+      "bundle_role": "TEST",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\RUNTIME\\doc_id\\SUB_DOC_ID\\6_TESTS\\DOC-TEST-REGISTRY-CONCURRENCY-001__test_registry_concurrency.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "CORE",
+      "file_id": "1999000042260125057",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "TEST",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125058",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000004",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000004"
+      ],
+      "bundle_role": "TEST",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\RUNTIME\\doc_id\\SUB_DOC_ID\\6_TESTS\\DOC-TEST-REGISTRY-INTEGRITY-001__test_registry_integrity.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "CORE",
+      "file_id": "1999000042260125058",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "TEST",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125059",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000003",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000003"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\RUNTIME\\doc_id\\SUB_DOC_ID\\common\\DOC-CORE-SSOT-SYS-TOOLS-TRACE-CONTEXT-1108__trace_context.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "CORE",
+      "file_id": "1999000042260125059",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125060",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000003",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000003"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\RUNTIME\\doc_id\\SUB_DOC_ID\\common\\trace_context.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "CORE",
+      "file_id": "1999000042260125060",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125061",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000005",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000005"
+      ],
+      "bundle_role": "RUNNER",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\scripts\\DOC-SCRIPT-RUN-ALL-GATES-001__run_all_gates.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "AUTOMATION",
+      "file_id": "1999000042260125061",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "RUNNER",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125062",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000010",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000010"
+      ],
+      "bundle_role": "SHARED_LIB",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\scripts\\DOC-SCRIPT-SCRIPTS-CI-GATE-STABLE-IDS-973__ci_gate_stable_ids.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "AUTOMATION",
+      "file_id": "1999000042260125062",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "SHARED_LIB",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125063",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000005",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000005"
+      ],
+      "bundle_role": "VALIDATOR",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\scripts\\validators\\DOC-SCRIPT-0989__validate_rule_id.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "AUTOMATION",
+      "file_id": "1999000042260125063",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "VALIDATOR",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125064",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000005",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000005"
+      ],
+      "bundle_role": "VALIDATOR",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\scripts\\validators\\DOC-SCRIPT-0990__validate_run_id.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "AUTOMATION",
+      "file_id": "1999000042260125064",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "VALIDATOR",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125065",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000005",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000005"
+      ],
+      "bundle_role": "VALIDATOR",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\scripts\\validators\\DOC-SCRIPT-0991__validate_schema_id.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "AUTOMATION",
+      "file_id": "1999000042260125065",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "VALIDATOR",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125066",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000005",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000005"
+      ],
+      "bundle_role": "VALIDATOR",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\scripts\\validators\\DOC-SCRIPT-0992__validate_alert_id.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "AUTOMATION",
+      "file_id": "1999000042260125066",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "VALIDATOR",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125067",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000005",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000005"
+      ],
+      "bundle_role": "VALIDATOR",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\scripts\\validators\\DOC-SCRIPT-1026__validate_requirement_id.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "AUTOMATION",
+      "file_id": "1999000042260125067",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "VALIDATOR",
+      "canonicality": "SUPERSEDED"
+    },
+    {
+      "superseded_by": "01999000042260125068",
+      "bundle_key": null,
+      "primary_geu_id": "99990000000000000004",
+      "report_outputs": [],
+      "geu_ids": [
+        "99990000000000000004"
+      ],
+      "bundle_role": "VALIDATOR",
+      "enforced_by_file_ids": [],
+      "owner_geu_id": null,
+      "is_shared": false,
+      "coverage_status": null,
+      "bundle_id": null,
+      "anchor_file_id": null,
+      "bundle_version": null,
+      "relative_path": "C:\\Users\\richg\\ALL_AI\\UTI_TOOLS\\DOC-CORE-UTI-TOOLS-VALIDATE-REGISTRY-823__validate_registry.py",
+      "artifact_kind": "PYTHON_MODULE",
+      "layer": "VALIDATION",
+      "file_id": "1999000042260125068",
+      "enforces_rule_ids": [],
+      "test_file_ids": [],
+      "evidence_outputs": [],
+      "depends_on_file_ids": [],
+      "geu_role": "VALIDATOR",
+      "canonicality": "SUPERSEDED"
     }
   ],
   "edges": [],
   "entries_metadata": {
     "status": "legacy_read_only",
-    "description": "The 'entries' array (252 records) is a GEU-role overlay for read-only use.",
-    "record_count": 245,
+    "description": "The 'entries' array (114 records) is a GEU-role overlay for read-only use.",
+    "record_count": 114,
     "migrated_utc": "2026-02-02T17:56:52.072229Z"
   },
   "column_headers_version": "2.0",

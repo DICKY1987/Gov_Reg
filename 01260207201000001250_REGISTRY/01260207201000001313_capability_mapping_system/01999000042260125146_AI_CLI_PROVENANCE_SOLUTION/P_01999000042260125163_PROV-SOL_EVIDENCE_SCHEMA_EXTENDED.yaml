@@ -1,0 +1,400 @@
+# DOC_LINK: DOC-SCHEMA-AI-CLI-PROVENANCE-EVIDENCE-EXTENDED-001
+# Evidence Schema - Extended with AI CLI Provenance
+# Version: 2.0
+# Created: 2026-01-04
+# Purpose: Defines all evidence paths used by identification criteria system
+
+doc_id: DOC-SCHEMA-AI-CLI-PROVENANCE-EVIDENCE-EXTENDED-001
+schema_version: "2.0"
+description: "Evidence registry schema including deterministic and heuristic (AI provenance) evidence paths"
+
+# Evidence path naming convention:
+# - evidence.* = Deterministic evidence (hard decisions allowed)
+# - provenance.* = Heuristic evidence (scoring/ranking only, no hard decisions)
+
+evidence_paths:
+
+  # ============================================================================
+  # DETERMINISTIC EVIDENCE (Existing - from graph, runtime, static analysis)
+  # ============================================================================
+
+  evidence:
+
+    # Graph reachability evidence (from RELATIONSHIP_INDEX)
+    edge:
+      inbound:
+        from_root_prod:
+          exists:
+            type: boolean
+            description: "File is reachable from production root via import graph"
+            source: "RELATIONSHIP_INDEX.json"
+            confidence_required: 0.80
+        from_root_test:
+          exists:
+            type: boolean
+            description: "File is reachable from test root only"
+            source: "RELATIONSHIP_INDEX.json"
+            confidence_required: 0.80
+        total_count:
+          type: integer
+          description: "Total number of inbound edges (imports)"
+          source: "RELATIONSHIP_INDEX.json"
+      outbound:
+        total_count:
+          type: integer
+          description: "Total number of outbound edges (imports this file makes)"
+          source: "RELATIONSHIP_INDEX.json"
+
+    # Graph coverage metrics
+    graph:
+      coverage_ratio:
+        type: float
+        range: [0.0, 1.0]
+        description: "Ratio of discovered edges to expected edges"
+        source: "RELATIONSHIP_INDEX.json"
+      reachable_from_any_root:
+        exists:
+          type: boolean
+          description: "File is reachable from any root (prod or test)"
+          source: "RELATIONSHIP_INDEX.json"
+          confidence_required: 0.85
+
+    # Entry point detection
+    entrypoint:
+      is_entrypoint:
+        type: boolean
+        description: "File is a known entry point (main, CLI, API endpoint)"
+        source: "static_analysis"
+        confidence_required: 0.80
+
+    # Runtime execution evidence
+    runtime:
+      executed:
+        confirmed:
+          type: boolean
+          description: "File was executed in runtime observations"
+          source: "runtime_profiler"
+          confidence_required: 0.85
+
+    # Infrastructure triggers
+    infra:
+      trigger:
+        confirmed:
+          type: boolean
+          description: "File is triggered by infrastructure (cron, webhook, etc.)"
+          source: "infra_scanner"
+          confidence_required: 0.75
+
+    # CodeQL static analysis
+    codeql:
+      reachable_from_prod_root:
+        exists:
+          type: boolean
+          description: "CodeQL confirms reachability from production root"
+          source: "codeql"
+          confidence_required: 0.85
+      calls_from_prod_root:
+        exists:
+          type: boolean
+          description: "CodeQL confirms calls from production code"
+          source: "codeql"
+          confidence_required: 0.85
+
+    # API surface detection
+    api:
+      is_public_surface:
+        type: boolean
+        description: "File exports public API surface"
+        source: "static_analysis"
+        confidence_required: 0.70
+
+    # Redundancy/duplicate detection
+    redundancy:
+      best_match:
+        exists:
+          type: boolean
+          description: "File has a duplicate/similar candidate"
+          source: "similarity_engine"
+        similarity_score:
+          type: float
+          range: [0.0, 1.0]
+          description: "Similarity score with best match"
+          source: "similarity_engine"
+        canonical_candidate:
+          type: boolean
+          description: "This file is the canonical (preferred) version"
+          source: "similarity_engine"
+        min_similarity:
+          type: float
+          description: "Minimum similarity threshold for match consideration"
+          source: "similarity_engine"
+          default: 0.90
+        min_confidence:
+          type: float
+          description: "Minimum confidence threshold for match consideration"
+          source: "similarity_engine"
+          default: 0.80
+
+    # Unique exports
+    unique_exports:
+      exists:
+        type: boolean
+        description: "File has unique exports not found in duplicates"
+        source: "static_analysis"
+        confidence_required: 0.80
+
+    # Current status tracking
+    status:
+      current:
+        type: enum
+        values: [ACTIVE, ACTIVE_TEST_ONLY, OBSOLETE_CANDIDATE, QUARANTINE_ELIGIBLE, UNKNOWN]
+        description: "Current classification status"
+        source: "classification_engine"
+
+    # Quarantine history
+    quarantine:
+      previous_attempts:
+        type: integer
+        description: "Number of previous quarantine attempts"
+        source: "state_tracker"
+
+    # Rollback planning
+    rollback:
+      plan_exists:
+        type: boolean
+        description: "Rollback plan exists for safe removal"
+        source: "state_tracker"
+
+    # Registry updates
+    registry:
+      update_plan_exists:
+        type: boolean
+        description: "Registry update plan exists"
+        source: "state_tracker"
+
+  # ============================================================================
+  # HEURISTIC EVIDENCE - AI CLI PROVENANCE (New - Phase 2)
+  # ============================================================================
+
+  provenance:
+
+    # AI CLI log evidence (NEW - Phase 2)
+    ai_cli_logs:
+      timeline:
+        exists:
+          type: boolean
+          description: "AI CLI activity detected for this file"
+          source: "ai_cli_provenance_collector"
+          default: false
+
+        last_seen:
+          type: datetime
+          description: "Timestamp of most recent AI CLI activity"
+          source: "ai_cli_provenance_collector"
+          format: "ISO8601"
+
+        first_seen:
+          type: datetime
+          description: "Timestamp of first AI CLI activity"
+          source: "ai_cli_provenance_collector"
+          format: "ISO8601"
+
+        session_count:
+          type: integer
+          description: "Total number of AI sessions touching this file"
+          source: "ai_cli_provenance_collector"
+          default: 0
+
+        tool_use_count:
+          view:
+            type: integer
+            description: "Number of AI 'view/read' operations"
+            source: "ai_cli_provenance_collector"
+            default: 0
+          edit:
+            type: integer
+            description: "Number of AI 'edit/modify' operations"
+            source: "ai_cli_provenance_collector"
+            default: 0
+          create:
+            type: integer
+            description: "Number of AI 'create/write' operations"
+            source: "ai_cli_provenance_collector"
+            default: 0
+
+        cli_agents:
+          type: array
+          items: string
+          description: "List of AI CLI agents that touched this file"
+          values: [claude, codex, copilot, cursor, other]
+          source: "ai_cli_provenance_collector"
+          default: []
+
+        intent_signals:
+          supersession_keywords:
+            type: array
+            items: string
+            description: "Detected supersession keywords from prompts (hashed)"
+            source: "ai_cli_provenance_collector"
+            examples: ["replace", "deprecate", "migrate", "remove", "obsolete"]
+            default: []
+
+          migration_intent:
+            type: boolean
+            description: "Migration intent detected in prompts"
+            source: "ai_cli_provenance_collector"
+            keywords: ["migrate", "move to", "replace with"]
+            default: false
+
+          deprecation_intent:
+            type: boolean
+            description: "Deprecation intent detected in prompts"
+            source: "ai_cli_provenance_collector"
+            keywords: ["deprecate", "phase out", "sunset"]
+            default: false
+
+          removal_intent:
+            type: boolean
+            description: "Removal intent detected in prompts"
+            source: "ai_cli_provenance_collector"
+            keywords: ["remove", "delete", "cleanup", "prune"]
+            default: false
+
+    # Git provenance - Human vs AI comparison (NEW - Phase 2)
+    git:
+      timeline:
+        human_commit_count:
+          type: integer
+          description: "Number of commits by human authors (non-AI co-author)"
+          source: "git_log_parser"
+          default: 0
+
+        ai_commit_count:
+          type: integer
+          description: "Number of commits with AI co-author attribution"
+          source: "git_log_parser"
+          co_author_patterns: ["Claude", "Copilot", "AI-generated"]
+          default: 0
+
+        last_human_commit:
+          type: datetime
+          description: "Timestamp of last human commit"
+          source: "git_log_parser"
+          format: "ISO8601"
+
+        last_ai_commit:
+          type: datetime
+          description: "Timestamp of last AI-attributed commit"
+          source: "git_log_parser"
+          format: "ISO8601"
+
+        human_to_ai_ratio:
+          type: float
+          description: "Ratio of human commits to AI commits"
+          source: "git_log_parser"
+          formula: "human_commit_count / (ai_commit_count + 1)"
+
+# ============================================================================
+# EVIDENCE COLLECTOR REGISTRY
+# ============================================================================
+
+collectors:
+  - collector_id: graph_collector
+    source: RELATIONSHIP_INDEX
+    evidence_paths: [evidence.edge.*, evidence.graph.*]
+    location: "../RUNTIME/relationship_index/SUB_RELATIONSHIP_INDEX/data/RELATIONSHIP_INDEX.json"
+
+  - collector_id: doc_id_mapper
+    source: DOC_ID_REGISTRY
+    evidence_paths: [doc_id]
+    location: "../RUNTIME/doc_id/SUB_DOC_ID/5_REGISTRY_DATA/DOC_ID_REGISTRY.yaml"
+
+  - collector_id: static_analyzer
+    source: static_analysis
+    evidence_paths: [evidence.entrypoint.*, evidence.api.*, evidence.unique_exports.*]
+    implementation: "static_analysis_collector.py"
+
+  - collector_id: runtime_profiler
+    source: runtime_profiler
+    evidence_paths: [evidence.runtime.*]
+    implementation: "runtime_profiler_collector.py"
+
+  - collector_id: ai_cli_provenance_collector
+    source: ai_cli_logs
+    evidence_paths: [provenance.ai_cli_logs.*]
+    implementation: "ai_cli_provenance_collector.py"
+    log_sources:
+      - path: "C:\\Users\\richg\\.claude\\projects\\C--Users-richg-ALL-AI\\*.jsonl"
+        format: jsonl
+        cli_agent: claude
+      - path: "C:\\Users\\richg\\.codex\\sessions\\**\\*.jsonl"
+        format: jsonl
+        cli_agent: codex
+      - path: "C:\\Users\\richg\\.copilot\\command-history-state.json"
+        format: json
+        cli_agent: copilot
+      - path: "C:\\Users\\richg\\.copilot\\session-state\\*.jsonl"
+        format: jsonl
+        cli_agent: copilot
+
+  - collector_id: git_log_parser
+    source: git_log
+    evidence_paths: [provenance.git.*]
+    implementation: "git_log_parser.py"
+
+# ============================================================================
+# VALIDATION RULES
+# ============================================================================
+
+validation:
+  required_fields: [type, description, source]
+
+  type_constraints:
+    boolean: [true, false]
+    integer: {min: 0}
+    float: {min: 0.0, max: 1.0}
+    datetime: {format: ISO8601}
+    array: {items: {type: string}}
+
+  evidence_path_rules:
+    - "evidence.* paths can make hard stop decisions"
+    - "provenance.* paths are heuristic only (scoring/ranking)"
+    - "All paths must have confidence thresholds for hard decisions"
+    - "Graceful degradation required (return defaults when source unavailable)"
+
+# ============================================================================
+# PRIVACY & SAFETY
+# ============================================================================
+
+privacy:
+  prompt_storage: SHA256_HASH_ONLY
+  path_filtering: REPO_SCOPED_ONLY
+  repo_root: "C:\\Users\\richg\\ALL_AI\\"
+  secret_exclusion: true
+
+safety:
+  graceful_degradation: true
+  default_behavior: CONSERVATIVE  # Return "exists: false" when uncertain
+  cache_results: true
+  cache_ttl_seconds: 3600
+
+# ============================================================================
+# CHANGELOG
+# ============================================================================
+
+changelog:
+  - version: "2.0"
+    date: "2026-01-04"
+    changes:
+      - "Added provenance.ai_cli_logs.* evidence paths"
+      - "Added provenance.git.timeline.* evidence paths"
+      - "Added ai_cli_provenance_collector to collector registry"
+      - "Added git_log_parser to collector registry"
+      - "Defined AI intent signals (migration, deprecation, removal)"
+      - "Added human vs AI commit comparison fields"
+
+  - version: "1.0"
+    date: "2025-12-01"
+    changes:
+      - "Initial schema with deterministic evidence paths only"
+      - "Defined graph, runtime, static analysis evidence"
