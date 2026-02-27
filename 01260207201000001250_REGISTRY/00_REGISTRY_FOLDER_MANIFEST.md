@@ -1,7 +1,7 @@
 # REGISTRY Folder Organization Manifest
 
-**Last Updated:** 2026-02-19  
-**Consolidation Status:** ✅ Complete
+**Last Updated:** 2026-02-27  
+**Consolidation Status:** ✅ Complete (Post-Remediation)
 
 ---
 
@@ -9,14 +9,16 @@
 
 ```
 01260207201000001250_REGISTRY/
-├── type_registries/              → 29 registry type definitions (YAML)
-├── archive/                      → Old registry versions & historical files
-├── from_gov_reg_root/           → Original root-level registry files
-├── from_gov_reg_subdirs/        → Registry scripts from subdirectories
-├── from_all_ai/                 → AI-generated registry tooling
-├── from_ssot_refactor/          → SSOT registry corrections
-├── [various numbered dirs]/     → Categorized registry components
-└── [root]/                      → Active registry files & main registry
+├── archive/                                          → Old registry versions & historical files
+├── COLUMN_HEADERS/                                   → Registry column definitions & mappings
+├── docs/                                             → Registry documentation & reports
+├── ID/                                               → ID system integration scripts
+├── src_modules/                                      → Registry source modules
+├── scripts/                                          → Registry management scripts
+├── tests/                                            → Registry test suites
+├── FILE WATCHER/                                     → File system monitoring integration
+├── 01260207201000001313_capability_mapping_system/  → Capability discovery & mapping
+└── [root]/                                          → Active registry files & schemas
 ```
 
 ---
@@ -24,7 +26,7 @@
 ## Key Registry Files (root level)
 
 **Main Registry (Authoritative):**
-- Look for most recent: `01999000042260124503_governance_registry_unified.json`
+- Registry file: `01999000042260124503_REGISTRY_file.json`
 - Schema: `01999000042260124012_governance_registry_schema.v3.json`
 
 **Active Management:**
@@ -33,49 +35,47 @@
 
 ---
 
-## Type Registries (`type_registries/`)
-
-**29 Domain-Specific Registries:**
-- `DOC-REGISTRY-ALERT-ID-001__ALERT_REGISTRY.yaml`
-- `DOC-REGISTRY-BENCHMARK-ID-001__BENCHMARK_REGISTRY.yaml`
-- `DOC-REGISTRY-CHAIN-ID-001__CHAIN_REGISTRY.yaml`
-- `DOC-REGISTRY-CONFIG-ID-001__CONFIG_REGISTRY.yaml`
-- `DOC-REGISTRY-CONTRACT-ID-001__CONTRACT_REGISTRY.yaml`
-- `DOC-REGISTRY-GATE-ID-001__GATE_REGISTRY.yaml`
-- `DOC-REGISTRY-METRIC-ID-001__METRIC_REGISTRY.yaml`
-- `DOC-REGISTRY-POLICY-ID-001__POLICY_REGISTRY.yaml`
-- `DOC-REGISTRY-WORKSTREAM-ID-001__WORKSTREAM_REGISTRY.yaml`
-- ... and 20 more type registries
-
----
-
 ## Subdirectory Organization
 
-### `from_gov_reg_subdirs/`
-**Registry management scripts organized by function:**
-- `scripts/utilities/` - Registry CLI, normalization, store management
-- `scripts/validation/` - Registry validation tools
-- `scripts/migration/` - Registry migration scripts
-- `scripts/registry_writer/` - Registry write operations
-- `scripts/registry_transition/` - Registry transition management
-- `scripts/path_registry/` - Path registry watchers
-- `scripts/govreg_core/` - Core registry schema and reconciliation
-- `tests/` - Registry test suites
-- `config/` - Registry configuration
+### `COLUMN_HEADERS/`
+**Registry column definitions and derivations:**
+- `01260207201000000192_UNIFIED_SSOT_REGISTRY_DERIVATIONS.yaml` - Computed field formulas (safe DSL)
+- `01260207201000000193_UNIFIED_SSOT_REGISTRY_WRITE_POLICY.yaml` - Column write rules
+- `REGISTRY_COLUMN_HEADERS.md` - Column documentation
+- `PY_COLUMN_PIPELINE_MAPPING.csv` - Python pipeline mappings
 
-### `from_all_ai/`
-**AI-generated registry tooling:**
-- `runtime/doc_id/` - DOC_ID registry runtime
-- `runtime/path_registry/` - Path registry runtime
-- `scripts/generators/` - Registry generators
-- `scripts/migration/` - Migration planning
-- `modules/` - Path abstraction modules
-- `mini_pipe/` - Lightweight registry tools
+### `ID/`
+**ID system integration:**
+- `1_runtime/` - ID runtime validators & watchers
+- `2_cli_tools/` - ID maintenance CLI tools
+- `7_automation/` - ID automation scripts & reconcilers
 
-### `from_ssot_refactor/`
-**SSOT registry correction artifacts:**
-- `phase_a1_registry_correction.py` - Registry correction script
-- Registry patches and reports (RFC6902 format)
+### `src_modules/`
+**Registry source modules:**
+- Field precedence logic
+- Gate implementations
+- State machine components
+
+### `scripts/`
+**Registry management scripts:**
+- Utilities (registry CLI, normalization)
+- Validators (schema validation, compliance checks)
+
+### `tests/`
+**Registry test suites:**
+- Unit tests for registry components
+- Integration tests for registry operations
+
+### `FILE WATCHER/`
+**File system monitoring integration:**
+- Real-time registry sync watchers
+- Event emission handlers
+
+### `01260207201000001313_capability_mapping_system/`
+**Capability discovery and mapping:**
+- `mapp_py/` - Python analysis tools (29 modules)
+- `capability_system_scripts/` - Registry patch generators
+- `01260207220000001322_src/` - Source capability builders
 
 ---
 
@@ -90,25 +90,15 @@
 
 ## Registry Scripts by Function
 
-### Registry Population & Sync
-- `from_gov_reg_subdirs/scripts/utilities/P_01999000042260125062_normalize_registry.py`
-- `from_gov_reg_subdirs/scripts/utilities/P_01999000042260125063_registry_cli.py`
-- `from_gov_reg_root/P_01260207201000000199_sync_registry_recursive.py`
+### Registry CLI & TUI
+- `01260207201000001270_scripts/P_01999000042260126011_registry_tui.py` - Interactive registry browser
 
 ### Registry Validation
-- `from_gov_reg_subdirs/scripts/validation/P_01260207233100000247_validate_artifact_registry.py`
-- `from_all_ai/migrations/DOC-SCRIPT-1289__validate_path_registry.py`
+- `scripts/` - Schema validation and compliance checks
+- ID system validators in `ID/1_runtime/validators/`
 
-### Registry Writers
-- `from_gov_reg_subdirs/scripts/registry_writer/P_01260207233100000335_registry_writer_service_v2.py`
-- `from_gov_reg_subdirs/scripts/registry_transition/P_01260207233100000325_registry_writer.py`
-
-### Path Registry
-- `from_gov_reg_subdirs/scripts/path_registry/P_01260207233100000026_path_registry.py`
-- `from_gov_reg_subdirs/scripts/path_registry/P_01999000042260126009_path_registry_watcher.py`
-
-### Registry TUI
-- `01260207201000001270_scripts/P_01999000042260126011_registry_tui.py` - Interactive registry browser
+### Capability Mapping
+- `01260207201000001313_capability_mapping_system/` - Full capability discovery pipeline
 
 ---
 
@@ -132,17 +122,19 @@
 
 ## Consolidation Summary
 
-**Files Moved In:** 77 registry-related files from:
-- ID folder (44 files)
-- SSOT_REFACTOR (4 files)
-- Various locations
+**Post-Remediation Structure (2026-02-27):**
+- Eliminated 5 non-existent directories from manifest
+- Added 8 actual directories (FILE WATCHER, scripts, tests, etc.)
+- Registry structure now accurately documented
+- Capability mapping system fully integrated
 
 **Organization Applied:**
-- Type registries → dedicated subfolder
-- Old versions → archive
-- Domain scripts → function-based subdirectories
+- Core registry files at root level
+- Column definitions in COLUMN_HEADERS/
+- Historical files in archive/
+- Domain-specific systems in numbered subdirectories
 
-**Result:** Clean, navigable registry structure with clear separation between active, archived, and type-specific files.
+**Result:** Clean, navigable registry structure with accurate documentation matching filesystem reality.
 
 ---
 
