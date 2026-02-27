@@ -1,0 +1,208 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FileInventoryRecordV2",
+  "description": "Schema for version 2 of the per‑file inventory record used by the consolidated analysis pipeline.",
+  "type": "object",
+  "required": [
+    "file_id",
+    "path_rel",
+    "ext",
+    "classification",
+    "size_bytes",
+    "content_sha256",
+    "facts",
+    "hashes"
+  ],
+  "properties": {
+    "file_id": {
+      "type": "string",
+      "description": "Stable identifier for the file.  Within a given run this should uniquely refer to a single file.  Implementations may derive this from the content hash, a registry ID or other mechanism."
+    },
+    "path_rel": {
+      "type": "string",
+      "description": "Repository‑relative path using forward slashes."
+    },
+    "path_abs": {
+      "type": "string",
+      "description": "Absolute path on disk (optional).  Included when the pipeline has access to absolute file system information."
+    },
+    "ext": {
+      "type": "string",
+      "description": "File extension in lower case, including the leading dot (e.g. `.py`, `.json`)."
+    },
+    "classification": {
+      "type": "string",
+      "description": "High level classification of the file.  Expected values include `python_entrypoint`, `python_module`, `python_test`, `schema_json`, `template_json`, `config`, `spec_doc`, `doc`, `data` and `unknown`."
+    },
+    "size_bytes": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Size of the file in bytes."
+    },
+    "mtime_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last modification timestamp in UTC ISO‑8601 format."
+    },
+    "content_sha256": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-9]{64}$",
+      "description": "SHA‑256 hash of the raw file content expressed as a 64 character hexadecimal string."
+    },
+    "parse": {
+      "type": "object",
+      "description": "Optional parser metadata keyed by language.  For Python this may include a syntax hash and LOC.",
+      "additionalProperties": true
+    },
+    "facts": {
+      "type": "object",
+      "description": "Deterministic facts extracted from the file.  Only these fields participate in the facts hash.",
+      "properties": {
+        "imports": {
+          "type": "object",
+          "description": "Dependency information extracted from Python imports.",
+          "properties": {
+            "entries": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": { "type": "string" },
+                  "module": { "type": "string" },
+                  "name": { "type": "string" },
+                  "asname": { "type": ["string", "null"] },
+                  "level": { "type": ["integer", "null"] },
+                  "lineno": { "type": "integer" },
+                  "col_offset": { "type": "integer" }
+                },
+                "required": [ "type", "module", "name", "lineno", "col_offset" ]
+              }
+            },
+            "hash": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{64}$",
+              "description": "SHA‑256 of the canonical JSON representation of the imports list."
+            },
+            "stdlib_count": { "type": "integer" },
+            "external_count": { "type": "integer" },
+            "relative_count": { "type": "integer" }
+          },
+          "required": [ "entries", "hash", "stdlib_count", "external_count", "relative_count" ]
+        },
+        "io_surface": {
+          "type": "object",
+          "description": "Information about file, network and security sensitive operations discovered in the source code.",
+          "properties": {
+            "file_ops": {
+              "type": "array",
+              "items": { "type": "object" }
+            },
+            "network_calls": {
+              "type": "array",
+              "items": { "type": "object" }
+            },
+            "security_calls": {
+              "type": "array",
+              "items": { "type": "object" }
+            },
+            "security_hash": {
+              "type": ["string", "null"],
+              "pattern": "^[a-fA-F0-9]{64}$"
+            }
+          },
+          "required": [ "file_ops", "network_calls", "security_calls", "security_hash" ]
+        },
+        "deliverable": {
+          "type": "object",
+          "description": "Classification of the deliverable type and its interface.",
+          "properties": {
+            "kind": { "type": "string" },
+            "interface_signature": {
+              "type": "object",
+              "properties": {
+                "classes": {
+                  "type": "array",
+                  "items": { "type": "object" }
+                },
+                "functions": {
+                  "type": "array",
+                  "items": { "type": "object" }
+                }
+              },
+              "required": [ "classes", "functions" ]
+            },
+            "interface_hash": {
+              "type": ["string", "null"],
+              "pattern": "^[a-fA-F0-9]{64}$"
+            }
+          },
+          "required": [ "kind", "interface_signature", "interface_hash" ]
+        },
+        "complexity": {
+          "type": "object",
+          "description": "Cyclomatic complexity metrics.",
+          "properties": {
+            "total": { "type": "integer" },
+            "average": { "type": "number" },
+            "max": { "type": "integer" },
+            "function_complexities": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "complexity": { "type": "integer" },
+                  "lineno": { "type": "integer" }
+                },
+                "required": [ "complexity", "lineno" ]
+              }
+            }
+          },
+          "required": [ "total", "average", "max" ]
+        },
+        "semantic": {
+          "type": "object",
+          "description": "Semantic signature generated from identifiers, strings and token frequencies.",
+          "properties": {
+            "token_frequencies": { "type": "object", "additionalProperties": { "type": "integer" } },
+            "unique_identifiers": { "type": "array", "items": { "type": "string" } },
+            "unique_strings": { "type": "array", "items": { "type": "string" } },
+            "signature_hash": {
+              "type": ["string", "null"],
+              "pattern": "^[a-fA-F0-9]{64}$"
+            }
+          },
+          "required": [ "token_frequencies", "unique_identifiers", "unique_strings", "signature_hash" ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "provenance": {
+      "type": "object",
+      "description": "Heuristic provenance signals.  These fields do not participate in the facts hash.",
+      "properties": {
+        "ai_cli": { "type": "object" },
+        "git": { "type": "object" }
+      },
+      "additionalProperties": true
+    },
+    "hashes": {
+      "type": "object",
+      "description": "Cryptographic hashes derived from the record.",
+      "required": [ "facts_sha256", "record_sha256" ],
+      "properties": {
+        "facts_sha256": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{64}$",
+          "description": "Hash of the canonical JSON representation of the deterministic facts."
+        },
+        "record_sha256": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{64}$",
+          "description": "Hash of the canonical JSON representation of the entire record excluding the record hash itself."
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

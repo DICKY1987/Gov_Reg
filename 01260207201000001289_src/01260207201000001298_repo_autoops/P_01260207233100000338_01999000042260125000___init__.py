@@ -10,7 +10,7 @@ RepoAutoOps - Automated Git operations with file watching and policy enforcement
 This package provides a zero-touch Git automation system that:
 - Watches filesystem for changes
 - Enforces module contracts and allowlists
-- Assigns identity (16-digit prefix + doc_id)
+- Assigns identity (20-digit prefix + file_id)
 - Validates files before committing
 - Handles conflicts via quarantine
 - Provides comprehensive audit logging

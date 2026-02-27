@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-FILE_ID: 01999000042260125045
+FILE_ID: 01260207233100000318
 Migrated from: C:\Users\richg\eafix-modular\services\generator\2026012322470016_generator_orchestrator.py
 """
 

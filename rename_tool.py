@@ -77,7 +77,8 @@ def main():
 
     run_id = run_cfg["run_id"]
     if run_id == "AUTO":
-        run_id = f"rename_{now_utc_compact()}" # [cite: 10]
+        run_id_prefix = run_cfg.get("run_id_prefix", "rename")
+        run_id = f"{run_id_prefix}_{now_utc_compact()}" # [cite: 10]
 
     out_dir = Path(run_cfg["output_dir"]) / run_id
     ensure_dir(out_dir)

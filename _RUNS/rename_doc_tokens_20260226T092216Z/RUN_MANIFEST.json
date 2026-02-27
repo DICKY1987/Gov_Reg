@@ -1,0 +1,42 @@
+{
+  "run_id": "rename_doc_tokens_20260226T092216Z",
+  "tool_version": "1.1",
+  "script_sha256": "cc1f4fe306f1a33bc7a597abd4baaccaf518c70f7a646a8160198d3536433952",
+  "success": true,
+  "config_path": "rename_doc_tokens_config.yml",
+  "roots": [
+    "C:\\Users\\richg\\Gov_Reg\\01260207201000001250_REGISTRY",
+    "C:\\Users\\richg\\Gov_Reg\\SOME_OTHER_ROOT"
+  ],
+  "recursive": true,
+  "dry_run": true,
+  "proceed_gate_ok": false,
+  "metrics": {
+    "dirs_visited": 55,
+    "files_visited_total": 239,
+    "files_matched": 0,
+    "collisions_resolved": 0,
+    "executed": 0,
+    "failed": 0,
+    "skipped_reasons": {
+      "no_match": 239,
+      "missing_root": 1
+    },
+    "files_skipped_reason_counts": {
+      "no_match": 239,
+      "missing_root": 1
+    },
+    "elapsed_ms": 13
+  },
+  "artifacts": {
+    "rename_map": "C:\\Users\\richg\\Gov_Reg\\_RUNS\\rename_doc_tokens_20260226T092216Z\\RENAME_MAP.json",
+    "full_inventory": "C:\\Users\\richg\\Gov_Reg\\_RUNS\\rename_doc_tokens_20260226T092216Z\\FULL_INVENTORY.csv",
+    "before_manifest": "C:\\Users\\richg\\Gov_Reg\\_RUNS\\rename_doc_tokens_20260226T092216Z\\before_manifest.csv",
+    "after_manifest": null,
+    "rename_log": null,
+    "traversal_report": "C:\\Users\\richg\\Gov_Reg\\_RUNS\\rename_doc_tokens_20260226T092216Z\\TRAVERSAL_REPORT.json",
+    "plan_report": "C:\\Users\\richg\\Gov_Reg\\_RUNS\\rename_doc_tokens_20260226T092216Z\\PLAN_REPORT.md",
+    "exec_summary": "C:\\Users\\richg\\Gov_Reg\\_RUNS\\rename_doc_tokens_20260226T092216Z\\EXECUTION_SUMMARY.md",
+    "config_echo": "C:\\Users\\richg\\Gov_Reg\\_RUNS\\rename_doc_tokens_20260226T092216Z\\CONFIG_ECHO.yml"
+  }
+}

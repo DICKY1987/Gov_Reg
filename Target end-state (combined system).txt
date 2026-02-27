@@ -1,0 +1,345 @@
+
+What overlaps (duplicate or near-duplicate concerns)
+	•	Repo traversal + file inventory
+All three need “walk the repo, identify files, normalize paths, assign IDs, emit records”.
+	•	Evidence + hashing + run IDs
+Both the mapping pipeline and the analyzer/provenance work produce “evidence artifacts” and hashes. This should be one shared utility + one shared evidence contract, not reimplemented per subsystem.
+	•	Registry integration
+Capability mapping writes to the registry via patches; provenance will eventually want to write back signals too (even if only as evidence links). Same integration layer.
+
+What’s complementary (different “why”)
+	•	Capability Mapping (4-step pipeline): answers
+“What does this file do?” and “Which capability does it support?”
+Output: tags + one-line purpose + facts hash promoted into SSOT registry.
+	•	mapp_py analyzers (components/imports/I-O/complexity/similarity/etc.): answers
+“What is this file structurally?” (static facts)
+Output: deterministic feature fields that make capability mapping more accurate and auditable.
+	•	PROV-SOL: answers
+“Who/what produced or edited this file, and how (AI vs human)?”
+Output: provenance timeline stored in SQLite + queryable evidence, useful for governance, trust, and “supersedes/deprecates” detection.
+
+The clean way to combine them
+
+Treat mapp_py and PROV-SOL as signal providers feeding the capability mapping + registry promotion pipeline:
+	•	A single canonical FileInventory record per file (ID, path, hashes, basic metadata).
+	•	A pluggable Analyzer interface:
+	•	static_analysis (imports/components/io/complexity)
+	•	semantic_similarity
+	•	ai_provenance
+	•	A single Evidence schema and writer.
+	•	A single Registry promoter that can promote:
+	•	capability tags/purpose
+	•	provenance summaries (optional, controlled by governance)
+
+Bottom line
+	•	Not redundant in purpose. Capability mapping = what it does. PROV-SOL = who/what touched it. mapp_py = what it is (measurable properties).
+	•	Redundant in plumbing. Merge traversal, normalization, hashing, evidence-writing, and registry writeback into shared libraries so the systems don’t drift.
+
+——
+
+
+Target end-state (combined system)
+
+One pipeline, one inventory, many analyzers, one evidence contract, one promoter.
+
+Dataflow
+	1.	Scan + identify files → FileInventory baseline (IDs, paths, hashes, metadata)
+	2.	Analyze each file via pluggable analyzers → deterministic facts + optional heuristic provenance
+	3.	Map files → capabilities/purpose (uses facts + (optionally) provenance as a ranking signal only)
+	4.	Promote results → SSOT registry via patch-only ops (allowlisted fields)
+
+⸻
+
+1) A single canonical FileInventory record per file
+
+Why you need this
+
+Right now:
+	•	Step 2 already emits an inventory record, but it’s missing several “mapp_py” fields (complexity, deliverable kind, interface hash, semantic signature, etc.).
+	•	PROV-SOL stores provenance in SQLite, but your mapping pipeline needs a per-file summarized view (exists/session_count/agent mix/intent signals) to use as a heuristic.
+
+So you standardize on one record format and treat everything else as “extensions”.
+
+Canonical schema (practical v2)
+
+Use JSONL for scale and deterministic append order.
+
+Each line is one record:
+
+{
+  "file_id": "0199900004226........",              // from SSOT/ID policy
+  "path_rel": "pipeline/src/core/x.py",            // POSIX-style
+  "path_abs": "C:\\...\\x.py",                     // optional
+  "ext": ".py",
+  "classification": "python_entrypoint|python_module|schema_json|doc|other",
+  "size_bytes": 12345,
+  "mtime_utc": "2026-02-26T17:50:00Z",
+  "content_sha256": "…",
+
+  "parse": {
+    "python": {
+      "success": true,
+      "syntax_sha256": "…",                        // hash of canonical AST-derived facts (not raw source)
+      "loc": 210
+    }
+  },
+
+  "facts": {
+    "imports": ["ast", "pathlib", "…"],
+    "defines": ["PurposeRegistryBuilder", "…"],
+    "argparse": { "commands": ["scan", "promote"], "has_parser": true },
+    "io_surface": {
+      "file_ops": [...],
+      "network_calls": [...],
+      "security_calls": [...],
+      "path_literals": ["schemas/X.json"],
+      "required_exists_paths": ["schemas/X.json"]
+    },
+    "complexity": { "avg": 3.2, "max": 8, "total": 51 },
+    "deliverable": { "kind": "SERVICE|SCRIPT|LIBRARY|TEST|CONFIG", "interface_hash": "…" },
+    "semantic": { "token_signature": { "foo": 12, "bar": 4 }, "signature_hash": "…" }
+  },
+
+  "provenance": {
+    "ai_cli": {
+      "exists": false,
+      "session_count": 0,
+      "tool_use_count": { "view": 0, "edit": 0, "create": 0 },
+      "cli_agents": [],
+      "intent_signals": { "migration": 0, "deprecation": 0, "removal": 0 }
+    },
+    "git": {
+      "human_commit_count": 0,
+      "ai_commit_count": 0,
+      "ai_ratio": 0.0
+    }
+  },
+
+  "hashes": {
+    "facts_sha256": "…",                           // hash of canonicalized facts (deterministic)
+    "record_sha256": "…"                           // hash of canonicalized full record
+  }
+}
+
+Determinism rules (non-negotiable)
+	•	All lists sorted deterministically (imports, defines, commands, paths).
+	•	Canonical JSON serialization (sort keys, stable float handling, no non-deterministic timestamps inside hashed objects).
+	•	facts_sha256 computed from facts only (and only deterministic facts).
+	•	provenance is never included in facts_sha256.
+
+⸻
+
+2) A pluggable Analyzer interface
+
+Core idea
+
+Treat every analyzer as a pure function:
+
+Input: a FileContext (path, bytes/source, parsed AST if applicable, baseline metadata)
+Output: AnalyzerResult (fields + evidence blobs + success flag)
+
+Interface (minimal but complete)
+
+class Analyzer(Protocol):
+    analyzer_id: str                # stable ID
+    analyzer_version: str           # bump when output semantics change
+    deterministic: bool             # True => may affect decisions; False => heuristic only
+    provides: list[str]             # field paths produced (facts.* or provenance.*)
+
+    def run(self, ctx: FileContext) -> AnalyzerResult: ...
+
+Execution ordering: sorted(analyzer_id) so runs are stable.
+
+Implementations mapped to your existing code
+
+static_analysis (deterministic)
+	•	dependency_analyzer → facts.imports
+	•	component_extractor → facts.defines (and optionally detailed classes/functions list)
+	•	i_o_surface_* → facts.io_surface
+	•	complexity_visitor → facts.complexity
+	•	deliverable_analyzer → facts.deliverable
+
+semantic_similarity (deterministic but used as ranking)
+	•	extract_semantic_features → facts.semantic.*
+	•	A separate “pairwise similarity” stage should not run inside per-file analyzers; it belongs in mapping/ranking step.
+
+ai_provenance (heuristic only)
+	•	PROV-SOL query wrapper → provenance.ai_cli.* + provenance.git.*
+
+Key optimization: parse once, reuse everywhere
+
+Right now multiple analyzers parse/read the file independently. Fix this by building FileContext like:
+	•	ctx.source_text loaded once
+	•	ctx.ast_tree parsed once (when .py)
+	•	ctx.tokens optional pre-tokenization (for semantic features)
+
+This drops runtime and removes subtle inconsistencies.
+
+⸻
+
+3) A single Evidence schema and writer
+
+What “single evidence schema” means here
+
+One contract that:
+	•	defines where evidence lives
+	•	defines what is deterministic vs heuristic
+	•	ensures every run emits a manifest + per-analyzer evidence + hashes
+
+You already have the right conceptual split in PROV-SOL:
+	•	evidence.* = deterministic (hard decisions allowed)
+	•	provenance.* = heuristic (ranking/scoring only)
+
+Extend it to cover your mapping pipeline too.
+
+Evidence directory layout (simple and scalable)
+
+.state/evidence/<pipeline_name>/<run_id>/
+  manifest.json
+  tool_versions.json
+  inventory.jsonl.sha256
+  file_records/
+    <file_id>__record.json
+    <file_id>__facts.json
+    <file_id>__provenance.json
+    <file_id>__analyzer_<analyzer_id>.json
+  mapping/
+    file_purpose_registry.json
+    mapping_summary.json
+  promotion/
+    registry_patch.json
+    apply_result.json
+    before_snapshot.json
+    after_snapshot.json
+    diff_summary.json
+
+Manifest fields (what you’ll wish you had later)
+	•	run_id, UTC timestamps
+	•	repo root, git commit hash (if available)
+	•	analyzer list with versions
+	•	counts: files scanned/analyzed/mapped/promoted
+	•	any degrade modes (e.g., provenance DB missing)
+
+Writer rules
+	•	The writer is the only component allowed to touch evidence output.
+	•	It canonicalizes JSON before hashing.
+	•	It enforces allowlists for what’s hashed vs not hashed.
+
+⸻
+
+4) A single Registry promoter (allowlisted promotion)
+
+Problem to avoid
+
+If you don’t gate promotion, provenance fields will “creep” into SSOT and become decision inputs accidentally.
+
+Solution
+
+Create a promoter that:
+	1.	Validates SSOT column dictionary contains required headers (or adds them via a controlled patch)
+	2.	Applies only allowlisted fields
+	3.	Emits complete before/after evidence
+
+Promotion allowlist (example)
+Deterministic:
+	•	one_line_purpose
+	•	py_capability_tags
+	•	py_capability_facts_hash (hash of deterministic facts only)
+
+Optional (heuristic summaries, only if enabled):
+	•	py_provenance_summary (string or compact JSON)
+	•	py_provenance_flags (e.g., “HIGH_AI_EDIT_ACTIVITY”)
+	•	py_provenance_hash (hash of provenance summary object, not used for decisions)
+
+Governance control
+
+A config switch like:
+	•	PROMOTE_PROVENANCE: false by default
+	•	If true, require a proceed gate file (fail-closed)
+
+⸻
+
+5) How to physically combine your current systems (implementation sequence)
+
+Phase 1 — Normalize the inventory and analyzers (no behavior change)
+	1.	Define FileInventory.schema.v2.json and update Step 2 builder to emit it (still JSONL).
+	2.	Wrap existing analyzers behind the Analyzer interface (thin adapters).
+	3.	Implement shared EvidenceWriter and update Step 1–4 to use it.
+
+Deliverable: Step 2 output becomes the canonical record; everything else consumes it.
+
+Phase 2 — Integrate PROV-SOL as a plugin
+	4.	Add an AiProvenanceAnalyzer that:
+	•	takes (file_id, path_rel) and queries provenance via PROV-SOL DB
+	•	if DB missing/unavailable → emits exists=false and records degrade mode in manifest
+	5.	Ensure provenance outputs land under provenance.* and are never included in deterministic hashes.
+
+Deliverable: mapping pipeline can “see” provenance signals without depending on them.
+
+Phase 3 — Upgrade mapping quality using new facts
+	6.	Update PurposeRegistryBuilder to use:
+	•	deliverable kind
+	•	io surface signals
+	•	complexity thresholds (optional)
+	•	semantic signature (for tie-break ranking)
+	7.	Keep the rule: only deterministic signals decide; provenance only breaks ties / ranks review queue.
+
+Deliverable: fewer unmapped files + smaller review queue.
+
+Phase 4 — Controlled promotion of provenance summaries (optional)
+	8.	Add new SSOT headers (if desired) and promote only compact summaries with explicit governance gating.
+
+Deliverable: SSOT can display provenance without letting it drive identity/purpose decisions.
+
+⸻
+
+6) High-value optimizations (worth doing during the merge)
+
+A) Stop double-parsing and double-reading
+	•	Parse AST once in FileContext.
+	•	Share results across dependency/components/io/deliverable/complexity analyzers.
+
+B) Add caching keyed by (content_sha256, analyzer_id, analyzer_version)
+	•	If file unchanged, skip analyzer and reuse prior evidence.
+	•	Massive speed-up on incremental runs.
+
+C) Fix existing format drift
+	•	Standardize on FILE_INVENTORY.jsonl everywhere (README currently conflicts with code).
+	•	Standardize hash policy (full SHA256 everywhere; no truncation in promoted facts hash).
+
+D) Make orchestration Windows-safe
+	•	No /tmp/...
+	•	Use tempfile and repo-local .state/ only.
+
+E) Tighten argparse extraction
+	•	Right now it detects parsers/subcommands but not argument details. Extend it to capture add_argument() calls (names, types, defaults). This materially improves capability discovery.
+
+⸻
+
+7) Minimal “combined pipeline” module breakdown
+
+core/
+	•	file_context.py (load/parse once)
+	•	inventory.py (schema + canonicalization + hash computation)
+	•	analyzer_base.py
+	•	evidence_writer.py
+	•	pipeline_runner.py (deterministic ordering, caching, manifests)
+
+analyzers/
+	•	imports.py (adapter to dependency analyzer)
+	•	components.py
+	•	io_surface.py
+	•	complexity.py
+	•	deliverable.py
+	•	semantic_signature.py
+	•	ai_provenance.py (adapter around PROV-SOL query)
+
+mapping/
+	•	capability_discovery.py
+	•	purpose_registry_builder.py (consumes canonical inventory)
+	•	ranking.py (semantic + provenance ranking, outputs review_queue)
+
+promotion/
+	•	registry_promoter.py (allowlisted patch generation + apply + evidence)
+
+⸻

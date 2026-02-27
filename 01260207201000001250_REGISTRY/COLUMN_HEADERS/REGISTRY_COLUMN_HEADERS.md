@@ -31,9 +31,9 @@
 | contracts_consumed | INPUT | OPTIONAL | array|null | entity:file |
 | contracts_produced | INPUT | OPTIONAL | array|null | entity:file |
 | coverage_status | INPUT | OPTIONAL | string|null | entity:file |
-| created_by | INPUT | REQUIRED | string | core,entity,edge,generator |
-| created_utc | INPUT | REQUIRED | string | core,entity,edge,generator |
-| data_transformation | DERIVED | OPTIONAL | boolean|string|null | entity:file |
+| created_by | INPUT | REQUIRED | string | entity,edge,generator |
+| created_utc | INPUT | REQUIRED | string | entity,edge,generator |
+| data_transformation | DERIVED | OPTIONAL | string|null | entity:file |
 | declared_dependencies | INPUT | OPTIONAL | array|null | generator |
 | deliverables | INPUT | OPTIONAL | array|null | All |
 | depends_on_file_ids | LOOKUP | OPTIONAL | array|null | All |
@@ -97,7 +97,7 @@
 | module_id_override | LOOKUP | OPTIONAL | string|null | entity:file |
 | module_id_source | LOOKUP | OPTIONAL | string|null | entity:file |
 | mtime_utc | INPUT | OPTIONAL | string|null | entity:file |
-| notes | INPUT | OPTIONAL | string|null | core,entity,edge,generator |
+| notes | INPUT | OPTIONAL | string|null | entity,edge,generator |
 | ns_code | INPUT | OPTIONAL | string|null | entity:file |
 | observed_utc | INPUT | OPTIONAL | string|null | edge |
 | one_line_purpose | INPUT | OPTIONAL | string|null | All |
@@ -150,8 +150,8 @@
 | py_tests_executed | DERIVED | OPTIONAL | integer|null | entity:file |
 | py_tool_versions | DERIVED | OPTIONAL | object|null | entity:file |
 | py_toolchain_id | DERIVED | OPTIONAL | string|null | entity:file |
-| record_id | SYSTEM | REQUIRED | string | core,entity,edge,generator |
-| record_kind | INPUT | REQUIRED | string | core,entity,edge,generator |
+| record_id | SYSTEM | REQUIRED | string | entity,edge,generator |
+| record_kind | INPUT | REQUIRED | string | entity,edge,generator |
 | rel_type | INPUT | CONDITIONAL | string|null | edge |
 | relative_path | EXTRACTED | CONDITIONAL | string|null | entity:file |
 | repo_root_id | LOOKUP | OPTIONAL | string|null | All |
@@ -176,11 +176,11 @@
 | source_file_id | LOOKUP | OPTIONAL | string|null | All |
 | source_registry_hash | INPUT | OPTIONAL | string|null | generator |
 | source_registry_scan_id | LOOKUP | OPTIONAL | string|null | generator |
-| status | INPUT | REQUIRED | string | core,entity,edge,generator |
+| status | INPUT | REQUIRED | string | entity,edge,generator |
 | step_refs | INPUT | OPTIONAL | array|null | entity:file |
 | superseded_by | INPUT | OPTIONAL | string|null | All |
 | supersedes_entity_id | LOOKUP | OPTIONAL | string|null | entity |
-| tags | INPUT | OPTIONAL | array|null | core,entity,edge,generator |
+| tags | INPUT | OPTIONAL | array|null | entity,edge,generator |
 | target_entity_id | LOOKUP | CONDITIONAL | string|null | edge |
 | target_file_id | LOOKUP | OPTIONAL | string|null | All |
 | target_schema_id | LOOKUP | OPTIONAL | string|null | All |
@@ -191,8 +191,8 @@
 | transient_type | INPUT | OPTIONAL | string|null | entity:transient |
 | ttl_seconds | INPUT | OPTIONAL | integer|null | entity:transient |
 | type_code | INPUT | OPTIONAL | string|null | entity:file |
-| updated_by | INPUT | REQUIRED | string | core,entity,edge,generator |
-| updated_utc | INPUT | REQUIRED | string | core,entity,edge,generator |
+| updated_by | INPUT | REQUIRED | string | entity,edge,generator |
+| updated_utc | INPUT | REQUIRED | string | entity,edge,generator |
 | validation_rules | INPUT | OPTIONAL | object|null | generator |
 | validator_id | LOOKUP | OPTIONAL | string|null | generator |
 

@@ -47,7 +47,7 @@ class DescriptorExtractor:
 
         Args:
             file_path: Absolute path to Python file
-            doc_id: 16-digit doc_id
+            doc_id: 20-digit doc_id
             relative_path: Repo-relative path
 
         Returns:
@@ -89,7 +89,7 @@ class DescriptorExtractor:
 
         Args:
             parse_results: Output from AST parser
-            doc_id: 16-digit doc_id
+            doc_id: 20-digit doc_id
             relative_path: Repo-relative path
             source_sha256: SHA-256 of source file
 
@@ -149,7 +149,7 @@ class DescriptorExtractor:
 
         Args:
             descriptor: Descriptor dict
-            doc_id: 16-digit doc_id
+            doc_id: 20-digit doc_id
 
         Returns:
             Path to saved descriptor file

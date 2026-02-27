@@ -21,7 +21,7 @@ class FileRenamer:
     """
     Atomically renames files to include doc_id prefix.
 
-    Example: example.py → 1234567890123456_example.py
+    Example: example.py → 12345678901234567890_example.py
 
     Features:
     - Atomic rename (os.rename is atomic on most filesystems)
@@ -49,7 +49,7 @@ class FileRenamer:
 
         Args:
             current_path: Current file path (absolute)
-            doc_id: 16-digit doc_id to prepend
+            doc_id: 20-digit doc_id to prepend
             dry_run: If True, don't actually rename (return what would be done)
 
         Returns:
@@ -71,10 +71,10 @@ class FileRenamer:
             filename: File name (not full path)
 
         Returns:
-            16-digit doc_id if found, None otherwise
+            20-digit doc_id if found, None otherwise
 
-        Pattern: Filename starts with 16 digits followed by underscore
-        Example: 1234567890123456_example.py → "1234567890123456"
+        Pattern: Filename starts with 20 digits followed by underscore
+        Example: 12345678901234567890_example.py → "12345678901234567890"
         """
         # TODO: Implement in Phase 3
         raise NotImplementedError("Phase 3")
@@ -87,7 +87,7 @@ class FileRenamer:
             filename: File name (not full path)
 
         Returns:
-            True if filename starts with 16-digit doc_id
+            True if filename starts with 20-digit doc_id
         """
         return self.extract_doc_id_from_filename(filename) is not None
 
@@ -97,7 +97,7 @@ class FileRenamer:
 
         Args:
             current_filename: Current filename
-            doc_id: 16-digit doc_id
+            doc_id: 20-digit doc_id
 
         Returns:
             New filename with doc_id prefix
@@ -105,7 +105,7 @@ class FileRenamer:
         # If filename already has doc_id, replace it
         if self.has_doc_id_prefix(current_filename):
             # Strip old doc_id and underscore
-            without_prefix = current_filename[17:]  # Skip "NNNNNNNNNNNNNNNN_"
+            without_prefix = current_filename[21:]  # Skip "NNNNNNNNNNNNNNNNNNNN_"
             return f"{doc_id}_{without_prefix}"
         else:
             return f"{doc_id}_{current_filename}"
