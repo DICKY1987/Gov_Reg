@@ -22,28 +22,28 @@ __author__ = "Gov_Reg System"
 
 # Import main classes (will be available once modules are created)
 try:
-    from .P_01260207233100000YYY_capability_discoverer import CapabilityDiscoverer
+    from .P_01260207201000000982_01999000042260130005_capability_discoverer import CapabilityDiscoverer
 except ImportError:
     CapabilityDiscoverer = None
 
 try:
-    from .P_01260207233100000YYY_file_inventory_builder import FileInventoryBuilder
+    from .P_01260207201000000983_01999000042260130006_file_inventory_builder import FileInventoryBuilder
 except ImportError:
     FileInventoryBuilder = None
 
 try:
-    from .P_01260207233100000YYY_purpose_registry_builder import PurposeRegistryBuilder
+    from .P_01260207201000000984_01999000042260130008_purpose_registry_builder import PurposeRegistryBuilder
 except ImportError:
     PurposeRegistryBuilder = None
 
 try:
-    from .P_01260207233100000YYY_argparse_extractor import ArgparseExtractor, extract_argparse_commands
+    from .P_01260207201000000980_01999000042260130003_argparse_extractor import ArgparseExtractor, extract_argparse_commands
 except ImportError:
     ArgparseExtractor = None
     extract_argparse_commands = None
 
 try:
-    from .P_01260207233100000YYY_call_graph_builder import CallGraphBuilder
+    from .P_01260207201000000981_01999000042260130004_call_graph_builder import CallGraphBuilder
 except ImportError:
     CallGraphBuilder = None
 

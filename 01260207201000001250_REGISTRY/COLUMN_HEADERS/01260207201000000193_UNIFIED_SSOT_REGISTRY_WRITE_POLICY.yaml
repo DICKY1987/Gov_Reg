@@ -48,6 +48,16 @@ version: 1.0.0
 status: authoritative
 applies_to_registry: UNIFIED_SSOT_REGISTRY.json
 generated_utc: 2026-01-29 00:00:00+00:00
+promotion_blockers:
+  - blocker_id: FILE_ID_MISMATCH
+    affects: all py_* columns
+    description: >
+      Pipeline sets file_id = content_sha256 (64-char hex).
+      Registry expects 20-digit numeric ID from ALLOCATE_FILE_ID().
+      A mapping/lookup layer is required before any py_* values
+      can be promoted to registry records.
+    status: open
+    cross_ref: PY_COLUMN_PIPELINE_MAPPING.md § Critical Integration Gap
 columns:
   dir_id:
     rationale: 20-digit unique directory identifier, null for files
@@ -888,3 +898,214 @@ columns:
     update_policy: recompute_on_build
     writable_by: tool_only
     merge_strategy: set_union
+
+  py_imports_hash:
+    rationale: SHA-256 hash of import dependency list from pipeline
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_complexity_cyclomatic:
+    rationale: Cyclomatic complexity value from ComplexityAnalyzerAdapter
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_deliverable_kinds:
+    rationale: Array of deliverable kind classifications
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_deliverable_signature_hash:
+    rationale: Hash of deliverable interface signature
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_ast_dump_hash:
+    rationale: SHA-256 hash of AST dump for structural comparison
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_ast_parse_ok:
+    rationale: Boolean indicating whether AST parsed successfully
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_component_count:
+    rationale: Count of classes + functions in file
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_defs_classes_count:
+    rationale: Count of class definitions in file
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_defs_functions_count:
+    rationale: Count of function definitions in file
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_deliverable_interfaces:
+    rationale: Flattened array of interface descriptors (classes + functions)
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_imports_local:
+    rationale: List of local/relative import module names
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_imports_stdlib:
+    rationale: List of standard library import module names
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_imports_third_party:
+    rationale: List of third-party/external import module names
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_io_surface_flags:
+    rationale: Derived flag array from io_surface analysis (HAS_NETWORK, etc.)
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_security_risk_flags:
+    rationale: Security risk flag array derived from security_calls analysis
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_analysis_run_id:
+    rationale: Run-level identifier for the analysis batch
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_analysis_success:
+    rationale: Per-file analysis success flag
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_analyzed_at_utc:
+    rationale: UTC timestamp of per-file analysis
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_canonical_candidate_score:
+    rationale: Batch-computed canonical ranking score
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_canonical_text_hash:
+    rationale: Hash of normalized text for deduplication
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_component_artifact_path:
+    rationale: Path to evidence artifact from component extraction
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_component_ids:
+    rationale: Stable component identifiers from component_extractor
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_coverage_percent:
+    rationale: Test coverage percentage from pytest+coverage
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_defs_public_api_hash:
+    rationale: Hash of public API surface for change detection
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_deliverable_inputs:
+    rationale: Input dependency patterns from deliverable analysis
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_deliverable_outputs:
+    rationale: Output patterns from deliverable analysis
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_overlap_best_match_file_id:
+    rationale: File ID of best pairwise similarity match
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_overlap_group_id:
+    rationale: Cluster group ID from similarity analysis
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_overlap_similarity_max:
+    rationale: Maximum pairwise similarity score
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_pytest_exit_code:
+    rationale: Exit code from pytest execution
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_quality_score:
+    rationale: Composite quality score from multiple inputs
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_static_issues_count:
+    rationale: Count of static analysis issues from linter
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_tests_executed:
+    rationale: Count of tests executed by pytest
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_tool_versions:
+    rationale: Toolchain version metadata object (Python, pytest, ruff, etc.)
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+    merge_strategy: object_merge
+
+  py_toolchain_id:
+    rationale: Toolchain identifier for reproducibility
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only

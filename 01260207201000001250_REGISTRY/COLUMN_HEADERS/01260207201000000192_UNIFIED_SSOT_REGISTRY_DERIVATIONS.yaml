@@ -1334,6 +1334,470 @@ derived_columns:
     trigger: recompute_on_scan
     rationale: Manual override with deterministic inferred fallback
     formula: COALESCE(INPUT.status, status_inferred)
+
+  # ──────────────────────────────────────────────────────────────────────
+  # py_* columns: Python analysis pipeline outputs
+  #
+  # PROMOTION BLOCKER (FILE_ID_MISMATCH):
+  #   Pipeline sets file_id = content_sha256 (64-char hex).
+  #   Registry expects 20-digit numeric ID from ALLOCATE_FILE_ID().
+  #   A mapping/lookup layer is required before any py_* values
+  #   can be promoted to registry records.
+  #   See: PY_COLUMN_PIPELINE_MAPPING.md § Critical Integration Gap
+  #
+  # Status key (from PY_COLUMN_PIPELINE_MAPPING.md):
+  #   DIRECT  — pipeline field maps 1:1
+  #   RENAME  — pipeline field exists but name/structure differs
+  #   PARTIAL — raw data exists, non-trivial transform needed
+  #   NO      — pipeline does not produce this; placeholder formula
+  # ──────────────────────────────────────────────────────────────────────
+
+  # ── NO: capability-specific pipeline required ──
+  py_capability_facts_hash:
+    depends_on: []
+    error_policy: set_null
+    type: string
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: COALESCE(INPUT.py_capability_facts_hash, NULL)
+    rationale: >
+      Status NO. Registry expects hash of capability-specific facts from
+      mapping pipeline (Steps 3-4), not the general facts_sha256 from
+      inventory. Requires capability mapping pipeline; compute hash over
+      capability tags + purpose only.
+
+  # ── NO: capability tagging pipeline required ──
+  py_capability_tags:
+    depends_on: []
+    error_policy: set_null
+    type: array
+    trigger: recompute_on_build
+    null_behavior: set_empty_array
+    formula: COALESCE(INPUT.py_capability_tags, [])
+    rationale: >
+      Status NO. Capability tagging is a mapping pipeline output (Step 3).
+      Requires capability discovery + purpose registry builder.
+
+  # ── DIRECT: 1:1 pipeline match ──
+  py_imports_hash:
+    depends_on: []
+    error_policy: set_null
+    type: string
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: INPUT.facts.imports.hash
+    rationale: >
+      Status DIRECT. Direct match from DependencyAnalyzerAdapter.
+      No transformation needed.
+
+  # ── RENAME: pipeline field exists, name/structure differs ──
+  py_complexity_cyclomatic:
+    depends_on: []
+    error_policy: set_null
+    type: number
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: COALESCE(INPUT.facts.complexity.average, NULL)
+    rationale: >
+      Status RENAME. Pipeline produces average, max, total at
+      ComplexityAnalyzerAdapter; registry expects single cyclomatic value.
+      Mapped to average; semantic decision may be revisited.
+
+  py_deliverable_kinds:
+    depends_on: []
+    error_policy: set_null
+    type: array
+    trigger: recompute_on_build
+    null_behavior: set_empty_array
+    formula: IF(IS_NULL(INPUT.facts.deliverable.kind), [], [INPUT.facts.deliverable.kind])
+    rationale: >
+      Status RENAME. Pipeline produces single string at facts.deliverable.kind;
+      registry expects array. Wrapped in array literal.
+
+  py_deliverable_signature_hash:
+    depends_on: []
+    error_policy: set_null
+    type: string
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: INPUT.facts.deliverable.interface_hash
+    rationale: >
+      Status RENAME. Semantically equivalent to facts.deliverable.interface_hash;
+      field name differs only.
+
+  # ── PARTIAL: raw data exists, transform required ──
+  py_ast_dump_hash:
+    depends_on: []
+    error_policy: set_null
+    type: string
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: IF(IS_NULL(INPUT.facts.ast_tree), NULL, SHA256_STRING(INPUT.facts.ast_dump))
+    rationale: >
+      Status PARTIAL. AST is parsed (FileContext.ast_tree) but dump hash
+      not computed. Requires hashlib.sha256(ast.dump(tree)) in FileContext
+      or a new analyzer.
+
+  py_ast_parse_ok:
+    depends_on: []
+    error_policy: set_null
+    type: boolean
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: NOT(IS_NULL(INPUT.facts.ast_tree))
+    rationale: >
+      Status PARTIAL. Boolean derivable from FileContext.ast_tree existence
+      but not exposed as a field. Derives ast_tree is not None.
+
+  py_component_count:
+    depends_on: []
+    error_policy: set_null
+    type: integer
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: >
+      IF(IS_NULL(INPUT.facts.deliverable.interface_signature), NULL,
+      COUNT(INPUT.facts.deliverable.interface_signature.classes)
+      + COUNT(INPUT.facts.deliverable.interface_signature.functions))
+    rationale: >
+      Status PARTIAL. Classes + functions lists exist at
+      facts.deliverable.interface_signature but not counted.
+      Derives len(classes) + len(functions).
+
+  py_defs_classes_count:
+    depends_on: []
+    error_policy: set_null
+    type: integer
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: IF(IS_NULL(INPUT.facts.deliverable.interface_signature), NULL, COUNT(INPUT.facts.deliverable.interface_signature.classes))
+    rationale: >
+      Status PARTIAL. Class list exists at
+      facts.deliverable.interface_signature.classes but not counted
+      as integer. Derives len(classes).
+
+  py_defs_functions_count:
+    depends_on: []
+    error_policy: set_null
+    type: integer
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: IF(IS_NULL(INPUT.facts.deliverable.interface_signature), NULL, COUNT(INPUT.facts.deliverable.interface_signature.functions))
+    rationale: >
+      Status PARTIAL. Function list exists at
+      facts.deliverable.interface_signature.functions but not counted
+      as integer. Derives len(functions).
+
+  py_deliverable_interfaces:
+    depends_on: []
+    error_policy: set_null
+    type: array
+    trigger: recompute_on_build
+    null_behavior: set_empty_array
+    formula: >
+      IF(IS_NULL(INPUT.facts.deliverable.interface_signature), [],
+      FLATTEN([INPUT.facts.deliverable.interface_signature.classes,
+      INPUT.facts.deliverable.interface_signature.functions]))
+    rationale: >
+      Status PARTIAL. Data exists as nested object {classes, functions};
+      registry expects flat array. Flattened into array of interface
+      descriptors.
+
+  py_imports_local:
+    depends_on: []
+    error_policy: set_null
+    type: array
+    trigger: recompute_on_build
+    null_behavior: set_empty_array
+    formula: >
+      IF(IS_NULL(INPUT.facts.imports.entries), [],
+      MAP(FILTER(INPUT.facts.imports.entries, EQUALS(item.type, "relative")), item.module))
+    rationale: >
+      Status PARTIAL. Count exists (relative_count); registry expects list
+      of module names. Filters entries where type == "relative", extracts
+      module names.
+
+  py_imports_stdlib:
+    depends_on: []
+    error_policy: set_null
+    type: array
+    trigger: recompute_on_build
+    null_behavior: set_empty_array
+    formula: >
+      IF(IS_NULL(INPUT.facts.imports.entries), [],
+      MAP(FILTER(INPUT.facts.imports.entries, EQUALS(item.classification, "stdlib")), item.module))
+    rationale: >
+      Status PARTIAL. Count exists (stdlib_count); registry expects list
+      of module names. Filters entries where classification is stdlib,
+      extracts module names.
+
+  py_imports_third_party:
+    depends_on: []
+    error_policy: set_null
+    type: array
+    trigger: recompute_on_build
+    null_behavior: set_empty_array
+    formula: >
+      IF(IS_NULL(INPUT.facts.imports.entries), [],
+      MAP(FILTER(INPUT.facts.imports.entries, EQUALS(item.classification, "external")), item.module))
+    rationale: >
+      Status PARTIAL. Count exists (external_count); registry expects list
+      of module names. Filters entries where classification is external,
+      extracts module names.
+
+  py_io_surface_flags:
+    depends_on: []
+    error_policy: set_null
+    type: array
+    trigger: recompute_on_build
+    null_behavior: set_empty_array
+    formula: >
+      FILTER([
+      IF(COUNT(COALESCE(INPUT.facts.io_surface.network_calls, [])) > 0, "HAS_NETWORK", NULL),
+      IF(COUNT(COALESCE(INPUT.facts.io_surface.file_ops, [])) > 0, "HAS_FILE_IO", NULL),
+      IF(COUNT(COALESCE(INPUT.facts.io_surface.security_calls, [])) > 0, "HAS_SECURITY_CALL", NULL)
+      ], NOT(IS_NULL(item)))
+    rationale: >
+      Status PARTIAL. Raw lists of file_ops, network_calls, security_calls
+      exist at facts.io_surface. Derives flag taxonomy: HAS_NETWORK,
+      HAS_FILE_IO, HAS_SECURITY_CALL.
+
+  py_security_risk_flags:
+    depends_on: []
+    error_policy: set_null
+    type: array
+    trigger: recompute_on_build
+    null_behavior: set_empty_array
+    formula: >
+      FILTER([
+      IF(COUNT(COALESCE(INPUT.facts.io_surface.security_calls, [])) > 0, "USES_SECURITY_API", NULL),
+      IF(COUNT(COALESCE(INPUT.facts.io_surface.network_calls, [])) > 0, "HAS_NETWORK_ACCESS", NULL)
+      ], NOT(IS_NULL(item)))
+    rationale: >
+      Status PARTIAL. Raw security_calls list exists at
+      facts.io_surface.security_calls. Derives risk flag taxonomy
+      from security_calls + network_calls.
+
+  # ── NO: pipeline does not produce; placeholder formulas ──
+  py_analysis_run_id:
+    depends_on: []
+    error_policy: set_null
+    type: string
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: COALESCE(INPUT.py_analysis_run_id, NULL)
+    rationale: >
+      Status NO. Run-level metadata not captured by pipeline.
+      Add to consolidated_runner.py or build registry_integration_pipeline.py.
+
+  py_analysis_success:
+    depends_on: []
+    error_policy: set_null
+    type: boolean
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: COALESCE(INPUT.py_analysis_success, NULL)
+    rationale: >
+      Status NO. Per-file success flag absent from pipeline.
+      Add aggregate success flag after all analyzers run.
+
+  py_analyzed_at_utc:
+    depends_on: []
+    error_policy: set_null
+    type: string
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: COALESCE(INPUT.py_analyzed_at_utc, NULL)
+    rationale: >
+      Status NO. Per-file analysis timestamp absent from pipeline.
+      Capture UTC timestamp per file in runner.
+
+  py_canonical_candidate_score:
+    depends_on: []
+    error_policy: set_null
+    type: number
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: COALESCE(INPUT.py_canonical_candidate_score, NULL)
+    rationale: >
+      Status NO. Requires batch ranking across overlap groups.
+      Build canonical_ranker.py (LAST_MILE Phase 2).
+
+  py_canonical_text_hash:
+    depends_on: []
+    error_policy: set_null
+    type: string
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: COALESCE(INPUT.py_canonical_text_hash, NULL)
+    rationale: >
+      Status NO. Requires text normalization before hashing.
+      Wire text_normalizer.py as an analyzer adapter.
+
+  py_component_artifact_path:
+    depends_on: []
+    error_policy: set_null
+    type: string
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: COALESCE(INPUT.py_component_artifact_path, NULL)
+    rationale: >
+      Status NO. Evidence writer not implemented.
+      Build evidence writer; capture artifact output path.
+
+  py_component_ids:
+    depends_on: []
+    error_policy: set_null
+    type: array
+    trigger: recompute_on_build
+    null_behavior: set_empty_array
+    formula: COALESCE(INPUT.py_component_ids, [])
+    rationale: >
+      Status NO. Requires component_extractor + generate_component_signature.
+      Wire component_extractor.py as adapter; generate stable IDs.
+
+  py_coverage_percent:
+    depends_on: []
+    error_policy: set_null
+    type: number
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: COALESCE(INPUT.py_coverage_percent, NULL)
+    rationale: >
+      Status NO. Requires pytest + coverage execution.
+      Phase B external tool (LAST_MILE).
+
+  py_defs_public_api_hash:
+    depends_on: []
+    error_policy: set_null
+    type: string
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: COALESCE(INPUT.py_defs_public_api_hash, NULL)
+    rationale: >
+      Status NO. Public API surface not separately hashed.
+      Extend deliverable analyzer or add dedicated extractor.
+
+  py_deliverable_inputs:
+    depends_on: []
+    error_policy: set_null
+    type: array
+    trigger: recompute_on_build
+    null_behavior: set_empty_array
+    formula: COALESCE(INPUT.py_deliverable_inputs, [])
+    rationale: >
+      Status NO. Deliverable analyzer does not extract input dependencies.
+      Extend DeliverableAnalyzerAdapter to capture input patterns.
+
+  py_deliverable_outputs:
+    depends_on: []
+    error_policy: set_null
+    type: array
+    trigger: recompute_on_build
+    null_behavior: set_empty_array
+    formula: COALESCE(INPUT.py_deliverable_outputs, [])
+    rationale: >
+      Status NO. Deliverable analyzer does not extract output patterns.
+      Extend DeliverableAnalyzerAdapter to capture output patterns.
+
+  py_overlap_best_match_file_id:
+    depends_on: []
+    error_policy: set_null
+    type: string
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: COALESCE(INPUT.py_overlap_best_match_file_id, NULL)
+    rationale: >
+      Status NO. Requires pairwise similarity computation.
+      Build similarity_clusterer.py (LAST_MILE Phase 2).
+
+  py_overlap_group_id:
+    depends_on: []
+    error_policy: set_null
+    type: string
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: COALESCE(INPUT.py_overlap_group_id, NULL)
+    rationale: >
+      Status NO. Requires batch clustering by signature hash.
+      Build similarity_clusterer.py (LAST_MILE Phase 2).
+
+  py_overlap_similarity_max:
+    depends_on: []
+    error_policy: set_null
+    type: number
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: COALESCE(INPUT.py_overlap_similarity_max, NULL)
+    rationale: >
+      Status NO. Requires similarity scoring.
+      Build similarity_clusterer.py (LAST_MILE Phase 2).
+
+  py_pytest_exit_code:
+    depends_on: []
+    error_policy: set_null
+    type: integer
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: COALESCE(INPUT.py_pytest_exit_code, NULL)
+    rationale: >
+      Status NO. Requires pytest execution.
+      Phase B external tool (LAST_MILE).
+
+  py_quality_score:
+    depends_on: []
+    error_policy: set_null
+    type: number
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: COALESCE(INPUT.py_quality_score, NULL)
+    rationale: >
+      Status NO. Composite score from multiple inputs.
+      Build quality_scorer.py (LAST_MILE Phase 2).
+
+  py_static_issues_count:
+    depends_on: []
+    error_policy: set_null
+    type: integer
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: COALESCE(INPUT.py_static_issues_count, NULL)
+    rationale: >
+      Status NO. Requires linter execution (ruff/pylint).
+      Phase B external tool (LAST_MILE).
+
+  py_tests_executed:
+    depends_on: []
+    error_policy: set_null
+    type: integer
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: COALESCE(INPUT.py_tests_executed, NULL)
+    rationale: >
+      Status NO. Requires pytest execution.
+      Phase B external tool (LAST_MILE).
+
+  py_tool_versions:
+    depends_on: []
+    error_policy: set_null
+    type: object
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: COALESCE(INPUT.py_tool_versions, NULL)
+    rationale: >
+      Status NO. Toolchain versions not captured by pipeline.
+      Add version collection to runner (Python, pytest, ruff, etc.).
+
+  py_toolchain_id:
+    depends_on: []
+    error_policy: set_null
+    type: string
+    trigger: recompute_on_build
+    null_behavior: allow
+    formula: COALESCE(INPUT.py_toolchain_id, NULL)
+    rationale: >
+      Status NO. Toolchain identifier not assigned.
+      Add constant or config-driven toolchain ID.
 generated_utc: 2026-01-29 00:00:00+00:00
 applies_to_registry: UNIFIED_SSOT_REGISTRY.json
 status: authoritative
@@ -1357,24 +1821,6 @@ validation:
   type_consistency:
     rule: Formula output type must match declared type
     on_violation: fail
-
-  py_capability_facts_hash:
-    depends_on: []
-    error_policy: set_null
-    type: string
-    trigger: recompute_on_build
-    null_behavior: allow
-    formula: COALESCE(INPUT.py_capability_facts_hash, NULL)
-    rationale: Provided directly by Python analysis tool; null for non-Python files
-
-  py_capability_tags:
-    depends_on: []
-    error_policy: set_null
-    type: array
-    trigger: recompute_on_build
-    null_behavior: set_empty_array
-    formula: COALESCE(INPUT.py_capability_tags, [])
-    rationale: Provided directly by Python analysis tool; null for non-Python files
 
   created_by:
     depends_on: []

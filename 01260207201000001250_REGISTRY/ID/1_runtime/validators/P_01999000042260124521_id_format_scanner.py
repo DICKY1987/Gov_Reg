@@ -17,6 +17,7 @@ Standard ID formats:
 - Acceptable legacy: {17-19-digit-ID}_{filename} (to be migrated)
 """
 
+import os
 import re
 import sys
 from pathlib import Path
@@ -338,7 +339,7 @@ Examples:
         root_path = paths[0] if paths[0].is_dir() else paths[0].parent
     else:
         # Find common ancestor
-        root_path = Path(*os.path.commonpath([str(p) for p in paths]))
+        root_path = Path(os.path.commonpath([str(p) for p in paths]))
     
     # Create scanner and run
     scanner = IDFormatScanner(root_path)

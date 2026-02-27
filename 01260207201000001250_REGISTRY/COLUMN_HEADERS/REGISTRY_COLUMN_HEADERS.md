@@ -113,43 +113,43 @@
 | process_id | LOOKUP | OPTIONAL | string|null | entity:file |
 | process_step_id | LOOKUP | OPTIONAL | string|null | entity:file |
 | process_step_role | INPUT | OPTIONAL | string|null | entity:file |
-| py_analysis_run_id | N/A | OPTIONAL | string|null | entity:file |
-| py_analysis_success | N/A | OPTIONAL | boolean|null | entity:file |
-| py_analyzed_at_utc | N/A | OPTIONAL | string|null | entity:file |
-| py_ast_dump_hash | N/A | OPTIONAL | string|null | entity:file |
-| py_ast_parse_ok | N/A | OPTIONAL | boolean|null | entity:file |
-| py_canonical_candidate_score | N/A | OPTIONAL | number|null | entity:file |
-| py_canonical_text_hash | N/A | OPTIONAL | string|null | entity:file |
-| py_capability_facts_hash | N/A | OPTIONAL | string|null | entity:file |
-| py_capability_tags | N/A | OPTIONAL | array|null | entity:file |
-| py_complexity_cyclomatic | N/A | OPTIONAL | number|null | entity:file |
-| py_component_artifact_path | N/A | OPTIONAL | string|null | entity:file |
-| py_component_count | N/A | OPTIONAL | integer|null | entity:file |
-| py_component_ids | N/A | OPTIONAL | array|null | entity:file |
-| py_coverage_percent | N/A | OPTIONAL | number|null | entity:file |
-| py_defs_classes_count | N/A | OPTIONAL | integer|null | entity:file |
-| py_defs_functions_count | N/A | OPTIONAL | integer|null | entity:file |
-| py_defs_public_api_hash | N/A | OPTIONAL | string|null | entity:file |
-| py_deliverable_inputs | N/A | OPTIONAL | array|null | entity:file |
-| py_deliverable_interfaces | N/A | OPTIONAL | array|null | entity:file |
-| py_deliverable_kinds | N/A | OPTIONAL | array|null | entity:file |
-| py_deliverable_outputs | N/A | OPTIONAL | array|null | entity:file |
-| py_deliverable_signature_hash | N/A | OPTIONAL | string|null | entity:file |
-| py_imports_hash | N/A | OPTIONAL | string|null | entity:file |
-| py_imports_local | N/A | OPTIONAL | array|null | entity:file |
-| py_imports_stdlib | N/A | OPTIONAL | array|null | entity:file |
-| py_imports_third_party | N/A | OPTIONAL | array|null | entity:file |
-| py_io_surface_flags | N/A | OPTIONAL | array|null | entity:file |
-| py_overlap_best_match_file_id | N/A | OPTIONAL | string|null | entity:file |
-| py_overlap_group_id | N/A | OPTIONAL | string|null | entity:file |
-| py_overlap_similarity_max | N/A | OPTIONAL | number|null | entity:file |
-| py_pytest_exit_code | N/A | OPTIONAL | integer|null | entity:file |
-| py_quality_score | N/A | OPTIONAL | number|null | entity:file |
-| py_security_risk_flags | N/A | OPTIONAL | array|null | entity:file |
-| py_static_issues_count | N/A | OPTIONAL | integer|null | entity:file |
-| py_tests_executed | N/A | OPTIONAL | integer|null | entity:file |
-| py_tool_versions | N/A | OPTIONAL | object|null | entity:file |
-| py_toolchain_id | N/A | OPTIONAL | string|null | entity:file |
+| py_analysis_run_id | DERIVED | OPTIONAL | string|null | entity:file |
+| py_analysis_success | DERIVED | OPTIONAL | boolean|null | entity:file |
+| py_analyzed_at_utc | DERIVED | OPTIONAL | string|null | entity:file |
+| py_ast_dump_hash | DERIVED | OPTIONAL | string|null | entity:file |
+| py_ast_parse_ok | DERIVED | OPTIONAL | boolean|null | entity:file |
+| py_canonical_candidate_score | DERIVED | OPTIONAL | number|null | entity:file |
+| py_canonical_text_hash | DERIVED | OPTIONAL | string|null | entity:file |
+| py_capability_facts_hash | DERIVED | OPTIONAL | string|null | entity:file |
+| py_capability_tags | DERIVED | OPTIONAL | array|null | entity:file |
+| py_complexity_cyclomatic | DERIVED | OPTIONAL | number|null | entity:file |
+| py_component_artifact_path | DERIVED | OPTIONAL | string|null | entity:file |
+| py_component_count | DERIVED | OPTIONAL | integer|null | entity:file |
+| py_component_ids | DERIVED | OPTIONAL | array|null | entity:file |
+| py_coverage_percent | DERIVED | OPTIONAL | number|null | entity:file |
+| py_defs_classes_count | DERIVED | OPTIONAL | integer|null | entity:file |
+| py_defs_functions_count | DERIVED | OPTIONAL | integer|null | entity:file |
+| py_defs_public_api_hash | DERIVED | OPTIONAL | string|null | entity:file |
+| py_deliverable_inputs | DERIVED | OPTIONAL | array|null | entity:file |
+| py_deliverable_interfaces | DERIVED | OPTIONAL | array|null | entity:file |
+| py_deliverable_kinds | DERIVED | OPTIONAL | array|null | entity:file |
+| py_deliverable_outputs | DERIVED | OPTIONAL | array|null | entity:file |
+| py_deliverable_signature_hash | DERIVED | OPTIONAL | string|null | entity:file |
+| py_imports_hash | DERIVED | OPTIONAL | string|null | entity:file |
+| py_imports_local | DERIVED | OPTIONAL | array|null | entity:file |
+| py_imports_stdlib | DERIVED | OPTIONAL | array|null | entity:file |
+| py_imports_third_party | DERIVED | OPTIONAL | array|null | entity:file |
+| py_io_surface_flags | DERIVED | OPTIONAL | array|null | entity:file |
+| py_overlap_best_match_file_id | DERIVED | OPTIONAL | string|null | entity:file |
+| py_overlap_group_id | DERIVED | OPTIONAL | string|null | entity:file |
+| py_overlap_similarity_max | DERIVED | OPTIONAL | number|null | entity:file |
+| py_pytest_exit_code | DERIVED | OPTIONAL | integer|null | entity:file |
+| py_quality_score | DERIVED | OPTIONAL | number|null | entity:file |
+| py_security_risk_flags | DERIVED | OPTIONAL | array|null | entity:file |
+| py_static_issues_count | DERIVED | OPTIONAL | integer|null | entity:file |
+| py_tests_executed | DERIVED | OPTIONAL | integer|null | entity:file |
+| py_tool_versions | DERIVED | OPTIONAL | object|null | entity:file |
+| py_toolchain_id | DERIVED | OPTIONAL | string|null | entity:file |
 | record_id | SYSTEM | REQUIRED | string | core,entity,edge,generator |
 | record_kind | INPUT | REQUIRED | string | core,entity,edge,generator |
 | rel_type | INPUT | CONDITIONAL | string|null | edge |
@@ -206,6 +206,8 @@
 - **DERIVED**: Computed using DSL formulas from other fields
 - **INPUT**: User/manual input required
 - **HYBRID**: Combination of multiple derivation strategies
+
+> **`py_*` columns:** derivation formulas reference pipeline output fields. See `PY_COLUMN_PIPELINE_MAPPING.md` for the pipeline-to-registry integration gap analysis.
 
 ---
 

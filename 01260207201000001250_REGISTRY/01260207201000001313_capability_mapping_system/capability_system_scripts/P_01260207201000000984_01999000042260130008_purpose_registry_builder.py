@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
 from P_01999000042260124490_io_utils import read_json, write_json
-from P_01260207201000000981_P_01260207233100000YYY_call_graph_builder import CallGraphBuilder
+from P_01260207201000000981_01999000042260130004_call_graph_builder import CallGraphBuilder
 
 
 class PurposeRegistryBuilder:

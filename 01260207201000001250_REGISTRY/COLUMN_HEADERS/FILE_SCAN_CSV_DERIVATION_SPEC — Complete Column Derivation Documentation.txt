@@ -28,8 +28,8 @@ Identity config may be absent. If present, it MUST be treated as authoritative o
 
 **identity_config fields**
 
-* `id_regex` (string regex). Default: `^\d{16}_`
-* `placeholder_id` (string). Default: `0000000000000000`
+* `id_regex` (string regex). Default: `^\d{20}_`
+* `placeholder_id` (string). Default: `00000000000000000000`
 * `default_scope` (string). Default: `GLOBAL`
 * `type_code_by_extension` (map ext -> code). Default: empty
 * `ns_code_by_top_dir` (map top_dir -> code). Default: empty
@@ -61,8 +61,8 @@ Identity config may be absent. If present, it MUST be treated as authoritative o
      * `YYYYMMDD_HHMMSS_<12hex>` OR UUIDv4.
 4. Determine effective identity settings:
 
-   * `ID_REGEX = identity_config.id_regex OR '^\d{16}_'`
-   * `PLACEHOLDER_ID = identity_config.placeholder_id OR '0000000000000000'`
+   * `ID_REGEX = identity_config.id_regex OR '^\d{20}_'`
+   * `PLACEHOLDER_ID = identity_config.placeholder_id OR '00000000000000000000'`
    * `DEFAULT_SCOPE = identity_config.default_scope OR 'GLOBAL'`
    * `TYPE_MAP = identity_config.type_code_by_extension OR {}`
    * `NS_MAP = identity_config.ns_code_by_top_dir OR {}`
@@ -132,11 +132,11 @@ Convert any string to a valid code token:
 
 * `has_id_prefix = regex(ID_REGEX).match(name) is not None`
 
-### H7 — `extract_16_digit_prefix(name)`
+### H7 - `extract_20_digit_prefix(name)`
 
-* If `name` matches `^(\d{16})_` return the 16 digits.
+* If `name` matches `^(\d{20})_` return the 20 digits.
 * Else return `''`
-* Note: extraction is always based on the fixed 16-digit pattern, even if `ID_REGEX` is broader. (Keeps doc_id stable.)
+* Note: extraction is always based on the fixed 20-digit pattern, even if `ID_REGEX` is broader. (Keeps doc_id stable.)
 
 ### H8 — `guess_mime_type(name)`
 
@@ -324,9 +324,9 @@ Failure handling:
 
 * **Rule**:
 
-  * If filename matches `^(\d{16})_`:
+  * If filename matches `^(\d{20})_`:
 
-    * `doc_id = extracted 16 digits`
+    * `doc_id = extracted 20 digits`
   * Else `''`
 * **Error behavior**: if name missing, `''`
 
@@ -340,16 +340,16 @@ Failure handling:
 * **Rule**: `needs_id = not has_id_prefix`
 * **Error behavior**: if has_id_prefix missing, default True and set error
 
-### `0000000000000000_filename`
+### `00000000000000000000_filename`
 
 * **Rule**:
 
   * If `has_id_prefix=True`:
 
-    * `0000000000000000_filename = name`
+    * `00000000000000000000_filename = name`
   * Else:
 
-    * `0000000000000000_filename = PLACEHOLDER_ID + '_' + name`
+    * `00000000000000000000_filename = PLACEHOLDER_ID + '_' + name`
 * **Error behavior**:
 
   * If `name==''`, then value is `PLACEHOLDER_ID + '_'`
@@ -361,7 +361,7 @@ Failure handling:
   * Phase 0 scan output MUST leave blank: `''`
 * **Populated later**:
 
-  * A planner allocates a 16-digit ID; scan never mutates.
+  * A planner allocates a 20-digit ID; scan never mutates.
 
 ### `planned_rel_path`
 
@@ -491,7 +491,7 @@ Input:
 * `has_id_prefix = False`
 * `doc_id = ''`
 * `needs_id = True`
-* `0000000000000000_filename = 0000000000000000_main.py`
+* `00000000000000000000_filename = 00000000000000000000_main.py`
 * `type_code = PY` (unless TYPE_MAP overrides)
 * `ns_code = SRC` (unless NS_MAP overrides)
 * `scope = GLOBAL` (unless SCOPE_MAP overrides)
@@ -499,13 +499,13 @@ Input:
 
 ### Example B: already prefixed markdown doc
 
-`name = 1234567890123456_README.md`
+`name = 12345678901234567890_README.md`
 Derived:
 
 * `has_id_prefix = True`
-* `doc_id = 1234567890123456`
+* `doc_id = 12345678901234567890`
 * `needs_id = False`
-* `0000000000000000_filename = 1234567890123456_README.md`
+* `00000000000000000000_filename = 12345678901234567890_README.md`
 
 ---
 

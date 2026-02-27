@@ -1,0 +1,38 @@
+py_column,status,pipeline_source,gap_description,action_needed
+py_analysis_run_id,NO,,Run-level metadata not captured,Add to consolidated_runner.py or build registry_integration_pipeline.py
+py_analysis_success,NO,,Per-file success flag absent,Add aggregate success flag after all analyzers run
+py_analyzed_at_utc,NO,,Per-file analysis timestamp absent,Capture UTC timestamp per file in runner
+py_ast_dump_hash,PARTIAL,FileContext.ast_tree exists,AST is parsed but dump hash not computed,Add hashlib.sha256(ast.dump(tree)) to FileContext or new analyzer
+py_ast_parse_ok,PARTIAL,FileContext.ast_tree is not None,Boolean derivable but not exposed as field,Add boolean field to record: ast_tree is not None
+py_canonical_candidate_score,NO,,Requires batch ranking across overlap groups,Build canonical_ranker.py (LAST_MILE Phase 2)
+py_canonical_text_hash,NO,,Requires text normalization before hashing,Wire text_normalizer.py as analyzer adapter
+py_capability_facts_hash,NO,,Registry expects hash of capability-specific facts from mapping pipeline not general facts_sha256,Build capability mapping pipeline; compute hash over capability tags + purpose only
+py_capability_tags,NO,,Capability tagging is a mapping pipeline output (Step 3),Build capability discovery + purpose registry builder
+py_complexity_cyclomatic,RENAME,facts.complexity.average,Pipeline produces average/max/total; registry expects single cyclomatic value,Decide semantic mapping (average vs max) and rename
+py_component_artifact_path,NO,,Evidence writer not implemented,Build evidence writer; capture artifact output path
+py_component_count,PARTIAL,facts.deliverable.interface_signature,Classes + functions lists exist but not counted,Add len(classes) + len(functions) derivation
+py_component_ids,NO,,Requires component_extractor + generate_component_signature,Wire component_extractor.py as adapter; generate stable IDs
+py_coverage_percent,NO,,Requires pytest + coverage execution,Phase B external tool (LAST_MILE)
+py_defs_classes_count,PARTIAL,facts.deliverable.interface_signature.classes,List exists but not counted as integer,Add len(classes) derivation
+py_defs_functions_count,PARTIAL,facts.deliverable.interface_signature.functions,List exists but not counted as integer,Add len(functions) derivation
+py_defs_public_api_hash,NO,,Public API surface not separately hashed,Extend deliverable analyzer or add dedicated extractor
+py_deliverable_inputs,NO,,Deliverable analyzer does not extract input dependencies,Extend DeliverableAnalyzerAdapter to capture input patterns
+py_deliverable_interfaces,PARTIAL,facts.deliverable.interface_signature,Data exists as nested object; registry expects flat array,Flatten {classes: [] functions: []} into array of interface descriptors
+py_deliverable_kinds,RENAME,facts.deliverable.kind,Pipeline produces single string; registry expects array,Wrap: [facts.deliverable.kind]
+py_deliverable_outputs,NO,,Deliverable analyzer does not extract output patterns,Extend DeliverableAnalyzerAdapter to capture output patterns
+py_deliverable_signature_hash,RENAME,facts.deliverable.interface_hash,Semantically equivalent; name differs,Rename interface_hash to py_deliverable_signature_hash
+py_imports_hash,DIRECT,facts.imports.hash,Direct match from DependencyAnalyzerAdapter,No action needed
+py_imports_local,PARTIAL,facts.imports.entries + relative_count,Count exists; registry expects list of module names,Filter entries where type == relative and extract module names
+py_imports_stdlib,PARTIAL,facts.imports.entries + stdlib_count,Count exists; registry expects list of module names,Filter entries where classification is stdlib and extract module names
+py_imports_third_party,PARTIAL,facts.imports.entries + external_count,Count exists; registry expects list of module names,Filter entries where classification is external and extract module names
+py_io_surface_flags,PARTIAL,facts.io_surface.*,Raw lists of file_ops/network_calls/security_calls exist,Define flag taxonomy and map: HAS_NETWORK / HAS_FILE_WRITE / HAS_SECURITY_CALL
+py_overlap_best_match_file_id,NO,,Requires pairwise similarity computation,Build similarity_clusterer.py (LAST_MILE Phase 2)
+py_overlap_group_id,NO,,Requires batch clustering by signature hash,Build similarity_clusterer.py (LAST_MILE Phase 2)
+py_overlap_similarity_max,NO,,Requires similarity scoring,Build similarity_clusterer.py (LAST_MILE Phase 2)
+py_pytest_exit_code,NO,,Requires pytest execution,Phase B external tool (LAST_MILE)
+py_quality_score,NO,,Composite score from multiple inputs,Build quality_scorer.py (LAST_MILE Phase 2)
+py_security_risk_flags,PARTIAL,facts.io_surface.security_calls,Raw security call list exists,Define risk flag taxonomy and map from security_calls + network_calls
+py_static_issues_count,NO,,Requires linter execution (ruff/pylint),Phase B external tool (LAST_MILE)
+py_tests_executed,NO,,Requires pytest execution,Phase B external tool (LAST_MILE)
+py_tool_versions,NO,,Toolchain versions not captured,Add version collection to runner
+py_toolchain_id,NO,,Toolchain identifier not assigned,Add constant or config-driven toolchain ID

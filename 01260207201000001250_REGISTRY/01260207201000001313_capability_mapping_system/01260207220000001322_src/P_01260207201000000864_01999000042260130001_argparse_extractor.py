@@ -6,7 +6,7 @@ Python scripts that use argparse. It uses AST parsing (similar to ComponentExtra
 to detect argparse.ArgumentParser(), add_subparsers(), and add_parser() calls.
 
 Usage:
-    from src.capability_mapping.P_01260207233100000YYY_argparse_extractor import extract_argparse_commands
+    from src.capability_mapping.P_01260207201000000980_01999000042260130003_argparse_extractor import extract_argparse_commands
     
     result = extract_argparse_commands(Path('script.py'))
     if result['success']:

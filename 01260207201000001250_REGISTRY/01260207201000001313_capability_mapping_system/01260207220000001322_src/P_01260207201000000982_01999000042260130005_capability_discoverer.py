@@ -10,7 +10,7 @@ from typing import Dict, List, Tuple
 
 from P_01260207233100000010_canonical_hash import hash_file_content
 from P_01999000042260124490_io_utils import write_json
-from P_01260207201000000864_P_01260207233100000YYY_argparse_extractor import extract_argparse_commands
+from P_01260207201000000864_01999000042260130001_argparse_extractor import extract_argparse_commands
 
 
 class CapabilityDiscoverer:
