@@ -19,61 +19,51 @@
 
 ---
 
-## 🔴 Priority 2: Duplicate Python Files
+## ✅ COMPLETED - Priority 2: Duplicate Python Files
 
 ### mapp_py/ Directory Analysis
 
-Based on `script_name_resolver.py`, the following files are **canonical** (actively referenced):
+**✅ DONE - Archived 6 duplicate files:**
+- `P_01260202173939000016_text_normalizer.py` → archive/cleanup_2026-02-27/duplicates/
+- `P_01260202173939000075_text_normalizer.py` → archive/cleanup_2026-02-27/duplicates/
+- `P_01260202173939000078_text_normalizer.py` → archive/cleanup_2026-02-27/duplicates/
+- `P_01260202173939000080_component_extractor.py` → archive/cleanup_2026-02-27/duplicates/
+- `P_01260202173939000082_dependency_analyzer.py` → archive/cleanup_2026-02-27/duplicates/
+- `P_01260202173939000074_cli_entry_point.py` → archive/cleanup_2026-02-27/duplicates/
 
-**Canonical Files (Keep):**
-- `P_01260202173939000060_text_normalizer.py` ← canonical
-- `P_01260202173939000061_component_extractor.py` ← canonical  
-- `P_01260202173939000063_dependency_analyzer.py` ← canonical
-- `P_01260202173939000072_cli_entry_point.py` ← canonical
-
-**Duplicate/Alternate Versions (Remove):**
-- `P_01260202173939000016_text_normalizer.py` (older version, 6731 bytes)
-- `P_01260202173939000075_text_normalizer.py` (alt version, 10431 bytes)
-- `P_01260202173939000078_text_normalizer.py` (alt version, 4482 bytes)
-- `P_01260202173939000080_component_extractor.py` (marked as v2 in resolver)
-- `P_01260202173939000082_dependency_analyzer.py` (marked as v2 in resolver)
-- `P_01260202173939000074_cli_entry_point.py` (duplicate)
-
-**Action:** Move 6 duplicate files to archive before deletion
-
-### argparse_extractor Duplicates
-
-Located in `01260207220000001322_src/`:
-- `P_01260207201000000864_P_01260207233100000YYY_argparse_extractor.py`
-- `P_01260207201000000980_P_01260207233100000YYY_argparse_extractor.py`
-
-**Action:** Both have YYY placeholders; address in Priority 3
+**Canonical files retained:**
+- `P_01260202173939000060_text_normalizer.py` ✓
+- `P_01260202173939000061_component_extractor.py` ✓
+- `P_01260202173939000063_dependency_analyzer.py` ✓
+- `P_01260202173939000072_cli_entry_point.py` ✓
 
 ---
 
-## 🟡 Priority 3: YYY Placeholder IDs (9 files)
+## ✅ COMPLETED - Priority 3: YYY Placeholder IDs (9 files)
 
-All in `capability_mapping_system/`:
+**All 9 files finalized with proper 20-digit IDs:**
 
 ### In `01260207220000001322_src/`:
-1. `P_01260207201000000864_P_01260207233100000YYY_argparse_extractor.py`
-2. `P_01260207201000000979_P_01260207233100000YYY___init__.py`
-3. `P_01260207201000000980_P_01260207233100000YYY_argparse_extractor.py`
-4. `P_01260207201000000981_P_01260207233100000YYY_call_graph_builder.py`
-5. `P_01260207201000000982_P_01260207233100000YYY_capability_discoverer.py`
-6. `P_01260207201000000983_P_01260207233100000YYY_file_inventory_builder.py`
+1. ✅ `P_01260207201000000864_01999000042260130001_argparse_extractor.py` (was YYY)
+2. ✅ `P_01260207201000000979_01999000042260130002___init__.py` (was YYY)
+3. ✅ `P_01260207201000000980_01999000042260130003_argparse_extractor.py` (was YYY)
+4. ✅ `P_01260207201000000981_01999000042260130004_call_graph_builder.py` (was YYY)
+5. ✅ `P_01260207201000000982_01999000042260130005_capability_discoverer.py` (was YYY)
+6. ✅ `P_01260207201000000983_01999000042260130006_file_inventory_builder.py` (was YYY)
 
 ### In `capability_system_scripts/`:
-7. `P_01260207201000000865_P_01260207233100000YYY_registry_patch_generator.py`
-8. `P_01260207201000000984_P_01260207233100000YYY_purpose_registry_builder.py`
-9. `P_01260207201000000985_P_01260207233100000YYY_registry_promoter.py`
+7. ✅ `P_01260207201000000865_01999000042260130007_registry_patch_generator.py` (was YYY)
+8. ✅ `P_01260207201000000984_01999000042260130008_purpose_registry_builder.py` (was YYY)
+9. ✅ `P_01260207201000000985_01999000042260130009_registry_promoter.py` (was YYY)
 
-**Decision Required:**
-- Option A: Finalize IDs (allocate proper 20-digit IDs to replace YYY)
-- Option B: Mark as deprecated and move to archive
-- Option C: Delete if not in use
-
-**Recommended:** Check for imports/references, then either finalize or archive
+**All imports updated in:**
+- P_01260207201000000979___init__.py
+- P_01260207220000001315_capability_mapper.py
+- P_01260207201000000850_capability_mapping_init.py
+- P_01260207201000000864_argparse_extractor.py
+- P_01260207201000000982_capability_discoverer.py
+- P_01260207201000000983_file_inventory_builder.py
+- P_01260207201000000984_purpose_registry_builder.py
 
 ---
 
@@ -136,10 +126,10 @@ All in `capability_mapping_system/`:
 ## Execution Order
 
 1. ✅ **DONE:** Fix critical documentation (00_REGISTRY_FOLDER_MANIFEST.md, CLAUDE.md)
-2. **NEXT:** Archive duplicate mapp_py files (6 files)
-3. **NEXT:** Decide on YYY placeholder files (9 files)
-4. **LATER:** Review and handle stub implementations (12+ files)
-5. **LATER:** Update secondary documentation issues
+2. ✅ **DONE:** Archive duplicate mapp_py files (6 files)
+3. ✅ **DONE:** Finalize YYY placeholder files (9 files with proper IDs)
+4. **IN PROGRESS:** Review and handle stub implementations (12+ files)
+5. **PENDING:** Update secondary documentation issues
 
 ---
 
@@ -155,4 +145,8 @@ All removed files should be moved to:
 
 ---
 
-**Next Action:** Review YYY placeholder files for imports/usage before archiving or finalizing
+**Current Status:** Priorities 1-3 complete. Ready for stub review and documentation updates.
+
+**Commits:**
+- `18a2367` - docs(registry): fix REGISTRY documentation and create cleanup plan
+- `3ca5a56` - refactor(registry): finalize YYY placeholders and archive duplicates
