@@ -1,0 +1,783 @@
+# DOC_LINK: DOC-REGISTRY-ID-TYPES-001
+doc_id: DOC-REGISTRY-ID-TYPES-001
+meta:
+  version: 1.0.0
+  created_utc: '2026-01-03T15:00:00Z'
+  updated_utc: '2026-01-07T18:20:00Z'
+  schema_version: 1.0.0
+  total_types: 49
+  description: Meta-registry of all stable ID types in the system
+  authority: constitutional
+id_types:
+- type_id: doc_id
+  name: Document Identifier
+  classification: minted
+  tier: 1
+  format: DOC-{CATEGORY}-{NAME}-{SEQ}
+  format_regex: ^DOC-([A-Z0-9]+)-([A-Z0-9-]+)-([0-9]{3,})$
+  status: production
+  priority: critical
+  owner: System Architecture
+  registry_file: RUNTIME/doc_id/SUB_DOC_ID/5_REGISTRY_DATA/DOC_ID_REGISTRY.yaml
+  inventory_file: RUNTIME/doc_id/SUB_DOC_ID/5_REGISTRY_DATA/docs_inventory.jsonl
+  validators:
+  - validate_doc_id_format
+  - validate_doc_id_uniqueness
+  - validate_doc_id_sync
+  - validate_doc_id_coverage
+  - validate_doc_id_references
+  automation:
+    scanner: true
+    assigner: true
+    pre_commit: true
+    watcher: true
+    scheduled: true
+  coverage:
+    total_ids: 3296
+    percentage: 100.0
+    target: 100.0
+  description: Stable identifier for all files and artifacts in the repository
+  first_seen: '2025-12-27T00:00:00Z'
+- type_id: trigger_id
+  name: Automation Trigger Identifier
+  classification: minted
+  tier: 2
+  format: TRIGGER-{CATEGORY}-{NAME}-{SEQ}
+  format_regex: ^TRIGGER-([A-Z0-9]+)-([A-Z0-9-]+)-([0-9]{3,})$
+  status: production
+  priority: high
+  owner: Automation Team
+  registry_file: RUNTIME/doc_id/SUB_DOC_ID/trigger_id/5_REGISTRY_DATA/TRG_ID_REGISTRY.yaml
+  inventory_file: RUNTIME/doc_id/SUB_DOC_ID/trigger_id/5_REGISTRY_DATA/triggers_inventory.jsonl
+  validators:
+  - validate_trigger_id_format
+  - validate_trigger_id_uniqueness
+  - validate_trigger_id_sync
+  - validate_trigger_id_references
+  automation:
+    scanner: true
+    assigner: true
+    pre_commit: true
+    watcher: true
+  coverage:
+    total_ids: 13
+    percentage: 100.0
+    target: 100.0
+  categories:
+  - HOOK
+  - WATCHER
+  - SCHED
+  - RUNNER
+  description: Stable identifier for automation triggers (hooks, watchers, scheduled
+    tasks)
+  first_seen: '2025-12-29T00:00:00Z'
+  migrated_from: TRIGGER-{CAT}-{SEQ}
+  migration_date: '2026-01-03T09:14:00Z'
+- type_id: pattern_id
+  name: Execution Pattern Identifier
+  classification: minted
+  tier: 2
+  format: PATTERN-{CATEGORY}-{NAME}-{SEQ}
+  format_regex: ^PATTERN-([A-Z0-9]+)-([A-Z0-9-]+)-([0-9]{3,})$
+  status: production
+  priority: high
+  owner: Pattern Governance
+  registry_file: RUNTIME/doc_id/SUB_DOC_ID/pattern_id/5_REGISTRY_DATA/PAT_ID_REGISTRY.yaml
+  validators:
+  - validate_pattern_id_format
+  - validate_pattern_id_uniqueness
+  - validate_pattern_id_sync
+  - validate_pattern_id_coverage
+  - validate_pattern_id_references
+  automation:
+    scanner: true
+    assigner: false
+    pre_commit: true
+  coverage:
+    total_ids: 12
+    percentage: 75.0
+    target: 75.0
+  categories:
+  - EXEC
+  - VALID
+  - DOC
+  - TEST
+  description: Stable identifier for execution patterns (spec+executor+test triads)
+  first_seen: '2025-12-29T00:00:00Z'
+  migrated_from: PATTERN-{CAT}-{SEQ}
+  migration_date: '2026-01-03T09:15:00Z'
+- type_id: dir_id
+  name: Directory Identifier
+  classification: minted
+  tier: 2
+  format: '{20-digit numeric}'
+  format_regex: ^[0-9]{20}$
+  status: production
+  priority: medium
+  owner: Directory Governance
+  registry_file: RUNTIME/doc_id/SUB_DOC_ID/5_REGISTRY_DATA/directory_registry.yaml
+  validators:
+  - validate_dir_id_format
+  - validate_dir_id_uniqueness
+  automation:
+    scanner: true
+    assigner: true
+  coverage:
+    total_ids: 37
+    percentage: 100.0
+    target: 100.0
+  description: Minted 20-digit identifier for directories (used as directory-name prefix)
+  first_seen: '2025-12-20T00:00:00Z'
+  notes: Minted by allocator; do not derive from path
+
+- type_id: template_id
+  name: Template Identifier
+  classification: minted
+  tier: 2
+  format: TEMPLATE-{TYPE}-{NAME}-{SEQ}
+  format_regex: ^TEMPLATE-([A-Z0-9]+)-([A-Z0-9-]+)-([0-9]{3,})$
+  status: active
+  priority: high
+  owner: Template Governance
+  registry_file: REFERENCE/templates/SUB_TEMPLATES/TEMPLATE_REGISTRY.yaml
+  description: Stable identifier for reusable template definitions
+  categories:
+  - DOC
+  - CODE
+  - CONFIG
+  - WORKFLOW
+- type_id: schema_id
+  name: Schema Identifier
+  classification: minted
+  tier: 2
+  format: SCHEMA-{TYPE}-{NAME}-{SEQ}
+  format_regex: ^SCHEMA-([A-Z0-9]+)-([A-Z0-9-]+)-([0-9]{3,})$
+  status: active
+  priority: high
+  owner: Schema Governance
+  registry_file: data/schemas/SCHEMA_REGISTRY.yaml
+  description: Stable identifier for data schema definitions
+  categories:
+  - JSON
+  - YAML
+  - SQL
+  - PROTO
+- type_id: path_key
+  name: Path Key Identifier
+  classification: derived
+  tier: 2
+  format: PATH-{HASH}
+  format_regex: ^PATH-[0-9a-f]{8}$
+  status: active
+  priority: medium
+  owner: Path Registry
+  registry_file: RUNTIME/path_registry/SUB_PATH_REGISTRY/path_key_registry.yaml
+  derivation_rule: 'Derived from file path: hash first 8 chars of canonical path'
+  description: Stable identifier for canonical paths
+  notes: Derived from canonical path resolution
+- type_id: term_id
+  name: Glossary Term Identifier
+  classification: natural
+  tier: 3
+  format: '{TERM}'
+  format_regex: ^[a-z][a-z0-9_]*$
+  status: active
+  priority: low
+  owner: Glossary Team
+  registry_file: CONTEXT/glossary/GLOSSARY_REGISTRY.yaml
+  description: Stable identifier for glossary terms (term itself is the ID)
+  notes: Natural key - the term string is the stable ID
+- type_id: rule_id
+  name: Validation Rule Identifier
+  classification: minted
+  tier: 2
+  format: RULE-{DOMAIN}-{NAME}-{SEQ}
+  format_regex: ^RULE-([A-Z0-9]+)-([A-Z0-9-]+)-([0-9]{3,})$
+  status: active
+  priority: high
+  owner: Governance Team
+  registry_file: GOVERNANCE/rules/RULE_REGISTRY.yaml
+  description: Stable identifier for SSOT validation rules
+  categories:
+  - SSOT
+  - SCHEMA
+  - FORMAT
+  - INTEGRITY
+- type_id: policy_id
+  name: Policy Identifier
+  classification: minted
+  tier: 2
+  format: POLICY-{DOMAIN}-{NUMBER}.v{VERSION}
+  format_regex: ^POLICY-([A-Z0-9]+)-([0-9]{3,})\.v([0-9]+)$
+  status: active
+  priority: medium
+  owner: Governance Team
+  registry_file: GOVERNANCE/policies/POLICY_REGISTRY.yaml
+  description: Versioned governance policy identifier
+  categories:
+  - SECURITY
+  - QUALITY
+  - PROCESS
+  - COMPLIANCE
+- type_id: conflict_id
+  name: Conflict Identifier
+  classification: minted
+  tier: 3
+  format: CONFLICT-{SEQ}
+  format_regex: ^CONFLICT-([0-9]{3,})$
+  status: active
+  priority: medium
+  owner: Conflict Resolution
+  registry_file: GOVERNANCE/conflicts/CONFLICT_REGISTRY.yaml
+  description: Stable identifier for known system conflicts
+- type_id: precedent_id
+  name: Authority Precedent Identifier
+  classification: minted
+  tier: 3
+  format: PREC-{DOMAIN}-{SEQ}
+  format_regex: ^PREC-([A-Z0-9]+)-([0-9]{3,})$
+  status: active
+  priority: low
+  owner: Authority Chain
+  registry_file: GOVERNANCE/precedents/PRECEDENT_REGISTRY.yaml
+  description: Stable identifier for authority rulings
+- type_id: contract_id
+  name: Pipeline Contract Identifier
+  classification: minted
+  tier: 2
+  format: CONTRACT-{PHASE}-{NAME}-{SEQ}
+  format_regex: ^CONTRACT-([A-Z0-9]+)-([A-Z0-9-]+)-([0-9]{3,})$
+  status: active
+  priority: high
+  owner: Pipeline Governance
+  registry_file: WORKFLOWS/contracts/CONTRACT_REGISTRY.yaml
+  description: Stable identifier for pipeline I/O contracts
+- type_id: pipeline_id
+  name: Pipeline Instance Identifier
+  classification: runtime
+  tier: 3
+  format: PIPELINE-{ULID}
+  format_regex: ^PIPELINE-[0-9A-HJKMNP-TV-Z]{26}$
+  status: active
+  priority: medium
+  owner: Pipeline Execution
+  registry_file: RUNTIME/pipelines/PIPELINE_REGISTRY.yaml
+  description: Runtime identifier for pipeline instances
+  notes: Uses ULID for chronological ordering
+- type_id: evaluation_id
+  name: Evaluation Run Identifier
+  classification: runtime
+  tier: 3
+  format: EVAL-{ULID}
+  format_regex: ^EVAL-[0-9A-HJKMNP-TV-Z]{26}$
+  status: active
+  priority: low
+  owner: Evaluation System
+  registry_file: RUNTIME/evaluations/EVAL_REGISTRY.yaml
+  description: Identifier for directory evaluation runs
+- type_id: relationship_id
+  name: Relationship Edge Identifier
+  classification: derived
+  tier: 3
+  format: REL-{SOURCE_HASH}-{TARGET_HASH}-{TYPE}
+  format_regex: ^REL-[0-9a-f]{8}-[0-9a-f]{8}-[A-Z_]+$
+  status: active
+  priority: medium
+  owner: Relationship Index
+  registry_file: RUNTIME/relationship_index/SUB_RELATIONSHIP_INDEX/data/RELATIONSHIP_INDEX.json
+  derivation_rule: Derived from source ID hash + target ID hash + relationship type
+  description: Identifier for typed relationships between entities
+  notes: Derived from source, target, and relationship type
+- type_id: graph_edge_id
+  name: Graph Edge Identifier
+  classification: derived
+  tier: 3
+  format: EDGE-{HASH}
+  format_regex: ^EDGE-[0-9a-f]{16}$
+  status: active
+  priority: low
+  owner: Graph System
+  registry_file: RUNTIME/graph/EDGE_REGISTRY.yaml
+  derivation_rule: Derived from edge endpoints and properties hash
+  description: Identifier for document graph edges
+- type_id: error_code
+  name: Error Code Identifier
+  classification: minted
+  tier: 2
+  format: ERR-{SUBSYSTEM}-{NUMBER}
+  format_regex: ^ERR-([A-Z0-9]+)-([0-9]{3,})$
+  status: active
+  priority: high
+  owner: Error Taxonomy
+  registry_file: RUNTIME/errors/ERROR_REGISTRY.yaml
+  description: Standard error taxonomy identifier
+  categories:
+  - VALIDATION
+  - EXECUTION
+  - INTEGRATION
+  - SYSTEM
+- type_id: event_id
+  name: Event Identifier
+  classification: runtime
+  tier: 3
+  format: EVENT-{ULID}
+  format_regex: ^EVENT-[0-9A-HJKMNP-TV-Z]{26}$
+  status: active
+  priority: medium
+  owner: Event System
+  registry_file: RUNTIME/events/EVENT_REGISTRY.yaml
+  description: Runtime event identifier for audit logs
+  notes: Uses ULID for event ordering
+- type_id: trace_id
+  name: Trace Identifier
+  classification: runtime
+  tier: 3
+  format: TRACE-{ULID}
+  format_regex: ^TRACE-[0-9A-HJKMNP-TV-Z]{26}$
+  status: active
+  priority: high
+  owner: Observability
+  registry_file: RUNTIME/traces/TRACE_REGISTRY.yaml
+  description: Distributed trace identifier for correlation
+  notes: OpenTelemetry compatible
+- type_id: run_id
+  name: Run Identifier
+  classification: runtime
+  tier: 2
+  format: RUN-{ULID}
+  format_regex: ^RUN-[0-9A-HJKMNP-TV-Z]{26}$
+  status: active
+  priority: high
+  owner: Execution Engine
+  registry_file: RUNTIME/runs/RUN_REGISTRY.yaml
+  description: Execution run identifier
+  notes: Correlates all operations in a single execution
+- type_id: drift_id
+  name: Schema Drift Identifier
+  classification: minted
+  tier: 3
+  format: DRIFT-{SEQ}
+  format_regex: ^DRIFT-([0-9]{3,})$
+  status: active
+  priority: medium
+  owner: Quality Assurance
+  registry_file: qa/drift/DRIFT_REGISTRY.yaml
+  description: Identifier for schema drift findings
+- type_id: duplication_id
+  name: Duplication Finding Identifier
+  classification: minted
+  tier: 3
+  format: DUP-{SEQ}
+  format_regex: ^DUP-([0-9]{3,})$
+  status: active
+  priority: low
+  owner: Quality Assurance
+  registry_file: qa/duplications/DUP_REGISTRY.yaml
+  description: Identifier for schema duplication findings
+- type_id: symbol_id
+  name: Code Symbol Identifier
+  classification: derived
+  tier: 3
+  format: SYM-{DOC_ID_HASH}-{QUALNAME_HASH}-{SIG_HASH}
+  format_regex: ^SYM-[0-9a-f]{8}-[0-9a-f]{8}-[0-9a-f]{8}$
+  status: active
+  priority: medium
+  owner: Code Analysis
+  registry_file: RUNTIME/symbols/SYMBOL_REGISTRY.yaml
+  derivation_rule: Derived from file doc_id + qualified name + signature hashes
+  description: Stable identifier for code symbols (functions, classes, methods)
+  notes: Derived from file doc_id, qualified name, and signature
+  categories:
+  - FUNCTION
+  - CLASS
+  - METHOD
+  - PROPERTY
+- type_id: definition_id
+  name: Definition Site Identifier
+  classification: derived
+  tier: 3
+  format: DEF-{SYMBOL_ID}-{HASH}
+  format_regex: ^DEF-SYM-[0-9a-f]{8}-[0-9a-f]{8}-[0-9a-f]{8}-[0-9a-f]{8}$
+  status: active
+  priority: low
+  owner: Code Analysis
+  registry_file: RUNTIME/definitions/DEF_REGISTRY.yaml
+  derivation_rule: Derived from symbol_id + location hash
+  description: Identifier for exact definition sites
+  notes: Survives formatting, changes on refactor
+- type_id: callsite_id
+  name: Call Site Identifier
+  classification: derived
+  tier: 3
+  format: CALL-{CALLER_ID}-{CALLEE_ID}-{LINE}
+  format_regex: ^CALL-[0-9a-f]{16}-[0-9a-f]{16}-[0-9]+$
+  status: active
+  priority: low
+  owner: Static Analysis
+  registry_file: RUNTIME/callsites/CALLSITE_REGISTRY.yaml
+  derivation_rule: Derived from caller symbol_id + callee symbol_id + line number
+  description: Identifier for function call sites
+  notes: For deep ref graphs and change impact analysis
+- type_id: requirement_id
+  name: Requirement Identifier
+  classification: minted
+  tier: 2
+  format: R-{DOMAIN}-{SEQ}
+  format_regex: ^R-([A-Z0-9]+)-([0-9]{3,})$
+  status: active
+  priority: high
+  owner: Requirements Team
+  registry_file: specs/requirements/REQ_REGISTRY.yaml
+  description: Stable identifier for system requirements
+  categories:
+  - FUNC
+  - PERF
+  - SECURITY
+  - COMPLIANCE
+- type_id: artifact_id
+  name: Artifact Identifier
+  classification: minted
+  tier: 2
+  format: A-{TYPE}-{SEQ}
+  format_regex: ^A-([A-Z0-9]+)-([0-9]{3,})$
+  status: active
+  priority: medium
+  owner: Artifact Registry
+  registry_file: generated/ARTIFACT_REGISTRY.yaml
+  description: Stable identifier for generated artifacts
+  categories:
+  - SCHEMA
+  - TOOL
+  - REPORT
+  - PACKAGE
+- type_id: section_id
+  name: Document Section Identifier
+  classification: minted
+  tier: 3
+  format: S-{TOKEN}
+  format_regex: ^S-[A-Z0-9]+$
+  status: active
+  priority: low
+  owner: Documentation
+  registry_file: docs/SECTION_REGISTRY.yaml
+  description: Stable identifier for document sections
+  notes: For cross-document section references
+- type_id: validator_id
+  name: Validator Identifier
+  classification: minted
+  tier: 2
+  format: VAL-{DOMAIN}-{NAME}-{SEQ}
+  format_regex: ^VAL-([A-Z0-9]+)-([A-Z0-9-]+)-([0-9]{3,})$
+  status: active
+  priority: high
+  owner: Validation Framework
+  registry_file: tests/validators/VALIDATOR_REGISTRY.yaml
+  description: Stable identifier for validation scripts
+  categories:
+  - FORMAT
+  - INTEGRITY
+  - COVERAGE
+  - REFERENCE
+- type_id: gate_id
+  name: Quality Gate Identifier
+  classification: minted
+  tier: 2
+  format: GATE-{PHASE}-{NAME}-{SEQ}
+  format_regex: ^GATE-([A-Z0-9]+)-([A-Z0-9-]+)-([0-9]{3,})$
+  status: active
+  priority: high
+  owner: CI/CD Team
+  registry_file: GOVERNANCE/gates/GATE_REGISTRY.yaml
+  description: Stable identifier for quality gates
+  categories:
+  - PRE_COMMIT
+  - CI
+  - RELEASE
+  - DEPLOY
+- type_id: prompt_id
+  name: Prompt Asset Identifier
+  classification: minted
+  tier: 3
+  format: PROMPT-{TYPE}-{NAME}-{SEQ}
+  format_regex: ^PROMPT-([A-Z0-9]+)-([A-Z0-9-]+)-([0-9]{3,})$
+  status: active
+  priority: low
+  owner: AI Assets
+  registry_file: prompts/PROMPT_REGISTRY.yaml
+  description: Stable identifier for prompt templates
+  categories:
+  - SYSTEM
+  - USER
+  - AGENT
+  - CHAIN
+- type_id: workstream_id
+  name: Workstream Identifier
+  classification: minted
+  tier: 2
+  format: WS-{PHASE}-{SEQ}
+  format_regex: ^WS-PHASE[0-9]+-([0-9]{3,})$
+  status: active
+  priority: medium
+  owner: Project Management
+  registry_file: WORKFLOWS/workstreams/WORKSTREAM_REGISTRY.yaml
+  description: Stable identifier for workstreams
+- type_id: phase_id
+  name: Phase Identifier
+  classification: minted
+  tier: 2
+  format: PH-{NAME}-{SEQ}
+  format_regex: ^PH-([A-Z0-9-]+)-([0-9]{3,})$
+  status: active
+  priority: medium
+  owner: Lifecycle Management
+  registry_file: LIFECYCLE/PHASE_REGISTRY.yaml
+  description: Stable identifier for lifecycle phases
+- type_id: step_id
+  name: Process Step Identifier
+  classification: derived
+  tier: 3
+  format: STEP-{PHASE_ID}-{STEP_NUMBER}
+  format_regex: ^STEP-PH-[A-Z0-9-]+-[0-9]{3,}-[0-9]{2}$
+  status: active
+  priority: low
+  owner: Process Library
+  registry_file: RUNTIME/process_steps/STEP_REGISTRY.yaml
+  derivation_rule: Derived from phase_id + step sequence number
+  description: Derived identifier for process steps
+  notes: Derived from phase_id and step sequence
+- type_id: outcome_id
+  name: Outcome Identifier
+  classification: derived
+  tier: 3
+  format: OUT-{STEP_ID}-{HASH}
+  format_regex: ^OUT-STEP-[A-Z0-9-]+-[0-9]{8}$
+  status: active
+  priority: low
+  owner: Process Library
+  registry_file: RUNTIME/outcomes/OUTCOME_REGISTRY.yaml
+  derivation_rule: Derived from step_id + outcome type hash
+  description: Derived identifier for step outcomes
+- type_id: correlation_id
+  name: Correlation Identifier
+  classification: runtime
+  tier: 3
+  format: CORR-{ULID}
+  format_regex: ^CORR-[0-9A-HJKMNP-TV-Z]{26}$
+  status: active
+  priority: medium
+  owner: Observability
+  registry_file: RUNTIME/correlation/CORR_REGISTRY.yaml
+  description: Cross-subsystem correlation identifier
+  notes: For distributed tracing across subsystems
+- type_id: chain_id
+  name: Orchestration Chain Identifier
+  classification: minted
+  tier: 2
+  format: CHAIN-{NAME}-{SEQ}
+  format_regex: ^CHAIN-([A-Z0-9-]+)-([0-9]{3,})$
+  status: active
+  priority: medium
+  owner: Orchestration
+  registry_file: WORKFLOWS/chains/CHAIN_REGISTRY.yaml
+  description: Identifier for automation chain definitions
+- type_id: hook_id
+  name: Hook Identifier
+  classification: minted
+  tier: 3
+  format: HOOK-{TYPE}-{NAME}-{SEQ}
+  format_regex: ^HOOK-([A-Z0-9]+)-([A-Z0-9-]+)-([0-9]{3,})$
+  status: active
+  priority: low
+  owner: Hook Framework
+  registry_file: RUNTIME/hooks/HOOK_REGISTRY.yaml
+  description: Identifier for extensibility hooks
+  categories:
+  - PRE
+  - POST
+  - AROUND
+  - EVENT
+- type_id: test_id
+  name: Test Case Identifier
+  classification: minted
+  tier: 3
+  format: TEST-{SUITE}-{NAME}-{SEQ}
+  format_regex: ^TEST-([A-Z0-9]+)-([A-Z0-9-]+)-([0-9]{3,})$
+  status: active
+  priority: medium
+  owner: Test Framework
+  registry_file: tests/TEST_REGISTRY.yaml
+  description: Stable identifier for test cases
+  categories:
+  - UNIT
+  - INTEGRATION
+  - E2E
+  - PERF
+- type_id: fixture_id
+  name: Test Fixture Identifier
+  classification: minted
+  tier: 3
+  format: FIX-{TYPE}-{NAME}-{SEQ}
+  format_regex: ^FIX-([A-Z0-9]+)-([A-Z0-9-]+)-([0-9]{3,})$
+  status: active
+  priority: low
+  owner: Test Framework
+  registry_file: tests/fixtures/FIXTURE_REGISTRY.yaml
+  description: Identifier for test fixtures and mock data
+- type_id: benchmark_id
+  name: Benchmark Identifier
+  classification: minted
+  tier: 3
+  format: BENCH-{CATEGORY}-{NAME}-{SEQ}
+  format_regex: ^BENCH-([A-Z0-9]+)-([A-Z0-9-]+)-([0-9]{3,})$
+  status: active
+  priority: low
+  owner: Performance Team
+  registry_file: benchmarks/BENCHMARK_REGISTRY.yaml
+  description: Identifier for performance benchmarks
+- type_id: alert_id
+  name: Alert Rule Identifier
+  classification: minted
+  tier: 3
+  format: ALERT-{SEVERITY}-{NAME}-{SEQ}
+  format_regex: ^ALERT-([A-Z]+)-([A-Z0-9-]+)-([0-9]{3,})$
+  status: active
+  priority: medium
+  owner: Monitoring
+  registry_file: RUNTIME/alerts/ALERT_REGISTRY.yaml
+  description: Identifier for monitoring alert rules
+  categories:
+  - CRITICAL
+  - WARNING
+  - INFO
+- type_id: metric_id
+  name: Metric Identifier
+  classification: minted
+  tier: 3
+  format: METRIC-{DOMAIN}-{NAME}-{SEQ}
+  format_regex: ^METRIC-([A-Z0-9]+)-([A-Z0-9-]+)-([0-9]{3,})$
+  status: active
+  priority: low
+  owner: Metrics System
+  registry_file: RUNTIME/metrics/METRIC_REGISTRY.yaml
+  description: Identifier for system metrics
+- type_id: config_id
+  name: Configuration Identifier
+  classification: minted
+  tier: 2
+  format: CFG-{ENV}-{NAME}-{SEQ}
+  format_regex: ^CFG-([A-Z0-9]+)-([A-Z0-9-]+)-([0-9]{3,})$
+  status: active
+  priority: medium
+  owner: Configuration Management
+  registry_file: config/CONFIG_REGISTRY.yaml
+  description: Identifier for configuration items
+  categories:
+  - DEV
+  - TEST
+  - STAGE
+  - PROD
+- type_id: environment_id
+  name: Environment Identifier
+  classification: minted
+  tier: 3
+  format: ENV-{NAME}
+  format_regex: ^ENV-[A-Z0-9-]+$
+  status: active
+  priority: low
+  owner: Environment Management
+  registry_file: config/environments/ENV_REGISTRY.yaml
+  description: Identifier for deployment environments
+- type_id: release_id
+  name: Release Identifier
+  classification: minted
+  tier: 2
+  format: REL-{YEAR}.{MONTH}.{BUILD}
+  format_regex: ^REL-[0-9]{4}\.[0-9]{2}\.[0-9]+$
+  status: active
+  priority: high
+  owner: Release Management
+  registry_file: releases/RELEASE_REGISTRY.yaml
+  description: Identifier for software releases
+  notes: Semantic versioning style
+- type_id: deployment_id
+  name: Deployment Identifier
+  classification: runtime
+  tier: 3
+  format: DEPLOY-{ULID}
+  format_regex: ^DEPLOY-[0-9A-HJKMNP-TV-Z]{26}$
+  status: active
+  priority: medium
+  owner: Deployment System
+  registry_file: RUNTIME/deployments/DEPLOY_REGISTRY.yaml
+  description: Runtime identifier for deployments
+- type_id: component_id
+  name: Python Component Identifier
+  classification: derived
+  tier: 2
+  format: COMP-{HASH}
+  format_regex: ^COMP-[0-9a-f]{12}$
+  status: active
+  priority: high
+  owner: mapp_py Python Introspection Layer
+  registry_file: mapp_py/component_id_registry.yaml
+  description: |
+    Deterministic identifier for Python code components (functions, classes, methods).
+    Hash derived from SHA256(doc_id + qualname + signature + kind).
+    First 12 hex characters ensure uniqueness while maintaining readability.
+  derivation:
+    algorithm: sha256
+    inputs:
+      - doc_id
+      - component.qualname
+      - component.signature_normalized
+      - component.kind
+    normalization:
+      signature_normalized:
+        remove_whitespace: true
+        remove_comments: true
+        normalize_literals: true
+        normalize_identifiers: false
+  validators:
+    - validate_component_id_format
+    - validate_component_id_determinism
+  automation:
+    scanner: false
+    assigner: false
+    pre_commit: false
+  work_id: WORK-MAPP-PY-001
+  first_seen: '2026-01-07T18:20:00Z'
+  notes: |
+    Component IDs enable fine-grained similarity analysis and duplicate detection
+    at the function/class level. Unlike DOC_IDs (which identify files), COMP-IDs
+    identify individual code components within files for granular comparison.
+lifecycle_log:
+- timestamp: '2026-01-07T18:20:00Z'
+  action: added
+  id_types_added:
+  - component_id
+  work_id: WORK-MAPP-PY-001
+  notes: Added COMP-{HASH} type for Python component identification (mapp_py Phase 0)
+- timestamp: '2026-01-03T15:00:00Z'
+  action: created
+  id_types_added:
+  - doc_id
+  - trigger_id
+  - pattern_id
+  - dir_id
+  notes: Initial meta-registry creation with 4 production types and 40 planned types
+summary:
+  total_types: 49
+  production: 4
+  active: 45
+  planned: 0
+  deprecated: 0
+  retired: 0
+  by_classification:
+    minted: 30
+    derived: 10
+    runtime: 8
+    natural: 1
+  by_tier:
+    tier_1: 1
+    tier_2: 24
+    tier_3: 24

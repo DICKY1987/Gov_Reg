@@ -11,8 +11,8 @@
 pip install jsonschema jsonpatch click pyyaml rich
 
 # 2. Validate (30 seconds)
-python scripts/validate_dependencies.py
-python scripts/validate_all_schemas.py
+python scripts/P_01260207201000000005_validate_dependencies.py
+python scripts/P_01260207201000000004_validate_all_schemas.py
 
 # 3. Run Example (1 minute)
 python examples/example_end_to_end.py
@@ -134,8 +134,8 @@ diff \
 ## ✅ Validation Scripts
 
 ```bash
-python scripts/validate_dependencies.py   # Check packages
-python scripts/validate_all_schemas.py    # Check schemas
+python scripts/P_01260207201000000005_validate_dependencies.py   # Check packages
+python scripts/P_01260207201000000004_validate_all_schemas.py    # Check schemas
 python scripts/check_resources.py         # Check RAM/disk
 python scripts/check_permissions.py       # Check permissions
 ```

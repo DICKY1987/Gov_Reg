@@ -22,7 +22,7 @@ A **deterministic, auditable planning refinement system** that:
 ### Week 1: Create 12 Schemas ⚡ CRITICAL
 **Why first**: Everything validates against these schemas
 **Files**: `schemas/PLAN.schema.json`, `CRITIC_REPORT.schema.json`, `PATCH.schema.json`, etc.
-**Command**: `python scripts/validate_all_schemas.py`
+**Command**: `python scripts/P_01260207201000000004_validate_all_schemas.py`
 **Success**: All schemas validate, sample docs pass/fail correctly
 
 ### Week 2: Build CLI Foundation

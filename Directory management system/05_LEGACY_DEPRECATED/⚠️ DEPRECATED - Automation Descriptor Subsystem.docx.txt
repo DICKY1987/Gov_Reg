@@ -1,0 +1,71 @@
+⚠️ DEPRECATION NOTICE FOR: Automation Descriptor Subsystem.docx
+
+================================================================================
+STATUS: DEPRECATED REFERENCE DOCUMENT
+DATE MARKED DEPRECATED: 2026-01-23
+BINARY FORMAT: Cannot be edited directly
+================================================================================
+
+SUPERSEDED BY:
+--------------
+1. Automation_Descriptor_Phase_Plan.md v1.3
+   - Contains frozen contracts (authoritative)
+   - Defines build order and implementation phases
+
+2. Automation_Descriptor_Deliverables_Specification.md v1.1
+   - Contains final requirements and acceptance criteria
+   - Includes compliance verification (Appendix C)
+
+AUTHORITY HIERARCHY:
+--------------------
+Per Phase Plan <spec_authority_hierarchy>:
+  Tier 1: Automation_Descriptor_Deliverables_Specification.md (SSOT for requirements)
+  Tier 2: Automation_Descriptor_Phase_Plan.md (build order + frozen contracts)
+  Tier 3: This .docx file (DEPRECATED legacy reference)
+
+Where conflicts exist, Tier 1 and 2 documents WIN.
+
+KNOWN CONFLICTS (DO NOT IMPLEMENT FROM .DOCX):
+-----------------------------------------------
+1. Registry File:
+   ❌ .docx says: FILE_REGISTRY_v2.json
+   ✅ Correct:    registry/UNIFIED_SSOT_REGISTRY.json
+
+2. Event Enum:
+   ❌ .docx says: FILE_CREATED
+   ✅ Correct:    FILE_ADDED (FILE_CREATED mapped on intake for legacy)
+
+3. Timestamp Fields:
+   ❌ .docx says: allocated_at, created_utc, id_assigned_utc
+   ✅ Correct:    first_seen_utc, updated_utc
+
+4. Path Field:
+   ❌ .docx says: current_path
+   ✅ Correct:    relative_path (POSIX forward-slash, repo-relative)
+
+5. Queue Schema:
+   ❌ .docx says: UNIQUE(path, status)
+   ✅ Correct:    UNIQUE(path) only
+
+6. Lock Ordering:
+   ❌ .docx says: incomplete/underspecified
+   ✅ Correct:    path_lock → doc_lock → registry_lock (total order)
+
+7. Patch Schema:
+   ❌ .docx says: missing registry_hash
+   ✅ Correct:    registry_hash REQUIRED (CAS precondition)
+
+PRESERVATION REASON:
+--------------------
+This file is preserved for:
+- Historical context
+- Design rationale
+- Implementation ideas/inspiration
+
+USE AS REFERENCE ONLY. DO NOT IMPLEMENT LITERALLY.
+
+================================================================================
+For current authoritative specification, see:
+- Automation_Descriptor_Phase_Plan.md (v1.3)
+- Automation_Descriptor_Deliverables_Specification.md (v1.1)
+================================================================================

@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 def load_classifier_module(repo_root):
-    classifier_path = repo_root / "scripts" / "classify_all_files.py"
+    classifier_path = repo_root / "scripts" / "P_01260207201000000001_classify_all_files.py"
     if not classifier_path.exists():
         raise FileNotFoundError(f"Classifier script not found: {classifier_path}")
     spec = importlib.util.spec_from_file_location("classify_all_files", classifier_path)

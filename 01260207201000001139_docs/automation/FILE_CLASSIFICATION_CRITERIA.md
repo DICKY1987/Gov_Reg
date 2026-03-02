@@ -573,7 +573,7 @@ To verify classification correctness:
 python validators/validate_classification.py --file <path> --expected-section <section>
 
 # Generate classification report
-python scripts/classify_all_files.py --report classification_report.json
+python scripts/P_01260207201000000001_classify_all_files.py --report classification_report.json
 ```
 
 ---

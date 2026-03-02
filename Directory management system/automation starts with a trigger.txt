@@ -1,0 +1,240 @@
+If automation **starts with a trigger** and **ends with a deliverable**, the process in between is a **deterministic execution pipeline**. There are no optional steps if you want the system to be reliable, auditable, and restartable.
+
+Below is the **canonical end-to-end sequence**, expressed in system terms rather than tooling terms.
+
+---
+
+## Automation Lifecycle (Trigger → Deliverable)
+
+### 1. Trigger Detection
+
+**What starts automation**
+
+Examples:
+
+* File system event (create / modify / move / delete)
+* Scheduled tick
+* Manual command
+* Upstream automation output
+
+**Output:** raw event
+**Failure allowed:** yes (event may be ignored later)
+
+---
+
+### 2. Event Ingestion
+
+**Normalize the trigger into a work unit**
+
+Actions:
+
+* Capture event metadata (path, time, type, source)
+* Insert into a persistent queue
+* Log first-seen evidence
+
+**Output:** queued work item
+**Failure allowed:** no (must be durable)
+
+---
+
+### 3. Stabilization / Debounce
+
+**Ensure the input is no longer changing**
+
+Actions:
+
+* Wait for quiet period
+* Collapse duplicate events
+* Reject transient or incomplete states
+
+**Output:** stable input candidate
+**Failure allowed:** yes (retry later)
+
+---
+
+### 4. Classification
+
+**Decide what kind of thing this is**
+
+Actions:
+
+* Governed vs unmanaged
+* File vs directory
+* Content type (Python, config, doc, binary)
+* Automation type (descriptor, index, transform, cleanup)
+
+**Output:** classified work item
+**Failure allowed:** no (must be explicit)
+
+---
+
+### 5. Identity Resolution
+
+**Bind the event to a stable identity**
+
+Actions:
+
+* Extract existing ID or allocate a new one
+* Enforce naming/ID rules
+* Resolve scope, ownership, module
+
+**Output:** entity identity
+**Failure allowed:** no (identity is foundational)
+
+---
+
+### 6. Lock Acquisition
+
+**Prevent concurrent corruption**
+
+Actions:
+
+* Acquire path lock
+* Acquire entity/ID lock
+* Acquire registry or shared-resource lock
+
+**Output:** exclusive execution rights
+**Failure allowed:** yes (retry)
+
+---
+
+### 7. Pre-Execution Validation
+
+**Decide whether execution is allowed**
+
+Actions:
+
+* Policy checks (tool-only, immutable fields)
+* Schema compatibility
+* Preconditions (files exist, registry state matches)
+
+**Output:** execution authorization
+**Failure allowed:** yes (reject or quarantine)
+
+---
+
+### 8. Core Processing
+
+**Do the actual work**
+
+Examples:
+
+* Parse file
+* Transform content
+* Generate descriptor
+* Derive index
+* Compute metadata
+
+**Output:** derived data + intermediate artifacts
+**Failure allowed:** yes (recoverable)
+
+---
+
+### 9. Deliverable Generation
+
+**Materialize the result**
+
+Actions:
+
+* Write derived artifact(s)
+* Use deterministic paths and names
+* Compute hashes
+
+**Output:** concrete deliverable
+**Failure allowed:** no partial state allowed
+
+---
+
+### 10. Promotion / Commit
+
+**Make results authoritative**
+
+Actions:
+
+* Update SSOT registry (single-writer only)
+* Apply normalization
+* Record provenance (hashes, timestamps, tool version)
+
+**Output:** committed system state
+**Failure allowed:** no (must be atomic)
+
+---
+
+### 11. Post-Execution Validation
+
+**Prove correctness**
+
+Actions:
+
+* Schema validation
+* Referential integrity checks
+* Policy enforcement
+* Cross-artifact consistency
+
+**Output:** validation evidence
+**Failure allowed:** triggers rollback
+
+---
+
+### 12. Rollback (Conditional)
+
+**Undo if anything is wrong**
+
+Actions:
+
+* Restore backups
+* Revert registry
+* Quarantine bad inputs
+
+**Output:** restored prior state
+**Failure allowed:** no (must succeed)
+
+---
+
+### 13. Completion & Observability
+
+**Close the loop**
+
+Actions:
+
+* Mark work item done
+* Emit audit log entry
+* Update metrics / status
+
+**Output:** completed automation run
+**Failure allowed:** no
+
+---
+
+## Summary (Compressed View)
+
+```
+Trigger
+ → Ingest
+ → Stabilize
+ → Classify
+ → Identify
+ → Lock
+ → Validate (pre)
+ → Process
+ → Generate
+ → Commit
+ → Validate (post)
+ → Rollback (if needed)
+ → Complete
+```
+
+---
+
+## Key Insight (Tell-It-Like-It-Is)
+
+If **any** of these steps are missing, the system will eventually:
+
+* Drift
+* Duplicate work
+* Corrupt state
+* Become non-restartable
+* Lose auditability
+
+This sequence is the **minimum viable automation spine**.
+Everything else (plugins, CLIs, watchers, schedulers) is just plumbing around it.

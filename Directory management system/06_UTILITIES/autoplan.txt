@@ -1,0 +1,579 @@
+
+
+A) <task_analysis>
+<original_request>Create a plan using the “phase plan execution” template for the testable automation architecture workstream (pilot one trigger, lifecycle contract, ALVT Layer 0+1, ACC + tests, fix until green, then consider Layer 2+).</original_request>
+
+<specificity_transformation> <objective>
+Produce an executable, repeatable pilot plan that proves “automation wiring + completeness” for ONE trigger using:
+(1) a hand-written Trigger Lifecycle Contract, (2) ALVT Layer 0 (static integrity) and Layer 1 (graph connectivity),
+(3) ACC table generation, and (4) a fix-loop until both layers pass reliably. </objective> <methodology>
+1) Select pilot trigger and define its lifecycle contract template + concrete instance.
+2) Implement ALVT Layer 0 checks (existence/config/stub detection) and Layer 1 checks (node/edge connectivity).
+3) Generate ACC table for the trigger and compare to contract (detect mismatches).
+4) Run tests; repair wiring gaps until ALVT Layer 0+1 pass repeatedly.
+5) Freeze the pilot as the reference pattern; only then design Layer 2+ backlog. </methodology>
+<success_criteria>
+- A single trigger lifecycle contract exists and is machine-validated.
+- ALVT Layer 0 passes for the pilot trigger (no missing referenced files/config keys; no required-path stubs).
+- ALVT Layer 1 passes for the pilot trigger (all required nodes and edges present; no orphaned steps).
+- ACC table generated and reconciles with the contract (no UNKNOWN remaining for required fields).
+- Tests are runnable via a single command and produce pass/fail output deterministically.
+</success_criteria>
+</specificity_transformation>
+
+  <classification>
+    <complexity>complex</complexity>
+    <domain>technical</domain>
+    <quality>production</quality>
+  </classification>
+</task_analysis>
+
+B) <assumptions_scope>
+
+* assumptions
+
+  * Pilot trigger name will be normalized to `FILE_IDENTITY_CREATE` (adjustable if your repo uses different IDs).
+  * You can add a small `contracts/` + `tools/alvt/` + `tests/` footprint without breaking existing structure.
+  * Registry and dispatch configuration exist (or will be created as minimal fixtures for the pilot).
+  * Python is the implementation language for ALVT tooling and tests.
+
+* in_scope
+
+  * One trigger pilot end-to-end for **definition + wiring proof** (ALVT L0 + L1 only).
+  * Trigger Lifecycle Contract template + one concrete contract instance.
+  * ALVT L0 tool + tests.
+  * ALVT L1 tool + tests.
+  * ACC generation prompt (stage A) and reconciliation process.
+  * Repair loop until L0+L1 are green and stable.
+
+* out_of_scope
+
+  * Implementing ALVT Layer 2+ (plan determinism, sandbox execution, negative-path, idempotency) beyond defining a backlog.
+  * Converting multiple triggers.
+  * Full self-healing auto-fix PR pipeline (optional future).
+
+* definition_of_done (objective checklist)
+
+  * [ ] `contracts/triggers/trigger.FILE_IDENTITY_CREATE.yaml` exists and validates against a schema or validator.
+  * [ ] `tools/alvt/layer0_static.py` produces `reports/alvt/static.FILE_IDENTITY_CREATE.json` with status=pass.
+  * [ ] `tools/alvt/layer1_graph.py` produces `reports/alvt/graph.FILE_IDENTITY_CREATE.json` with status=pass.
+  * [ ] `pytest -q` passes for the pilot ALVT tests.
+  * [ ] ACC table exists and matches contract-required entrypoints/dispatcher/handler/gates/evidence with no required UNKNOWN.
+    </assumptions_scope>
+
+C) <phase_plan>
+(table: phase | goals | deliverables | validation_gates | exit_criteria)
+
+| phase                             | goals                                                                                 | deliverables                                                                                                          | validation_gates                                                                                                 | exit_criteria                                                                 |
+| --------------------------------- | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| 0) Assumptions & Scope Lock       | Lock pilot trigger + boundaries; define “done”                                        | Pilot trigger selection note; DoD checklist; directory footprint plan                                                 | `python -c "print('scope locked')"` (placeholder command only for operational cadence; no functional gating yet) | Pilot trigger ID chosen; DoD checklist accepted as internal target            |
+| 1) Architecture & Plan            | Define the minimal ALVT architecture and contract model                               | Architecture note (contract→ALVT tools→reports→tests); repo structure tree                                            | `python -m compileall src tools` (must compile)                                                                  | Structure documented; no missing directories; compile check passes            |
+| 2) Contract/Interfaces            | Create lifecycle contract template + one filled contract for the pilot                | `trigger_contract_template.yaml`; `trigger.FILE_IDENTITY_CREATE.yaml`; (optional) JSON schema for validation          | `python tools/alvt/validate_contract.py --trigger FILE_IDENTITY_CREATE` (must return 0)                          | Contract validates; required sections present; paths/refs resolvable          |
+| 3) Implementation (TDD for L0+L1) | Implement ALVT Layer 0 + Layer 1 tools; write tests first                             | `tools/alvt/layer0_static.py`; `tools/alvt/layer1_graph.py`; `tests/test_alvt_layer0.py`; `tests/test_alvt_layer1.py` | `pytest -q tests/test_alvt_layer0.py::...` and `pytest -q tests/test_alvt_layer1.py::...`                        | Both tests pass OR produce actionable failing report with exact missing items |
+| 4) Validation Gates               | Run tools against real repo; generate reports; prove determinism                      | `reports/alvt/static.*.json`; `reports/alvt/graph.*.json`                                                             | `python tools/alvt/layer0_static.py --trigger FILE_IDENTITY_CREATE` must say PASS; same for layer1               | Both layers PASS; reports persisted                                           |
+| 5) ACC Reconciliation             | Generate ACC table and reconcile with contract; eliminate UNKNOWN for required fields | ACC table artifact; mismatch report (contract vs ACC)                                                                 | “ACC stage-A prompt” run; plus a consistency script: `python tools/alvt/reconcile_acc.py ...`                    | No required UNKNOWN; mismatches resolved or documented as contract updates    |
+| 6) Final Completion Checklist     | Freeze pilot as reference pattern; define Layer 2+ backlog (not implement)            | “Pilot Passed” record; Layer 2+ backlog doc                                                                           | `pytest -q` and rerun layer0/layer1 twice to confirm stability                                                   | Repeat runs remain PASS; pilot declared baseline reference                    |
+| </phase_plan>                     |                                                                                       |                                                                                                                       |                                                                                                                  |                                                                               |
+
+D) <architecture>
+
+* high-level design
+
+  * **Trigger Lifecycle Contract (YAML)** is the source-of-truth for what must exist and how a trigger is wired.
+  * **ALVT Layer 0** checks static integrity:
+
+    * referenced files exist
+    * referenced config keys exist
+    * stub/TODO markers absent from required-path code
+  * **ALVT Layer 1** checks graph connectivity:
+
+    * required nodes exist (entrypoint/dispatcher/handler/gates/evidence)
+    * required edges exist (trigger→entrypoint→dispatcher→handler→gates/evidence)
+  * **ACC table** is a human/AI-generated or tool-generated “chain-of-custody view” used to surface wiring gaps; it must reconcile with the contract.
+
+* repo/project structure tree
+
+  * Proposed minimal footprint (adjust paths to your repo):
+
+    * `contracts/triggers/trigger.FILE_IDENTITY_CREATE.yaml`
+    * `tools/alvt/`
+
+      * `layer0_static.py`
+      * `layer1_graph.py`
+      * `validate_contract.py` (optional but recommended)
+      * `reconcile_acc.py` (optional but recommended)
+    * `reports/alvt/`
+    * `tests/`
+
+      * `test_alvt_layer0.py`
+      * `test_alvt_layer1.py`
+
+* key decisions + tradeoffs
+
+  * Contracts-first: makes “completeness” measurable; small upfront cost, big downstream leverage.
+  * Layer 0+1 first: cheapest, fastest way to eliminate missing wiring before runtime work.
+  * Single-trigger pilot: prevents premature scaling and avoids designing abstractions on guesses.
+
+    </architecture>
+
+E) <implementation>
+Plan-only deliverable. No code emitted in this response. </implementation>
+
+F) <tests>
+Plan-only deliverable. Tests will be added in Phase 3 (TDD) and must be runnable via `pytest -q`. </tests>
+
+G) <validation_gates>
+Planned gates (to be implemented in Phases 2–4):
+
+* `python tools/alvt/validate_contract.py --trigger FILE_IDENTITY_CREATE` → exit 0
+* `python tools/alvt/layer0_static.py --trigger FILE_IDENTITY_CREATE` → PASS + report written
+* `python tools/alvt/layer1_graph.py --trigger FILE_IDENTITY_CREATE` → PASS + report written
+* `pytest -q` → all tests pass
+  </validation_gates>
+
+H) <runbook>
+Plan-only deliverable.
+
+* Setup: ensure Python + pytest available.
+* Run: execute Layer 0/1 tools and pytest gates.
+* Troubleshooting: use Layer 0 report for missing file/config/stub; use Layer 1 report for missing nodes/edges.
+
+  </runbook>
+
+I) <final_summary>
+
+* what was delivered
+
+  * A pilot-focused, phase-gated plan to prove automation completeness and wiring for one trigger using Trigger Lifecycle Contract + ALVT Layer 0/1 + ACC reconciliation.
+* known limitations
+
+  * No code/tests produced in this response (this is a plan artifact only).
+  * Layer 2+ intentionally deferred until Layer 0/1 pass.
+* next hardening steps (brief)
+
+  * After the pilot passes: add Layer 2 (plan determinism) and Layer 3 (sandbox e2e) for the same trigger before scaling to additional triggers.
+    </final_summary>
+	
+	
+	
+	
+
+<prompt_template name="Autonomous Project Delivery — Generic" version="1.2"> <inputs>
+<project_brief>
+Next steps to operationalize “testable automation” for ONE pilot trigger using the plan/execute + ops injection + workspace + events pattern.
+Deliverables must include:
+(1) Trigger Lifecycle Contract template + one filled contract (pilot),
+(2) ALVT Layer 0 (static integrity) + Layer 1 (connectivity) tools + pytest coverage,
+(3) ACC table generation + reconciliation loop,
+(4) Fix loop until Layer 0+1 pass repeatedly,
+(5) Defer Layer 2+ until pilot is green.
+Current baseline: reference implementation exists (core/ops/workspace/trigger + Layer 2/3/5 tests), but needs tightening (evidence querying helpers, run-level events, workspace-safe registry path, explicit idempotency policy).
+</project_brief>
+<target_environment>local</target_environment>
+<tech_preferences>Python + pytest</tech_preferences> <constraints>
+<time_budget>optional</time_budget>
+<security_or_compliance>avoid writing outside workspace during tests; deterministic outputs</security_or_compliance>
+<performance_targets>Layer 0/1 checks should run fast (<1s typical)</performance_targets> </constraints>
+<delivery_mode> <autopilot>true</autopilot>
+<enterprise_mode>false</enterprise_mode>
+</delivery_mode> </inputs>
+
+<task_analysis>
+<original_request>Plan next steps using the phase plan execution template.</original_request>
+<specificity_transformation> <objective>
+Establish an objective, repeatable verification loop for ONE trigger that proves automation “completeness + connection”
+via Trigger Lifecycle Contract + ALVT Layer 0/1 + ACC reconciliation, with a fix-until-green discipline. </objective> <methodology>
+(1) Lock pilot trigger + define lifecycle contract template and instance.
+(2) Implement ALVT L0 (existence/config/stub) + L1 (nodes/edges) with machine-readable reports.
+(3) Generate ACC table, reconcile with contract, eliminate required UNKNOWN.
+(4) Tighten reference implementation: evidence query helpers, run-level events, workspace-safe registry path, idempotency policy.
+(5) Run gates repeatedly until stable pass; only then backlog Layer 2+. </methodology>
+<success_criteria>
+- Pilot trigger contract exists and passes a contract validator.
+- ALVT Layer 0 PASS for pilot (no missing files/config keys; no forbidden stubs in required paths).
+- ALVT Layer 1 PASS for pilot (required nodes/edges satisfied).
+- ACC table exists and matches contract-required wiring (no required UNKNOWN).
+- pytest suite PASS and repeatable (two consecutive runs) without manual edits.
+</success_criteria>
+</specificity_transformation> <classification> <complexity>complex</complexity> <domain>technical</domain> <quality>production</quality> </classification>
+</task_analysis>
+
+<phase_plan> <phase id="0" name="Assumptions & Scope Lock"> <goals> <goal>Select exactly one pilot trigger and freeze definition-of-done (DoD) for Layer 0/1.</goal> <goal>Prevent scope creep (no Layer 2+ implementation until L0/L1 green).</goal> </goals> <deliverables> <deliverable>DOC: pilot_trigger_selection.md (trigger_id + rationale + DoD checklist)</deliverable> <deliverable>Repo dirs reserved: contracts/, tools/alvt/, reports/alvt/, tests/ (or equivalent)</deliverable> </deliverables>
+<validation_gates> <gate> <command>python -c "print('scope_locked')"</command>
+<pass_condition>command exits 0</pass_condition> </gate>
+</validation_gates>
+<exit_criteria> <criterion>Pilot trigger_id locked (e.g., FILE_IDENTITY_CREATE).</criterion> <criterion>DoD checklist written and stored.</criterion>
+</exit_criteria> </phase>
+
+```
+<phase id="1" name="Architecture & Plan">
+  <goals>
+    <goal>Define canonical artifacts and their relationships: Contract → ALVT L0/L1 → Reports → Tests → ACC reconciliation.</goal>
+    <goal>Define the “workspace-safe” rule set for tests.</goal>
+  </goals>
+  <deliverables>
+    <deliverable>DOC: automation_verification_architecture.md (ACC model + ALVT L0/L1 responsibilities)</deliverable>
+    <deliverable>Decision: registry path must be workspace-relative for sandbox/testing</deliverable>
+  </deliverables>
+  <validation_gates>
+    <gate>
+      <command>python -m compileall src tools</command>
+      <pass_condition>exit 0</pass_condition>
+    </gate>
+  </validation_gates>
+  <exit_criteria>
+    <criterion>Architecture doc committed.</criterion>
+    <criterion>Workspace-safe rule explicit (no global writes during tests).</criterion>
+  </exit_criteria>
+</phase>
+
+<phase id="2" name="Contract/Interfaces">
+  <goals>
+    <goal>Create exact Trigger Lifecycle Contract template + one filled contract for the pilot.</goal>
+    <goal>Create a minimal contract validator (schema or code-based).</goal>
+  </goals>
+  <deliverables>
+    <deliverable>contracts/triggers/trigger_contract_template.yaml</deliverable>
+    <deliverable>contracts/triggers/trigger.FILE_IDENTITY_CREATE.yaml</deliverable>
+    <deliverable>tools/alvt/validate_contract.py (or JSON-schema equivalent)</deliverable>
+  </deliverables>
+  <validation_gates>
+    <gate>
+      <command>python tools/alvt/validate_contract.py --trigger FILE_IDENTITY_CREATE</command>
+      <pass_condition>exit 0; prints VALID</pass_condition>
+    </gate>
+  </validation_gates>
+  <exit_criteria>
+    <criterion>Contract instance validates.</criterion>
+    <criterion>Contract references are resolvable (paths/handler refs).</criterion>
+  </exit_criteria>
+</phase>
+
+<phase id="3" name="Implementation (Test-First)">
+  <goals>
+    <goal>Implement ALVT Layer 0 and Layer 1 with report outputs.</goal>
+    <goal>Tighten reference implementation to support objective verification.</goal>
+  </goals>
+  <deliverables>
+    <deliverable>tools/alvt/layer0_static.py (outputs reports/alvt/static.&lt;trigger&gt;.json)</deliverable>
+    <deliverable>tools/alvt/layer1_graph.py (outputs reports/alvt/graph.&lt;trigger&gt;.json)</deliverable>
+    <deliverable>tests/test_alvt_layer0.py</deliverable>
+    <deliverable>tests/test_alvt_layer1.py</deliverable>
+    <deliverable>Enhancements:
+      - EvidenceOps: query helpers (by_type/by_step/filter)
+      - Run-level events: execution_started/execution_completed
+      - Registry path policy: workspace-relative in tests
+      - Idempotency policy decision for pilot (run-once OR safe-rerun)
+    </deliverable>
+  </deliverables>
+  <validation_gates>
+    <gate>
+      <command>pytest -q tests/test_alvt_layer0.py</command>
+      <pass_condition>exit 0</pass_condition>
+    </gate>
+    <gate>
+      <command>pytest -q tests/test_alvt_layer1.py</command>
+      <pass_condition>exit 0</pass_condition>
+    </gate>
+  </validation_gates>
+  <exit_criteria>
+    <criterion>ALVT L0/L1 tests are present and runnable.</criterion>
+    <criterion>Evidence query helpers available for tests.</criterion>
+    <criterion>Run-level events emitted.</criterion>
+  </exit_criteria>
+</phase>
+
+<phase id="4" name="Validation Gates (Fix-Validate-Repeat)">
+  <goals>
+    <goal>Run ALVT L0/L1 against the pilot trigger and fix all breakages until stable PASS.</goal>
+    <goal>Ensure reports are deterministic and failures are actionable (file+reason).</goal>
+  </goals>
+  <deliverables>
+    <deliverable>reports/alvt/static.FILE_IDENTITY_CREATE.json (PASS)</deliverable>
+    <deliverable>reports/alvt/graph.FILE_IDENTITY_CREATE.json (PASS)</deliverable>
+    <deliverable>Issue log: alvt_pilot_findings.md (what broke + fix applied)</deliverable>
+  </deliverables>
+  <validation_gates>
+    <gate>
+      <command>python tools/alvt/layer0_static.py --trigger FILE_IDENTITY_CREATE</command>
+      <pass_condition>status=PASS</pass_condition>
+    </gate>
+    <gate>
+      <command>python tools/alvt/layer1_graph.py --trigger FILE_IDENTITY_CREATE</command>
+      <pass_condition>status=PASS</pass_condition>
+    </gate>
+    <gate>
+      <command>pytest -q</command>
+      <pass_condition>exit 0</pass_condition>
+    </gate>
+  </validation_gates>
+  <exit_criteria>
+    <criterion>Two consecutive runs of L0/L1 + pytest pass without changes.</criterion>
+  </exit_criteria>
+</phase>
+
+<phase id="5" name="Packaging & Runbooks">
+  <goals>
+    <goal>Make the workflow runnable by a single operator command.</goal>
+    <goal>Document how to add the next trigger after the pilot is green.</goal>
+  </goals>
+  <deliverables>
+    <deliverable>CLI wrapper: tools/alvt/alvt_cli.py (layer0/layer1 commands)</deliverable>
+    <deliverable>RUNBOOK: run_alvt_pilot.md (exact commands + expected outputs)</deliverable>
+    <deliverable>Template: new_trigger_checklist.md (how to create next contract + wire + test)</deliverable>
+  </deliverables>
+  <validation_gates>
+    <gate>
+      <command>python tools/alvt/alvt_cli.py layer0 --trigger FILE_IDENTITY_CREATE</command>
+      <pass_condition>PASS</pass_condition>
+    </gate>
+    <gate>
+      <command>python tools/alvt/alvt_cli.py layer1 --trigger FILE_IDENTITY_CREATE</command>
+      <pass_condition>PASS</pass_condition>
+    </gate>
+  </validation_gates>
+  <exit_criteria>
+    <criterion>One-command documented path to run verification.</criterion>
+    <criterion>Runbook sufficient for non-author execution.</criterion>
+  </exit_criteria>
+</phase>
+
+<phase id="6" name="Final Completion Checklist">
+  <goals>
+    <goal>Freeze pilot as the reference implementation and define Layer 2+ backlog (do not implement yet).</goal>
+  </goals>
+  <deliverables>
+    <deliverable>DOC: pilot_baseline_locked.md (hashes/versions/expected outputs)</deliverable>
+    <deliverable>DOC: layer2_plus_backlog.md (Layer 2 plan determinism, Layer 3 sandbox, Layer 4 negative, Layer 5 idempotency)</deliverable>
+  </deliverables>
+  <validation_gates>
+    <gate>
+      <command>python tools/alvt/alvt_cli.py layer0 --trigger FILE_IDENTITY_CREATE &amp;&amp; python tools/alvt/alvt_cli.py layer1 --trigger FILE_IDENTITY_CREATE &amp;&amp; pytest -q</command>
+      <pass_condition>all PASS, exit 0</pass_condition>
+    </gate>
+  </validation_gates>
+  <exit_criteria>
+    <criterion>Pilot declared stable baseline (L0/L1 proven).</criterion>
+    <criterion>Layer 2+ backlog exists but is explicitly deferred.</criterion>
+  </exit_criteria>
+</phase>
+```
+
+</phase_plan>
+
+<next_steps> <step priority="1">Phase 0: lock pilot trigger_id + DoD checklist.</step> <step priority="2">Phase 2: write contract template + pilot contract + validator.</step> <step priority="3">Phase 3: implement ALVT L0/L1 + pytest; add evidence query helpers + run-level events + workspace-safe registry policy.</step> <step priority="4">Phase 4: run/fix loop until two consecutive PASS runs.</step> <step priority="5">Phase 5: add minimal CLI + runbook.</step> <step priority="6">Phase 6: freeze baseline; create Layer 2+ backlog only.</step>
+</next_steps>
+</prompt_template>
+
+
+
+
+
+
+<prompt_template name="Autonomous Project Delivery — Generic" version="1.2"> <inputs>
+<project_brief>
+Next steps to operationalize “testable automation” for ONE pilot trigger using the plan/execute + ops injection + workspace + events pattern.
+Deliverables must include:
+(1) Trigger Lifecycle Contract template + one filled contract (pilot),
+(2) ALVT Layer 0 (static integrity) + Layer 1 (connectivity) tools + pytest coverage,
+(3) ACC table generation + reconciliation loop,
+(4) Fix loop until Layer 0+1 pass repeatedly,
+(5) Defer Layer 2+ until pilot is green.
+Current baseline: reference implementation exists (core/ops/workspace/trigger + Layer 2/3/5 tests), but needs tightening (evidence querying helpers, run-level events, workspace-safe registry path, explicit idempotency policy).
+</project_brief>
+<target_environment>local</target_environment>
+<tech_preferences>Python + pytest</tech_preferences> <constraints>
+<time_budget>optional</time_budget>
+<security_or_compliance>avoid writing outside workspace during tests; deterministic outputs</security_or_compliance>
+<performance_targets>Layer 0/1 checks should run fast (<1s typical)</performance_targets> </constraints>
+<delivery_mode> <autopilot>true</autopilot>
+<enterprise_mode>false</enterprise_mode>
+</delivery_mode> </inputs>
+
+<task_analysis>
+<original_request>Plan next steps using the phase plan execution template.</original_request>
+<specificity_transformation> <objective>
+Establish an objective, repeatable verification loop for ONE trigger that proves automation “completeness + connection”
+via Trigger Lifecycle Contract + ALVT Layer 0/1 + ACC reconciliation, with a fix-until-green discipline. </objective> <methodology>
+(1) Lock pilot trigger + define lifecycle contract template and instance.
+(2) Implement ALVT L0 (existence/config/stub) + L1 (nodes/edges) with machine-readable reports.
+(3) Generate ACC table, reconcile with contract, eliminate required UNKNOWN.
+(4) Tighten reference implementation: evidence query helpers, run-level events, workspace-safe registry path, idempotency policy.
+(5) Run gates repeatedly until stable pass; only then backlog Layer 2+. </methodology>
+<success_criteria>
+- Pilot trigger contract exists and passes a contract validator.
+- ALVT Layer 0 PASS for pilot (no missing files/config keys; no forbidden stubs in required paths).
+- ALVT Layer 1 PASS for pilot (required nodes/edges satisfied).
+- ACC table exists and matches contract-required wiring (no required UNKNOWN).
+- pytest suite PASS and repeatable (two consecutive runs) without manual edits.
+</success_criteria>
+</specificity_transformation> <classification> <complexity>complex</complexity> <domain>technical</domain> <quality>production</quality> </classification>
+</task_analysis>
+
+<phase_plan> <phase id="0" name="Assumptions & Scope Lock"> <goals> <goal>Select exactly one pilot trigger and freeze definition-of-done (DoD) for Layer 0/1.</goal> <goal>Prevent scope creep (no Layer 2+ implementation until L0/L1 green).</goal> </goals> <deliverables> <deliverable>DOC: pilot_trigger_selection.md (trigger_id + rationale + DoD checklist)</deliverable> <deliverable>Repo dirs reserved: contracts/, tools/alvt/, reports/alvt/, tests/ (or equivalent)</deliverable> </deliverables>
+<validation_gates> <gate> <command>python -c "print('scope_locked')"</command>
+<pass_condition>command exits 0</pass_condition> </gate>
+</validation_gates>
+<exit_criteria> <criterion>Pilot trigger_id locked (e.g., FILE_IDENTITY_CREATE).</criterion> <criterion>DoD checklist written and stored.</criterion>
+</exit_criteria> </phase>
+
+```
+<phase id="1" name="Architecture & Plan">
+  <goals>
+    <goal>Define canonical artifacts and their relationships: Contract → ALVT L0/L1 → Reports → Tests → ACC reconciliation.</goal>
+    <goal>Define the “workspace-safe” rule set for tests.</goal>
+  </goals>
+  <deliverables>
+    <deliverable>DOC: automation_verification_architecture.md (ACC model + ALVT L0/L1 responsibilities)</deliverable>
+    <deliverable>Decision: registry path must be workspace-relative for sandbox/testing</deliverable>
+  </deliverables>
+  <validation_gates>
+    <gate>
+      <command>python -m compileall src tools</command>
+      <pass_condition>exit 0</pass_condition>
+    </gate>
+  </validation_gates>
+  <exit_criteria>
+    <criterion>Architecture doc committed.</criterion>
+    <criterion>Workspace-safe rule explicit (no global writes during tests).</criterion>
+  </exit_criteria>
+</phase>
+
+<phase id="2" name="Contract/Interfaces">
+  <goals>
+    <goal>Create exact Trigger Lifecycle Contract template + one filled contract for the pilot.</goal>
+    <goal>Create a minimal contract validator (schema or code-based).</goal>
+  </goals>
+  <deliverables>
+    <deliverable>contracts/triggers/trigger_contract_template.yaml</deliverable>
+    <deliverable>contracts/triggers/trigger.FILE_IDENTITY_CREATE.yaml</deliverable>
+    <deliverable>tools/alvt/validate_contract.py (or JSON-schema equivalent)</deliverable>
+  </deliverables>
+  <validation_gates>
+    <gate>
+      <command>python tools/alvt/validate_contract.py --trigger FILE_IDENTITY_CREATE</command>
+      <pass_condition>exit 0; prints VALID</pass_condition>
+    </gate>
+  </validation_gates>
+  <exit_criteria>
+    <criterion>Contract instance validates.</criterion>
+    <criterion>Contract references are resolvable (paths/handler refs).</criterion>
+  </exit_criteria>
+</phase>
+
+<phase id="3" name="Implementation (Test-First)">
+  <goals>
+    <goal>Implement ALVT Layer 0 and Layer 1 with report outputs.</goal>
+    <goal>Tighten reference implementation to support objective verification.</goal>
+  </goals>
+  <deliverables>
+    <deliverable>tools/alvt/layer0_static.py (outputs reports/alvt/static.&lt;trigger&gt;.json)</deliverable>
+    <deliverable>tools/alvt/layer1_graph.py (outputs reports/alvt/graph.&lt;trigger&gt;.json)</deliverable>
+    <deliverable>tests/test_alvt_layer0.py</deliverable>
+    <deliverable>tests/test_alvt_layer1.py</deliverable>
+    <deliverable>Enhancements:
+      - EvidenceOps: query helpers (by_type/by_step/filter)
+      - Run-level events: execution_started/execution_completed
+      - Registry path policy: workspace-relative in tests
+      - Idempotency policy decision for pilot (run-once OR safe-rerun)
+    </deliverable>
+  </deliverables>
+  <validation_gates>
+    <gate>
+      <command>pytest -q tests/test_alvt_layer0.py</command>
+      <pass_condition>exit 0</pass_condition>
+    </gate>
+    <gate>
+      <command>pytest -q tests/test_alvt_layer1.py</command>
+      <pass_condition>exit 0</pass_condition>
+    </gate>
+  </validation_gates>
+  <exit_criteria>
+    <criterion>ALVT L0/L1 tests are present and runnable.</criterion>
+    <criterion>Evidence query helpers available for tests.</criterion>
+    <criterion>Run-level events emitted.</criterion>
+  </exit_criteria>
+</phase>
+
+<phase id="4" name="Validation Gates (Fix-Validate-Repeat)">
+  <goals>
+    <goal>Run ALVT L0/L1 against the pilot trigger and fix all breakages until stable PASS.</goal>
+    <goal>Ensure reports are deterministic and failures are actionable (file+reason).</goal>
+  </goals>
+  <deliverables>
+    <deliverable>reports/alvt/static.FILE_IDENTITY_CREATE.json (PASS)</deliverable>
+    <deliverable>reports/alvt/graph.FILE_IDENTITY_CREATE.json (PASS)</deliverable>
+    <deliverable>Issue log: alvt_pilot_findings.md (what broke + fix applied)</deliverable>
+  </deliverables>
+  <validation_gates>
+    <gate>
+      <command>python tools/alvt/layer0_static.py --trigger FILE_IDENTITY_CREATE</command>
+      <pass_condition>status=PASS</pass_condition>
+    </gate>
+    <gate>
+      <command>python tools/alvt/layer1_graph.py --trigger FILE_IDENTITY_CREATE</command>
+      <pass_condition>status=PASS</pass_condition>
+    </gate>
+    <gate>
+      <command>pytest -q</command>
+      <pass_condition>exit 0</pass_condition>
+    </gate>
+  </validation_gates>
+  <exit_criteria>
+    <criterion>Two consecutive runs of L0/L1 + pytest pass without changes.</criterion>
+  </exit_criteria>
+</phase>
+
+<phase id="5" name="Packaging & Runbooks">
+  <goals>
+    <goal>Make the workflow runnable by a single operator command.</goal>
+    <goal>Document how to add the next trigger after the pilot is green.</goal>
+  </goals>
+  <deliverables>
+    <deliverable>CLI wrapper: tools/alvt/alvt_cli.py (layer0/layer1 commands)</deliverable>
+    <deliverable>RUNBOOK: run_alvt_pilot.md (exact commands + expected outputs)</deliverable>
+    <deliverable>Template: new_trigger_checklist.md (how to create next contract + wire + test)</deliverable>
+  </deliverables>
+  <validation_gates>
+    <gate>
+      <command>python tools/alvt/alvt_cli.py layer0 --trigger FILE_IDENTITY_CREATE</command>
+      <pass_condition>PASS</pass_condition>
+    </gate>
+    <gate>
+      <command>python tools/alvt/alvt_cli.py layer1 --trigger FILE_IDENTITY_CREATE</command>
+      <pass_condition>PASS</pass_condition>
+    </gate>
+  </validation_gates>
+  <exit_criteria>
+    <criterion>One-command documented path to run verification.</criterion>
+    <criterion>Runbook sufficient for non-author execution.</criterion>
+  </exit_criteria>
+</phase>
+
+<phase id="6" name="Final Completion Checklist">
+  <goals>
+    <goal>Freeze pilot as the reference implementation and define Layer 2+ backlog (do not implement yet).</goal>
+  </goals>
+  <deliverables>
+    <deliverable>DOC: pilot_baseline_locked.md (hashes/versions/expected outputs)</deliverable>
+    <deliverable>DOC: layer2_plus_backlog.md (Layer 2 plan determinism, Layer 3 sandbox, Layer 4 negative, Layer 5 idempotency)</deliverable>
+  </deliverables>
+  <validation_gates>
+    <gate>
+      <command>python tools/alvt/alvt_cli.py layer0 --trigger FILE_IDENTITY_CREATE &amp;&amp; python tools/alvt/alvt_cli.py layer1 --trigger FILE_IDENTITY_CREATE &amp;&amp; pytest -q</command>
+      <pass_condition>all PASS, exit 0</pass_condition>
+    </gate>
+  </validation_gates>
+  <exit_criteria>
+    <criterion>Pilot declared stable baseline (L0/L1 proven).</criterion>
+    <criterion>Layer 2+ backlog exists but is explicitly deferred.</criterion>
+  </exit_criteria>
+</phase>
+```
+
+</phase_plan>
+
+<next_steps> <step priority="1">Phase 0: lock pilot trigger_id + DoD checklist.</step> <step priority="2">Phase 2: write contract template + pilot contract + validator.</step> <step priority="3">Phase 3: implement ALVT L0/L1 + pytest; add evidence query helpers + run-level events + workspace-safe registry policy.</step> <step priority="4">Phase 4: run/fix loop until two consecutive PASS runs.</step> <step priority="5">Phase 5: add minimal CLI + runbook.</step> <step priority="6">Phase 6: freeze baseline; create Layer 2+ backlog only.</step>
+</next_steps>
+</prompt_template>
+

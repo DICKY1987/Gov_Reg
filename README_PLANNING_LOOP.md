@@ -144,8 +144,8 @@ python src/plan_refine_cli/main.py finalize \
 
 ### Pre-Implementation Checks
 ```bash
-python scripts/validate_dependencies.py  # Check packages
-python scripts/validate_all_schemas.py   # Validate schemas
+python scripts/P_01260207201000000005_validate_dependencies.py  # Check packages
+python scripts/P_01260207201000000004_validate_all_schemas.py   # Validate schemas
 python scripts/check_resources.py        # Check RAM/disk
 python scripts/check_permissions.py      # Check permissions
 ```

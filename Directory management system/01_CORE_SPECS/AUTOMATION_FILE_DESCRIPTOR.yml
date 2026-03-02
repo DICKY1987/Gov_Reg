@@ -1,0 +1,138 @@
+# AUTOMATION_FILE_DESCRIPTOR.yaml
+schema_version: "1.0"
+record_kind: "automation_file_descriptor"
+
+identity:
+  file_id: ""                 # stable id if you have one (16-digit, doc_id, etc.)
+  basename: ""                # script filename
+  relative_path: ""           # repo-relative
+  language: ""                # powershell|python|bash|js|other
+  entrypoint: ""              # main function / CLI command / module entry
+  status: ""                  # active|deprecated|experimental|draft
+  owner: ""                   # person/team/system
+
+purpose:
+  one_line_summary: ""        # what it does in one sentence
+  scope_in: []                # what it is responsible for
+  scope_out: []               # what it explicitly does NOT do
+  primary_user_value: ""      # why this exists
+
+triggering:
+  trigger_modes: []           # manual|scheduled|watcher|event-driven|pipeline
+  triggers:
+    - type: ""                # fs_event|cron|task_scheduler|ci|api|manual
+      condition: ""           # e.g., "on file created in /inbox with .csv"
+      debounce_ms: 0
+      idempotency_key: ""     # how repeats are detected / suppressed
+
+inputs:
+  required_inputs:
+    - name: ""
+      type: ""                # path|string|json|yaml|env|stdin|args
+      source: ""              # cli|env|config|registry|filesystem|network
+      validation: ""          # regex/range/schema rules
+  optional_inputs: []
+  config_files: []            # list of config paths + precedence rules
+  secrets: []                 # secret names + storage mechanism (no secret values)
+
+outputs:
+  primary_outputs:
+    - name: ""
+      type: ""                # file|dir|jsonl|db_row|api_call|log
+      location: ""            # path/pattern/table/topic
+      deterministic_from: []  # inputs/registry fields it derives from
+  side_effects:
+    - description: ""         # e.g., "renames files", "git commit", "sends webhook"
+      reversible: true
+      rollback_method: ""     # how to revert
+
+state_and_ssot:
+  ssot_reads: []              # registries / ssot files read
+  ssot_writes: []             # registries / ssot files written
+  derived_artifacts_written: []
+  state_store: ""             # sqlite|json|none
+  state_keys: []              # run_id, task_id, file_hash, etc.
+
+process:
+  high_level_flow:
+    - step: 1
+      name: ""
+      description: ""
+      input_refs: []
+      output_refs: []
+      failure_modes: []
+  invariants: []              # must always be true (determinism, naming, atomicity)
+
+error_handling:
+  failure_policy: ""          # fail-fast|best-effort|retry|quarantine
+  retries:
+    enabled: true
+    max_attempts: 0
+    backoff: ""               # fixed|exponential
+  quarantine:
+    enabled: true
+    location: ""
+    criteria: ""
+  rollback:
+    supported: true
+    strategy: ""              # transactional|compensating_actions|restore_backup
+
+observability:
+  logging:
+    format: ""                # jsonl|text
+    log_paths: []
+    log_fields_required: []   # run_id, file_id, action, status, duration_ms, error_code
+  metrics: []                 # counters/timers
+  evidence_artifacts: []      # validation reports, diffs, snapshots
+  notifications:
+    channels: []              # console|toast|webhook|email|slack
+    escalation_rules: []
+
+security_and_safety:
+  permissions_needed: []      # filesystem, network, git, admin, etc.
+  allowed_paths: []           # allowlist
+  denied_paths: []            # blocklist
+  destructive_ops: []         # delete/move/overwrite; with safeguards
+  data_handling: ""           # pii? secrets? retention rules?
+
+compatibility:
+  supported_os: []            # windows|linux|mac
+  runtime_requirements: []    # python version, pwsh version, modules, binaries
+  dependencies:
+    internal: []              # other scripts/modules
+    external: []              # libs/tools (git, jq, sqlite, etc.)
+
+execution:
+  commands:
+    run_examples:
+      - name: ""
+        cmd: ""               # exact command line
+        expected_result: ""
+  exit_codes:
+    success: [0]
+    known_errors:
+      - code: 1
+        meaning: ""
+        remediation: ""
+
+testing:
+  acceptance_tests:
+    - id: ""
+      scenario: ""
+      steps: []
+      expected: []
+      evidence_required: []
+  fixtures: []                # sample inputs
+  dry_run_supported: true
+  deterministic_replay: ""     # how to reproduce same run
+
+change_control:
+  version: ""                 # script version or semver
+  last_modified: ""
+  changelog_ref: ""
+  deprecation_plan: ""
+
+related:
+  linked_docs: []
+  linked_modules: []          # module ids
+  related_automations: []     # other automation file_ids

@@ -119,7 +119,7 @@ python validators/validate_population_completeness.py \
 **Files Validated:**
 - Any file specified via `--file` argument
 - `01999000042260124503_governance_registry_unified.json` (root level) - Registry index
-- `scripts/classify_all_files.py` - Classification module
+- `scripts/P_01260207201000000001_classify_all_files.py` - Classification module
 
 **Validation Rules:**
 - File is classified into expected section

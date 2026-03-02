@@ -1082,7 +1082,7 @@
                   "check",
                   "&&",
                   "python",
-                  "scripts/validate_dependencies.py",
+                  "scripts/P_01260207201000000005_validate_dependencies.py",
                   "requirements.txt"
                 ],
                 "timeout_seconds": 600,
@@ -3214,7 +3214,7 @@
                 "validation_command": {
                   "exe": "python",
                   "args": [
-                    "validators/validate_all_schemas.py",
+                    "validators/P_01260207201000000004_validate_all_schemas.py",
                     "--artifacts-dir",
                     "{{ARTIFACTS_DIR}}"
                   ]

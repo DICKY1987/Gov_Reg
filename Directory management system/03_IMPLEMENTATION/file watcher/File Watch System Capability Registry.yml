@@ -1,0 +1,615 @@
+spec_version: "1.0"
+spec_id: "CAPREG_FILE_WATCH_SYSTEM_20260121"
+title: "File Watch System Capability Registry"
+scope: "Capabilities discussed in conversation: watcher core, plugin model, registry integration, safety, observability, integrations."
+schema_notes:
+  - "Each capability is atomic: one main behavior or guarantee."
+  - "levels: must | should | could"
+  - "dependencies list capability_id values (not external tools)."
+  - "test_evidence describes objective proof artifacts or checks."
+
+capabilities:
+
+  - capability_id: "CAP_FS_DETECT_CREATE"
+    category: "filesystem_detection"
+    level: "must"
+    description: "Detect file creation events under configured watch roots."
+    inputs:
+      - "watch_roots[]"
+      - "ignore_patterns[]"
+      - "include_globs[]"
+    outputs:
+      - "event:fs.file_created"
+      - "event_payload:{path, timestamp, root, metadata}"
+    dependencies:
+      - "CAP_EVENT_SCHEMA_CANONICAL"
+      - "CAP_FILTER_IGNORE"
+    test_evidence:
+      - "Create a file in a watched directory; verify JSONL event record contains fs.file_created with correct path."
+      - "Negative test: create file under ignored path; verify no event emitted."
+
+  - capability_id: "CAP_FS_DETECT_MODIFY"
+    category: "filesystem_detection"
+    level: "must"
+    description: "Detect file modification events."
+    inputs:
+      - "watch_roots[]"
+      - "ignore_patterns[]"
+    outputs:
+      - "event:fs.file_modified"
+      - "event_payload:{path, timestamp, metadata}"
+    dependencies:
+      - "CAP_EVENT_SCHEMA_CANONICAL"
+      - "CAP_FILTER_IGNORE"
+    test_evidence:
+      - "Append bytes to an existing file; verify fs.file_modified emitted once after debounce/coalesce."
+
+  - capability_id: "CAP_FS_DETECT_DELETE"
+    category: "filesystem_detection"
+    level: "must"
+    description: "Detect file deletion events."
+    inputs:
+      - "watch_roots[]"
+      - "ignore_patterns[]"
+    outputs:
+      - "event:fs.file_deleted"
+      - "event_payload:{path, timestamp}"
+    dependencies:
+      - "CAP_EVENT_SCHEMA_CANONICAL"
+      - "CAP_FILTER_IGNORE"
+    test_evidence:
+      - "Delete file; verify fs.file_deleted event and registry tombstone/status update if enabled."
+
+  - capability_id: "CAP_FS_DETECT_MOVE_RENAME"
+    category: "filesystem_detection"
+    level: "must"
+    description: "Detect file move/rename (path change) events."
+    inputs:
+      - "watch_roots[]"
+      - "ignore_patterns[]"
+    outputs:
+      - "event:fs.file_moved_or_renamed"
+      - "event_payload:{old_path, new_path, timestamp}"
+    dependencies:
+      - "CAP_EVENT_SCHEMA_CANONICAL"
+      - "CAP_FILTER_IGNORE"
+    test_evidence:
+      - "Rename a file; verify old_path and new_path reported correctly."
+
+  - capability_id: "CAP_WATCH_MULTI_ROOT"
+    category: "filesystem_detection"
+    level: "should"
+    description: "Support multiple watch roots in a single runtime."
+    inputs:
+      - "watch_roots[]"
+    outputs:
+      - "events tagged with root identifier"
+    dependencies:
+      - "CAP_EVENT_SCHEMA_CANONICAL"
+    test_evidence:
+      - "Configure 2 roots; create files in both; verify events include correct root."
+
+  - capability_id: "CAP_WATCH_BACKENDS_OS_AND_POLL"
+    category: "watch_backends"
+    level: "should"
+    description: "Prefer OS events; fallback to polling scan when OS backend unavailable."
+    inputs:
+      - "backend_preference"
+      - "poll_interval_seconds"
+    outputs:
+      - "backend_selected:{os|poll}"
+      - "equivalent fs events emitted"
+    dependencies:
+      - "CAP_FS_DETECT_CREATE"
+      - "CAP_FS_DETECT_MODIFY"
+      - "CAP_FS_DETECT_DELETE"
+      - "CAP_FS_DETECT_MOVE_RENAME"
+    test_evidence:
+      - "Run with OS backend disabled; verify polling backend emits identical event types for same operations."
+
+  - capability_id: "CAP_FILTER_IGNORE"
+    category: "filtering"
+    level: "must"
+    description: "Ignore paths matching configured ignore patterns (e.g., .git)."
+    inputs:
+      - "ignore_patterns[]"
+    outputs:
+      - "filtered_event_stream"
+    dependencies: []
+    test_evidence:
+      - "Create/modify files under ignored patterns; verify no events emitted."
+
+  - capability_id: "CAP_FILTER_INCLUDE_GLOBS"
+    category: "filtering"
+    level: "should"
+    description: "Include only files matching configured glob patterns."
+    inputs:
+      - "include_globs[]"
+    outputs:
+      - "filtered_event_stream"
+    dependencies:
+      - "CAP_FILTER_IGNORE"
+    test_evidence:
+      - "Configure include_globs for *.md; create *.txt and *.md; verify only *.md emits events."
+
+  - capability_id: "CAP_EVENT_SCHEMA_CANONICAL"
+    category: "event_model"
+    level: "must"
+    description: "Emit events using a fixed canonical schema (type + payload)."
+    inputs:
+      - "raw_backend_events"
+    outputs:
+      - "canonical_events"
+    dependencies: []
+    test_evidence:
+      - "Validate emitted events against JSON Schema for canonical event envelope."
+
+  - capability_id: "CAP_DEBOUNCE_COALESCE"
+    category: "event_quality"
+    level: "must"
+    description: "Debounce and coalesce bursts of events into stable actionable batches."
+    inputs:
+      - "canonical_events"
+      - "debounce_ms"
+      - "coalesce_window_ms"
+    outputs:
+      - "event_batches"
+    dependencies:
+      - "CAP_EVENT_SCHEMA_CANONICAL"
+    test_evidence:
+      - "Write a file in multiple small chunks; verify only one batch reaches plugins."
+
+  - capability_id: "CAP_STABILITY_GATE"
+    category: "event_quality"
+    level: "must"
+    description: "Delay processing until a file is stable (not still being written)."
+    inputs:
+      - "candidate_path"
+      - "stability_delay_seconds"
+      - "stability_checks:{mtime,size,hash}"
+    outputs:
+      - "event_payload includes stable:boolean"
+    dependencies:
+      - "CAP_DEBOUNCE_COALESCE"
+    test_evidence:
+      - "Simulate slow write; verify stable=false until content stops changing, then stable=true."
+
+  - capability_id: "CAP_JOURNAL_JSONL_APPEND_ONLY"
+    category: "observability"
+    level: "must"
+    description: "Record all events and actions to an append-only JSONL journal."
+    inputs:
+      - "canonical_events"
+      - "actions_executed"
+    outputs:
+      - "jsonl_journal_path"
+      - "records:{event|action|result}"
+    dependencies:
+      - "CAP_EVENT_SCHEMA_CANONICAL"
+    test_evidence:
+      - "Verify journal grows monotonically; verify records include before/after and reason for actions."
+
+  - capability_id: "CAP_ACTION_PIPELINE_MATCH_PLAN_APPLY_VERIFY_RECORD"
+    category: "execution_model"
+    level: "should"
+    description: "Standardize execution stages: Match → Plan → Apply → Verify → Record."
+    inputs:
+      - "event_batches"
+      - "plugin_rules"
+    outputs:
+      - "planned_actions"
+      - "applied_results"
+      - "verification_results"
+      - "recorded_journal_entries"
+    dependencies:
+      - "CAP_JOURNAL_JSONL_APPEND_ONLY"
+    test_evidence:
+      - "Trigger an action; verify journal contains stage transitions and verification outcome."
+
+  - capability_id: "CAP_PLUGIN_SUBSCRIPTIONS"
+    category: "plugins"
+    level: "must"
+    description: "Plugins declare subscriptions/filters (event types, paths, predicates)."
+    inputs:
+      - "plugin_manifest"
+      - "canonical_events"
+    outputs:
+      - "routed_events_per_plugin"
+    dependencies:
+      - "CAP_EVENT_SCHEMA_CANONICAL"
+      - "CAP_FILTER_IGNORE"
+    test_evidence:
+      - "Register plugin for fs.file_created only; verify it never receives other event types."
+
+  - capability_id: "CAP_PLUGIN_RETURNS_TYPED_ACTIONS"
+    category: "plugins"
+    level: "must"
+    description: "Plugins return typed actions (rename/move/run_command/notify/etc.) instead of arbitrary side effects."
+    inputs:
+      - "event"
+      - "plugin_context"
+    outputs:
+      - "actions[]:{action_type, params, idempotency_key}"
+    dependencies:
+      - "CAP_PLUGIN_SUBSCRIPTIONS"
+      - "CAP_IDEMPOTENCY_KEYS"
+    test_evidence:
+      - "Plugin emits rename action; verify action conforms to action schema and is executed by core."
+
+  - capability_id: "CAP_COMMUNICATION_HUB_MULTI_SINK"
+    category: "communications"
+    level: "should"
+    description: "Centralized communications layer that routes notifications to multiple sinks (user + other programs)."
+    inputs:
+      - "notification_events"
+      - "sink_configs:{console,toast,email,webhook,http,mqtt,named_pipe,db,file_drop}"
+    outputs:
+      - "delivery_results per sink"
+    dependencies:
+      - "CAP_EVENT_SCHEMA_CANONICAL"
+      - "CAP_JOURNAL_JSONL_APPEND_ONLY"
+    test_evidence:
+      - "Emit notify action; verify delivery to configured sink(s) and journaled delivery results."
+
+  - capability_id: "CAP_DRY_RUN_DEFAULT"
+    category: "safety"
+    level: "must"
+    description: "Default to dry-run mode; require explicit flag to apply destructive/mutating actions."
+    inputs:
+      - "cli_flags"
+      - "actions[]"
+    outputs:
+      - "planned_changes_without_apply"
+      - "journal indicates dry_run:true"
+    dependencies:
+      - "CAP_JOURNAL_JSONL_APPEND_ONLY"
+    test_evidence:
+      - "Run without --apply; verify filesystem unchanged and journal lists intended actions."
+
+  - capability_id: "CAP_QUARANTINE_NOT_DELETE"
+    category: "safety"
+    level: "should"
+    description: "Prefer quarantine/relocation over deletion."
+    inputs:
+      - "violation_event"
+      - "quarantine_path"
+    outputs:
+      - "action:move_to_quarantine"
+      - "registry/status update if enabled"
+    dependencies:
+      - "CAP_ACTION_PIPELINE_MATCH_PLAN_APPLY_VERIFY_RECORD"
+    test_evidence:
+      - "Trigger forbidden-file rule; verify file moved to quarantine, not deleted."
+
+  - capability_id: "CAP_ACTION_BUDGETS_BLAST_RADIUS"
+    category: "safety"
+    level: "should"
+    description: "Enforce action budgets (max renames/moves/assignments per run) to limit blast radius."
+    inputs:
+      - "budget_config"
+      - "planned_actions"
+    outputs:
+      - "execution_halted_or_throttled"
+      - "budget_violation_event"
+    dependencies:
+      - "CAP_JOURNAL_JSONL_APPEND_ONLY"
+    test_evidence:
+      - "Set max_renames=1; create 3 files; verify only 1 rename applied and budget violation logged."
+
+  - capability_id: "CAP_LOCKING_SHARED_REGISTRIES"
+    category: "safety"
+    level: "must"
+    description: "Use locks around shared registries/counters to prevent concurrent corruption."
+    inputs:
+      - "registry_path"
+      - "lock_strategy"
+    outputs:
+      - "atomic_registry_updates"
+    dependencies:
+      - "CAP_DRY_RUN_DEFAULT"
+    test_evidence:
+      - "Run two instances; verify no duplicate counter allocation and registry remains valid."
+
+  - capability_id: "CAP_IDEMPOTENCY_KEYS"
+    category: "safety"
+    level: "should"
+    description: "Actions carry idempotency keys to avoid repeat execution on retries/restarts."
+    inputs:
+      - "action"
+      - "state_store"
+    outputs:
+      - "deduplicated_execution"
+    dependencies:
+      - "CAP_STATE_PERSISTENCE_QUEUE"
+    test_evidence:
+      - "Replay same event batch; verify action executes once and subsequent attempts are skipped."
+
+  - capability_id: "CAP_LOOP_PREVENTION"
+    category: "safety"
+    level: "must"
+    description: "Prevent the watcher from re-triggering on its own modifications (self-induced loops)."
+    inputs:
+      - "actions_executed"
+      - "ignore_rules_generated"
+    outputs:
+      - "suppressed_self_events"
+    dependencies:
+      - "CAP_FILTER_IGNORE"
+      - "CAP_IDEMPOTENCY_KEYS"
+    test_evidence:
+      - "Rename file via action; verify resulting fs events do not cause repeated renames."
+
+  - capability_id: "CAP_RETRY_BACKOFF"
+    category: "reliability"
+    level: "should"
+    description: "Retry transient failures with backoff and record outcomes."
+    inputs:
+      - "action"
+      - "retry_policy:{max_attempts, backoff}"
+    outputs:
+      - "event:action_retry"
+      - "final_result"
+    dependencies:
+      - "CAP_JOURNAL_JSONL_APPEND_ONLY"
+    test_evidence:
+      - "Lock a file temporarily; verify retries occur and are journaled."
+
+  - capability_id: "CAP_STATE_PERSISTENCE_QUEUE"
+    category: "reliability"
+    level: "should"
+    description: "Persist queued work/state (e.g., SQLite) for restart-safe processing."
+    inputs:
+      - "event_batches"
+      - "state_db_path"
+    outputs:
+      - "durable_queue_records"
+      - "resume_after_restart"
+    dependencies:
+      - "CAP_JOURNAL_JSONL_APPEND_ONLY"
+    test_evidence:
+      - "Stop process mid-batch; restart; verify batch resumes without duplication."
+
+  - capability_id: "CAP_PERIODIC_RECONCILE_SCAN"
+    category: "reliability"
+    level: "should"
+    description: "Periodic full/partial scans to catch missed events and reconcile state."
+    inputs:
+      - "scan_interval_seconds"
+      - "watch_roots[]"
+    outputs:
+      - "event:scan.started"
+      - "event:scan.entity_updated"
+      - "event:scan.completed"
+    dependencies:
+      - "CAP_EVENT_SCHEMA_CANONICAL"
+      - "CAP_JOURNAL_JSONL_APPEND_ONLY"
+    test_evidence:
+      - "Disable OS events; create file while watcher down; start watcher; verify reconcile scan detects new file."
+
+  - capability_id: "CAP_IDENTITY_PREFIX_ASSIGN"
+    category: "identity"
+    level: "could"
+    description: "Assign deterministic numeric prefix (e.g., 16-digit) to files lacking a prefix."
+    inputs:
+      - "fs.file_created"
+      - "prefix_registry"
+      - "naming_policy"
+    outputs:
+      - "action:rename_with_prefix"
+      - "prefix_registry updated"
+    dependencies:
+      - "CAP_STABILITY_GATE"
+      - "CAP_LOCKING_SHARED_REGISTRIES"
+      - "CAP_DRY_RUN_DEFAULT"
+    test_evidence:
+      - "Create file without prefix; verify planned/applied rename adds prefix and registry increments."
+
+  - capability_id: "CAP_IDENTITY_DOC_ID_ASSIGN"
+    category: "identity"
+    level: "could"
+    description: "Assign DOC_ID on create and update registry accordingly."
+    inputs:
+      - "fs.file_created"
+      - "doc_id_rules"
+      - "registry_write_policy"
+    outputs:
+      - "action:rename_or_metadata_update"
+      - "registry entry created/updated"
+    dependencies:
+      - "CAP_STABILITY_GATE"
+      - "CAP_REGISTRY_WRITE_POLICY_ENFORCE"
+    test_evidence:
+      - "Create new file; verify DOC_ID assigned and registry contains matching record."
+
+  - capability_id: "CAP_REGISTRY_WRITE_POLICY_ENFORCE"
+    category: "registry_integration"
+    level: "must"
+    description: "Enforce registry write policy: tool-owned vs user-patch-only fields; recompute_on_scan/build behaviors."
+    inputs:
+      - "registry_record"
+      - "proposed_updates"
+      - "write_policy"
+    outputs:
+      - "accepted_updates"
+      - "rejected_updates with reasons"
+    dependencies:
+      - "CAP_JOURNAL_JSONL_APPEND_ONLY"
+    test_evidence:
+      - "Attempt to write tool-owned field via patch; verify rejection and logged reason."
+
+  - capability_id: "CAP_REGISTRY_DERIVATION_RECOMPUTE"
+    category: "registry_integration"
+    level: "must"
+    description: "Recompute derived fields based on declared dependency rules when inputs change."
+    inputs:
+      - "registry_record"
+      - "changed_fields[]"
+      - "derivation_rules"
+    outputs:
+      - "updated_derived_fields"
+      - "event:registry.derived_recomputed"
+    dependencies:
+      - "CAP_REGISTRY_WRITE_POLICY_ENFORCE"
+      - "CAP_EVENT_SCHEMA_CANONICAL"
+    test_evidence:
+      - "Change relative_path; verify filename and directory_path recomputed and emitted."
+
+  - capability_id: "CAP_REGISTRY_DERIVED_DRIFT_DETECT"
+    category: "registry_integration"
+    level: "should"
+    description: "Detect mismatches between stored derived values and recomputed values (drift)."
+    inputs:
+      - "registry_record"
+      - "derivation_rules"
+    outputs:
+      - "event:registry.derived_drift_detected"
+      - "optional:auto_fix_action"
+    dependencies:
+      - "CAP_REGISTRY_DERIVATION_RECOMPUTE"
+    test_evidence:
+      - "Manually corrupt derived value; run scan; verify drift event and correction plan."
+
+  - capability_id: "CAP_REGISTRY_NORMALIZATION"
+    category: "registry_integration"
+    level: "should"
+    description: "Normalize fields (path formats, extension casing, rel_type uppercase) during ingest/update."
+    inputs:
+      - "registry_record"
+      - "normalization_rules"
+    outputs:
+      - "normalized_record"
+      - "event:registry.normalize_needed (if changes applied)"
+    dependencies:
+      - "CAP_REGISTRY_WRITE_POLICY_ENFORCE"
+    test_evidence:
+      - "Provide extension with leading dot and uppercase; verify normalized to lowercase without dot."
+
+  - capability_id: "CAP_REGISTRY_MODULE_ASSIGNMENT"
+    category: "registry_integration"
+    level: "should"
+    description: "Compute module_id using precedence override > manifest > path_rule; emit module assignment change events."
+    inputs:
+      - "registry_record"
+      - "module_id_override"
+      - "manifest_data"
+      - "path_rules"
+    outputs:
+      - "module_id"
+      - "event:registry.module_assignment_changed"
+    dependencies:
+      - "CAP_REGISTRY_DERIVATION_RECOMPUTE"
+    test_evidence:
+      - "Set override; verify module_id uses override and change event emitted."
+
+  - capability_id: "CAP_REGISTRY_PROCESS_MAPPING_VALIDATE"
+    category: "registry_integration"
+    level: "could"
+    description: "Validate process mappings against process registry; enforce 'all three or none' rule."
+    inputs:
+      - "registry_record:{process_id,step_id,role}"
+      - "process_registry"
+    outputs:
+      - "event:registry.process_validation_failed (on failure)"
+      - "validation_passed:boolean"
+    dependencies:
+      - "CAP_REGISTRY_WRITE_POLICY_ENFORCE"
+    test_evidence:
+      - "Set process_id without step/role; verify validation failure event."
+
+  - capability_id: "CAP_REGISTRY_STATUS_TRANSITIONS"
+    category: "registry_integration"
+    level: "could"
+    description: "Enforce allowed status transitions; emit accept/reject events."
+    inputs:
+      - "registry_record:{status}"
+      - "requested_status"
+      - "status_transition_rules"
+    outputs:
+      - "event:registry.status_change_requested"
+      - "event:registry.status_change_rejected_invalid_transition (on reject)"
+    dependencies:
+      - "CAP_REGISTRY_WRITE_POLICY_ENFORCE"
+    test_evidence:
+      - "Attempt invalid status transition; verify reject event and no mutation."
+
+  - capability_id: "CAP_TTL_EXPIRATION"
+    category: "lifecycle"
+    level: "could"
+    description: "Compute expires_utc from created_utc + ttl_seconds and emit expiring/expired events."
+    inputs:
+      - "registry_record:{created_utc, ttl_seconds}"
+      - "clock"
+    outputs:
+      - "event:transient.expiring_soon"
+      - "event:transient.expired"
+    dependencies:
+      - "CAP_REGISTRY_DERIVATION_RECOMPUTE"
+      - "CAP_PERIODIC_RECONCILE_SCAN"
+    test_evidence:
+      - "Create record with ttl_seconds=5; verify expiring/expired events emitted at correct times."
+
+  - capability_id: "CAP_BUILD_TRACEABILITY"
+    category: "build"
+    level: "could"
+    description: "Emit build started/completed events with source_registry_hash and output_hash for traceability."
+    inputs:
+      - "generator_id"
+      - "source_registry_hash"
+      - "output_hash"
+    outputs:
+      - "event:build.started"
+      - "event:build.completed"
+    dependencies:
+      - "CAP_JOURNAL_JSONL_APPEND_ONLY"
+      - "CAP_COMMUNICATION_HUB_MULTI_SINK"
+    test_evidence:
+      - "Run generator; verify build events contain correct hashes and linkable evidence paths."
+
+  - capability_id: "CAP_GIT_AUTOMATION_PIPELINE"
+    category: "git_integration"
+    level: "could"
+    description: "Automate pull → stage → commit → push with plugin gating and conflict events."
+    inputs:
+      - "repo_path"
+      - "remote"
+      - "branch"
+      - "events"
+    outputs:
+      - "git_ops_results"
+      - "event:git.conflict_detected (if conflict)"
+    dependencies:
+      - "CAP_PLUGIN_SUBSCRIPTIONS"
+      - "CAP_JOURNAL_JSONL_APPEND_ONLY"
+    test_evidence:
+      - "Modify a file; verify it is staged+committed with expected message when apply enabled; verify conflict event on simulated conflict."
+
+  - capability_id: "CAP_SERVICE_MODE"
+    category: "operations"
+    level: "could"
+    description: "Run as a background service/daemon."
+    inputs:
+      - "service_config"
+    outputs:
+      - "service_health_status"
+      - "journal continues across sessions"
+    dependencies:
+      - "CAP_STATE_PERSISTENCE_QUEUE"
+      - "CAP_JOURNAL_JSONL_APPEND_ONLY"
+    test_evidence:
+      - "Start service; reboot; verify it resumes and processes queued events."
+
+  - capability_id: "CAP_UI_RULE_BUILDER"
+    category: "operations"
+    level: "could"
+    description: "Provide GUI rule builder to create/enable/disable ordered rules and view status."
+    inputs:
+      - "rule_definitions"
+      - "plugin_catalog"
+    outputs:
+      - "serialized_rule_config"
+      - "ui_audit_changes"
+    dependencies:
+      - "CAP_PLUGIN_SUBSCRIPTIONS"
+      - "CAP_COMMUNICATION_HUB_MULTI_SINK"
+    test_evidence:
+      - "Create a rule via UI; verify config updated and rule is applied to subsequent events."

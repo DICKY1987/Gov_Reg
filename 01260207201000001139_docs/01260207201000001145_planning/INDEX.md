@@ -209,7 +209,7 @@
 
 ### Week 1 Gate:
 - **Friday EOD**: All 12 schemas must validate
-- **Command**: `python scripts/validate_all_schemas.py`
+- **Command**: `python scripts/P_01260207201000000004_validate_all_schemas.py`
 - **Evidence**: `.planning_loop_state/evidence/PH-01/STEP-001/schema_validation.json`
 
 ---

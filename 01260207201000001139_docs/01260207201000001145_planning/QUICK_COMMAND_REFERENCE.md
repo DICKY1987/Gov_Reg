@@ -98,7 +98,7 @@ python scripts/run_all_gates.py --plan-file planning_runs/final-test-001/99_fina
 python -c "import jsonschema, json; jsonschema.Draft202012Validator(json.load(open('schemas/PLAN.schema.json')))"
 
 # All schemas
-python scripts/validate_all_schemas.py
+python scripts/P_01260207201000000004_validate_all_schemas.py
 ```
 
 ### Check Plan Consistency:
@@ -380,7 +380,7 @@ python scripts/validate_final_package.py planning_runs/$RUN_ID/99_final/
 
 ### Week 1 (Schemas):
 ```bash
-python scripts/validate_all_schemas.py
+python scripts/P_01260207201000000004_validate_all_schemas.py
 # Expect: All 12 schemas valid
 ```
 
