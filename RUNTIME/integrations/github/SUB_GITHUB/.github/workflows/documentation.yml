@@ -1,0 +1,149 @@
+name: Documentation Validation
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'scripts/generate_doc_index.py'
+      - 'scripts/generate_implementation_map.py'
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - 'scripts/generate_doc_index.py'
+      - 'scripts/generate_implementation_map.py'
+  workflow_dispatch:
+
+jobs:
+  validate-docs:
+    name: Validate Documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # No external dependencies required for these scripts
+
+      - name: Generate documentation index
+        run: |
+          python scripts/generate_doc_index.py --output docs/DOCUMENTATION_INDEX_GENERATED.md
+
+      - name: Check for broken links
+        run: |
+          python scripts/generate_doc_index.py --fail-on-broken-links
+        continue-on-error: true
+
+      - name: Generate implementation map
+        run: |
+          python scripts/generate_implementation_map.py --output docs/IMPLEMENTATION_LOCATIONS_GENERATED.md
+
+      - name: Check for documentation changes
+        id: check-changes
+        run: |
+          if [ -f "docs/DOCUMENTATION_INDEX.md" ]; then
+            # Compare generated with existing (ignore timestamps)
+            diff -I "Last Updated" -I "Last Generated" \
+              docs/DOCUMENTATION_INDEX.md docs/DOCUMENTATION_INDEX_GENERATED.md > /dev/null
+            INDEX_CHANGED=$?
+          else
+            INDEX_CHANGED=1
+          fi
+
+          if [ -f "docs/IMPLEMENTATION_LOCATIONS.md" ]; then
+            diff -I "Last Updated" -I "Last Generated" \
+              docs/IMPLEMENTATION_LOCATIONS.md docs/IMPLEMENTATION_LOCATIONS_GENERATED.md > /dev/null
+            IMPL_CHANGED=$?
+          else
+            IMPL_CHANGED=1
+          fi
+
+          echo "index_changed=$INDEX_CHANGED" >> $GITHUB_OUTPUT
+          echo "impl_changed=$IMPL_CHANGED" >> $GITHUB_OUTPUT
+
+      - name: Comment on PR if documentation is outdated
+        if: github.event_name == 'pull_request' && (steps.check-changes.outputs.index_changed != '0' || steps.check-changes.outputs.impl_changed != '0')
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+
+            let comment = '## 📚 Documentation Update Needed\n\n';
+            comment += 'The documentation index or implementation map is outdated. ';
+            comment += 'Please regenerate by running:\n\n';
+            comment += '```bash\n';
+
+            if ('${{ steps.check-changes.outputs.index_changed }}' != '0') {
+              comment += 'python scripts/generate_doc_index.py\n';
+            }
+
+            if ('${{ steps.check-changes.outputs.impl_changed }}' != '0') {
+              comment += 'python scripts/generate_implementation_map.py\n';
+            }
+
+            comment += '```\n\n';
+            comment += 'Then commit the updated files.';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Upload generated documentation
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: generated-documentation
+          path: |
+            docs/DOCUMENTATION_INDEX_GENERATED.md
+            docs/IMPLEMENTATION_LOCATIONS_GENERATED.md
+          retention-days: 7
+
+      - name: Fail if documentation is outdated on main
+        if: github.ref == 'refs/heads/main' && (steps.check-changes.outputs.index_changed != '0' || steps.check-changes.outputs.impl_changed != '0')
+        run: |
+          echo "❌ Documentation is outdated on main branch!"
+          echo "Run the following commands to update:"
+          if [ "${{ steps.check-changes.outputs.index_changed }}" != "0" ]; then
+            echo "  python scripts/generate_doc_index.py"
+          fi
+          if [ "${{ steps.check-changes.outputs.impl_changed }}" != "0" ]; then
+            echo "  python scripts/generate_implementation_map.py"
+          fi
+          exit 1
+
+  validate-links:
+    name: Validate Documentation Links
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+
+      - name: Check for broken internal links
+        run: |
+          echo "Checking for broken markdown links..."
+          python scripts/generate_doc_index.py --fail-on-broken-links
+        continue-on-error: true
+
+      - name: Report broken links
+        if: failure()
+        run: |
+          echo "⚠️ Broken links detected. See job output for details."
+          echo "Run 'python scripts/generate_doc_index.py' locally to see the full report."

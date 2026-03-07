@@ -1,0 +1,256 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://acms.local/schemas/pattern_spec.schema.json",
+  "title": "Pattern Specification Schema",
+  "description": "Schema for ACMS/MINI_PIPE execution pattern specifications",
+  "type": "object",
+  "required": [
+    "pattern_id",
+    "version",
+    "description",
+    "category",
+    "executor",
+    "guardrails"
+  ],
+  "properties": {
+    "pattern_id": {
+      "type": "string",
+      "pattern": "^[a-z_][a-z0-9_]*$",
+      "description": "Unique pattern identifier (snake_case)"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version (e.g., 1.0.0)"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 500,
+      "description": "Human-readable description of what this pattern does"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "code_creation",
+        "code_modification",
+        "validation",
+        "git_management",
+        "recovery",
+        "planning",
+        "testing",
+        "deployment"
+      ],
+      "description": "Pattern category for organization"
+    },
+    "stability": {
+      "type": "string",
+      "enum": ["alpha", "beta", "stable", "deprecated"],
+      "default": "stable",
+      "description": "Pattern stability level"
+    },
+    "executor": {
+      "type": "string",
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_.]*$",
+      "description": "Executor function (module.function format)"
+    },
+    "schema_path": {
+      "type": "string",
+      "description": "Path to JSON schema for task inputs"
+    },
+    "requires_patterns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Other patterns that must be available for this pattern to work"
+    },
+    "guardrails": {
+      "type": "object",
+      "required": [
+        "allowed_tools",
+        "path_scope",
+        "required_prechecks",
+        "required_postchecks",
+        "forbidden_operations"
+      ],
+      "properties": {
+        "allowed_tools": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "List of tool_ids this pattern is allowed to use"
+        },
+        "path_scope": {
+          "type": "object",
+          "required": ["include", "exclude"],
+          "properties": {
+            "include": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Glob patterns for paths this pattern CAN touch"
+            },
+            "exclude": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Glob patterns for paths this pattern CANNOT touch"
+            }
+          },
+          "description": "Path scope restrictions"
+        },
+        "max_changes": {
+          "type": "object",
+          "properties": {
+            "files": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Maximum number of files this pattern can modify"
+            },
+            "lines": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Maximum lines of code changed"
+            },
+            "hunks": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Maximum patch hunks"
+            },
+            "renames": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Maximum number of renames"
+            },
+            "worktrees": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Maximum worktrees created"
+            }
+          },
+          "description": "Quantitative limits on changes"
+        },
+        "required_prechecks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Checks that MUST pass before pattern execution"
+        },
+        "required_postchecks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Checks that MUST pass after pattern execution"
+        },
+        "forbidden_operations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Operations this pattern is NEVER allowed to do"
+        },
+        "requires_manual_review": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether this pattern requires manual approval before execution"
+        },
+        "timeout_minutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60,
+          "default": 30,
+          "description": "Maximum execution time in minutes"
+        }
+      },
+      "description": "Guardrails for this pattern"
+    },
+    "inputs": {
+      "type": "object",
+      "description": "Expected input parameters (schema reference in schema_path)"
+    },
+    "outputs": {
+      "type": "object",
+      "description": "Expected output structure"
+    },
+    "examples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "inputs": {
+            "type": "object"
+          },
+          "expected_outcome": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Usage examples"
+    },
+    "failure_modes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["mode", "recovery_pattern"],
+        "properties": {
+          "mode": {
+            "type": "string",
+            "description": "Name of failure mode"
+          },
+          "description": {
+            "type": "string"
+          },
+          "recovery_pattern": {
+            "type": "string",
+            "description": "Pattern ID to trigger for recovery"
+          }
+        }
+      },
+      "description": "Known failure modes and their recovery patterns"
+    },
+    "tests": {
+      "type": "object",
+      "properties": {
+        "unit_tests": {
+          "type": "string",
+          "description": "Path to unit tests for this pattern"
+        },
+        "integration_tests": {
+          "type": "string",
+          "description": "Path to integration tests"
+        }
+      },
+      "description": "Test coverage for this pattern"
+    },
+    "changelog": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["version", "date", "changes"],
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "changes": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Version history"
+    }
+  }
+}

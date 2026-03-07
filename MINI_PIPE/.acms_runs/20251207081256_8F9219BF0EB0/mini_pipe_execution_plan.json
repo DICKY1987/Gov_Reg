@@ -1,0 +1,26 @@
+{
+  "version": "1.0",
+  "run_id": "20251207081256_8F9219BF0EB0",
+  "generated_at": "2025-12-07T08:12:56.738381+00:00",
+  "tasks": [
+    {
+      "task_id": "ws-acms-20251207081256_8F9219BF0EB0-001-task-001",
+      "pattern_id": "generic_fix",
+      "operation_kind": "EXEC-AIDER-EDIT",
+      "file_scope": [],
+      "dependencies": [],
+      "inputs": {
+        "gap_id": "GAP_0001",
+        "description": "Placeholder gap for testing pipeline",
+        "severity": "low",
+        "category": "testing"
+      },
+      "timeout_seconds": 1800,
+      "metadata": {
+        "gap_source": "ACMS",
+        "gap_category": "testing"
+      }
+    }
+  ],
+  "workstreams_dir": ".acms_runs\\20251207081256_8F9219BF0EB0\\workstreams"
+}

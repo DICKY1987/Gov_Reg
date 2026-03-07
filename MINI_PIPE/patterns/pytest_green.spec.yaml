@@ -1,0 +1,138 @@
+# Pattern Specification: pytest_green
+# Run pytest and verify all tests pass
+
+pattern_id: pytest_green
+version: "1.0.0"
+description: "Execute pytest and verify all tests pass with acceptable coverage"
+category: validation
+stability: stable
+executor: "MINI_PIPE_executor.execute_pytest_green"
+schema_path: "schemas/pytest_green.schema.json"
+
+requires_patterns: []
+
+guardrails:
+  allowed_tools:
+    - pytest
+    - coverage_report
+  
+  path_scope:
+    include:
+      - "**/*"  # Can read entire codebase
+    exclude: []
+  
+  max_changes:
+    files: 0  # Read-only pattern
+  
+  required_prechecks:
+    - pytest_installed          # pytest must be available
+    - tests_exist              # At least one test file exists
+    - python_env_active        # Python environment activated
+  
+  required_postchecks:
+    - all_tests_passed         # All tests must pass
+    - exit_code_zero           # Exit code must be 0
+    - no_errors_reported       # No error messages in output
+  
+  forbidden_operations:
+    - modify_files
+    - delete_files
+    - git_commit
+    - git_push
+    - modify_pattern_index
+  
+  requires_manual_review: false
+  timeout_minutes: 15
+
+inputs:
+  test_path:
+    type: string
+    required: false
+    default: "tests/"
+    description: "Path to tests to run"
+  
+  markers:
+    type: array
+    items:
+      type: string
+    required: false
+    description: "Pytest markers to filter tests (e.g., ['unit', 'fast'])"
+  
+  coverage_threshold:
+    type: integer
+    required: false
+    default: 0
+    minimum: 0
+    maximum: 100
+    description: "Minimum coverage percentage required"
+  
+  verbose:
+    type: boolean
+    required: false
+    default: false
+    description: "Verbose output"
+
+outputs:
+  tests_run:
+    type: integer
+    description: "Number of tests executed"
+  
+  tests_passed:
+    type: integer
+    description: "Number of tests that passed"
+  
+  tests_failed:
+    type: integer
+    description: "Number of tests that failed"
+  
+  coverage_percent:
+    type: number
+    description: "Code coverage percentage"
+  
+  exit_code:
+    type: integer
+    description: "Pytest exit code"
+  
+  output:
+    type: string
+    description: "Full pytest output"
+
+examples:
+  - description: "Run all tests"
+    inputs:
+      test_path: "tests/"
+    expected_outcome: "All tests pass"
+  
+  - description: "Run only unit tests with coverage"
+    inputs:
+      test_path: "tests/"
+      markers: ["unit"]
+      coverage_threshold: 80
+      verbose: true
+    expected_outcome: "Unit tests pass with 80%+ coverage"
+
+failure_modes:
+  - mode: "tests_failed"
+    description: "One or more tests failed"
+    recovery_pattern: "self_heal"
+  
+  - mode: "pytest_not_found"
+    description: "pytest not installed or not in PATH"
+    recovery_pattern: "rollback"
+  
+  - mode: "no_tests_found"
+    description: "No tests found in specified path"
+    recovery_pattern: "rollback"
+  
+  - mode: "coverage_below_threshold"
+    description: "Coverage below required threshold"
+    recovery_pattern: "self_heal"
+
+tests:
+  unit_tests: "tests/test_pytest_green.py"
+  integration_tests: "tests/integration/test_pytest_green_workflow.py"
+
+changelog:
+  - version: "1.0.0"
+    date: "2025-12-07"
+    changes: "Initial pattern specification with guardrails"

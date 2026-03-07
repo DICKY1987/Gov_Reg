@@ -1,0 +1,110 @@
+# Path Index - Authoritative registry of important paths
+# All ACMS/MINI_PIPE modules MUST use path keys instead of hardcoded paths
+# Reference: UET_PATH_ABSTRACTION_LAYER.md
+
+meta:
+  version: "1.0.0"
+  description: "Path indirection layer for ACMS/MINI_PIPE"
+  last_updated: "2025-12-07"
+
+# ACMS paths
+acms:
+  docs:
+    controller_spec: "docs/specs/ACMS_CONTROLLER_SPEC.md"
+    implementation_guide: "ACMS_IMPLEMENTATION_GUIDE.md"
+    quick_start: "ACMS_QUICK_START.md"
+    file_index: "ACMS_FILE_INDEX.md"
+  
+  schemas:
+    gap_record: "schemas/gap_record.schema.json"
+    run_status: "schemas/run_status.schema.json"
+    workstream: "schemas/workstream_definition.schema.json"
+    uet_workstream: "schemas/uet_workstream.schema.json"
+  
+  modules:
+    controller: "acms_controller.py"
+    ai_adapter: "acms_ai_adapter.py"
+    minipipe_adapter: "acms_minipipe_adapter.py"
+    golden_path: "acms_golden_path.py"
+    show_run: "acms_show_run.py"
+  
+  runtime:
+    runs_dir: ".acms_runs"
+    state_dir: ".state/acms"
+    logs_dir: "logs/acms"
+
+# MINI_PIPE paths
+mini_pipe:
+  docs:
+    core_components: "MINI_PIPE_CORE_COMPONENTS.md"
+    process_steps: "MINI_PIPE_Process steps.txt"
+  
+  modules:
+    orchestrator: "MINI_PIPE_orchestrator.py"
+    executor: "MINI_PIPE_executor.py"
+    scheduler: "MINI_PIPE_scheduler.py"
+    router: "MINI_PIPE_router.py"
+    tools: "MINI_PIPE_tools.py"
+    process_spawner: "MINI_PIPE_process_spawner.py"
+    retry: "MINI_PIPE_retry.py"
+    recovery: "MINI_PIPE_recovery.py"
+    circuit_breaker: "MINI_PIPE_circuit_breaker.py"
+    patch_ledger: "MINI_PIPE_patch_ledger.py"
+  
+  runtime:
+    state_dir: ".state/mini_pipe"
+    logs_dir: "logs/mini_pipe"
+
+# Workstream & Pattern paths
+workstreams:
+  spec:
+    uet: "docs/specs/UET_WORKSTREAM_SPEC.md"
+  
+  runtime:
+    plans_dir: ".acms_runs/{run_id}/workstreams"
+    execution_logs: ".acms_runs/{run_id}/logs"
+
+patterns:
+  index: "PATTERN_INDEX.yaml"
+  specs_dir: "patterns"
+  anti_patterns_dir: "anti_patterns"
+
+# Tool contracts & profiles
+tools:
+  contracts:
+    aider: "docs/specs/DOC_AIDER_CONTRACT.md"
+    uet_submodule_io: "contracts/uet_submodule_io_contracts.py"
+  
+  profiles:
+    config: "config/tool_profiles.json"
+
+# Gap analysis paths
+gaps:
+  registry: "gap_registry.py"
+  planner: "execution_planner.py"
+  runtime:
+    reports_dir: ".acms_runs/{run_id}/gaps"
+
+# Guardrails paths
+guardrails:
+  docs:
+    readme: "GUARDRAILS_README.md"
+    quickstart: "GUARDRAILS_QUICKSTART.md"
+    delivery: "GUARDRAILS_DELIVERY.md"
+  
+  module: "guardrails.py"
+
+# Schemas & Validation
+schemas:
+  root: "schemas"
+  pattern_spec: "schemas/pattern_spec.schema.json"
+  execution_plan: "schemas/minipipe_execution_plan.schema.json"
+
+# System invariants
+system:
+  invariants: "SYSTEM_INVARIANTS.md"
+  
+# Configuration
+config:
+  root: "config"
+  path_index: "config/path_index.yaml"

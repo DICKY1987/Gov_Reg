@@ -1,0 +1,3805 @@
+{
+  "metadata": {
+    "generated_at": "2025-12-18T15:31:04.390692",
+    "source_schema": "C:\\Users\\richg\\ALL_AI\\PROCESS_STEP_LIB\\schemas\\unified\\PFA_E2E_WITH_FILES.yaml",
+    "total_steps": 274,
+    "total_waves": 9,
+    "has_cycles": false,
+    "critical_path_duration": 8.0
+  },
+  "nodes": [
+    {
+      "step_id": "E2E-1-004",
+      "name": "Validate Directory Structure",
+      "phase": "1_BOOTSTRAP",
+      "operation_kind": "initialization",
+      "dependencies": []
+    },
+    {
+      "step_id": "E2E-1-005",
+      "name": "Initialize Pattern Database",
+      "phase": "1_BOOTSTRAP",
+      "operation_kind": "initialization",
+      "dependencies": []
+    },
+    {
+      "step_id": "E2E-1-006",
+      "name": "Load Pattern Registry",
+      "phase": "1_BOOTSTRAP",
+      "operation_kind": "initialization",
+      "dependencies": []
+    },
+    {
+      "step_id": "E2E-1-007",
+      "name": "Load Glossary Metadata",
+      "phase": "1_BOOTSTRAP",
+      "operation_kind": "initialization",
+      "dependencies": []
+    },
+    {
+      "step_id": "E2E-1-008",
+      "name": "Validate Directory Structure",
+      "phase": "1_BOOTSTRAP",
+      "operation_kind": "initialization",
+      "dependencies": []
+    },
+    {
+      "step_id": "E2E-1-009",
+      "name": "Load Governance Policies",
+      "phase": "1_BOOTSTRAP",
+      "operation_kind": "initialization",
+      "dependencies": []
+    },
+    {
+      "step_id": "E2E-1-001",
+      "name": "Initialize Master Orchestrator",
+      "phase": "1_BOOTSTRAP",
+      "operation_kind": "initialization",
+      "dependencies": []
+    },
+    {
+      "step_id": "E2E-1-002",
+      "name": "Validate Prerequisites",
+      "phase": "1_BOOTSTRAP",
+      "operation_kind": "initialization",
+      "dependencies": []
+    },
+    {
+      "step_id": "E2E-1-003",
+      "name": "Ensure Directory Structure",
+      "phase": "1_BOOTSTRAP",
+      "operation_kind": "initialization",
+      "dependencies": []
+    },
+    {
+      "step_id": "E2E-1-010",
+      "name": "User invokes ACMS controller",
+      "phase": "1_BOOTSTRAP",
+      "operation_kind": "task_execution",
+      "dependencies": []
+    },
+    {
+      "step_id": "E2E-1-011",
+      "name": "acms_controller parses CLI arguments",
+      "phase": "1_BOOTSTRAP",
+      "operation_kind": "task_execution",
+      "dependencies": []
+    },
+    {
+      "step_id": "E2E-1-012",
+      "name": "acms_controller generates run_id (ULID format)",
+      "phase": "1_BOOTSTRAP",
+      "operation_kind": "task_execution",
+      "dependencies": []
+    },
+    {
+      "step_id": "E2E-1-013",
+      "name": "acms_controller creates run directory structure",
+      "phase": "1_BOOTSTRAP",
+      "operation_kind": "initialization",
+      "dependencies": []
+    },
+    {
+      "step_id": "E2E-1-014",
+      "name": "acms_controller initializes run ledger (JSONL append-only log)",
+      "phase": "1_BOOTSTRAP",
+      "operation_kind": "initialization",
+      "dependencies": []
+    },
+    {
+      "step_id": "E2E-1-015",
+      "name": "acms_controller creates top-level run record",
+      "phase": "1_BOOTSTRAP",
+      "operation_kind": "initialization",
+      "dependencies": []
+    },
+    {
+      "step_id": "E2E-1-016",
+      "name": "acms_controller initializes core components",
+      "phase": "1_BOOTSTRAP",
+      "operation_kind": "initialization",
+      "dependencies": []
+    },
+    {
+      "step_id": "E2E-1-017",
+      "name": "GUARDRAILS INITIALIZATION (if enabled)",
+      "phase": "1_BOOTSTRAP",
+      "operation_kind": "guardrail_check",
+      "dependencies": []
+    },
+    {
+      "step_id": "E2E-1-018",
+      "name": "acms_controller logs state transition to GAP_ANALYSIS",
+      "phase": "1_BOOTSTRAP",
+      "operation_kind": "state_transition",
+      "dependencies": []
+    },
+    {
+      "step_id": "E2E-1-019",
+      "name": "CHECKPOINT - INIT phase complete",
+      "phase": "1_BOOTSTRAP",
+      "operation_kind": "state_transition",
+      "dependencies": []
+    },
+    {
+      "step_id": "E2E-2-007",
+      "name": "Create Term Proposal",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "term_proposal",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-2-008",
+      "name": "Check for Duplicates",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "cross_reference_validation",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-2-009",
+      "name": "acms_controller loads gap analysis configuration",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "gap_discovery",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-2-010",
+      "name": "acms_controller assembles gap analysis request payload",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "gap_discovery",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-2-011",
+      "name": "acms_controller calls AI adapter to perform gap discovery",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "gap_discovery",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-2-012",
+      "name": "AI adapter executes gap analysis prompts",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "gap_discovery",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-2-013",
+      "name": "AI adapter returns structured JSON results",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-2-014",
+      "name": "acms_controller validates gap analysis JSON",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "gap_discovery",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-2-015",
+      "name": "acms_controller writes raw gap analysis report to disk",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "gap_discovery",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-2-016",
+      "name": "acms_controller passes validated gap report to gap_registry",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "summary_generation",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-2-017",
+      "name": "gap_registry normalizes raw findings into canonical GapRecord objects",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "gap_discovery",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-2-018",
+      "name": "gap_registry persists normalized gaps",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "gap_normalization",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-2-019",
+      "name": "gap_registry returns in-memory view of gaps",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-2-020",
+      "name": "acms_controller logs gap discovery completion",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "gap_discovery",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-2-021",
+      "name": "CHECKPOINT - GAP_ANALYSIS phase complete",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "state_transition",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-2-022",
+      "name": "If mode == \"analyze_only\", skip to DONE state",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-2-006",
+      "name": "Mine AI Tool Logs",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "ai_log_mining",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-2-001",
+      "name": "Discover Phase Plans",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "phase_discovery",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-2-002",
+      "name": "Scan Pattern Specifications",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "pattern_discovery",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-2-003",
+      "name": "Discover Executors",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "pattern_discovery",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-2-004",
+      "name": "Detect Duplicates",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "pattern_validation",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-2-005",
+      "name": "Score Pattern Staleness",
+      "phase": "2_DISCOVERY",
+      "operation_kind": "pattern_validation",
+      "dependencies": [
+        "E2E-1-019"
+      ]
+    },
+    {
+      "step_id": "E2E-3-011",
+      "name": "Generate Pattern Specifications",
+      "phase": "3_DESIGN",
+      "operation_kind": "pattern_generation",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-012",
+      "name": "Generate Documentation Suite",
+      "phase": "3_DESIGN",
+      "operation_kind": "doc_suite_generation",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-018",
+      "name": "acms_controller logs state transition to PLANNING",
+      "phase": "3_DESIGN",
+      "operation_kind": "state_transition",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-019",
+      "name": "acms_controller calls execution_planner with normalized gaps",
+      "phase": "3_DESIGN",
+      "operation_kind": "gap_normalization",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-020",
+      "name": "execution_planner clusters gaps into workstreams",
+      "phase": "3_DESIGN",
+      "operation_kind": "planning",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-021",
+      "name": "execution_planner assigns priority scores to workstreams",
+      "phase": "3_DESIGN",
+      "operation_kind": "planning",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-022",
+      "name": "execution_planner orders workstreams by priority",
+      "phase": "3_DESIGN",
+      "operation_kind": "planning",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-023",
+      "name": "execution_planner generates workstream metadata",
+      "phase": "3_DESIGN",
+      "operation_kind": "planning",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-024",
+      "name": "execution_planner validates workstreams",
+      "phase": "3_DESIGN",
+      "operation_kind": "planning",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-025",
+      "name": "execution_planner returns structured workstream definitions",
+      "phase": "3_DESIGN",
+      "operation_kind": "planning",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-026",
+      "name": "acms_controller saves workstreams to disk",
+      "phase": "3_DESIGN",
+      "operation_kind": "planning",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-027",
+      "name": "GUARDRAILS: Increment planning_attempts counter",
+      "phase": "3_DESIGN",
+      "operation_kind": "guardrail_check",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-028",
+      "name": "acms_controller logs planning completion",
+      "phase": "3_DESIGN",
+      "operation_kind": "event_emission",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-029",
+      "name": "acms_controller calls phase_plan_compiler with workstreams",
+      "phase": "3_DESIGN",
+      "operation_kind": "planning",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-030",
+      "name": "phase_plan_compiler transforms workstreams into MINI_PIPE tasks",
+      "phase": "3_DESIGN",
+      "operation_kind": "planning",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-031",
+      "name": "GUARDRAILS: Validate pattern_ids in task metadata",
+      "phase": "3_DESIGN",
+      "operation_kind": "guardrail_check",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-032",
+      "name": "phase_plan_compiler builds task dependency graph",
+      "phase": "3_DESIGN",
+      "operation_kind": "plan_compilation",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-033",
+      "name": "phase_plan_compiler creates MINI_PIPE execution plan",
+      "phase": "3_DESIGN",
+      "operation_kind": "plan_compilation",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-034",
+      "name": "phase_plan_compiler validates execution plan",
+      "phase": "3_DESIGN",
+      "operation_kind": "plan_compilation",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-035",
+      "name": "phase_plan_compiler writes MINI_PIPE execution plan to disk",
+      "phase": "3_DESIGN",
+      "operation_kind": "plan_compilation",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-036",
+      "name": "GUARDRAILS: Check for AP_PLANNING_LOOP anti-pattern",
+      "phase": "3_DESIGN",
+      "operation_kind": "guardrail_check",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-037",
+      "name": "acms_controller logs plan generation completion",
+      "phase": "3_DESIGN",
+      "operation_kind": "event_emission",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-038",
+      "name": "CHECKPOINT - PLANNING phase complete",
+      "phase": "3_DESIGN",
+      "operation_kind": "state_transition",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-039",
+      "name": "If mode == \"plan_only\", skip to DONE state",
+      "phase": "3_DESIGN",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-001",
+      "name": "Invoke Workstream Converter",
+      "phase": "3_DESIGN",
+      "operation_kind": "workstream_conversion",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-002",
+      "name": "Parse Phase Plan YAML",
+      "phase": "3_DESIGN",
+      "operation_kind": "workstream_conversion",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-003",
+      "name": "Convert to Workstream JSON",
+      "phase": "3_DESIGN",
+      "operation_kind": "workstream_conversion",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-004",
+      "name": "Write Workstream JSON File",
+      "phase": "3_DESIGN",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-008",
+      "name": "Cluster Similar Requests",
+      "phase": "3_DESIGN",
+      "operation_kind": "similarity_detection",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-009",
+      "name": "Calculate Confidence Scores",
+      "phase": "3_DESIGN",
+      "operation_kind": "similarity_detection",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-010",
+      "name": "Detect Anti-Patterns",
+      "phase": "3_DESIGN",
+      "operation_kind": "self_healing",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-013",
+      "name": "Enrich Term Metadata",
+      "phase": "3_DESIGN",
+      "operation_kind": "term_update",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-014",
+      "name": "Verify Implementation Paths",
+      "phase": "3_DESIGN",
+      "operation_kind": "cross_reference_validation",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-005",
+      "name": "Load Workstream JSON Files",
+      "phase": "3_DESIGN",
+      "operation_kind": "dag_resolution",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-006",
+      "name": "Construct Dependency DAG",
+      "phase": "3_DESIGN",
+      "operation_kind": "dag_resolution",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-007",
+      "name": "Topological Sort and Execution Order",
+      "phase": "3_DESIGN",
+      "operation_kind": "dag_resolution",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-015",
+      "name": "Schema Validation",
+      "phase": "3_DESIGN",
+      "operation_kind": "term_validation",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-016",
+      "name": "Quality Check",
+      "phase": "3_DESIGN",
+      "operation_kind": "quality_analysis",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-3-017",
+      "name": "Cross-Reference Validation",
+      "phase": "3_DESIGN",
+      "operation_kind": "cross_reference_validation",
+      "dependencies": [
+        "E2E-2-005"
+      ]
+    },
+    {
+      "step_id": "E2E-4-003",
+      "name": "Confidence-Based Auto-Approval",
+      "phase": "4_APPROVAL",
+      "operation_kind": "auto_approval",
+      "dependencies": [
+        "E2E-3-017"
+      ]
+    },
+    {
+      "step_id": "E2E-4-004",
+      "name": "Generate Approval Report",
+      "phase": "4_APPROVAL",
+      "operation_kind": "pattern_generation",
+      "dependencies": [
+        "E2E-3-017"
+      ]
+    },
+    {
+      "step_id": "E2E-4-001",
+      "name": "Schema Validation",
+      "phase": "4_APPROVAL",
+      "operation_kind": "pattern_validation",
+      "dependencies": [
+        "E2E-3-017"
+      ]
+    },
+    {
+      "step_id": "E2E-4-002",
+      "name": "Duplicate Check",
+      "phase": "4_APPROVAL",
+      "operation_kind": "pattern_validation",
+      "dependencies": [
+        "E2E-3-017"
+      ]
+    },
+    {
+      "step_id": "E2E-5-001",
+      "name": "Update Pattern Registry",
+      "phase": "5_REGISTRATION",
+      "operation_kind": "registry_update",
+      "dependencies": [
+        "E2E-4-002"
+      ]
+    },
+    {
+      "step_id": "E2E-5-002",
+      "name": "Move Drafts to Specs",
+      "phase": "5_REGISTRATION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-4-002"
+      ]
+    },
+    {
+      "step_id": "E2E-5-003",
+      "name": "Update Term Status to Active",
+      "phase": "5_REGISTRATION",
+      "operation_kind": "term_activation",
+      "dependencies": [
+        "E2E-4-002"
+      ]
+    },
+    {
+      "step_id": "E2E-5-004",
+      "name": "Update Glossary Index",
+      "phase": "5_REGISTRATION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-4-002"
+      ]
+    },
+    {
+      "step_id": "E2E-5-005",
+      "name": "Create Changelog Entry",
+      "phase": "5_REGISTRATION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-4-002"
+      ]
+    },
+    {
+      "step_id": "E2E-6-001",
+      "name": "Invoke Multi-Agent Coordinator",
+      "phase": "6_EXECUTION",
+      "operation_kind": "multi_agent_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-002",
+      "name": "Assign Workstreams to Agents",
+      "phase": "6_EXECUTION",
+      "operation_kind": "multi_agent_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-003",
+      "name": "Execute Workstream via Agent",
+      "phase": "6_EXECUTION",
+      "operation_kind": "multi_agent_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-004",
+      "name": "Apply Circuit Breakers",
+      "phase": "6_EXECUTION",
+      "operation_kind": "circuit_breaker_check",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-005",
+      "name": "Load and validate circuit breaker config",
+      "phase": "6_EXECUTION",
+      "operation_kind": "circuit_breaker_check",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-006",
+      "name": "Generate error signatures",
+      "phase": "6_EXECUTION",
+      "operation_kind": "circuit_breaker_check",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-007",
+      "name": "Track attempt counts and diff hashes",
+      "phase": "6_EXECUTION",
+      "operation_kind": "circuit_breaker_check",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-008",
+      "name": "Evaluate retry conditions",
+      "phase": "6_EXECUTION",
+      "operation_kind": "circuit_breaker_check",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-009",
+      "name": "Emit circuit breaker tripped event",
+      "phase": "6_EXECUTION",
+      "operation_kind": "circuit_breaker_check",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-010",
+      "name": "Invoke Fix Loop on Failure",
+      "phase": "6_EXECUTION",
+      "operation_kind": "fix_loop",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-011",
+      "name": "Load Pattern and Instance",
+      "phase": "6_EXECUTION",
+      "operation_kind": "pattern_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-012",
+      "name": "Match Executor",
+      "phase": "6_EXECUTION",
+      "operation_kind": "pattern_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-013",
+      "name": "Execute Pattern via Executor",
+      "phase": "6_EXECUTION",
+      "operation_kind": "pattern_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-014",
+      "name": "Log Execution Telemetry",
+      "phase": "6_EXECUTION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-015",
+      "name": "Handle Execution Errors",
+      "phase": "6_EXECUTION",
+      "operation_kind": "self_healing",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-070",
+      "name": "Transition to EXECUTION",
+      "phase": "6_EXECUTION",
+      "operation_kind": "state_transition",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-071",
+      "name": "Construct AcmsMiniPipeAdapter",
+      "phase": "6_EXECUTION",
+      "operation_kind": "initialization",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-072",
+      "name": "Resolve integration strategy",
+      "phase": "6_EXECUTION",
+      "operation_kind": "initialization",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-073",
+      "name": "Invoke MINI_PIPE_orchestrator",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-074",
+      "name": "Store execution plan",
+      "phase": "6_EXECUTION",
+      "operation_kind": "initialization",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-075",
+      "name": "Initialize internal state",
+      "phase": "6_EXECUTION",
+      "operation_kind": "initialization",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-076",
+      "name": "Transition run to running state",
+      "phase": "6_EXECUTION",
+      "operation_kind": "state_transition",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-077",
+      "name": "Initialize event bus",
+      "phase": "6_EXECUTION",
+      "operation_kind": "initialization",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-083",
+      "name": "Hand plan to scheduler",
+      "phase": "6_EXECUTION",
+      "operation_kind": "dag_build",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-084",
+      "name": "Build task DAG",
+      "phase": "6_EXECUTION",
+      "operation_kind": "dag_build",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-085",
+      "name": "Compute ready/blocked tasks",
+      "phase": "6_EXECUTION",
+      "operation_kind": "dag_build",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-086",
+      "name": "Respect max_concurrency limit",
+      "phase": "6_EXECUTION",
+      "operation_kind": "dag_build",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-087",
+      "name": "Call executor with ready batch",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-088",
+      "name": "Iterate over current batch",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-089",
+      "name": "Consult router for each task",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-093",
+      "name": "Router selects tool/adapter",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-099",
+      "name": "Call tools to run selected tool",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-100",
+      "name": "Render command template",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-101",
+      "name": "Execute command with context",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-102",
+      "name": "Capture stdout, stderr, exit code",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-103",
+      "name": "Extract structured payload",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-104",
+      "name": "Return normalized ToolResult",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-105",
+      "name": "GUARDRAILS: Pre-execution checks",
+      "phase": "6_EXECUTION",
+      "operation_kind": "guardrail_check",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-106",
+      "name": "Record per-task results in run state",
+      "phase": "6_EXECUTION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-107",
+      "name": "GUARDRAILS: Post-execution checks",
+      "phase": "6_EXECUTION",
+      "operation_kind": "guardrail_check",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-108",
+      "name": "Emit task completion event",
+      "phase": "6_EXECUTION",
+      "operation_kind": "event_emission",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-109",
+      "name": "Update task statuses in DAG",
+      "phase": "6_EXECUTION",
+      "operation_kind": "dag_build",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-110",
+      "name": "Ask scheduler for next ready batch",
+      "phase": "6_EXECUTION",
+      "operation_kind": "dag_build",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-111",
+      "name": "Handle step failures",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-112",
+      "name": "Repeat execution loop (Steps 59-75)",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-113",
+      "name": "OPTIONAL: Convert AI outputs to patches",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-114",
+      "name": "OPTIONAL: Manage patch lifecycle",
+      "phase": "6_EXECUTION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-121",
+      "name": "Compute final run status",
+      "phase": "6_EXECUTION",
+      "operation_kind": "summary_generation",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-122",
+      "name": "Mark run complete",
+      "phase": "6_EXECUTION",
+      "operation_kind": "state_transition",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-123",
+      "name": "Persist final state",
+      "phase": "6_EXECUTION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-016",
+      "name": "acms_controller logs state transition to EXECUTION",
+      "phase": "6_EXECUTION",
+      "operation_kind": "state_transition",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-017",
+      "name": "acms_controller constructs AcmsMiniPipeAdapter",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-018",
+      "name": "acms_minipipe_adapter resolves integration strategy",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-019",
+      "name": "acms_minipipe_adapter invokes MINI_PIPE_orchestrator",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-020",
+      "name": "MINI_PIPE_orchestrator stores execution plan",
+      "phase": "6_EXECUTION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-021",
+      "name": "MINI_PIPE_orchestrator initializes internal state",
+      "phase": "6_EXECUTION",
+      "operation_kind": "initialization",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-022",
+      "name": "MINI_PIPE_orchestrator transitions run to \"running\" state",
+      "phase": "6_EXECUTION",
+      "operation_kind": "state_transition",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-023",
+      "name": "MINI_PIPE_orchestrator initializes event bus",
+      "phase": "6_EXECUTION",
+      "operation_kind": "initialization",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-024",
+      "name": "Define EventEnvelope schema",
+      "phase": "6_EXECUTION",
+      "operation_kind": "initialization",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-078",
+      "name": "Define EventEnvelope schema",
+      "phase": "6_EXECUTION",
+      "operation_kind": "initialization",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-025",
+      "name": "Implement publish/subscribe hooks",
+      "phase": "6_EXECUTION",
+      "operation_kind": "initialization",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-079",
+      "name": "Implement publish/subscribe hooks",
+      "phase": "6_EXECUTION",
+      "operation_kind": "initialization",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-026",
+      "name": "Emit ROUTING_COMPLETE event",
+      "phase": "6_EXECUTION",
+      "operation_kind": "initialization",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-080",
+      "name": "Emit ROUTING_COMPLETE event",
+      "phase": "6_EXECUTION",
+      "operation_kind": "initialization",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-027",
+      "name": "Emit TASK_FAILED event",
+      "phase": "6_EXECUTION",
+      "operation_kind": "initialization",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-081",
+      "name": "Emit TASK_FAILED event",
+      "phase": "6_EXECUTION",
+      "operation_kind": "initialization",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-028",
+      "name": "Schedule automatic retry on FIX_APPLIED",
+      "phase": "6_EXECUTION",
+      "operation_kind": "initialization",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-082",
+      "name": "Schedule automatic retry on FIX_APPLIED",
+      "phase": "6_EXECUTION",
+      "operation_kind": "initialization",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-029",
+      "name": "MINI_PIPE_orchestrator hands plan to MINI_PIPE_scheduler",
+      "phase": "6_EXECUTION",
+      "operation_kind": "dag_build",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-030",
+      "name": "MINI_PIPE_scheduler builds task DAG (Directed Acyclic Graph)",
+      "phase": "6_EXECUTION",
+      "operation_kind": "dag_build",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-031",
+      "name": "MINI_PIPE_scheduler computes ready/blocked tasks",
+      "phase": "6_EXECUTION",
+      "operation_kind": "dag_build",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-032",
+      "name": "MINI_PIPE_scheduler respects max_concurrency limit",
+      "phase": "6_EXECUTION",
+      "operation_kind": "dag_build",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-033",
+      "name": "MINI_PIPE_orchestrator calls MINI_PIPE_executor with ready batch",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-034",
+      "name": "MINI_PIPE_executor iterates over current batch",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-035",
+      "name": "For each task, MINI_PIPE_executor consults MINI_PIPE_router",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-036",
+      "name": "Validate ExecutionRequest schema",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-090",
+      "name": "Validate ExecutionRequest schema",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-037",
+      "name": "Resolve and validate PhaseSpec",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-091",
+      "name": "Resolve and validate PhaseSpec",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-038",
+      "name": "Enforce routing guards",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-092",
+      "name": "Enforce routing guards",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-039",
+      "name": "MINI_PIPE_router selects tool/adapter for task",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-040",
+      "name": "Evaluate routing rules",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-094",
+      "name": "Evaluate routing rules",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-041",
+      "name": "Filter tool candidates by allowed tools",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-095",
+      "name": "Filter tool candidates by allowed tools",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-042",
+      "name": "Bind and validate PromptInstance",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-096",
+      "name": "Bind and validate PromptInstance",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-043",
+      "name": "Enqueue work item to tool inbox",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-097",
+      "name": "Enqueue work item to tool inbox",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-044",
+      "name": "Handle tool failure with retry/fallback",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-098",
+      "name": "Handle tool failure with retry/fallback",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-045",
+      "name": "MINI_PIPE_executor calls MINI_PIPE_tools to run selected tool",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-046",
+      "name": "MINI_PIPE_tools renders command template or API call",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-047",
+      "name": "MINI_PIPE_tools executes command with proper context",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-048",
+      "name": "MINI_PIPE_tools captures stdout, stderr, exit code",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-049",
+      "name": "MINI_PIPE_tools extracts structured payload (if applicable)",
+      "phase": "6_EXECUTION",
+      "operation_kind": "initialization",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-050",
+      "name": "MINI_PIPE_tools returns normalized ToolResult to executor",
+      "phase": "6_EXECUTION",
+      "operation_kind": "gap_normalization",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-051",
+      "name": "GUARDRAILS: Pre-execution checks (if pattern_id in task metadata)",
+      "phase": "6_EXECUTION",
+      "operation_kind": "guardrail_check",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-052",
+      "name": "MINI_PIPE_executor records per-task results in run state",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-053",
+      "name": "GUARDRAILS: Post-execution checks (if pattern_id in task metadata)",
+      "phase": "6_EXECUTION",
+      "operation_kind": "guardrail_check",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-054",
+      "name": "MINI_PIPE_executor emits task completion event",
+      "phase": "6_EXECUTION",
+      "operation_kind": "event_emission",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-055",
+      "name": "MINI_PIPE_orchestrator updates task statuses in DAG",
+      "phase": "6_EXECUTION",
+      "operation_kind": "dag_build",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-056",
+      "name": "MINI_PIPE_orchestrator asks scheduler for next ready batch",
+      "phase": "6_EXECUTION",
+      "operation_kind": "dag_build",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-057",
+      "name": "MINI_PIPE_orchestrator handles step failures",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-058",
+      "name": "Steps 59-75 repeat in execution loop",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-059",
+      "name": "OPTIONAL: MINI_PIPE_patch_converter converts AI outputs to patches",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-060",
+      "name": "OPTIONAL: MINI_PIPE_patch_ledger manages patch lifecycle",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-061",
+      "name": "Normalize tool output into PatchArtifact",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-115",
+      "name": "Normalize tool output into PatchArtifact",
+      "phase": "6_EXECUTION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-062",
+      "name": "Create PatchLedgerEntry",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-116",
+      "name": "Create PatchLedgerEntry",
+      "phase": "6_EXECUTION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-063",
+      "name": "Validate patch against policies",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-117",
+      "name": "Validate patch against policies",
+      "phase": "6_EXECUTION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-064",
+      "name": "Apply patch to worktree",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-118",
+      "name": "Apply patch to worktree",
+      "phase": "6_EXECUTION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-065",
+      "name": "Verify patch with tests",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-119",
+      "name": "Verify patch with tests",
+      "phase": "6_EXECUTION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-066",
+      "name": "Quarantine or rollback failed patch",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-120",
+      "name": "Quarantine or rollback failed patch",
+      "phase": "6_EXECUTION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-067",
+      "name": "MINI_PIPE_orchestrator computes final run status",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-068",
+      "name": "MINI_PIPE_orchestrator marks run complete",
+      "phase": "6_EXECUTION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-6-069",
+      "name": "MINI_PIPE_orchestrator persists final state",
+      "phase": "6_EXECUTION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-5-005"
+      ]
+    },
+    {
+      "step_id": "E2E-7-001",
+      "name": "Aggregate Agent Results",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "result_consolidation",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-002",
+      "name": "Save to Consolidated Database",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-003",
+      "name": "Generate Unified Execution Report",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "result_consolidation",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-023",
+      "name": "Poll MINI_PIPE for completion",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-024",
+      "name": "Collect aggregated execution results",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "summary_generation",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-025",
+      "name": "Return execution summary to ACMS",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "summary_generation",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-026",
+      "name": "GUARDRAILS: Update patches_applied counter",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "guardrail_check",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-027",
+      "name": "Correlate execution results with gaps",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "gap_normalization",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-028",
+      "name": "Update gap_registry with new statuses",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "gap_normalization",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-029",
+      "name": "Persist updated gap statuses",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-030",
+      "name": "GUARDRAILS: Final anti-pattern detection",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "guardrail_check",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-031",
+      "name": "Synthesize unified RunStatus object",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "summary_generation",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-032",
+      "name": "Write RunStatus JSON to disk",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-033",
+      "name": "Generate human-readable summary report",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "summary_generation",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-034",
+      "name": "Transition to SUMMARY state",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "state_transition",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-035",
+      "name": "Print summary to console",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "event_emission",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-036",
+      "name": "Safely store code changes",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-037",
+      "name": "Transition to DONE state",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "state_transition",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-038",
+      "name": "Finalize run ledger",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-004",
+      "name": "acms_minipipe_adapter polls MINI_PIPE for completion",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-005",
+      "name": "acms_minipipe_adapter collects aggregated execution results",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-006",
+      "name": "acms_minipipe_adapter returns execution summary to acms_controller",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "summary_generation",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-007",
+      "name": "GUARDRAILS: Update patches_applied counter",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "guardrail_check",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-008",
+      "name": "acms_controller correlates execution results with original gaps",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-009",
+      "name": "acms_controller updates gap_registry with new statuses",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-010",
+      "name": "gap_registry persists updated statuses",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-011",
+      "name": "GUARDRAILS: Final anti-pattern detection",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "guardrail_check",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-012",
+      "name": "acms_controller synthesizes unified RunStatus object",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-013",
+      "name": "acms_controller writes RunStatus JSON to disk",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-014",
+      "name": "acms_controller generates human-readable summary report",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "summary_generation",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-015",
+      "name": "acms_controller logs state transition to SUMMARY",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "state_transition",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-016",
+      "name": "acms_controller prints summary to console",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "summary_generation",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-017",
+      "name": "acms_controller ensures code changes are safely stored",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-018",
+      "name": "acms_controller logs state transition to DONE",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "state_transition",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-019",
+      "name": "acms_controller finalizes run ledger",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-020",
+      "name": "acms_controller exits with appropriate exit code",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-021",
+      "name": "CLI prints concise summary to stdout",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "summary_generation",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-7-022",
+      "name": "Cleanup temporary files (if configured)",
+      "phase": "7_CONSOLIDATION",
+      "operation_kind": "task_execution",
+      "dependencies": [
+        "E2E-6-069"
+      ]
+    },
+    {
+      "step_id": "E2E-8-004",
+      "name": "Apply Term Update Patch",
+      "phase": "8_MAINTENANCE",
+      "operation_kind": "patch_application",
+      "dependencies": [
+        "E2E-7-022"
+      ]
+    },
+    {
+      "step_id": "E2E-8-005",
+      "name": "Extract Terms from Code",
+      "phase": "8_MAINTENANCE",
+      "operation_kind": "term_extraction",
+      "dependencies": [
+        "E2E-7-022"
+      ]
+    },
+    {
+      "step_id": "E2E-8-006",
+      "name": "Enforce SSOT Policy",
+      "phase": "8_MAINTENANCE",
+      "operation_kind": "ssot_enforcement",
+      "dependencies": [
+        "E2E-7-022"
+      ]
+    },
+    {
+      "step_id": "E2E-8-007",
+      "name": "Calculate Quality Metrics",
+      "phase": "8_MAINTENANCE",
+      "operation_kind": "quality_analysis",
+      "dependencies": [
+        "E2E-7-022"
+      ]
+    },
+    {
+      "step_id": "E2E-8-010",
+      "name": "Update Term Status to Archived",
+      "phase": "8_MAINTENANCE",
+      "operation_kind": "term_archival",
+      "dependencies": [
+        "E2E-7-022"
+      ]
+    },
+    {
+      "step_id": "E2E-8-011",
+      "name": "Update Statistics",
+      "phase": "8_MAINTENANCE",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-7-022"
+      ]
+    },
+    {
+      "step_id": "E2E-8-008",
+      "name": "Update Term Status to Deprecated",
+      "phase": "8_MAINTENANCE",
+      "operation_kind": "term_deprecation",
+      "dependencies": [
+        "E2E-7-022"
+      ]
+    },
+    {
+      "step_id": "E2E-8-009",
+      "name": "Update References to Use Replacement",
+      "phase": "8_MAINTENANCE",
+      "operation_kind": "ssot_enforcement",
+      "dependencies": [
+        "E2E-7-022"
+      ]
+    },
+    {
+      "step_id": "E2E-8-001",
+      "name": "Calculate Performance Metrics",
+      "phase": "8_MAINTENANCE",
+      "operation_kind": "performance_analysis",
+      "dependencies": [
+        "E2E-7-022"
+      ]
+    },
+    {
+      "step_id": "E2E-8-002",
+      "name": "Check System Health",
+      "phase": "8_MAINTENANCE",
+      "operation_kind": "performance_analysis",
+      "dependencies": [
+        "E2E-7-022"
+      ]
+    },
+    {
+      "step_id": "E2E-8-003",
+      "name": "Generate Dashboard",
+      "phase": "8_MAINTENANCE",
+      "operation_kind": "performance_analysis",
+      "dependencies": [
+        "E2E-7-022"
+      ]
+    },
+    {
+      "step_id": "E2E-9-001",
+      "name": "Invoke GitHub Sync Engine",
+      "phase": "9_SYNC_AND_FINALIZE",
+      "operation_kind": "github_sync",
+      "dependencies": [
+        "E2E-8-003"
+      ]
+    },
+    {
+      "step_id": "E2E-9-002",
+      "name": "Create Feature Branch",
+      "phase": "9_SYNC_AND_FINALIZE",
+      "operation_kind": "github_sync",
+      "dependencies": [
+        "E2E-8-003"
+      ]
+    },
+    {
+      "step_id": "E2E-9-003",
+      "name": "Create Workstream Commits",
+      "phase": "9_SYNC_AND_FINALIZE",
+      "operation_kind": "github_sync",
+      "dependencies": [
+        "E2E-8-003"
+      ]
+    },
+    {
+      "step_id": "E2E-9-004",
+      "name": "Push to Remote",
+      "phase": "9_SYNC_AND_FINALIZE",
+      "operation_kind": "github_sync",
+      "dependencies": [
+        "E2E-8-003"
+      ]
+    },
+    {
+      "step_id": "E2E-9-005",
+      "name": "Generate Sync Summary Report",
+      "phase": "9_SYNC_AND_FINALIZE",
+      "operation_kind": "result_consolidation",
+      "dependencies": [
+        "E2E-8-003"
+      ]
+    },
+    {
+      "step_id": "E2E-9-006",
+      "name": "Generate Master Summary Report",
+      "phase": "9_SYNC_AND_FINALIZE",
+      "operation_kind": "result_consolidation",
+      "dependencies": [
+        "E2E-8-003"
+      ]
+    },
+    {
+      "step_id": "E2E-9-007",
+      "name": "Print Execution Summary",
+      "phase": "9_SYNC_AND_FINALIZE",
+      "operation_kind": "event_emission",
+      "dependencies": [
+        "E2E-8-003"
+      ]
+    },
+    {
+      "step_id": "E2E-9-008",
+      "name": "Generate Workflow Report",
+      "phase": "9_SYNC_AND_FINALIZE",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-8-003"
+      ]
+    },
+    {
+      "step_id": "E2E-9-009",
+      "name": "Print Execution Summary",
+      "phase": "9_SYNC_AND_FINALIZE",
+      "operation_kind": "orchestration",
+      "dependencies": [
+        "E2E-8-003"
+      ]
+    },
+    {
+      "step_id": "E2E-9-010",
+      "name": "Generate Quality Report",
+      "phase": "9_SYNC_AND_FINALIZE",
+      "operation_kind": "quality_analysis",
+      "dependencies": [
+        "E2E-8-003"
+      ]
+    },
+    {
+      "step_id": "E2E-9-011",
+      "name": "Exit with appropriate code",
+      "phase": "9_SYNC_AND_FINALIZE",
+      "operation_kind": "state_transition",
+      "dependencies": [
+        "E2E-8-003"
+      ]
+    },
+    {
+      "step_id": "E2E-9-012",
+      "name": "Print concise summary to stdout",
+      "phase": "9_SYNC_AND_FINALIZE",
+      "operation_kind": "event_emission",
+      "dependencies": [
+        "E2E-8-003"
+      ]
+    },
+    {
+      "step_id": "E2E-9-013",
+      "name": "Cleanup temporary files",
+      "phase": "9_SYNC_AND_FINALIZE",
+      "operation_kind": "persistence",
+      "dependencies": [
+        "E2E-8-003"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-007"
+    },
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-008"
+    },
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-009"
+    },
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-010"
+    },
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-011"
+    },
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-012"
+    },
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-013"
+    },
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-014"
+    },
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-015"
+    },
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-016"
+    },
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-017"
+    },
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-018"
+    },
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-019"
+    },
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-020"
+    },
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-021"
+    },
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-022"
+    },
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-006"
+    },
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-001"
+    },
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-002"
+    },
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-003"
+    },
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-004"
+    },
+    {
+      "from": "E2E-1-019",
+      "to": "E2E-2-005"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-011"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-012"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-018"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-019"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-020"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-021"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-022"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-023"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-024"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-025"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-026"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-027"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-028"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-029"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-030"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-031"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-032"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-033"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-034"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-035"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-036"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-037"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-038"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-039"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-001"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-002"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-003"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-004"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-008"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-009"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-010"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-013"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-014"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-005"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-006"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-007"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-015"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-016"
+    },
+    {
+      "from": "E2E-2-005",
+      "to": "E2E-3-017"
+    },
+    {
+      "from": "E2E-3-017",
+      "to": "E2E-4-003"
+    },
+    {
+      "from": "E2E-3-017",
+      "to": "E2E-4-004"
+    },
+    {
+      "from": "E2E-3-017",
+      "to": "E2E-4-001"
+    },
+    {
+      "from": "E2E-3-017",
+      "to": "E2E-4-002"
+    },
+    {
+      "from": "E2E-4-002",
+      "to": "E2E-5-001"
+    },
+    {
+      "from": "E2E-4-002",
+      "to": "E2E-5-002"
+    },
+    {
+      "from": "E2E-4-002",
+      "to": "E2E-5-003"
+    },
+    {
+      "from": "E2E-4-002",
+      "to": "E2E-5-004"
+    },
+    {
+      "from": "E2E-4-002",
+      "to": "E2E-5-005"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-001"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-002"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-003"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-004"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-005"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-006"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-007"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-008"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-009"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-010"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-011"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-012"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-013"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-014"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-015"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-070"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-071"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-072"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-073"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-074"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-075"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-076"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-077"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-083"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-084"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-085"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-086"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-087"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-088"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-089"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-093"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-099"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-100"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-101"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-102"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-103"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-104"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-105"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-106"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-107"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-108"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-109"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-110"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-111"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-112"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-113"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-114"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-121"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-122"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-123"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-016"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-017"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-018"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-019"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-020"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-021"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-022"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-023"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-024"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-078"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-025"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-079"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-026"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-080"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-027"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-081"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-028"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-082"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-029"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-030"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-031"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-032"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-033"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-034"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-035"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-036"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-090"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-037"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-091"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-038"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-092"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-039"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-040"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-094"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-041"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-095"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-042"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-096"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-043"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-097"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-044"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-098"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-045"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-046"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-047"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-048"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-049"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-050"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-051"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-052"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-053"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-054"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-055"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-056"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-057"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-058"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-059"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-060"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-061"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-115"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-062"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-116"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-063"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-117"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-064"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-118"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-065"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-119"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-066"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-120"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-067"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-068"
+    },
+    {
+      "from": "E2E-5-005",
+      "to": "E2E-6-069"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-001"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-002"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-003"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-023"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-024"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-025"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-026"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-027"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-028"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-029"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-030"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-031"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-032"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-033"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-034"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-035"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-036"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-037"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-038"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-004"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-005"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-006"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-007"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-008"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-009"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-010"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-011"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-012"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-013"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-014"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-015"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-016"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-017"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-018"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-019"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-020"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-021"
+    },
+    {
+      "from": "E2E-6-069",
+      "to": "E2E-7-022"
+    },
+    {
+      "from": "E2E-7-022",
+      "to": "E2E-8-004"
+    },
+    {
+      "from": "E2E-7-022",
+      "to": "E2E-8-005"
+    },
+    {
+      "from": "E2E-7-022",
+      "to": "E2E-8-006"
+    },
+    {
+      "from": "E2E-7-022",
+      "to": "E2E-8-007"
+    },
+    {
+      "from": "E2E-7-022",
+      "to": "E2E-8-010"
+    },
+    {
+      "from": "E2E-7-022",
+      "to": "E2E-8-011"
+    },
+    {
+      "from": "E2E-7-022",
+      "to": "E2E-8-008"
+    },
+    {
+      "from": "E2E-7-022",
+      "to": "E2E-8-009"
+    },
+    {
+      "from": "E2E-7-022",
+      "to": "E2E-8-001"
+    },
+    {
+      "from": "E2E-7-022",
+      "to": "E2E-8-002"
+    },
+    {
+      "from": "E2E-7-022",
+      "to": "E2E-8-003"
+    },
+    {
+      "from": "E2E-8-003",
+      "to": "E2E-9-001"
+    },
+    {
+      "from": "E2E-8-003",
+      "to": "E2E-9-002"
+    },
+    {
+      "from": "E2E-8-003",
+      "to": "E2E-9-003"
+    },
+    {
+      "from": "E2E-8-003",
+      "to": "E2E-9-004"
+    },
+    {
+      "from": "E2E-8-003",
+      "to": "E2E-9-005"
+    },
+    {
+      "from": "E2E-8-003",
+      "to": "E2E-9-006"
+    },
+    {
+      "from": "E2E-8-003",
+      "to": "E2E-9-007"
+    },
+    {
+      "from": "E2E-8-003",
+      "to": "E2E-9-008"
+    },
+    {
+      "from": "E2E-8-003",
+      "to": "E2E-9-009"
+    },
+    {
+      "from": "E2E-8-003",
+      "to": "E2E-9-010"
+    },
+    {
+      "from": "E2E-8-003",
+      "to": "E2E-9-011"
+    },
+    {
+      "from": "E2E-8-003",
+      "to": "E2E-9-012"
+    },
+    {
+      "from": "E2E-8-003",
+      "to": "E2E-9-013"
+    }
+  ],
+  "waves": [
+    {
+      "wave_number": 0,
+      "steps": [
+        "E2E-1-004",
+        "E2E-1-005",
+        "E2E-1-006",
+        "E2E-1-007",
+        "E2E-1-008",
+        "E2E-1-009",
+        "E2E-1-001",
+        "E2E-1-002",
+        "E2E-1-003",
+        "E2E-1-010",
+        "E2E-1-011",
+        "E2E-1-012",
+        "E2E-1-013",
+        "E2E-1-014",
+        "E2E-1-015",
+        "E2E-1-016",
+        "E2E-1-017",
+        "E2E-1-018",
+        "E2E-1-019"
+      ],
+      "parallelism": 19
+    },
+    {
+      "wave_number": 1,
+      "steps": [
+        "E2E-2-011",
+        "E2E-2-004",
+        "E2E-2-001",
+        "E2E-2-007",
+        "E2E-2-002",
+        "E2E-2-010",
+        "E2E-2-013",
+        "E2E-2-003",
+        "E2E-2-008",
+        "E2E-2-012",
+        "E2E-2-018",
+        "E2E-2-022",
+        "E2E-2-015",
+        "E2E-2-009",
+        "E2E-2-006",
+        "E2E-2-016",
+        "E2E-2-019",
+        "E2E-2-021",
+        "E2E-2-017",
+        "E2E-2-014",
+        "E2E-2-005",
+        "E2E-2-020"
+      ],
+      "parallelism": 22
+    },
+    {
+      "wave_number": 2,
+      "steps": [
+        "E2E-3-014",
+        "E2E-3-003",
+        "E2E-3-008",
+        "E2E-3-016",
+        "E2E-3-018",
+        "E2E-3-004",
+        "E2E-3-019",
+        "E2E-3-025",
+        "E2E-3-012",
+        "E2E-3-013",
+        "E2E-3-029",
+        "E2E-3-032",
+        "E2E-3-009",
+        "E2E-3-027",
+        "E2E-3-033",
+        "E2E-3-034",
+        "E2E-3-007",
+        "E2E-3-028",
+        "E2E-3-026",
+        "E2E-3-030",
+        "E2E-3-017",
+        "E2E-3-021",
+        "E2E-3-036",
+        "E2E-3-001",
+        "E2E-3-024",
+        "E2E-3-006",
+        "E2E-3-015",
+        "E2E-3-035",
+        "E2E-3-038",
+        "E2E-3-011",
+        "E2E-3-039",
+        "E2E-3-031",
+        "E2E-3-005",
+        "E2E-3-022",
+        "E2E-3-037",
+        "E2E-3-010",
+        "E2E-3-023",
+        "E2E-3-020",
+        "E2E-3-002"
+      ],
+      "parallelism": 39
+    },
+    {
+      "wave_number": 3,
+      "steps": [
+        "E2E-4-002",
+        "E2E-4-003",
+        "E2E-4-001",
+        "E2E-4-004"
+      ],
+      "parallelism": 4
+    },
+    {
+      "wave_number": 4,
+      "steps": [
+        "E2E-5-003",
+        "E2E-5-005",
+        "E2E-5-001",
+        "E2E-5-002",
+        "E2E-5-004"
+      ],
+      "parallelism": 5
+    },
+    {
+      "wave_number": 5,
+      "steps": [
+        "E2E-6-034",
+        "E2E-6-062",
+        "E2E-6-078",
+        "E2E-6-014",
+        "E2E-6-031",
+        "E2E-6-048",
+        "E2E-6-118",
+        "E2E-6-122",
+        "E2E-6-021",
+        "E2E-6-059",
+        "E2E-6-006",
+        "E2E-6-012",
+        "E2E-6-054",
+        "E2E-6-024",
+        "E2E-6-032",
+        "E2E-6-028",
+        "E2E-6-080",
+        "E2E-6-035",
+        "E2E-6-019",
+        "E2E-6-113",
+        "E2E-6-001",
+        "E2E-6-023",
+        "E2E-6-101",
+        "E2E-6-096",
+        "E2E-6-088",
+        "E2E-6-109",
+        "E2E-6-058",
+        "E2E-6-081",
+        "E2E-6-094",
+        "E2E-6-060",
+        "E2E-6-011",
+        "E2E-6-016",
+        "E2E-6-041",
+        "E2E-6-087",
+        "E2E-6-067",
+        "E2E-6-029",
+        "E2E-6-097",
+        "E2E-6-100",
+        "E2E-6-038",
+        "E2E-6-110",
+        "E2E-6-015",
+        "E2E-6-007",
+        "E2E-6-050",
+        "E2E-6-089",
+        "E2E-6-119",
+        "E2E-6-008",
+        "E2E-6-004",
+        "E2E-6-116",
+        "E2E-6-043",
+        "E2E-6-071",
+        "E2E-6-040",
+        "E2E-6-066",
+        "E2E-6-090",
+        "E2E-6-104",
+        "E2E-6-068",
+        "E2E-6-076",
+        "E2E-6-107",
+        "E2E-6-082",
+        "E2E-6-061",
+        "E2E-6-098",
+        "E2E-6-030",
+        "E2E-6-020",
+        "E2E-6-073",
+        "E2E-6-045",
+        "E2E-6-053",
+        "E2E-6-120",
+        "E2E-6-003",
+        "E2E-6-064",
+        "E2E-6-091",
+        "E2E-6-117",
+        "E2E-6-099",
+        "E2E-6-074",
+        "E2E-6-086",
+        "E2E-6-106",
+        "E2E-6-102",
+        "E2E-6-065",
+        "E2E-6-069",
+        "E2E-6-002",
+        "E2E-6-077",
+        "E2E-6-108",
+        "E2E-6-037",
+        "E2E-6-026",
+        "E2E-6-083",
+        "E2E-6-079",
+        "E2E-6-013",
+        "E2E-6-070",
+        "E2E-6-092",
+        "E2E-6-063",
+        "E2E-6-049",
+        "E2E-6-121",
+        "E2E-6-044",
+        "E2E-6-057",
+        "E2E-6-095",
+        "E2E-6-114",
+        "E2E-6-022",
+        "E2E-6-111",
+        "E2E-6-047",
+        "E2E-6-084",
+        "E2E-6-115",
+        "E2E-6-123",
+        "E2E-6-027",
+        "E2E-6-075",
+        "E2E-6-072",
+        "E2E-6-010",
+        "E2E-6-039",
+        "E2E-6-056",
+        "E2E-6-103",
+        "E2E-6-009",
+        "E2E-6-025",
+        "E2E-6-033",
+        "E2E-6-042",
+        "E2E-6-105",
+        "E2E-6-055",
+        "E2E-6-017",
+        "E2E-6-018",
+        "E2E-6-093",
+        "E2E-6-112",
+        "E2E-6-085",
+        "E2E-6-036",
+        "E2E-6-046",
+        "E2E-6-052",
+        "E2E-6-005",
+        "E2E-6-051"
+      ],
+      "parallelism": 123
+    },
+    {
+      "wave_number": 6,
+      "steps": [
+        "E2E-7-033",
+        "E2E-7-031",
+        "E2E-7-002",
+        "E2E-7-001",
+        "E2E-7-030",
+        "E2E-7-026",
+        "E2E-7-029",
+        "E2E-7-012",
+        "E2E-7-019",
+        "E2E-7-013",
+        "E2E-7-010",
+        "E2E-7-003",
+        "E2E-7-034",
+        "E2E-7-037",
+        "E2E-7-008",
+        "E2E-7-004",
+        "E2E-7-021",
+        "E2E-7-027",
+        "E2E-7-024",
+        "E2E-7-005",
+        "E2E-7-016",
+        "E2E-7-036",
+        "E2E-7-022",
+        "E2E-7-028",
+        "E2E-7-018",
+        "E2E-7-038",
+        "E2E-7-011",
+        "E2E-7-020",
+        "E2E-7-007",
+        "E2E-7-015",
+        "E2E-7-009",
+        "E2E-7-006",
+        "E2E-7-014",
+        "E2E-7-035",
+        "E2E-7-032",
+        "E2E-7-017",
+        "E2E-7-023",
+        "E2E-7-025"
+      ],
+      "parallelism": 38
+    },
+    {
+      "wave_number": 7,
+      "steps": [
+        "E2E-8-002",
+        "E2E-8-003",
+        "E2E-8-006",
+        "E2E-8-004",
+        "E2E-8-001",
+        "E2E-8-007",
+        "E2E-8-008",
+        "E2E-8-010",
+        "E2E-8-005",
+        "E2E-8-011",
+        "E2E-8-009"
+      ],
+      "parallelism": 11
+    },
+    {
+      "wave_number": 8,
+      "steps": [
+        "E2E-9-007",
+        "E2E-9-002",
+        "E2E-9-005",
+        "E2E-9-013",
+        "E2E-9-008",
+        "E2E-9-001",
+        "E2E-9-012",
+        "E2E-9-003",
+        "E2E-9-006",
+        "E2E-9-009",
+        "E2E-9-004",
+        "E2E-9-011",
+        "E2E-9-010"
+      ],
+      "parallelism": 13
+    }
+  ],
+  "critical_path": [
+    "E2E-1-019",
+    "E2E-2-005",
+    "E2E-3-017",
+    "E2E-4-002",
+    "E2E-5-005",
+    "E2E-6-069",
+    "E2E-7-022",
+    "E2E-8-003",
+    "E2E-9-001"
+  ],
+  "cycles": [],
+  "doc_id": "DOC-CONFIG-PROCESS-DAG-799"
+}

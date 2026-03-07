@@ -1,0 +1,6 @@
+{"ts": "2025-12-07T07:47:13.354061+00:00", "run_id": "20251207074713_273C608F4745", "state": "init", "event": "enter_state", "previous_state": "init", "meta": {"message": "Run initialized", "guardrails": true}}
+{"ts": "2025-12-07T07:47:13.369792+00:00", "run_id": "20251207074713_273C608F4745", "state": "gap_analysis", "event": "enter_state", "previous_state": "init", "meta": {"mode": "full"}}
+{"ts": "2025-12-07T07:47:13.369792+00:00", "run_id": "20251207074713_273C608F4745", "state": "gap_analysis", "event": "gap_discovery_complete", "meta": {"gap_count": 1}}
+{"ts": "2025-12-07T07:47:13.369792+00:00", "run_id": "20251207074713_273C608F4745", "state": "planning", "event": "enter_state", "previous_state": "gap_analysis", "meta": {"mode": "full"}}
+{"ts": "2025-12-07T07:47:13.369792+00:00", "run_id": "20251207074713_273C608F4745", "state": "failed", "event": "enter_state", "previous_state": "planning", "meta": {"error": "'ExecutionPlanner' object has no attribute 'cluster_gaps_to_workstreams'"}}
+{"ts": "2025-12-07T07:47:13.385645+00:00", "run_id": "20251207074713_273C608F4745", "state": "failed", "event": "run_finalized", "meta": {"status": "failed", "run_stats": {"planning_attempts": 0, "patches_applied": 0, "hallucination_count": 0, "anti_patterns_detected": []}}}

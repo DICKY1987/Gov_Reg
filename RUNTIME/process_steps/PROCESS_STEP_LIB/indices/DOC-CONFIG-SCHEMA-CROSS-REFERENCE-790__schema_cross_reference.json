@@ -1,0 +1,534 @@
+{
+  "doc_id": "DOC-CONFIG-SCHEMA-CROSS-REFERENCE-790",
+  "Length": 58,
+  "LongLength": 58,
+  "Rank": 1,
+  "SyncRoot": [
+    {
+      "step_id": "P0-STEP-008",
+      "schema_name": null,
+      "schema_description": null,
+      "schema_source": null,
+      "in_e2e": true,
+      "e2e_phase": "INIT",
+      "e2e_description": "GUARDRAILS INITIALIZATION (if enabled)"
+    },
+    {
+      "step_id": "P2-STEP-034",
+      "schema_name": null,
+      "schema_description": null,
+      "schema_source": null,
+      "in_e2e": true,
+      "e2e_phase": "PLANNING",
+      "e2e_description": "execution_planner validates plan structure"
+    },
+    {
+      "step_id": "P3-STEP-038",
+      "schema_name": null,
+      "schema_description": null,
+      "schema_source": null,
+      "in_e2e": false,
+      "e2e_phase": null,
+      "e2e_description": null
+    },
+    {
+      "step_id": "P3-STEP-043",
+      "schema_name": null,
+      "schema_description": null,
+      "schema_source": null,
+      "in_e2e": false,
+      "e2e_phase": null,
+      "e2e_description": null
+    },
+    {
+      "step_id": "P4-STEP-047",
+      "schema_name": "Transition to EXECUTION",
+      "schema_description": "Log state transition PLANNING → EXECUTION to ledger and console.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Transition to EXECUTION"
+    },
+    {
+      "step_id": "P4-STEP-048",
+      "schema_name": "Construct AcmsMiniPipeAdapter",
+      "schema_description": "Create adapter instance with: execution_plan_path, repo_root, run_id, config. This adapter bridges ACMS orchestration to MINI_PIPE execution engine.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Resolve integration strategy"
+    },
+    {
+      "step_id": "P4-STEP-049",
+      "schema_name": "Resolve integration strategy",
+      "schema_description": "Determine integration mode: python_api (direct import) or cli (subprocess). Decision based on: adapter_type config, MINI_PIPE module availability, performance.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Initialize MINI_PIPE adapter"
+    },
+    {
+      "step_id": "P4-STEP-050",
+      "schema_name": "Invoke MINI_PIPE_orchestrator",
+      "schema_description": "Call: orchestrator.execute_plan(plan_path, variables). Register new MINI_PIPE run with ACMS run_id linkage for traceability.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Invoke MINI_PIPE_orchestrator"
+    },
+    {
+      "step_id": "P5-STEP-051",
+      "schema_name": "Store execution plan",
+      "schema_description": "Load plan from JSON, validate against Plan schema, perform variable substitution, store in orchestrator.plan attribute.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Store execution plan"
+    },
+    {
+      "step_id": "P5-STEP-052",
+      "schema_name": "Initialize internal state",
+      "schema_description": "Create run record in SQLite DB: run_id, project_id, phase_id, state=pending, created_at, metadata.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Initialize execution state"
+    },
+    {
+      "step_id": "P5-STEP-053",
+      "schema_name": "Transition run to running state",
+      "schema_description": "Update DB: state=running, started_at=now(). Emit event: run_started to event bus.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Validate execution plan schema"
+    },
+    {
+      "step_id": "P5-STEP-054",
+      "schema_name": "Initialize event bus",
+      "schema_description": "Create EventBus instance with db_path, subscribe to run lifecycle events, enable event-driven integrations.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Initialize worker pool"
+    },
+    {
+      "step_id": "P5-STEP-055",
+      "schema_name": "Hand plan to scheduler",
+      "schema_description": "Call: scheduler.build_dag(plan.steps). Scheduler will construct task dependency graph.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Initialize task graph"
+    },
+    {
+      "step_id": "P5-STEP-056",
+      "schema_name": "Build task DAG",
+      "schema_description": "For each StepDef: create node (step.id), create edges (depends_on → step.id). Validate: all dependencies valid, no circular dependencies, DAG connected.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Build dependency graph"
+    },
+    {
+      "step_id": "P5-STEP-057",
+      "schema_name": "Compute ready/blocked tasks",
+      "schema_description": "Ready: steps with no unsatisfied dependencies (all depends_on succeeded). Blocked: steps with at least one dependency not yet succeeded.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Resolve topological order"
+    },
+    {
+      "step_id": "P5-STEP-058",
+      "schema_name": "Respect max_concurrency limit",
+      "schema_description": "Enforce plan.globals.max_concurrency (default: 1). If N steps ready and M running: can start max(0, max_concurrency - M).",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Determine batch boundaries"
+    },
+    {
+      "step_id": "P5-STEP-059",
+      "schema_name": "Call executor with ready batch",
+      "schema_description": "For each ready step (up to concurrency limit): executor.execute_step(run_id, step_def, plan).",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Select next batch"
+    },
+    {
+      "step_id": "P5-STEP-060",
+      "schema_name": "Iterate over current batch",
+      "schema_description": "Sequential processing of ready steps. Each step executed (potentially in parallel via subprocess). Results collected as steps complete.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Iterate over current batch"
+    },
+    {
+      "step_id": "P5-STEP-061",
+      "schema_name": "Consult router for each task",
+      "schema_description": "Call: router.select_tool(step_def, plan). Router analyzes: step_def.command, task metadata, router_config.json rules.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Prepare task execution context"
+    },
+    {
+      "step_id": "P5-STEP-062",
+      "schema_name": "Router selects tool/adapter",
+      "schema_description": "Decision tree: command=ai → AI tool, command=test → test runner, command=lint → linter, else use command as-is.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Resolve task tool routing"
+    },
+    {
+      "step_id": "P5-STEP-063",
+      "schema_name": "Call tools to run selected tool",
+      "schema_description": "Call: tools.execute_tool(tool_id, step_def, context). Optionally uses process_spawner for subprocess management, resilient_executor for retry/circuit breaker.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Execute tool call"
+    },
+    {
+      "step_id": "P5-STEP-064",
+      "schema_name": "Render command template",
+      "schema_description": "Substitute template variables: ${REPO_ROOT}, ${FILE_PATH}, ${TASK_KIND}. Example: \"ai codegen --file ${FILE_PATH}\" → \"ai codegen --file src/utils.py\".",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Capture stdout/stderr and return code"
+    },
+    {
+      "step_id": "P5-STEP-065",
+      "schema_name": "Execute command with context",
+      "schema_description": "Spawn subprocess with: cwd, shell, env (merged from plan.globals.env + step.env), timeout, stdout/stderr captured to PIPE.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Parse tool output into normalized result"
+    },
+    {
+      "step_id": "P5-STEP-066",
+      "schema_name": "Capture stdout, stderr, exit code",
+      "schema_description": "Wait for process completion (or timeout). If timeout: kill process, exit_code=-1, error=\"Timeout after Ns\". If completed: read stdout/stderr, get exit_code.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Validate task result schema"
+    },
+    {
+      "step_id": "P5-STEP-067",
+      "schema_name": "Extract structured payload",
+      "schema_description": "For AI tools: parse JSON from stdout. For test tools: parse JUnit XML or test results. For linters: parse JSON output. Store in ToolResult.output_data.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Emit per-task metrics"
+    },
+    {
+      "step_id": "P5-STEP-068",
+      "schema_name": "Return normalized ToolResult",
+      "schema_description": "ToolResult: {success: exit_code==0, exit_code, stdout, stderr, output_data, execution_time}.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Append task result to ledger"
+    },
+    {
+      "step_id": "P5-STEP-069",
+      "schema_name": "GUARDRAILS: Pre-execution checks",
+      "schema_description": "If pattern_id in task metadata: guardrails.pre_execution_checks(pattern_id, task_data). Validate: pattern exists/enabled, paths in scope, tools allowed, no forbidden ops. Fail task immediately if critical violations.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Update task state in orchestrator state"
+    },
+    {
+      "step_id": "P5-STEP-070",
+      "schema_name": "Record per-task results in run state",
+      "schema_description": "Create step_attempt record: step_attempt_id, run_id, sequence, tool_id, started_at, state=running. After completion: update state (succeeded/failed/canceled), ended_at, exit_code, output_patch_id, error_log.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Record per-task results in run state"
+    },
+    {
+      "step_id": "P5-STEP-071",
+      "schema_name": "GUARDRAILS: Post-execution checks",
+      "schema_description": "If pattern_id in task metadata: guardrails.post_execution_checks(pattern_id, task_result). Validate changes within max_changes limits. Detect hallucinated success: status=success BUT exit_code!=0 OR tests_passed<tests_run OR expected files missing. If hallucination: increment run_stats.hallucination_count, escalate if >=3.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Detect failures / non-zero status"
+    },
+    {
+      "step_id": "P5-STEP-072",
+      "schema_name": "Emit task completion event",
+      "schema_description": "Event: {event_type: step_completed, step_attempt_id, status: succeeded/failed, ...}. Stored in event bus for monitoring/auditing.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Apply failure policy (retry/skip/halt)"
+    },
+    {
+      "step_id": "P5-STEP-073",
+      "schema_name": "Update task statuses in DAG",
+      "schema_description": "Mark completed step as SUCCESS or FAILED in DAG. Update step state in database. Emit state transition events.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "If retryable, enqueue retry attempt"
+    },
+    {
+      "step_id": "P5-STEP-074",
+      "schema_name": "Ask scheduler for next ready batch",
+      "schema_description": "Call: scheduler.get_ready_steps(current_state). Scheduler recomputes: steps with all dependencies satisfied, blocked steps, runnable steps (up to max_concurrency).",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "If non-retryable, mark task failed"
+    },
+    {
+      "step_id": "P5-STEP-075",
+      "schema_name": "Handle step failures",
+      "schema_description": "Apply failure policy from step_def.on_failure: - abort: Cancel all pending if step.critical==true - skip_dependents: Mark dependent steps as SKIPPED - continue: Allow independent steps to proceed Retry logic: if attempt < step_def.retries, reset to PENDING and retry.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Propagate failure to dependent tasks"
+    },
+    {
+      "step_id": "P5-STEP-076",
+      "schema_name": "Repeat execution loop (Steps 59-75)",
+      "schema_description": "While has_pending_or_running_steps(): - Update running steps (check completion, timeouts) - Find runnable steps (dependencies met) - Start runnable steps (up to max_concurrency) - Sleep 0.5s (polling interval) Exit when: all steps in terminal state (SUCCESS/FAILED/SKIPPED/CANCELED).",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Consolidate batch results"
+    },
+    {
+      "step_id": "P5-STEP-077",
+      "schema_name": "OPTIONAL: Convert AI outputs to patches",
+      "schema_description": "If patch_converter enabled: read AI tool stdout (unified diff format), parse into Patch objects, validate syntax and context, return normalized Patch.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Determine if more batches remain"
+    },
+    {
+      "step_id": "P5-STEP-078",
+      "schema_name": "OPTIONAL: Manage patch lifecycle",
+      "schema_description": "If patch_ledger enabled: store patch with state=created, validate (→validated), queue (→queued), apply (→applied), verify (→verified), commit/quarantine (→committed|quarantined). Ledger: JSON append-only log.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "If remaining, loop to next batch selection"
+    },
+    {
+      "step_id": "P5-STEP-079",
+      "schema_name": "Compute final run status",
+      "schema_description": "If any FAILED steps → run status=failed. If all SUCCESS or SKIPPED → run status=succeeded. If unexpected state → run status=quarantined.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "If no remaining, finalize run"
+    },
+    {
+      "step_id": "P5-STEP-080",
+      "schema_name": "Mark run complete",
+      "schema_description": "Update DB: state (succeeded/failed/quarantined), ended_at, exit_code (0/1). Emit event: run_completed.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Mark run complete"
+    },
+    {
+      "step_id": "P5-STEP-081",
+      "schema_name": "Persist final state",
+      "schema_description": "Commit database transaction. All step_attempts saved. All events flushed to event bus. Run record finalized.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "EXECUTION",
+      "e2e_description": "Write execution artifacts"
+    },
+    {
+      "step_id": "P6-STEP-082",
+      "schema_name": "Poll MINI_PIPE for completion",
+      "schema_description": "Query: orchestrator.get_run_status(run_id). Wait for run state: succeeded | failed | quarantined.",
+      "schema_source": "steps",
+      "in_e2e": false,
+      "e2e_phase": null,
+      "e2e_description": null
+    },
+    {
+      "step_id": "P6-STEP-083",
+      "schema_name": "Collect aggregated execution results",
+      "schema_description": "Query: orchestrator.get_run_steps(run_id), orchestrator.get_run_events(run_id). Summarize: total tasks, tasks succeeded, failed, skipped, execution duration, files modified.",
+      "schema_source": "steps",
+      "in_e2e": false,
+      "e2e_phase": null,
+      "e2e_description": null
+    },
+    {
+      "step_id": "P6-STEP-084",
+      "schema_name": "Return execution summary to ACMS",
+      "schema_description": "ExecutionResult: {success, run_id, tasks_completed, tasks_failed, execution_time_seconds, error, output_data}.",
+      "schema_source": "steps",
+      "in_e2e": false,
+      "e2e_phase": null,
+      "e2e_description": null
+    },
+    {
+      "step_id": "P6-STEP-085",
+      "schema_name": "GUARDRAILS: Update patches_applied counter",
+      "schema_description": "run_stats[\"patches_applied\"] = <count from execution results>. Used to detect planning loops (planning without execution).",
+      "schema_source": "steps",
+      "in_e2e": false,
+      "e2e_phase": null,
+      "e2e_description": null
+    },
+    {
+      "step_id": "P6-STEP-086",
+      "schema_name": "Correlate execution results with gaps",
+      "schema_description": "For each task in execution results: - Extract gap_ids from task metadata - Look up gaps in gap_registry - Determine if gap addressed: task succeeded + verified → gap resolved, task failed → gap in_progress, task skipped → gap deferred.",
+      "schema_source": "steps",
+      "in_e2e": false,
+      "e2e_phase": null,
+      "e2e_description": null
+    },
+    {
+      "step_id": "P6-STEP-087",
+      "schema_name": "Update gap_registry with new statuses",
+      "schema_description": "For each gap: if addressed → gap.status=RESOLVED, if attempted but failed → gap.status=IN_PROGRESS, if not attempted → gap.status=DEFERRED. Associate gap with: run_id, workstream_id, task_id (in metadata).",
+      "schema_source": "steps",
+      "in_e2e": false,
+      "e2e_phase": null,
+      "e2e_description": null
+    },
+    {
+      "step_id": "P6-STEP-088",
+      "schema_name": "Persist updated gap statuses",
+      "schema_description": "Save gap_registry.json with updated gap records. Atomic write (temp file + rename).",
+      "schema_source": "steps",
+      "in_e2e": false,
+      "e2e_phase": null,
+      "e2e_description": null
+    },
+    {
+      "step_id": "P6-STEP-089",
+      "schema_name": "GUARDRAILS: Final anti-pattern detection",
+      "schema_description": "Call: anti_pattern_detector.detect_all(run_context). Check: hallucinated success (final summary), planning loop, all runbook patterns. Log all detections to ledger and console.",
+      "schema_source": "steps",
+      "in_e2e": false,
+      "e2e_phase": null,
+      "e2e_description": null
+    },
+    {
+      "step_id": "P6-STEP-090",
+      "schema_name": "Synthesize unified RunStatus object",
+      "schema_description": "Components: run metadata, state transitions, gap statistics (discovered/resolved/in_progress/deferred), workstream statistics, guardrails statistics (violations, anti-patterns), configuration, artifacts.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "SUMMARY",
+      "e2e_description": "Synthesize unified RunStatus object"
+    },
+    {
+      "step_id": "P6-STEP-091",
+      "schema_name": "Write RunStatus JSON to disk",
+      "schema_description": "File: .acms_runs/<RUN_ID>/run_status.json. Format: Comprehensive JSON with all run data.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "SUMMARY",
+      "e2e_description": "Write summary report artifact"
+    },
+    {
+      "step_id": "P6-STEP-092",
+      "schema_name": "Generate human-readable summary report",
+      "schema_description": "File: .acms_runs/<RUN_ID>/summary_report.md (Markdown). Contains: executive summary, gap discovery results, planning results, execution results, guardrails summary, recommendations, links to artifacts.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "SUMMARY",
+      "e2e_description": "Persist final run status JSON"
+    },
+    {
+      "step_id": "P6-STEP-093",
+      "schema_name": "Transition to SUMMARY state",
+      "schema_description": "Log state transition EXECUTION → SUMMARY to ledger and console.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "SUMMARY",
+      "e2e_description": "acms_controller logs state transition to SUMMARY"
+    },
+    {
+      "step_id": "P6-STEP-094",
+      "schema_name": "Print summary to console",
+      "schema_description": "Formatted table with: Run ID, Phases completed, Gaps (discovered/resolved), Workstreams, Tasks (succeeded/failed), Guardrails (anti-patterns detected).",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "SUMMARY",
+      "e2e_description": "Notify stakeholders (if enabled)"
+    },
+    {
+      "step_id": "P6-STEP-095",
+      "schema_name": "Safely store code changes",
+      "schema_description": "Options: create git branch, commit changes, leave in working tree, patch ledger. Controlled by config.commit_strategy.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "SUMMARY",
+      "e2e_description": "CHECKPOINT - SUMMARY phase complete"
+    },
+    {
+      "step_id": "P6-STEP-096",
+      "schema_name": "Transition to DONE state",
+      "schema_description": "Log state transition SUMMARY → DONE to ledger and console.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "SUMMARY",
+      "e2e_description": "acms_controller logs state transition to DONE"
+    },
+    {
+      "step_id": "P6-STEP-097",
+      "schema_name": "Finalize run ledger",
+      "schema_description": "Final entry: {event: run_finalized, status: success|failed}. Ledger closed (no more writes).",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "SUMMARY",
+      "e2e_description": "Finalize run ledger"
+    },
+    {
+      "step_id": "P6-STEP-098",
+      "schema_name": "Exit with appropriate code",
+      "schema_description": "Exit code 0: run succeeded (all critical tasks passed). Exit code 1: run failed (critical tasks failed or ACMS errors).",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "DONE",
+      "e2e_description": "Exit with appropriate code"
+    },
+    {
+      "step_id": "P6-STEP-099",
+      "schema_name": "Print concise summary to stdout",
+      "schema_description": "Format: [ACMS] Run completed successfully, Run ID, Gaps resolved, Tasks completed, Reports path.",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "DONE",
+      "e2e_description": "Print concise summary to stdout"
+    },
+    {
+      "step_id": "P6-STEP-100",
+      "schema_name": "Cleanup temporary files",
+      "schema_description": "If configured: remove intermediate build artifacts, compress logs, archive old runs (per run_retention_days config).",
+      "schema_source": "steps",
+      "in_e2e": true,
+      "e2e_phase": "DONE",
+      "e2e_description": "Cleanup temporary files"
+    }
+  ],
+  "IsReadOnly": false,
+  "IsFixedSize": true,
+  "IsSynchronized": false,
+  "Count": 58
+}

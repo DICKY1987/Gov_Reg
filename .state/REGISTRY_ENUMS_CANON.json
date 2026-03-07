@@ -1,0 +1,36 @@
+{
+  "generated_at": "2026-03-06T18:08:23.795297",
+  "enums": {
+    "repo_root_id": {
+      "canonical": [
+        "GOV_REG_WORKSPACE",
+        "ALL_AI",
+        "AI_PROD_PIPELINE"
+      ],
+      "aliases": {
+        "AI_PIPELINE": "AI_PROD_PIPELINE",
+        "PROD_PIPELINE": "AI_PROD_PIPELINE",
+        "AI": "ALL_AI",
+        "01": "GOV_REG_WORKSPACE"
+      },
+      "description": "Repository root identifier for multi-root governance"
+    },
+    "canonicality": {
+      "canonical": [
+        "CANONICAL",
+        "LEGACY",
+        "ALTERNATE",
+        "EXPERIMENTAL"
+      ],
+      "aliases": {
+        "PRIMARY": "CANONICAL",
+        "DEPRECATED": "LEGACY",
+        "ALT": "ALTERNATE",
+        "EXPERIMENTAL_DRAFT": "EXPERIMENTAL",
+        "SUPERSEDED": "LEGACY"
+      },
+      "description": "File canonicality status in multi-version scenarios"
+    }
+  },
+  "source": "P_01999000042260305000_enum_drift_gate.py"
+}

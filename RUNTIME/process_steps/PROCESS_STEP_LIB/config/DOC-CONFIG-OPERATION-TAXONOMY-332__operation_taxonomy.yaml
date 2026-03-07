@@ -1,0 +1,392 @@
+# DOC_LINK: DOC-CONFIG-OPERATION-TAXONOMY-332
+doc_id: DOC-CONFIG-OPERATION-TAXONOMY-332
+# operation_taxonomy.yaml
+# Consolidates 30+ operation_kind values into 15 unified categories
+# Version: 1.0.0
+
+version: "1.0.0"
+description: "Operation kind taxonomy for E2E unified process schema"
+
+# Universal operation categories (15 total)
+universal_categories:
+  initialization:
+    description: "System startup, configuration loading, directory creation"
+    examples:
+      - "Loading configuration files"
+      - "Creating directory structures"
+      - "Initializing databases"
+      - "Setting up runtime environment"
+
+  discovery:
+    description: "Scanning, searching, and identifying resources"
+    examples:
+      - "Scanning directories for files"
+      - "Discovering patterns in code"
+      - "Finding gaps in documentation"
+      - "Extracting terms from content"
+
+  analysis:
+    description: "Analyzing, computing, and evaluating data"
+    examples:
+      - "Gap analysis"
+      - "Similarity detection"
+      - "Quality metrics computation"
+      - "Dependency analysis"
+
+  validation:
+    description: "Checking compliance, quality, and correctness"
+    examples:
+      - "Schema validation"
+      - "Quality checks"
+      - "Constraint verification"
+      - "Duplicate detection"
+
+  transformation:
+    description: "Converting, parsing, and transforming data"
+    examples:
+      - "YAML parsing"
+      - "Format conversion"
+      - "Data normalization"
+      - "Template rendering"
+
+  generation:
+    description: "Creating new artifacts, documents, or code"
+    examples:
+      - "Generating specifications"
+      - "Creating executors"
+      - "Building documentation"
+      - "Synthesizing reports"
+
+  registration:
+    description: "Registering, indexing, and cataloging entities"
+    examples:
+      - "Adding to registry"
+      - "Creating index entries"
+      - "Assigning identifiers"
+      - "Cataloging artifacts"
+
+  execution:
+    description: "Running tasks, executing code, or invoking processes"
+    examples:
+      - "Executing tasks"
+      - "Running agents"
+      - "Invoking executors"
+      - "Processing workflows"
+
+  monitoring:
+    description: "Observing, tracking, and measuring system behavior"
+    examples:
+      - "Performance monitoring"
+      - "Health checks"
+      - "Progress tracking"
+      - "Telemetry collection"
+
+  aggregation:
+    description: "Collecting, consolidating, and merging results"
+    examples:
+      - "Aggregating results"
+      - "Merging reports"
+      - "Consolidating metrics"
+      - "Combining outputs"
+
+  persistence:
+    description: "Saving, storing, and persisting data"
+    examples:
+      - "Writing to database"
+      - "Saving files"
+      - "Persisting state"
+      - "Creating checkpoints"
+
+  synchronization:
+    description: "Syncing with external systems and maintaining consistency"
+    examples:
+      - "GitHub sync"
+      - "External API calls"
+      - "State reconciliation"
+      - "Data synchronization"
+
+  approval:
+    description: "Approval gates, confirmation, and authorization"
+    examples:
+      - "Human approval"
+      - "Automated approval"
+      - "Confidence scoring"
+      - "Authorization checks"
+
+  maintenance:
+    description: "Updates, patches, deprecation, and archival"
+    examples:
+      - "Applying patches"
+      - "Deprecating entries"
+      - "Archiving data"
+      - "Cleanup operations"
+
+  reporting:
+    description: "Generating reports, summaries, and notifications"
+    examples:
+      - "Creating summary reports"
+      - "Generating dashboards"
+      - "Sending notifications"
+      - "Producing analytics"
+
+# Mappings from original operation_kind values to universal categories
+mappings:
+  # Initialization variants
+  initialization:
+    - initialization
+    - bootstrap
+    - setup
+    - init
+    - load_config
+    - create_directories
+
+  # Discovery variants
+  discovery:
+    - phase_discovery
+    - pattern_discovery
+    - gap_discovery
+    - term_extraction
+    - file_scanning
+    - resource_discovery
+    - mining
+
+  # Analysis variants
+  analysis:
+    - gap_analysis
+    - similarity_detection
+    - quality_analysis
+    - dependency_analysis
+    - conflict_detection
+    - impact_analysis
+    - semantic_analysis
+
+  # Validation variants
+  validation:
+    - validation
+    - schema_validation
+    - quality_check
+    - duplicate_detection
+    - constraint_check
+    - compliance_check
+    - verification
+
+  # Transformation variants
+  transformation:
+    - parsing
+    - conversion
+    - normalization
+    - transformation
+    - template_rendering
+    - format_conversion
+    - data_mapping
+
+  # Generation variants
+  generation:
+    - generation
+    - spec_generation
+    - executor_generation
+    - doc_generation
+    - code_generation
+    - artifact_creation
+    - synthesis
+
+  # Registration variants
+  registration:
+    - registration
+    - indexing
+    - cataloging
+    - id_assignment
+    - enrollment
+    - listing
+
+  # Execution variants
+  execution:
+    - task_execution
+    - agent_execution
+    - executor_invocation
+    - workflow_execution
+    - command_execution
+    - script_execution
+    - run
+
+  # Monitoring variants
+  monitoring:
+    - monitoring
+    - health_check
+    - performance_tracking
+    - telemetry
+    - observation
+    - status_check
+    - progress_tracking
+
+  # Aggregation variants
+  aggregation:
+    - aggregation
+    - consolidation
+    - merging
+    - collection
+    - combination
+    - rollup
+
+  # Persistence variants
+  persistence:
+    - persistence
+    - storage
+    - save
+    - write
+    - commit
+    - checkpoint
+    - snapshot
+
+  # Synchronization variants
+  synchronization:
+    - synchronization
+    - sync
+    - external_sync
+    - state_sync
+    - reconciliation
+    - integration
+
+  # Approval variants
+  approval:
+    - approval
+    - approval_gate
+    - human_approval
+    - automated_approval
+    - authorization
+    - confirmation
+    - review
+
+  # Maintenance variants
+  maintenance:
+    - maintenance
+    - patching
+    - update
+    - deprecation
+    - archival
+    - cleanup
+    - housekeeping
+
+  # Reporting variants
+  reporting:
+    - reporting
+    - summary_generation
+    - notification
+    - dashboard_creation
+    - analytics
+    - log_generation
+
+# Ambiguous operations that need context for categorization
+ambiguous_operations:
+  update:
+    default_category: "maintenance"
+    context_rules:
+      - condition: "phase in ['INIT', '1_BOOTSTRAP']"
+        category: "initialization"
+      - condition: "phase in ['EXECUTION', '6_EXECUTION']"
+        category: "execution"
+      - condition: "phase in ['MAINTENANCE', '8_MAINTENANCE']"
+        category: "maintenance"
+
+  validate:
+    default_category: "validation"
+    context_rules:
+      - condition: "responsible_component contains 'schema'"
+        category: "validation"
+      - condition: "responsible_component contains 'quality'"
+        category: "validation"
+
+  generate:
+    default_category: "generation"
+    context_rules:
+      - condition: "expected_outputs contains 'report'"
+        category: "reporting"
+      - condition: "expected_outputs contains 'summary'"
+        category: "reporting"
+
+# Operation kind patterns (regex-based categorization)
+operation_patterns:
+  - pattern: "^(init|setup|bootstrap|load_config)"
+    category: "initialization"
+
+  - pattern: "^(scan|discover|find|search|mine|extract)"
+    category: "discovery"
+
+  - pattern: "^(analyze|compute|calculate|evaluate|detect)"
+    category: "analysis"
+
+  - pattern: "^(validate|verify|check|comply)"
+    category: "validation"
+
+  - pattern: "^(parse|convert|transform|normalize|render)"
+    category: "transformation"
+
+  - pattern: "^(generate|create|build|synthesize|produce)"
+    category: "generation"
+
+  - pattern: "^(register|index|catalog|enroll|list)"
+    category: "registration"
+
+  - pattern: "^(execute|run|invoke|process|perform)"
+    category: "execution"
+
+  - pattern: "^(monitor|track|observe|measure|watch)"
+    category: "monitoring"
+
+  - pattern: "^(aggregate|consolidate|merge|collect|combine)"
+    category: "aggregation"
+
+  - pattern: "^(save|store|persist|write|commit)"
+    category: "persistence"
+
+  - pattern: "^(sync|synchronize|reconcile|integrate)"
+    category: "synchronization"
+
+  - pattern: "^(approve|authorize|confirm|review|gate)"
+    category: "approval"
+
+  - pattern: "^(maintain|patch|update|deprecate|archive|cleanup)"
+    category: "maintenance"
+
+  - pattern: "^(report|summarize|notify|dashboard|log)"
+    category: "reporting"
+
+# Statistics from current schemas
+source_statistics:
+  MASTER_SPLINTER:
+    unique_operations: 13
+    most_common:
+      - initialization: 3
+      - phase_discovery: 1
+      - parsing: 3
+      - task_execution: 15
+
+  PATTERNS:
+    unique_operations: 12
+    most_common:
+      - initialization: 3
+      - pattern_discovery: 2
+      - validation: 3
+      - registration: 2
+
+  GLOSSARY:
+    unique_operations: 10
+    most_common:
+      - initialization: 3
+      - term_extraction: 1
+      - validation: 3
+      - maintenance: 4
+
+  SSOT:
+    unique_operations: 8
+    most_common:
+      - initialization: 7
+      - task_execution: 80
+      - gap_analysis: 5
+      - reporting: 8
+
+  PROCESS:
+    unique_operations: 5
+    most_common:
+      - initialization: 1
+      - task_execution: 4

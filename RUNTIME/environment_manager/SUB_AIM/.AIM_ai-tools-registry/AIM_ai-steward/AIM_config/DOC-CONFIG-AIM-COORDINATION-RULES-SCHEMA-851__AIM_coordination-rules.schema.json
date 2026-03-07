@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "AIM_coordination-rules.schema.json",
+  "type": "object",
+  "properties": {
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "primary"
+        ],
+        "properties": {
+          "primary": {
+            "type": "string"
+          },
+          "fallback": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "loadBalance": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  },
+  "doc_id": "DOC-CONFIG-AIM-COORDINATION-RULES-SCHEMA-851"
+}

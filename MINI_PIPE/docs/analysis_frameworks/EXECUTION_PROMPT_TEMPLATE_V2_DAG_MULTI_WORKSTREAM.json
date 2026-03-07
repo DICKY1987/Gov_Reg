@@ -1,0 +1,287 @@
+{
+  "meta": {
+    "prompt_id": "EXECUTION_PROMPT_TEMPLATE_V2_DAG_MULTI_WORKSTREAM",
+    "version": "2.0.0",
+    "source_file": "EXECUTION_PROMPT_TEMPLATE_V2_DAG_MULTI_WORKSTREAM.md",
+    "description": "Template for AI agent execution prompts with DAG-based multi-workstream support",
+    "notes": [
+      "Converted from EXECUTION_PROMPT_TEMPLATE_V2_DAG_MULTI_WORKSTREAM.md into structured JSON.",
+      "Supports variable substitution for phase_id, workstream_id, and other runtime parameters."
+    ]
+  },
+  "index": {
+    "metadata": {
+      "PROMPT_ID": {
+        "path": "/meta/prompt_id",
+        "description": "Unique identifier for this execution template",
+        "tags": ["meta", "identifier"]
+      },
+      "VERSION": {
+        "path": "/meta/version",
+        "description": "Version number of the template",
+        "tags": ["meta", "version"]
+      }
+    },
+    "variables": {
+      "PHASE_ID": {
+        "path": "/variables/phase_id",
+        "description": "Current phase identifier",
+        "tags": ["variable", "phase"]
+      },
+      "WORKSTREAM_ID": {
+        "path": "/variables/workstream_id",
+        "description": "Current workstream identifier",
+        "tags": ["variable", "workstream"]
+      },
+      "OBJECTIVE": {
+        "path": "/variables/objective",
+        "description": "Mission objective for this execution",
+        "tags": ["variable", "mission"]
+      },
+      "FILE_SCOPE_MODIFY": {
+        "path": "/variables/file_scope_modify",
+        "description": "File patterns that may be modified",
+        "tags": ["variable", "scope", "permissions"]
+      },
+      "FILE_SCOPE_CREATE": {
+        "path": "/variables/file_scope_create",
+        "description": "Directories where files may be created",
+        "tags": ["variable", "scope", "permissions"]
+      },
+      "FILE_SCOPE_READ_ONLY": {
+        "path": "/variables/file_scope_read_only",
+        "description": "File patterns that are read-only",
+        "tags": ["variable", "scope", "permissions"]
+      },
+      "FORBIDDEN_PATHS": {
+        "path": "/variables/forbidden_paths",
+        "description": "Paths that must never be touched",
+        "tags": ["variable", "scope", "forbidden"]
+      },
+      "EXECUTION_STEPS": {
+        "path": "/variables/execution_steps_formatted",
+        "description": "Formatted execution steps",
+        "tags": ["variable", "steps"]
+      },
+      "PRE_FLIGHT_CHECKS": {
+        "path": "/variables/pre_flight_checks",
+        "description": "Pre-execution validation checks",
+        "tags": ["variable", "validation"]
+      },
+      "ACCEPTANCE_TESTS": {
+        "path": "/variables/acceptance_tests",
+        "description": "Post-execution acceptance tests",
+        "tags": ["variable", "testing"]
+      },
+      "EXPECTED_ARTIFACTS": {
+        "path": "/variables/expected_artifacts",
+        "description": "Required output artifacts",
+        "tags": ["variable", "artifacts"]
+      },
+      "COMPLETION_GATE_RULES": {
+        "path": "/variables/completion_gate_rules",
+        "description": "Success criteria for completion",
+        "tags": ["variable", "gates"]
+      }
+    },
+    "sections": {
+      "S_MISSION": {
+        "path": "/mission",
+        "description": "Mission statement section",
+        "tags": ["section", "mission"]
+      },
+      "S_CONSTRAINTS": {
+        "path": "/constraints",
+        "description": "Critical constraints section",
+        "tags": ["section", "constraints"]
+      },
+      "S_EXECUTION_STEPS": {
+        "path": "/execution_steps",
+        "description": "Execution steps section",
+        "tags": ["section", "steps"]
+      },
+      "S_PRE_FLIGHT": {
+        "path": "/pre_flight_checks",
+        "description": "Pre-flight checks section",
+        "tags": ["section", "validation"]
+      },
+      "S_ACCEPTANCE_TESTS": {
+        "path": "/acceptance_tests",
+        "description": "Acceptance tests section",
+        "tags": ["section", "testing"]
+      },
+      "S_EXPECTED_ARTIFACTS": {
+        "path": "/expected_artifacts",
+        "description": "Expected artifacts section",
+        "tags": ["section", "artifacts"]
+      },
+      "S_ERROR_HANDLING": {
+        "path": "/error_handling",
+        "description": "Error handling protocol",
+        "tags": ["section", "errors"]
+      },
+      "S_SUCCESS_CRITERIA": {
+        "path": "/success_criteria",
+        "description": "Success criteria section",
+        "tags": ["section", "success"]
+      },
+      "S_OUTPUT_FORMAT": {
+        "path": "/output_format",
+        "description": "Output format specification",
+        "tags": ["section", "output"]
+      }
+    },
+    "constraints": {
+      "C_FILE_SCOPE": {
+        "path": "/constraints/file_scope_enforcement",
+        "description": "File scope enforcement rules",
+        "tags": ["constraint", "files"]
+      },
+      "C_GROUND_TRUTH": {
+        "path": "/constraints/ground_truth_over_vibes",
+        "description": "Ground truth verification rules",
+        "tags": ["constraint", "verification"]
+      },
+      "C_NO_STOP": {
+        "path": "/constraints/no_stop_mode",
+        "description": "No-stop execution mode rules",
+        "tags": ["constraint", "execution"]
+      }
+    },
+    "output": {
+      "FORMAT_SCHEMA": {
+        "path": "/output_format/schema",
+        "description": "JSON output schema definition",
+        "tags": ["output", "schema"]
+      }
+    }
+  },
+  "variables": {
+    "phase_id": "${phase_id}",
+    "workstream_id": "${workstream_id}",
+    "objective": "${objective}",
+    "file_scope_modify": "${file_scope_modify}",
+    "file_scope_create": "${file_scope_create}",
+    "file_scope_read_only": "${file_scope_read_only}",
+    "forbidden_paths": "${forbidden_paths}",
+    "execution_steps_formatted": "${execution_steps_formatted}",
+    "pre_flight_checks": "${pre_flight_checks}",
+    "acceptance_tests": "${acceptance_tests}",
+    "expected_artifacts": "${expected_artifacts}",
+    "completion_gate_rules": "${completion_gate_rules}"
+  },
+  "agent_role": "You are an AI operator executing Phase ${phase_id} of Workstream ${workstream_id}.",
+  "mission": {
+    "description": "${objective}"
+  },
+  "constraints": {
+    "title": "CRITICAL",
+    "file_scope_enforcement": {
+      "title": "File Scope Enforcement",
+      "rules": [
+        {
+          "action": "modify",
+          "description": "You MAY ONLY modify files matching",
+          "value": "${file_scope_modify}"
+        },
+        {
+          "action": "create",
+          "description": "You MAY create files in",
+          "value": "${file_scope_create}"
+        },
+        {
+          "action": "read",
+          "description": "You MAY read files in",
+          "value": "${file_scope_read_only}"
+        },
+        {
+          "action": "forbidden",
+          "description": "You MUST NEVER touch",
+          "value": "${forbidden_paths}"
+        }
+      ]
+    },
+    "ground_truth_over_vibes": {
+      "title": "Ground Truth Over Vibes",
+      "principles": [
+        "Trust git status, test output, and filesystem over conversational summaries",
+        "Verify success with actual commands, not assumptions"
+      ]
+    },
+    "no_stop_mode": {
+      "title": "NO STOP MODE",
+      "principles": [
+        "If a step fails, log the error and continue",
+        "Execute ALL steps, collect ALL errors",
+        "Report comprehensive results at the end"
+      ]
+    }
+  },
+  "execution_steps": {
+    "description": "${execution_steps_formatted}",
+    "placeholder": "Runtime-populated list of steps to execute"
+  },
+  "pre_flight_checks": {
+    "description": "Before starting, verify:",
+    "checks": "${pre_flight_checks}",
+    "placeholder": "Runtime-populated list of pre-flight validation checks"
+  },
+  "acceptance_tests": {
+    "description": "After execution, run:",
+    "tests": "${acceptance_tests}",
+    "placeholder": "Runtime-populated list of acceptance tests"
+  },
+  "expected_artifacts": {
+    "description": "You must produce:",
+    "artifacts": "${expected_artifacts}",
+    "placeholder": "Runtime-populated list of required artifacts"
+  },
+  "error_handling": {
+    "title": "If Errors Occur",
+    "steps": [
+      "Log error details to stderr",
+      "Add to error collection list",
+      "Continue with next step",
+      "Report all errors in final summary"
+    ]
+  },
+  "success_criteria": {
+    "description": "${completion_gate_rules}",
+    "placeholder": "Runtime-populated completion gate rules"
+  },
+  "output_format": {
+    "description": "Provide structured JSON output",
+    "schema": {
+      "phase_id": {
+        "type": "string",
+        "description": "Phase identifier",
+        "value": "${phase_id}"
+      },
+      "status": {
+        "type": "string",
+        "enum": ["completed", "failed", "blocked"],
+        "description": "Execution status"
+      },
+      "errors": {
+        "type": "array",
+        "description": "List of errors encountered"
+      },
+      "warnings": {
+        "type": "array",
+        "description": "List of warnings encountered"
+      },
+      "files_modified": {
+        "type": "array",
+        "description": "List of files modified during execution"
+      },
+      "tests_passed": {
+        "type": "boolean",
+        "description": "Whether all tests passed"
+      },
+      "artifacts_created": {
+        "type": "array",
+        "description": "List of artifacts created"
+      }
+    }
+  }
+}

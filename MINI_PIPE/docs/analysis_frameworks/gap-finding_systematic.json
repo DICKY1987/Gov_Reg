@@ -1,0 +1,1037 @@
+{
+  "title": "Comprehensive Gap-Finding Framework: Making It Systematic and Continuous",
+  "sections": [
+    {
+      "id": "S_1",
+      "title": "LOGICAL GAPS (Correctness, Behavior, Edge Cases)",
+      "subsections": [
+        {
+          "id": "SS_EXPANDED_FRAMEWORK_THE_TESTING_PYRAMID__RISK_SURFACE_ANALYSIS",
+          "title": "Expanded Framework: The Testing Pyramid + Risk Surface Analysis",
+          "sub_subsections": [
+            {
+              "id": "SSS_11",
+              "title": "Multi-Layer Coverage Analysis",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "text": "Don't just measure line coverage\u2014use a **coverage stack**:"
+                },
+                {
+                  "type": "code_block",
+                  "text": "```\nLayer 1: Syntactic Coverage\n\u251c\u2500 Line coverage (basic)\n\u251c\u2500 Branch coverage (better)\n\u2514\u2500 MC/DC coverage (aerospace standard - Modified Condition/Decision Coverage)\n\nLayer 2: Semantic Coverage\n\u251c\u2500 Data flow coverage (def-use pairs)\n\u251c\u2500 Path coverage (realistic paths through code)\n\u2514\u2500 State machine coverage (for stateful systems)\n\nLayer 3: Property Coverage\n\u251c\u2500 Mutation testing (are tests strong enough?)\n\u251c\u2500 Property-based testing (hypothesis/QuickCheck)\n\u2514\u2500 Metamorphic testing (output relationships hold)\n\nLayer 4: Boundary & Edge Case Coverage\n\u251c\u2500 Input boundary testing (min, max, null, empty)\n\u251c\u2500 Resource exhaustion scenarios\n\u2514\u2500 Concurrency edge cases\n```"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Tools by Language:**",
+                    "- **Python**: `coverage.py` + `pytest-cov` + `mutmut`/`cosmic-ray` + `hypothesis`",
+                    "- **PowerShell**: `Pester` + `PSScriptAnalyzer` + manual property tests",
+                    "- **.NET**: `coverlet` + `Stryker.NET` (mutation) + `FsCheck`",
+                    "- **JavaScript**: `nyc`/`c8` + `Stryker` + `fast-check`"
+                  ]
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Automation Pattern:**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```yaml\n# CI Pipeline Stage: Coverage Analysis\ncoverage-analysis:\n  steps:\n    - run: pytest --cov --cov-report=json --cov-report=html\n    - run: coverage report --fail-under=80\n    - run: mutmut run --use-coverage  # Only mutate covered code\n    - run: hypothesis --profile ci    # Run property tests\n    - store: coverage-report/\n    - alert: if coverage drops or mutation score < 75%\n```"
+                }
+              ]
+            },
+            {
+              "id": "SSS_12",
+              "title": "Domain Invariant Mapping (DDD-Inspired Audit)",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "text": "This is about **treating code as an implementation of business rules**."
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Process:**"
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "text": "1. **Extract domain concepts** from code and docs 2. **Identify invariants** for each concept 3. **Map enforcement points** in code 4. **Find enforcement gaps**"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Example for a banking system:**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```\nConcept: Account\nInvariants:\n  - Balance >= 0 (unless overdraft enabled)\n  - All transactions must be auditable\n  - Account.total_debits + Account.starting_balance - Account.total_credits = Account.current_balance\n\nEnforcement Check:\n  \u2713 Database constraint: CHECK (balance >= 0)\n  \u2713 Account.debit() method validates before update\n  \u2717 GAP: Import from CSV doesn't validate invariants\n  \u2717 GAP: Admin override endpoint bypasses checks\n  \u2717 GAP: No periodic reconciliation job to verify invariant holds\n```"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Automation Strategy:**",
+                    "- Use **contract testing** or **design-by-contract** tools",
+                    "- Python: `icontract`, `deal`",
+                    "- .NET: Code Contracts",
+                    "- General: Write invariant checks as assertions, enable in test/staging",
+                    "- Build **invariant monitors** that run periodically:"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```python\n  # invariant_monitor.py\n  def check_account_invariants():\n      violations = []\n      for account in Account.objects.all():\n          if account.balance != account.compute_expected_balance():\n              violations.append(f\"Account {account.id} balance mismatch\")\n      return violations\n  ```"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "- Run as **chaos validation**: during/after chaos experiments, verify all invariants still hold"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "SSS_13",
+              "title": "Comprehensive Failure Mode Analysis",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "text": "Go beyond \"where can this fail\" to **\"what is the blast radius when it fails?\"**"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Structured Failure Catalog:**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```\nExternal Dependency: Database\n\u251c\u2500 Connection failure\n\u2502  \u251c\u2500 Retry logic: YES (3 attempts, exponential backoff)\n\u2502  \u251c\u2500 Circuit breaker: NO \u274c GAP\n\u2502  \u251c\u2500 Fallback: NO \u274c GAP\n\u2502  \u2514\u2500 Observability: Logs error but no metric \u274c GAP\n\u251c\u2500 Timeout\n\u2502  \u251c\u2500 Timeout configured: YES (30s)\n\u2502  \u251c\u2500 Graceful degradation: NO \u274c GAP\n\u2502  \u2514\u2500 Transaction rollback: YES\n\u251c\u2500 Partial failure (some queries succeed)\n\u2502  \u251c\u2500 Inconsistency detection: NO \u274c GAP\n\u2502  \u2514\u2500 Compensating transactions: NO \u274c GAP\n\u2514\u2500 Data corruption\n   \u251c\u2500 Validation on read: NO \u274c GAP\n   \u2514\u2500 Checksum/integrity checks: NO \u274c GAP\n```"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Automation: Failure Mode Test Suite**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```python\n# failure_modes_test.py\nclass TestDatabaseFailures:\n    def test_connection_failure_with_circuit_breaker(self):\n        with simulate_db_down():\n            # First 3 calls should retry\n            # After threshold, circuit should open\n            # Subsequent calls should fail fast\n            assert circuit_breaker.is_open()\n    \n    def test_partial_query_failure_handling(self):\n        with simulate_partial_db_failure():\n            result = fetch_user_data(user_id)\n            assert result.is_consistent()  # Should detect inconsistency\n            assert compensating_action_was_triggered()\n```"
+                },
+                {
+                  "type": "paragraph",
+                  "text": "Use **chaos engineering** tools to automate this:"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "- **Chaos Toolkit** / **LitmusChaos** / **Gremlin**",
+                    "- Define failure scenarios in code, run regularly in test environments"
+                  ]
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "---"
+                  ]
+                }
+              ]
+            }
+          ],
+          "content": []
+        }
+      ],
+      "content": []
+    },
+    {
+      "id": "S_2",
+      "title": "PROCESS / WORKFLOW GAPS",
+      "subsections": [
+        {
+          "id": "SS_EXPANDED_FRAMEWORK_VALUE_STREAM__SDLC_MATURITY__TOIL_TRACKING",
+          "title": "Expanded Framework: Value Stream + SDLC Maturity + Toil Tracking",
+          "sub_subsections": [
+            {
+              "id": "SSS_21",
+              "title": "Value Stream Mapping (VSM) - Practical Implementation",
+              "content": [
+                {
+                  "type": "list",
+                  "items": [
+                    "**Step-by-step VSM for a software team:**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```\n1. Define scope: Pick one workflow (e.g., \"feature request \u2192 production\")\n\n2. Map current state:\n   Idea \u2192 Backlog \u2192 Development \u2192 Code Review \u2192 Testing \u2192 Staging \u2192 Production\n    \u2193        \u2193          \u2193            \u2193            \u2193         \u2193          \u2193\n   Wait?   Wait?      Value-add    Wait?        Value-add Wait?     Value-add\n   \n3. For each step, measure:\n   - Process time (value-adding time)\n   - Lead time (total wait + process time)\n   - % Complete & Accurate (rework rate)\n   - Who/what touches it (manual vs automated)\n\n4. Example measurements:\n   Development: 2 days process time\n   Code Review: 0.5 days process, 1.5 days wait \u274c GAP\n   Testing: 1 day process (manual) \u274c GAP, 0.5 days wait\n   Deployment: 0.1 days process (manual) \u274c GAP, 2 days wait (weekly releases) \u274c GAP\n```"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Automation Pattern:**"
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "text": "Create a **workflow telemetry system**:"
+                },
+                {
+                  "type": "code_block",
+                  "text": "```python\n# workflow_telemetry.py\nclass WorkflowTracker:\n    def record_transition(self, item_id, from_state, to_state, actor):\n        \"\"\"Record every state transition with timestamp\"\"\"\n        self.ledger.append({\n            'item_id': item_id,\n            'from': from_state,\n            'to': to_state,\n            'timestamp': now(),\n            'actor': actor,\n            'automated': is_bot(actor)\n        })\n    \n    def compute_vsm_metrics(self):\n        \"\"\"Generate VSM report from telemetry\"\"\"\n        return {\n            'lead_times': self.compute_lead_times(),\n            'wait_times': self.compute_wait_times(),\n            'automation_rate': len([t for t in transitions if t.automated]) / len(transitions),\n            'bottlenecks': self.identify_bottlenecks()\n        }\n```"
+                },
+                {
+                  "type": "paragraph",
+                  "text": "Integrate with **Jira/GitHub/ADO** APIs to auto-generate VSM reports monthly."
+                }
+              ]
+            },
+            {
+              "id": "SSS_22",
+              "title": "SDLC Maturity Assessment (Continuous Self-Assessment)",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "text": "Rather than one-time assessment, make it **continuous and metric-driven**."
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Capability Scorecard:**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```yaml\ncapabilities:\n  version_control:\n    - metric: \"% of code in version control\"\n      target: 100%\n      current: 98%  # GAP: some scripts in shared drives\n    - metric: \"% commits with meaningful messages\"\n      target: 90%\n      current: 65%  # GAP\n  \n  ci_cd:\n    - metric: \"% of projects with CI pipeline\"\n      target: 100%\n      current: 80%  # GAP\n    - metric: \"Average build time\"\n      target: <10min\n      current: 15min  # GAP\n    - metric: \"% of deployments automated\"\n      target: 100%\n      current: 60%  # GAP: manual production deploys\n  \n  testing:\n    - metric: \"% of projects with automated tests\"\n      target: 100%\n      current: 70%  # GAP\n    - metric: \"Average test coverage\"\n      target: 80%\n      current: 55%  # GAP\n```"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Automation: SDLC Dashboard**",
+                    "- Pull data from GitHub API, CI systems, SonarQube, etc.",
+                    "- Generate **maturity heatmap** weekly",
+                    "- Alert on regressions: \"CI automation dropped from 82% to 78%\""
+                  ]
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Tool recommendation:** Build custom dashboard or use:",
+                    "- **DORA DevOps Quickcheck**",
+                    "- **Atlassian DevOps Maturity Model**",
+                    "- **CloudBees DevOptics** / **Sleuth** / **LinearB**"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "SSS_23",
+              "title": "Toil Inventory & Automation Opportunity Scoring",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "text": "SRE-style **toil tracking** but systematized."
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Toil Characteristics (must meet all 4):**"
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "text": "1. **Manual**: requires human to run 2. **Repetitive**: done often enough to automate 3. **Automatable**: could be done by machine 4. **Tactical**: no enduring value, interrupt-driven 5. **Scales linearly**: O(n) with service growth"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Toil Inventory Template:**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```\nTask: Deploy new service to production\n\u251c\u2500 Frequency: 2-3x per week\n\u251c\u2500 Time per instance: 45 minutes\n\u251c\u2500 Manual steps:\n\u2502  \u251c\u2500 Update config file \u274c Toil - should be automated\n\u2502  \u251c\u2500 Run kubectl apply \u274c Toil - should be CI/CD\n\u2502  \u251c\u2500 Manual smoke test \u274c Toil - should be automated test\n\u2502  \u251c\u2500 Update status page \u274c Toil - should be automated\n\u2502  \u2514\u2500 Notify team \u274c Toil - should be automated\n\u251c\u2500 Automation cost: 2 days to build CD pipeline\n\u251c\u2500 ROI: Saves 3.5 hrs/week = 182 hrs/year\n\u2514\u2500 Priority: HIGH\n```"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Automation: Toil Tracking System**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```python\n# toil_tracker.py\ntoil_db.record_toil_event(\n    task=\"manual_deployment\",\n    time_spent_minutes=45,\n    performer=\"ops_team\",\n    could_be_automated=True,\n    automation_blocker=\"no_budget_approval\"  # Track WHY not automated\n)\n\n# Generate monthly toil report\ntoil_db.generate_report()\n# Output: \"Manual deployments: 180 minutes/month, ROI for automation: 3.2 months\"\n```"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "---"
+                  ]
+                }
+              ]
+            }
+          ],
+          "content": []
+        }
+      ],
+      "content": []
+    },
+    {
+      "id": "S_3",
+      "title": "ARCHITECTURAL GAPS",
+      "subsections": [
+        {
+          "id": "SS_EXPANDED_FRAMEWORK_MULTIMODEL_ARCHITECTURE_ASSESSMENT",
+          "title": "Expanded Framework: Multi-Model Architecture Assessment",
+          "sub_subsections": [
+            {
+              "id": "SSS_31",
+              "title": "ATAM (Architecture Tradeoff Analysis Method) - Practical Execution",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "text": "ATAM is heavyweight but powerful. Here's a streamlined version for ongoing use:"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Lightweight ATAM Process:**"
+                  ]
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Phase 1: Define Quality Attribute Scenarios**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```\nScenario: High-volume traffic spike\n\u251c\u2500 Stimulus: 10x normal traffic\n\u251c\u2500 Environment: Production, peak hours\n\u251c\u2500 Response: System maintains <200ms p95 latency\n\u251c\u2500 Measure: Latency stays below 200ms, no errors\n\u2514\u2500 Current architecture support: WEAK \u274c GAP\n   \u251c\u2500 No auto-scaling configured\n   \u251c\u2500 Database is single instance (bottleneck)\n   \u2514\u2500 No caching layer\n\nScenario: Critical security patch needed\n\u251c\u2500 Stimulus: CVE announced in dependency\n\u251c\u2500 Environment: Production\n\u251c\u2500 Response: Patch deployed within 4 hours\n\u251c\u2500 Measure: Time from CVE to deployment\n\u2514\u2500 Current architecture support: WEAK \u274c GAP\n   \u251c\u2500 No automated dependency scanning\n   \u251c\u2500 Manual deployment process (45 min)\n   \u2514\u2500 No blue-green for zero-downtime patch\n```"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Phase 2: Map Architecture Decisions to Scenarios**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```\nDecision: Monolithic architecture\n\u251c\u2500 Supports: Simple deployment (1 artifact)\n\u251c\u2500 Hinders: Scaling (must scale entire app)\n\u251c\u2500 Hinders: Fault isolation (one bug crashes all)\n\u2514\u2500 Risk areas: Performance, Availability \u274c GAP\n\nDecision: Synchronous REST calls between services\n\u251c\u2500 Supports: Simple programming model\n\u251c\u2500 Hinders: Cascading failures\n\u251c\u2500 Hinders: Performance under load\n\u2514\u2500 Risk areas: Reliability, Performance \u274c GAP\n   \u2514\u2500 Mitigation needed: Circuit breakers, timeouts, bulkheads\n```"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Automation: Architectural Fitness Functions**"
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "text": "These are **automated tests that enforce architectural rules**."
+                },
+                {
+                  "type": "code_block",
+                  "text": "```python\n# architecture_tests.py\nimport pytest\nfrom arch_test_lib import should_not_depend_on, should_have_max_complexity\n\ndef test_layer_dependencies():\n    \"\"\"Core domain should not depend on infrastructure\"\"\"\n    assert should_not_depend_on(\n        source=\"src/domain/**\",\n        target=\"src/infrastructure/**\"\n    )\n\ndef test_service_boundaries():\n    \"\"\"Services should not directly access each other's databases\"\"\"\n    assert no_cross_database_queries(\n        services=[\"user-service\", \"order-service\", \"inventory-service\"]\n    )\n\ndef test_api_gateway_pattern():\n    \"\"\"All external requests must go through API gateway\"\"\"\n    assert all_external_traffic_via_gateway()\n\ndef test_cyclomatic_complexity():\n    \"\"\"No function should exceed complexity of 15\"\"\"\n    assert should_have_max_complexity(threshold=15)\n```"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Tools for Architectural Testing:**",
+                    "- **Python**: `pytestarch`, `import-linter`",
+                    "- **.NET**: `NetArchTest`, `ArchUnitNET`",
+                    "- **Java**: `ArchUnit`",
+                    "- **General**: Custom `ast` parsing, static analysis"
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "text": "Run these in CI\u2014**architecture tests fail the build if violated**."
+                }
+              ]
+            },
+            {
+              "id": "SSS_32",
+              "title": "C4 Model + Arc42 Documentation + Living Architecture",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "text": "Don't just create diagrams\u2014make them **generative and validated**."
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Pattern: Documentation as Code + Diagram Generation**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```python\n# architecture_model.py (using Structurizr DSL or similar)\nworkspace = Workspace(\"System\", \"Description\")\n\n# Define systems\nui = workspace.add_software_system(\"Web UI\")\napi = workspace.add_software_system(\"API\")\ndb = workspace.add_software_system(\"Database\")\n\n# Define relationships\nui.uses(api, \"Makes API calls\", \"HTTPS\")\napi.uses(db, \"Reads/writes\", \"PostgreSQL\")\n\n# Generate diagrams automatically\nworkspace.export_to_c4_diagrams()\n\n# Validate architecture matches reality\ndef test_architecture_matches_code():\n    \"\"\"Ensure documented architecture matches actual code structure\"\"\"\n    assert detected_dependencies() == documented_dependencies()\n```"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Tools:**",
+                    "- **Structurizr** (C4 diagrams as code)",
+                    "- **arc42** (architecture documentation template)",
+                    "- **Diagrams.py** / **Graphviz** (generate diagrams from code)",
+                    "- **Dependabot** / **Renovate** (keep architecture docs in sync with code)"
+                  ]
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Living Architecture Pattern:**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```\n1. Store architecture in code (DSL or structured data)\n2. Generate diagrams automatically in CI\n3. Run architectural tests against actual codebase\n4. Detect drift: \"Code structure diverges from documented architecture\" \u274c GAP\n5. Alert and require synchronization\n```"
+                }
+              ]
+            },
+            {
+              "id": "SSS_33",
+              "title": "Quality Models + Technical Debt Quantification",
+              "content": [
+                {
+                  "type": "list",
+                  "items": [
+                    "**ISO/IEC 25010 Software Quality Model + Practical Metrics:**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```\nMaintainability:\n\u251c\u2500 Modularity\n\u2502  \u2514\u2500 Metric: Coupling between modules (should be LOW)\n\u251c\u2500 Reusability\n\u2502  \u2514\u2500 Metric: % of code duplicated (should be <3%)\n\u251c\u2500 Analyzability\n\u2502  \u2514\u2500 Metric: Cyclomatic complexity (should be <15 per function)\n\u251c\u2500 Modifiability\n\u2502  \u2514\u2500 Metric: LCOM (Lack of Cohesion of Methods)\n\u2514\u2500 Testability\n   \u2514\u2500 Metric: % of code covered by tests\n```"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Automation: Technical Debt Dashboard**"
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "text": "Use **SonarQube**, **Code Climate**, **NDepend**, or similar:"
+                },
+                {
+                  "type": "code_block",
+                  "text": "```yaml\n# sonarqube-config.yml\nquality_gates:\n  - name: \"Maintainability Rating\"\n    metric: maintainability_rating\n    threshold: A  # Fail if worse than A\n  \n  - name: \"Technical Debt Ratio\"\n    metric: sqale_debt_ratio\n    threshold: 5%  # Fail if >5%\n  \n  - name: \"Code Smells\"\n    metric: code_smells\n    threshold: 50  # Fail if >50 smells\n```"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Advanced: Technical Debt Accrual Rate**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```python\n# Track technical debt over time\ndebt_tracker.record_snapshot(\n    timestamp=now(),\n    total_debt_hours=sonarqube.get_total_debt(),\n    new_debt_this_sprint=sonarqube.get_new_debt_since(last_snapshot),\n    paid_debt_this_sprint=fixed_issues\n)\n\n# Alert if debt is accruing faster than it's being paid down\nif debt_tracker.debt_velocity() > 0:\n    alert(\"Technical debt is increasing! \u274c GAP\")\n```"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "---"
+                  ]
+                }
+              ]
+            }
+          ],
+          "content": []
+        }
+      ],
+      "content": []
+    },
+    {
+      "id": "S_4",
+      "title": "AUTOMATION GAPS",
+      "subsections": [
+        {
+          "id": "SS_EXPANDED_FRAMEWORK_CD_MATURITY__DORA__INFRASTRUCTUREASCODE__OBSERVABILITY",
+          "title": "Expanded Framework: CD Maturity + DORA + Infrastructure-as-Code + Observability",
+          "sub_subsections": [
+            {
+              "id": "SSS_41",
+              "title": "Continuous Delivery Maturity Model - Detailed Assessment",
+              "content": [
+                {
+                  "type": "list",
+                  "items": [
+                    "**CD Maturity Levels (per capability):**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```\nLevel 0: Manual/Ad-hoc\nLevel 1: Scripted (but manually triggered)\nLevel 2: Automated (triggered automatically)\nLevel 3: Continuous (high frequency, low friction)\nLevel 4: Optimized (self-healing, self-improving)\n```"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Example Assessment:**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```\nBuild Automation:\n\u251c\u2500 Current: Level 2 (Automated)\n\u2502  \u2713 CI builds on every commit\n\u2502  \u2713 Runs unit tests automatically\n\u2502  \u2717 Flaky tests cause false failures \u274c GAP\n\u2502  \u2717 Build time is 20 minutes (too slow) \u274c GAP\n\u2514\u2500 Target: Level 3 (Continuous)\n   \u2514\u2500 Action items:\n      - Parallelize tests (reduce to <10 min)\n      - Quarantine flaky tests\n      - Implement test impact analysis (only run affected tests)\n\nDeployment Automation:\n\u251c\u2500 Current: Level 1 (Scripted)\n\u2502  \u2713 Deployment script exists\n\u2502  \u2717 Manually triggered (requires approval) \u274c GAP\n\u2502  \u2717 No rollback automation \u274c GAP\n\u2502  \u2717 Requires downtime \u274c GAP\n\u2514\u2500 Target: Level 3 (Continuous)\n   \u2514\u2500 Action items:\n      - Implement blue-green or canary deployments\n      - Automate rollback on failure detection\n      - Remove manual approval (use automated quality gates)\n\nMonitoring & Alerting:\n\u251c\u2500 Current: Level 1 (Scripted)\n\u2502  \u2713 Logs collected\n\u2502  \u2717 No structured logging \u274c GAP\n\u2502  \u2717 Alerts are noisy (alert fatigue) \u274c GAP\n\u2502  \u2717 No SLO/SLI tracking \u274c GAP\n\u2514\u2500 Target: Level 4 (Optimized)\n   \u2514\u2500 Action items:\n      - Implement structured logging (JSON format)\n      - Define SLOs and alert on SLO violations only\n      - Implement auto-remediation for common issues\n```"
+                }
+              ]
+            },
+            {
+              "id": "SSS_42",
+              "title": "DORA Metrics + Capability Assessment",
+              "content": [
+                {
+                  "type": "list",
+                  "items": [
+                    "**The Four Key Metrics (track continuously):**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```python\n# dora_metrics.py\nclass DORAMetrics:\n    def deployment_frequency(self):\n        \"\"\"How often does org deploy to production?\"\"\"\n        # Elite: Multiple times per day\n        # High: Once per day to once per week\n        # Medium: Once per week to once per month\n        # Low: Less than once per month\n        return deployments_per_day()\n    \n    def lead_time_for_changes(self):\n        \"\"\"How long from commit to production?\"\"\"\n        # Elite: Less than one hour\n        # High: Less than one day\n        # Medium: Less than one week\n        # Low: More than one week\n        return avg_time_commit_to_deploy()\n    \n    def time_to_restore_service(self):\n        \"\"\"How long to recover from failure?\"\"\"\n        # Elite: Less than one hour\n        # High: Less than one day\n        # Medium: Less than one week\n        # Low: More than one week\n        return avg_time_incident_to_resolution()\n    \n    def change_failure_rate(self):\n        \"\"\"What % of changes cause failures?\"\"\"\n        # Elite: 0-15%\n        # High: 16-30%\n        # Medium: 31-45%\n        # Low: 46-100%\n        return failed_changes / total_changes\n```"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Automation: DORA Dashboard**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```python\n# Auto-collect from CI/CD, incident management, version control\ndora_collector.collect_data(\n    source_ci=\"github_actions\",\n    source_deploy=\"kubernetes\",\n    source_incidents=\"pagerduty\",\n    source_vcs=\"github\"\n)\n\n# Generate weekly report with trends\nreport = dora_collector.generate_report()\nif report.any_metric_regressing():\n    alert(\"DORA metrics regressing! \u274c GAP\")\n```"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**DORA Capabilities - Systematic Assessment:**"
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "text": "Beyond metrics, assess the **24 key capabilities** that drive performance:"
+                },
+                {
+                  "type": "code_block",
+                  "text": "```\nContinuous Delivery Capabilities:\n\u251c\u2500 Version control: \u2713\n\u251c\u2500 Deployment automation: \u2717 GAP (manual prod deploys)\n\u251c\u2500 Continuous integration: \u2713\n\u251c\u2500 Trunk-based development: \u2717 GAP (long-lived feature branches)\n\u251c\u2500 Test automation: \u26a0\ufe0f PARTIAL (60% coverage)\n\u251c\u2500 Test data management: \u2717 GAP (no test data strategy)\n\u251c\u2500 Shift left on security: \u2717 GAP (security testing manual)\n\u251c\u2500 Continuous delivery: \u2717 GAP (weekly release cycle)\n\nArchitecture Capabilities:\n\u251c\u2500 Loosely coupled architecture: \u26a0\ufe0f PARTIAL\n\u251c\u2500 Empowered teams: \u2713\n\u251c\u2500 Database change management: \u2717 GAP (manual migrations)\n\nProduct & Process Capabilities:\n\u251c\u2500 Customer feedback: \u2713\n\u251c\u2500 Value stream: \u26a0\ufe0f PARTIAL (VSM done, not monitored)\n\u251c\u2500 Team experimentation: \u2713\n\u251c\u2500 Lightweight change approval: \u2717 GAP (heavy CAB process)\n\nLean Management & Monitoring:\n\u251c\u2500 Change failure monitoring: \u2717 GAP\n\u251c\u2500 WIP limits: \u2717 GAP\n\u251c\u2500 Visual management: \u26a0\ufe0f PARTIAL\n\u251c\u2500 Proactive monitoring: \u2717 GAP (reactive only)\n\nCultural Capabilities:\n\u251c\u2500 Westrum organizational culture: \u26a0\ufe0f PARTIAL\n\u251c\u2500 Learning culture: \u2713\n\u251c\u2500 Job satisfaction: \u2713\n```"
+                },
+                {
+                  "type": "paragraph",
+                  "text": "Each \u2717 and \u26a0\ufe0f is an automation/process gap."
+                }
+              ]
+            },
+            {
+              "id": "SSS_43",
+              "title": "Infrastructure-as-Code (IaC) + Policy-as-Code",
+              "content": [
+                {
+                  "type": "list",
+                  "items": [
+                    "**IaC Gap Analysis:**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```\nInfrastructure Component: Database\n\u251c\u2500 Provisioning: \u2717 MANUAL \u274c GAP\n\u2502  \u2514\u2500 Action: Create Terraform module\n\u251c\u2500 Configuration: \u26a0\ufe0f SCRIPTED but not version-controlled \u274c GAP\n\u2502  \u2514\u2500 Action: Move configs to Git, use Ansible/Chef\n\u251c\u2500 Backup/Restore: \u2717 MANUAL \u274c GAP\n\u2502  \u2514\u2500 Action: Automate with cloud-native tools\n\u251c\u2500 Monitoring: \u2713 AUTOMATED (CloudWatch alarms)\n\u251c\u2500 Scaling: \u2717 MANUAL \u274c GAP\n\u2502  \u2514\u2500 Action: Implement auto-scaling policies\n\u2514\u2500 Disaster Recovery: \u2717 NOT TESTED \u274c GAP\n   \u2514\u2500 Action: Automate DR drills monthly\n```"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Policy-as-Code (Prevent Drift):**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```python\n# policy_tests.py using Open Policy Agent (OPA) or similar\ndef test_all_infra_is_code():\n    \"\"\"No infrastructure should be created manually\"\"\"\n    manual_resources = cloud_api.list_resources(created_by=\"console\")\n    assert len(manual_resources) == 0, f\"Found manual resources: {manual_resources}\"\n\ndef test_all_databases_encrypted():\n    \"\"\"All databases must have encryption at rest\"\"\"\n    for db in cloud_api.list_databases():\n        assert db.encryption_enabled, f\"DB {db.id} not encrypted \u274c GAP\"\n\ndef test_no_public_s3_buckets():\n    \"\"\"No S3 buckets should be publicly accessible\"\"\"\n    for bucket in cloud_api.list_s3_buckets():\n        assert not bucket.is_public, f\"Bucket {bucket.name} is public \u274c GAP\"\n```"
+                },
+                {
+                  "type": "paragraph",
+                  "text": "Run these as **continuous compliance checks**."
+                }
+              ]
+            },
+            {
+              "id": "SSS_44",
+              "title": "Observability Maturity (Beyond Monitoring)",
+              "content": [
+                {
+                  "type": "list",
+                  "items": [
+                    "**The Three Pillars + Context:**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```\nLogs:\n\u251c\u2500 Collection: \u2713 (CloudWatch)\n\u251c\u2500 Structure: \u2717 GAP (unstructured)\n\u251c\u2500 Retention: \u26a0\ufe0f PARTIAL (7 days, should be 30)\n\u251c\u2500 Analysis: \u2717 GAP (no log aggregation)\n\nMetrics:\n\u251c\u2500 Collection: \u2713 (Prometheus)\n\u251c\u2500 Business metrics: \u2717 GAP (only infra metrics)\n\u251c\u2500 SLIs defined: \u2717 GAP\n\u251c\u2500 Dashboards: \u26a0\ufe0f PARTIAL (exist but not maintained)\n\nTraces:\n\u251c\u2500 Distributed tracing: \u2717 GAP (not implemented)\n\u251c\u2500 Request correlation: \u2717 GAP\n\u251c\u2500 Span enrichment: N/A\n\nContext (Metadata):\n\u251c\u2500 Service mesh: \u2717 GAP (no Istio/Linkerd)\n\u251c\u2500 Topology mapping: \u2717 GAP (no service graph)\n\u251c\u2500 Dependency analysis: \u2717 GAP\n```"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Observability-Driven Development Pattern:**"
+                  ]
+                },
+                {
+                  "type": "code_block",
+                  "text": "```python\n# Every service should emit:\n1. Structured logs with context\n2. RED metrics (Rate, Errors, Duration)\n3. Resource utilization metrics\n4. Business KPI metrics\n5. Distributed traces\n\n# Example service instrumentation:\n@app.route(\"/api/orders\")\n@trace_request  # Adds distributed tracing\n@emit_metrics([\"orders_api_requests\", \"orders_api_duration\"])\ndef get_orders():\n    logger.info(\"Fetching orders\", extra={\n        \"user_id\": current_user.id,\n        \"request_id\": request.id,\n        \"trace_id\": trace.current_span().context.trace_id\n    })\n    # ... business logic\n```"
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "**Gap Detection via Observability:**",
+                    "- Missing metrics = blind spot = GAP",
+                    "- Missing traces = can't debug = GAP",
+                    "- Unstructured logs = can't query = GAP"
+                  ]
+                },
+                {
+                  "type": "list",
+                  "items": [
+                    "---"
+                  ]
+                }
+              ]
+            }
+          ],
+          "content": []
+        }
+      ],
+      "content": []
+    },
+    {
+      "id": "S_5",
+      "title": "THE UNIFIED FRAMEWORK: Operationalizing All Four Lenses",
+      "subsections": [
+        {
+          "id": "SS_51_THE_COMPLETE_GAPFINDING_WORKFLOW",
+          "title": "5.1 The Complete Gap-Finding Workflow",
+          "sub_subsections": [],
+          "content": [
+            {
+              "type": "code_block",
+              "text": "```\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502         CONTINUOUS GAP ANALYSIS             \u2502\n\u2502  (Runs automatically, triggers on events)   \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n         \u2502\n         \u251c\u2500> LENS A: Code & Logic Audit\n         \u2502   \u251c\u2500 Trigger: On every PR / nightly\n         \u2502   \u251c\u2500 Run: Coverage, mutation, property tests\n         \u2502   \u251c\u2500 Run: Invariant checks\n         \u2502   \u251c\u2500 Run: Failure mode tests\n         \u2502   \u2514\u2500 Output: Logical Gap Report (JSON)\n         \u2502\n         \u251c\u2500> LENS B: Architecture Assessment\n         \u2502   \u251c\u2500 Trigger: Weekly / on major changes\n         \u2502   \u251c\u2500 Run: Fitness function tests\n         \u2502   \u251c\u2500 Run: Quality model analysis (SonarQube)\n         \u2502   \u251c\u2500 Run: Architecture-code drift detection\n         \u2502   \u2514\u2500 Output: Architectural Gap Report (JSON)\n         \u2502\n         \u251c\u2500> LENS C: Process & Workflow Analysis\n         \u2502   \u251c\u2500 Trigger: Monthly / quarterly\n         \u2502   \u251c\u2500 Run: VSM calculation from telemetry\n         \u2502   \u251c\u2500 Run: SDLC maturity scorecard\n         \u2502   \u251c\u2500 Run: Toil inventory aggregation\n         \u2502   \u2514\u2500 Output: Process Gap Report (JSON)\n         \u2502\n         \u2514\u2500> LENS D: Automation & Ops Assessment\n             \u251c\u2500 Trigger: Monthly / on deployment changes\n             \u251c\u2500 Run: CD maturity model assessment\n             \u251c\u2500 Run: DORA metrics calculation\n             \u251c\u2500 Run: IaC coverage check\n             \u251c\u2500 Run: Observability maturity check\n             \u2514\u2500 Output: Automation Gap Report (JSON)\n\n         \u2193\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502        GAP AGGREGATION & PRIORITIZATION      \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n         \u2502\n         \u251c\u2500> Merge all gap reports\n         \u251c\u2500> Deduplicate (same gap from multiple lenses)\n         \u251c\u2500> Enrich with context (code owners, JIRA, etc.)\n         \u251c\u2500> Score by:\n         \u2502   \u251c\u2500 Severity (P0-P4)\n         \u2502   \u251c\u2500 Likelihood of exploitation\n         \u2502   \u251c\u2500 Business impact\n         \u2502   \u251c\u2500 Automation ROI\n         \u2502   \u2514\u2500 Technical debt contribution\n         \u251c\u2500> Cluster into themes\n         \u2514\u2500> Generate prioritized backlog\n         \n         \u2193\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502     AUTOMATED REMEDIATION (Where Possible)   \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n         \u2502\n         \u251c\u2500> Auto-fix: Simple gaps (e.g., add missing tests)\n         \u251c\u2500> Auto-create: JIRA tickets for complex gaps\n         \u251c\u2500> Auto-suggest: PR with proposed fixes\n         \u2514\u2500> Alert: Notify relevant owners\n```"
+            }
+          ]
+        },
+        {
+          "id": "SS_52_THE_GAP_REGISTRY_CENTRAL_TRUTH_STORE",
+          "title": "5.2 The Gap Registry (Central Truth Store)",
+          "sub_subsections": [],
+          "content": [
+            {
+              "type": "list",
+              "items": [
+                "**Schema:**"
+              ]
+            },
+            {
+              "type": "code_block",
+              "text": "```json\n{\n  \"gap_id\": \"GAP-2024-001234\",\n  \"title\": \"Database connection failures have no circuit breaker\",\n  \"type\": \"logical\",\n  \"category\": \"reliability\",\n  \"severity\": \"high\",\n  \"detected_by\": [\"lens_a_failure_mode_analysis\"],\n  \"detected_at\": \"2024-01-15T10:30:00Z\",\n  \"affected_components\": [\"user-service\", \"order-service\"],\n  \"evidence\": {\n    \"test_failure\": \"tests/failure_modes_test.py::test_db_circuit_breaker\",\n    \"code_location\": \"src/database/connection.py:L45-67\",\n    \"metric\": \"db_connection_failures_per_hour\",\n    \"threshold_violated\": true\n  },\n  \"impact\": {\n    \"availability_risk\": 0.85,\n    \"performance_degradation\": 0.60,\n    \"customer_impact\": \"Service unavailable during DB hiccups\"\n  },\n  \"remediation\": {\n    \"effort_estimate\": \"4 hours\",\n    \"roi_months\": 0.5,\n    \"suggested_solution\": \"Implement circuit breaker using pybreaker library\",\n    \"related_gaps\": [\"GAP-2024-000987\"],\n    \"owner\": \"platform-team\"\n  },\n  \"status\": \"open\",\n  \"history\": [\n    {\"action\": \"detected\", \"timestamp\": \"2024-01-15T10:30:00Z\"},\n    {\"action\": \"ticket_created\", \"ticket\": \"JIRA-1234\", \"timestamp\": \"2024-01-15T10:31:00Z\"}\n  ]\n}\n```"
+            },
+            {
+              "type": "list",
+              "items": [
+                "**Gap Registry Operations:**"
+              ]
+            },
+            {
+              "type": "code_block",
+              "text": "```python\n# gap_registry.py\nclass GapRegistry:\n    def ingest_gap_report(self, report_type, gaps):\n        \"\"\"Ingest gaps from any lens\"\"\"\n        for gap in gaps:\n            existing = self.find_similar_gap(gap)\n            if existing:\n                self.merge_gap(existing, gap)\n            else:\n                self.create_gap(gap)\n    \n    def prioritize_gaps(self):\n        \"\"\"Score and rank all gaps\"\"\"\n        for gap in self.get_all_gaps():\n            gap.priority_score = (\n                gap.severity * 0.4 +\n                gap.likelihood * 0.3 +\n                gap.impact * 0.2 +\n                gap.roi * 0.1\n            )\n        return sorted(self.gaps, key=lambda g: g.priority_score, reverse=True)\n    \n    def auto_remediate(self, gap):\n        \"\"\"Attempt automated fix if possible\"\"\"\n        if gap.type == \"simple\":\n            fix_pr = self.generate_fix_pr(gap)\n            github.create_pull_request(fix_pr)\n        else:\n            jira.create_ticket(gap)\n```"
+            }
+          ]
+        },
+        {
+          "id": "SS_53_MAKING_IT_CONTINUOUS",
+          "title": "5.3 Making It Continuous",
+          "sub_subsections": [],
+          "content": [
+            {
+              "type": "list",
+              "items": [
+                "**Integration Points:**"
+              ]
+            },
+            {
+              "type": "code_block",
+              "text": "```yaml\n# github-actions.yml\nname: Continuous Gap Analysis\n\non:\n  push:\n    branches: [main]\n  schedule:\n    - cron: '0 2 * * *'  # Daily at 2 AM\n\njobs:\n  logical-gaps:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v3\n      - name: Run coverage analysis\n        run: pytest --cov --cov-report=json\n      - name: Run mutation testing\n        run: mutmut run --use-coverage\n      - name: Run failure mode tests\n        run: pytest tests/failure_modes/\n      - name: Upload to Gap Registry\n        run: |\n          python scripts/upload_gaps.py \\\n            --type logical \\\n            --report coverage-report.json mutation-report.json\n  \n  architecture-gaps:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Run architecture tests\n        run: pytest tests/architecture/\n      - name: Run SonarQube scan\n        run: sonar-scanner\n      - name: Check architecture-code drift\n        run: python scripts/check_architecture_drift.py\n      - name: Upload to Gap Registry\n        run: |\n          python scripts/upload_gaps.py \\\n            --type architecture \\\n            --report architecture-report.json sonar-report.json\n  \n  # Similar jobs for process and automation gaps\n```"
+            },
+            {
+              "type": "list",
+              "items": [
+                "---"
+              ]
+            }
+          ]
+        }
+      ],
+      "content": []
+    },
+    {
+      "id": "S_6",
+      "title": "TOOLS & PLATFORMS FOR AUTOMATION",
+      "subsections": [
+        {
+          "id": "SS_RECOMMENDED_STACK",
+          "title": "Recommended Stack:",
+          "sub_subsections": [],
+          "content": [
+            {
+              "type": "list",
+              "items": [
+                "**Analysis & Detection:**",
+                "- **Code Quality**: SonarQube, Code Climate, DeepSource",
+                "- **Security**: Snyk, Dependabot, Trivy",
+                "- **Architecture**: ArchUnit, import-linter, Structurizr",
+                "- **Testing**: pytest + plugins, Pester, Stryker (mutation)",
+                "- **Observability**: Prometheus + Grafana, Datadog, New Relic"
+              ]
+            },
+            {
+              "type": "list",
+              "items": [
+                "**Workflow & Process:**",
+                "- **VSM & Metrics**: LinearB, Sleuth, Jellyfish",
+                "- **DORA Tracking**: CloudBees, GitPrime, custom dashboards",
+                "- **Incident Management**: PagerDuty, Opsgenie"
+              ]
+            },
+            {
+              "type": "list",
+              "items": [
+                "**Automation & IaC:**",
+                "- **CI/CD**: GitHub Actions, GitLab CI, Jenkins X",
+                "- **IaC**: Terraform, Pulumi, AWS CDK",
+                "- **Policy**: Open Policy Agent, Checkov, tfsec"
+              ]
+            },
+            {
+              "type": "list",
+              "items": [
+                "**Central Orchestration:**",
+                "- **Gap Registry**: Custom (PostgreSQL + REST API)",
+                "- **Dashboard**: Grafana + custom panels",
+                "- **Alerting**: Slack/Teams webhooks + PagerDuty"
+              ]
+            },
+            {
+              "type": "list",
+              "items": [
+                "---"
+              ]
+            }
+          ]
+        }
+      ],
+      "content": []
+    },
+    {
+      "id": "S_7",
+      "title": "FINAL SYNTHESIS",
+      "subsections": [],
+      "content": [
+        {
+          "type": "list",
+          "items": [
+            "**To directly answer your question:**"
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "There is **no single named universal framework** that covers all four dimensions (logical, process, architecture, automation) in one tool."
+        },
+        {
+          "type": "list",
+          "items": [
+            "**However**, you can build a **unified systematic approach** by:"
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "1. **Adopting established frameworks per dimension**:"
+        },
+        {
+          "type": "list",
+          "items": [
+            "- Logical: Coverage + Mutation + Property-based testing + FMEA",
+            "- Process: Value Stream Mapping + SDLC maturity models",
+            "- Architecture: ATAM + C4 + Fitness functions + Quality models",
+            "- Automation: CD maturity + DORA + IaC + Observability maturity"
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "2. **Instrumenting each framework** for continuous automated execution"
+        },
+        {
+          "type": "paragraph",
+          "text": "3. **Centralizing results** in a Gap Registry with common schema"
+        },
+        {
+          "type": "paragraph",
+          "text": "4. **Automating remediation** where possible, otherwise auto-creating work items"
+        },
+        {
+          "type": "paragraph",
+          "text": "5. **Making it continuous** via scheduled jobs, event triggers, and dashboards"
+        },
+        {
+          "type": "paragraph",
+          "text": "This gives you a **factory model for gap-finding** that runs like a production system: deterministic, observable, self-documenting, and continuously improving."
+        }
+      ]
+    }
+  ],
+  "index": {
+    "sections": {
+      "S_1": {
+        "path": "/sections/0",
+        "title": "LOGICAL GAPS (Correctness, Behavior, Edge Cases)",
+        "tags": [
+          "section",
+          "s-1"
+        ]
+      },
+      "S_2": {
+        "path": "/sections/1",
+        "title": "PROCESS / WORKFLOW GAPS",
+        "tags": [
+          "section",
+          "s-2"
+        ]
+      },
+      "S_3": {
+        "path": "/sections/2",
+        "title": "ARCHITECTURAL GAPS",
+        "tags": [
+          "section",
+          "s-3"
+        ]
+      },
+      "S_4": {
+        "path": "/sections/3",
+        "title": "AUTOMATION GAPS",
+        "tags": [
+          "section",
+          "s-4"
+        ]
+      },
+      "S_5": {
+        "path": "/sections/4",
+        "title": "THE UNIFIED FRAMEWORK: Operationalizing All Four Lenses",
+        "tags": [
+          "section",
+          "s-5"
+        ]
+      },
+      "S_6": {
+        "path": "/sections/5",
+        "title": "TOOLS & PLATFORMS FOR AUTOMATION",
+        "tags": [
+          "section",
+          "s-6"
+        ]
+      },
+      "S_7": {
+        "path": "/sections/6",
+        "title": "FINAL SYNTHESIS",
+        "tags": [
+          "section",
+          "s-7"
+        ]
+      }
+    },
+    "subsections": {
+      "SS_EXPANDED_FRAMEWORK_THE_TESTING_PYRAMID__RISK_SURFACE_ANALYSIS": {
+        "path": "/sections/0/subsections/0",
+        "title": "Expanded Framework: The Testing Pyramid + Risk Surface Analysis",
+        "tags": [
+          "subsection",
+          "ss-expanded-framework-the-testing-pyramid--risk-surface-analysis",
+          "s-1"
+        ]
+      },
+      "SS_EXPANDED_FRAMEWORK_VALUE_STREAM__SDLC_MATURITY__TOIL_TRACKING": {
+        "path": "/sections/1/subsections/0",
+        "title": "Expanded Framework: Value Stream + SDLC Maturity + Toil Tracking",
+        "tags": [
+          "subsection",
+          "ss-expanded-framework-value-stream--sdlc-maturity--toil-tracking",
+          "s-2"
+        ]
+      },
+      "SS_EXPANDED_FRAMEWORK_MULTIMODEL_ARCHITECTURE_ASSESSMENT": {
+        "path": "/sections/2/subsections/0",
+        "title": "Expanded Framework: Multi-Model Architecture Assessment",
+        "tags": [
+          "subsection",
+          "ss-expanded-framework-multimodel-architecture-assessment",
+          "s-3"
+        ]
+      },
+      "SS_EXPANDED_FRAMEWORK_CD_MATURITY__DORA__INFRASTRUCTUREASCODE__OBSERVABILITY": {
+        "path": "/sections/3/subsections/0",
+        "title": "Expanded Framework: CD Maturity + DORA + Infrastructure-as-Code + Observability",
+        "tags": [
+          "subsection",
+          "ss-expanded-framework-cd-maturity--dora--infrastructureascode--observability",
+          "s-4"
+        ]
+      },
+      "SS_51_THE_COMPLETE_GAPFINDING_WORKFLOW": {
+        "path": "/sections/4/subsections/0",
+        "title": "5.1 The Complete Gap-Finding Workflow",
+        "tags": [
+          "subsection",
+          "ss-51-the-complete-gapfinding-workflow",
+          "s-5"
+        ]
+      },
+      "SS_52_THE_GAP_REGISTRY_CENTRAL_TRUTH_STORE": {
+        "path": "/sections/4/subsections/1",
+        "title": "5.2 The Gap Registry (Central Truth Store)",
+        "tags": [
+          "subsection",
+          "ss-52-the-gap-registry-central-truth-store",
+          "s-5"
+        ]
+      },
+      "SS_53_MAKING_IT_CONTINUOUS": {
+        "path": "/sections/4/subsections/2",
+        "title": "5.3 Making It Continuous",
+        "tags": [
+          "subsection",
+          "ss-53-making-it-continuous",
+          "s-5"
+        ]
+      },
+      "SS_RECOMMENDED_STACK": {
+        "path": "/sections/5/subsections/0",
+        "title": "Recommended Stack:",
+        "tags": [
+          "subsection",
+          "ss-recommended-stack",
+          "s-6"
+        ]
+      }
+    },
+    "sub_subsections": {
+      "SSS_11": {
+        "path": "/sections/0/subsections/0/sub_subsections/0",
+        "title": "Multi-Layer Coverage Analysis",
+        "tags": [
+          "sub_subsection",
+          "sss-11",
+          "ss-expanded-framework-the-testing-pyramid--risk-surface-analysis"
+        ]
+      },
+      "SSS_12": {
+        "path": "/sections/0/subsections/0/sub_subsections/1",
+        "title": "Domain Invariant Mapping (DDD-Inspired Audit)",
+        "tags": [
+          "sub_subsection",
+          "sss-12",
+          "ss-expanded-framework-the-testing-pyramid--risk-surface-analysis"
+        ]
+      },
+      "SSS_13": {
+        "path": "/sections/0/subsections/0/sub_subsections/2",
+        "title": "Comprehensive Failure Mode Analysis",
+        "tags": [
+          "sub_subsection",
+          "sss-13",
+          "ss-expanded-framework-the-testing-pyramid--risk-surface-analysis"
+        ]
+      },
+      "SSS_21": {
+        "path": "/sections/1/subsections/0/sub_subsections/0",
+        "title": "Value Stream Mapping (VSM) - Practical Implementation",
+        "tags": [
+          "sub_subsection",
+          "sss-21",
+          "ss-expanded-framework-value-stream--sdlc-maturity--toil-tracking"
+        ]
+      },
+      "SSS_22": {
+        "path": "/sections/1/subsections/0/sub_subsections/1",
+        "title": "SDLC Maturity Assessment (Continuous Self-Assessment)",
+        "tags": [
+          "sub_subsection",
+          "sss-22",
+          "ss-expanded-framework-value-stream--sdlc-maturity--toil-tracking"
+        ]
+      },
+      "SSS_23": {
+        "path": "/sections/1/subsections/0/sub_subsections/2",
+        "title": "Toil Inventory & Automation Opportunity Scoring",
+        "tags": [
+          "sub_subsection",
+          "sss-23",
+          "ss-expanded-framework-value-stream--sdlc-maturity--toil-tracking"
+        ]
+      },
+      "SSS_31": {
+        "path": "/sections/2/subsections/0/sub_subsections/0",
+        "title": "ATAM (Architecture Tradeoff Analysis Method) - Practical Execution",
+        "tags": [
+          "sub_subsection",
+          "sss-31",
+          "ss-expanded-framework-multimodel-architecture-assessment"
+        ]
+      },
+      "SSS_32": {
+        "path": "/sections/2/subsections/0/sub_subsections/1",
+        "title": "C4 Model + Arc42 Documentation + Living Architecture",
+        "tags": [
+          "sub_subsection",
+          "sss-32",
+          "ss-expanded-framework-multimodel-architecture-assessment"
+        ]
+      },
+      "SSS_33": {
+        "path": "/sections/2/subsections/0/sub_subsections/2",
+        "title": "Quality Models + Technical Debt Quantification",
+        "tags": [
+          "sub_subsection",
+          "sss-33",
+          "ss-expanded-framework-multimodel-architecture-assessment"
+        ]
+      },
+      "SSS_41": {
+        "path": "/sections/3/subsections/0/sub_subsections/0",
+        "title": "Continuous Delivery Maturity Model - Detailed Assessment",
+        "tags": [
+          "sub_subsection",
+          "sss-41",
+          "ss-expanded-framework-cd-maturity--dora--infrastructureascode--observability"
+        ]
+      },
+      "SSS_42": {
+        "path": "/sections/3/subsections/0/sub_subsections/1",
+        "title": "DORA Metrics + Capability Assessment",
+        "tags": [
+          "sub_subsection",
+          "sss-42",
+          "ss-expanded-framework-cd-maturity--dora--infrastructureascode--observability"
+        ]
+      },
+      "SSS_43": {
+        "path": "/sections/3/subsections/0/sub_subsections/2",
+        "title": "Infrastructure-as-Code (IaC) + Policy-as-Code",
+        "tags": [
+          "sub_subsection",
+          "sss-43",
+          "ss-expanded-framework-cd-maturity--dora--infrastructureascode--observability"
+        ]
+      },
+      "SSS_44": {
+        "path": "/sections/3/subsections/0/sub_subsections/3",
+        "title": "Observability Maturity (Beyond Monitoring)",
+        "tags": [
+          "sub_subsection",
+          "sss-44",
+          "ss-expanded-framework-cd-maturity--dora--infrastructureascode--observability"
+        ]
+      }
+    }
+  }
+}

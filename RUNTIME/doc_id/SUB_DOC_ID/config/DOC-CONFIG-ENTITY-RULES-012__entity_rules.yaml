@@ -1,0 +1,162 @@
+# DOC_LINK: DOC-CONFIG-ENTITY-RULES-012
+# Entity Classification Rules
+# Defines how file changes are classified into entity types
+# DOC_ID: DOC-CONFIG-ENTITY-RULES-012
+
+# Format:
+# - entity_type: Type identifier (DOC, FILE, SCHEMA, CONTRACT, etc.)
+# - patterns: List of glob patterns to match
+# - requires_id: Whether this entity type requires a doc_id
+# - id_prefix: Prefix for generated doc_ids
+# - additional_checks: Optional additional validation
+
+entity_types:
+  - entity_type: DOC
+    description: "Markdown documentation files with frontmatter"
+    patterns:
+      - "**/*.md"
+      - "**/*.markdown"
+    requires_id: true
+    id_prefix: "DOC-"
+    additional_checks:
+      - has_frontmatter
+    priority: 1
+
+  - entity_type: SCHEMA
+    description: "JSON Schema files"
+    patterns:
+      - "**/*.schema.json"
+      - "**/schemas/**/*.json"
+    requires_id: true
+    id_prefix: "DOC-SCHEMA-"
+    priority: 2
+
+  - entity_type: CONTRACT
+    description: "Contract YAML files"
+    patterns:
+      - "**/contracts/**/*.yaml"
+      - "**/contracts/**/*.yml"
+      - "**/*_contract.yaml"
+      - "**/*_contract.yml"
+    requires_id: true
+    id_prefix: "DOC-CONTRACT-"
+    priority: 2
+
+  - entity_type: CONFIG
+    description: "Configuration files"
+    patterns:
+      - "**/config/**/*.yaml"
+      - "**/config/**/*.yml"
+      - "**/config/**/*.json"
+      - "**/.*.yaml"
+      - "**/.*.yml"
+    requires_id: true
+    id_prefix: "DOC-CONFIG-"
+    priority: 3
+
+  - entity_type: SCRIPT
+    description: "Python and PowerShell scripts"
+    patterns:
+      - "**/*.py"
+      - "**/*.ps1"
+      - "**/*.sh"
+    requires_id: true
+    id_prefix: "DOC-SCRIPT-"
+    exclude_patterns:
+      - "**/tests/**"
+      - "**/__pycache__/**"
+    priority: 4
+
+  - entity_type: TEST
+    description: "Test files"
+    patterns:
+      - "**/tests/**/*.py"
+      - "**/test_*.py"
+      - "**/*_test.py"
+    requires_id: true
+    id_prefix: "DOC-TEST-"
+    priority: 5
+
+  - entity_type: CORE
+    description: "Core implementation files"
+    patterns:
+      - "**/core/**/*.py"
+      - "**/orchestrator/**/*.py"
+      - "**/detection/**/*.py"
+      - "**/resolution/**/*.py"
+    requires_id: true
+    id_prefix: "DOC-CORE-"
+    exclude_patterns:
+      - "**/tests/**"
+    priority: 6
+
+  - entity_type: WORKFLOW
+    description: "GitHub workflow files"
+    patterns:
+      - ".github/workflows/**/*.yml"
+      - ".github/workflows/**/*.yaml"
+    requires_id: true
+    id_prefix: "DOC-WORKFLOW-"
+    priority: 7
+
+  - entity_type: HOOK
+    description: "Git hook scripts"
+    patterns:
+      - ".git/hooks/**"
+      - "**/hooks/**/*.py"
+      - "**/hooks/**/*.sh"
+    requires_id: true
+    id_prefix: "DOC-HOOK-"
+    priority: 8
+
+  - entity_type: PHASE
+    description: "Phase plan files"
+    patterns:
+      - "**/phase_plans/**/*.yml"
+      - "**/phase_plans/**/*.yaml"
+      - "**/PH-*.yml"
+    requires_id: true
+    id_prefix: "DOC-PHASE-"
+    priority: 9
+
+  - entity_type: FILE
+    description: "Generic tracked files"
+    patterns:
+      - "**/*"
+    requires_id: false
+    id_prefix: "FIL-"
+    priority: 100  # Lowest priority (catch-all)
+
+# Additional validation rules
+validation_rules:
+  has_frontmatter:
+    description: "Check if markdown file has YAML frontmatter"
+    pattern: "^---\\n[\\s\\S]*?\\n---"
+    applies_to:
+      - DOC
+
+  has_doc_id:
+    description: "Check if file already has a doc_id"
+    pattern: "doc_id:\\s*[\"']?([A-Z]+-[A-Z0-9]+-\\d{3,})[\"']?"
+    applies_to: all
+
+# Exclusion rules (files to ignore completely)
+global_excludes:
+  - "**/__pycache__/**"
+  - "**/*.pyc"
+  - "**/node_modules/**"
+  - "**/.git/**"
+  - "**/.venv/**"
+  - "**/venv/**"
+  - "**/htmlcov/**"
+  - "**/.pytest_cache/**"
+  - "**/run/**"
+  - "**/logs/**"
+  - "**/out/**"
+  - "**/*.log"
+  - "**/.DS_Store"
+  - "**/Thumbs.db"
+
+# Classification priority
+# Lower number = higher priority
+# When multiple patterns match, highest priority wins

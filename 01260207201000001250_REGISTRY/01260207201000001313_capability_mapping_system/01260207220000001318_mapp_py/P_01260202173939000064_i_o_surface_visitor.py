@@ -228,6 +228,17 @@ def main():
 
     result = analyze_io_surface(file_path)
 
+    # Handle --json flag
+    if '--json' in sys.argv:
+        idx = sys.argv.index('--json')
+        out_path = sys.argv[idx + 1] if idx + 1 < len(sys.argv) else None
+        if out_path:
+            with open(out_path, 'w') as f:
+                json.dump(result, f, indent=2, sort_keys=True)
+        else:
+            print(json.dumps(result, indent=2, sort_keys=True))
+        sys.exit(0)
+
     if result["success"]:
         print(f"File operations: {result['py_file_operations_count']}")
         print(f"Network calls: {result['py_network_calls_count']}")

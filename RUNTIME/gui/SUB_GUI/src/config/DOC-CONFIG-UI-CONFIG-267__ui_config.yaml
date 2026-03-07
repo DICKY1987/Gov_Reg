@@ -1,0 +1,70 @@
+# DOC_LINK: DOC-CONFIG-UI-CONFIG-267
+doc_id: DOC-CONFIG-UI-CONFIG-267
+# Unified UI Configuration (TUI + GUI)
+# DOC_ID: DOC-CONFIG-UI-CONFIG-060
+
+# Shared panel refresh intervals (seconds)
+panels:
+  dashboard_refresh_seconds: 2.0
+  pattern_refresh_seconds: 5.0
+  file_refresh_seconds: 3.0
+  tool_refresh_seconds: 4.0
+  log_refresh_seconds: 3.0
+
+# Shared log configuration
+logs:
+  path: "logs/combined.log"
+  max_lines: 60
+
+# TUI-specific settings (Textual)
+tui:
+  theme:
+    surface: "#0b1221"
+    primary: "#1f6feb"
+    accent: "#2bc48a"
+    warning: "#f5a524"
+    danger: "#ff6b6b"
+    muted: "#94a3b8"
+    text: "#dfe7f5"
+
+# GUI-specific settings (PySide6)
+gui:
+  window:
+    width: 1280
+    height: 800
+    remember_position: true
+  theme: "Fusion"  # Qt theme: Fusion, Windows, WindowsVista, Macintosh
+
+# State file configuration
+state:
+  # Backend type: "file", "sqlite", or "memory"
+  backend: "file"
+
+  # Directory containing PHASE_5_EXECUTION state files
+  state_dir: "C:\\Users\\richg\\ALL_AI\\PHASE_5_EXECUTION\\.state"
+
+  # Auto-discover latest run ID
+  auto_discover_run: true
+
+  # Specific run ID to monitor (overrides auto-discovery)
+  run_id: null
+
+  # File watching for real-time updates
+  watch_files: true
+  watch_interval_seconds: 2.0
+
+  # State file names (customize if needed)
+  files:
+    execution_results: "execution_results.json"
+    router_state: "router_state.json"
+    routing_decisions: "routing_decisions.json"
+    adapter_assignments: "adapter_assignments.json"
+
+# Event stream configuration
+events:
+  log_file: "C:\\Users\\richg\\ALL_AI\\logs\\events\\events.jsonl"
+  max_events: 500
+
+# Doc ID registry configuration
+doc_id:
+  registry_path: "C:\\Users\\richg\\ALL_AI\\SUB_DOC_ID\\5_REGISTRY_DATA\\DOC_ID_REGISTRY.yaml"

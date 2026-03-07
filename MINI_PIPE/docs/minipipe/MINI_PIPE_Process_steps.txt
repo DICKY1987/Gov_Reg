@@ -1,0 +1,1063 @@
+================================================================================
+MINI_PIPE & ACMS PROCESS STEPS - COMPLETE REFERENCE
+================================================================================
+Version: 2.0
+Last Updated: 2025-12-07
+System: ACMS (Autonomous Code Modification System) + MINI_PIPE Orchestrator
+Guardrails: ENABLED (Pattern-based execution with anti-pattern detection)
+================================================================================
+
+OVERVIEW:
+---------
+This document describes the complete end-to-end process for gap discovery,
+planning, and execution in the ACMS/MINI_PIPE system. The system integrates:
+  
+  • ACMS Controller: Gap analysis, planning, and high-level orchestration
+  • MINI_PIPE Orchestrator: Task execution, scheduling, and state management
+  • Guardrails System: Pattern enforcement and anti-pattern detection
+  • Gap Registry: Normalized gap storage and lifecycle tracking
+  • Execution Planner: Gap clustering into executable workstreams
+  • Phase Plan Compiler: Workstream-to-task translation
+
+The process follows a strict state machine with 6 phases:
+  INIT → GAP_ANALYSIS → PLANNING → EXECUTION → SUMMARY → DONE
+
+KEY COMPONENTS:
+  - acms_controller.py: Main orchestrator (golden path entrypoint)
+  - MINI_PIPE_orchestrator.py: Run lifecycle and plan execution engine
+  - guardrails.py: Pattern guardrails and anti-pattern detection
+  - gap_registry.py: Gap normalization and storage
+  - execution_planner.py: Gap clustering and workstream generation
+  - phase_plan_compiler.py: Plan compilation with guardrail validation
+  - MINI_PIPE_scheduler.py: Task DAG construction and dependency resolution
+  - MINI_PIPE_executor.py: Task execution and result management
+  - MINI_PIPE_router.py: Tool selection and routing logic
+  - MINI_PIPE_tools.py: Tool execution wrappers
+  - acms_ai_adapter.py: AI backend abstraction (OpenAI/Anthropic/Copilot/Mock)
+  - acms_minipipe_adapter.py: MINI_PIPE integration adapter
+
+================================================================================
+PHASE 0: RUN INITIALIZATION & BOOTSTRAP
+================================================================================
+
+Step 1: User invokes ACMS controller
+  Command: python acms_controller.py <REPO_ROOT> --mode full --ai-adapter <adapter> [--enable-guardrails]
+  
+  Available modes:
+    - full: Complete pipeline (gap analysis → planning → execution → summary)
+    - analyze_only: Gap discovery only
+    - plan_only: Gap discovery + planning (no execution)
+    - execute_only: Execute existing plans (skip gap analysis)
+  
+  Available AI adapters:
+    - mock: Mock adapter for testing (no real AI calls)
+    - copilot: GitHub Copilot CLI integration
+    - openai: OpenAI API (GPT-4, etc.)
+    - anthropic: Anthropic API (Claude, etc.)
+
+Step 2: acms_controller parses CLI arguments
+  - Resolves repo_root to absolute path
+  - Validates mode selection
+  - Selects AI adapter type
+  - Determines guardrail enablement (default: enabled if PATTERN_INDEX.yaml exists)
+
+Step 3: acms_controller generates run_id (ULID format)
+  - Format: <YYYYMMDDHHMMSS>_<RANDOM_HEX>
+  - Example: 20251207014530_A3F2C1D8E5B9
+  - Used to track entire execution lifecycle
+
+Step 4: acms_controller creates run directory structure
+  - Base directory: <REPO_ROOT>/.acms_runs/<RUN_ID>/
+  - Subdirectories created:
+    - workstreams/ : Individual workstream JSON files
+    - logs/ : Execution logs
+    - reports/ : Summary reports
+    - patches/ : Generated patches (if patch ledger enabled)
+
+Step 5: acms_controller initializes run ledger (JSONL append-only log)
+  - File: .acms_runs/<RUN_ID>/run.ledger.jsonl
+  - Contains all state transitions and events
+  - Format: {"ts": "ISO8601", "run_id": "...", "event": "...", "state": "...", "meta": {...}}
+  - First entry: {"event": "enter_state", "state": "INIT", ...}
+
+Step 6: acms_controller creates top-level run record
+  - State object initialized with:
+    - run_id
+    - repo_root
+    - started_at (UTC timestamp)
+    - current_state: "INIT"
+    - phases_completed: []
+    - ai_adapter_type
+    - config (merged with defaults)
+    - guardrails_enabled: true/false
+
+Step 7: acms_controller initializes core components
+  7a. GapRegistry: Loads or creates gap_registry.json
+  7b. ExecutionPlanner: Initialized with gap_registry reference
+  7c. PhasePlanCompiler: Initialized with guardrails if enabled
+  7d. AI Adapter: Created via acms_ai_adapter.create_ai_adapter(type)
+  7e. MINI_PIPE Adapter: Created via acms_minipipe_adapter.create_minipipe_adapter(type)
+
+Step 8: GUARDRAILS INITIALIZATION (if enabled)
+  8a. Load PATTERN_INDEX.yaml from repo root
+  8b. Initialize PatternGuardrails with pattern index
+  8c. Load anti-pattern runbooks from anti_patterns/ directory
+  8d. Initialize AntiPatternDetector with runbooks
+  8e. Initialize run_stats tracking:
+      - planning_attempts: 0
+      - patches_applied: 0
+      - hallucination_count: 0
+      - anti_patterns_detected: []
+  8f. Log guardrails status to console and ledger
+
+Step 9: acms_controller logs state transition to GAP_ANALYSIS
+  - Ledger entry: {"event": "enter_state", "state": "GAP_ANALYSIS", "previous_state": "INIT", ...}
+  - Console: [STATE] INIT → GAP_ANALYSIS
+
+Step 10: CHECKPOINT - INIT phase complete
+  - All components initialized
+  - Run directory created
+  - Ledger started
+  - Ready to proceed to gap discovery
+
+================================================================================
+PHASE 1: MULTI-LENS GAP DISCOVERY
+================================================================================
+
+Step 11: acms_controller loads gap analysis configuration
+  - Primary prompt: OVERLAP_AUTOMATION_AND_MASTER_GAP_ANALYSIS.merged.json
+  - Fallback: COMPREHENSIVE_GAP_FINDING_FRAMEWORK.json
+  - Framework references: GAP_ANALYSIS_V1.json, minimal_gap_analysis_prompt.json
+
+Step 12: acms_controller assembles gap analysis request payload
+  - Includes:
+    - repo_root path
+    - scope configuration (which files/dirs to analyze)
+    - framework specifications (what to look for)
+    - prompt templates (how to structure the analysis)
+
+Step 13: acms_controller calls AI adapter to perform gap discovery
+  - Request: AIRequest(prompt_template_path, context, repo_root, timeout)
+  - AI adapter execution:
+    13a. Loads prompt template from JSON file
+    13b. Interpolates context variables into template
+    13c. Executes AI call via selected backend (OpenAI/Anthropic/Copilot/Mock)
+    13d. Waits for structured JSON response
+    13e. Validates response format
+    13f. Returns AIResponse with success/failure status
+
+Step 14: AI adapter executes gap analysis prompts
+  - For mock adapter: Returns pre-defined sample gaps
+  - For real adapters: Sends prompt to AI backend and waits for response
+  - Expected output: Structured JSON with gap findings
+
+Step 15: AI adapter returns structured JSON results
+  - Format: {"version": "1.0", "generated_at": "...", "gaps": [...]}
+  - Each gap includes:
+    - gap_id (e.g., "GAP_0001")
+    - title
+    - description
+    - category (e.g., "documentation", "testing", "security")
+    - severity ("critical", "high", "medium", "low", "info")
+    - file_paths (affected files)
+    - dependencies (other gap_ids this depends on)
+
+Step 16: acms_controller validates gap analysis JSON
+  - Schema validation (if jsonschema available)
+  - Structure checks:
+    - "gaps" key exists and is a list
+    - Each gap has required fields
+    - gap_id is unique
+  - Logs validation warnings/errors
+
+Step 17: acms_controller writes raw gap analysis report to disk
+  - File: .acms_runs/<RUN_ID>/gap_analysis_report.json
+  - Contains unmodified AI response
+  - Used for audit trail and debugging
+
+Step 18: acms_controller passes validated gap report to gap_registry
+  - Call: gap_registry.load_from_report(gap_report_path)
+
+Step 19: gap_registry normalizes raw findings into canonical GapRecord objects
+  - Creates GapRecord for each finding:
+    - gap_id: Preserved from raw report
+    - title, description, category: Copied from raw
+    - severity: Converted to GapSeverity enum
+    - status: Initialized to GapStatus.DISCOVERED
+    - discovered_at: Current UTC timestamp
+    - file_paths, dependencies: Copied from raw
+    - metadata: Additional fields stored here
+
+Step 20: gap_registry persists normalized gaps
+  - Storage format: JSON dictionary {gap_id: GapRecord.to_dict()}
+  - File: .acms_runs/<RUN_ID>/gap_registry.json
+  - Atomic write (write to temp file, then rename)
+
+Step 21: gap_registry returns in-memory view of gaps
+  - Returns: Dict[str, GapRecord]
+  - Provides query methods:
+    - get_unresolved(): Gaps not yet resolved
+    - get_by_severity(severity): Filter by severity
+    - get_by_category(category): Filter by category
+    - get_by_file(file_path): Gaps affecting a specific file
+
+Step 22: acms_controller logs gap discovery completion
+  - Console: "✓ Loaded N gaps from report"
+  - Ledger: {"event": "gap_discovery_complete", "gap_count": N, ...}
+  - State: gap_count field updated
+
+Step 23: CHECKPOINT - GAP_ANALYSIS phase complete
+  - All gaps discovered, normalized, and stored
+  - gap_registry.json persisted to disk
+  - Ready to proceed to planning
+
+Step 24: If mode == "analyze_only", skip to DONE state
+  - acms_controller transitions to DONE
+  - Returns final run status
+  - Process exits successfully
+
+================================================================================
+PHASE 2: GAP CONSOLIDATION & CLUSTERING
+================================================================================
+
+Step 25: acms_controller logs state transition to PLANNING
+  - Ledger entry: {"event": "enter_state", "state": "PLANNING", ...}
+  - Console: [STATE] GAP_ANALYSIS → PLANNING
+
+Step 26: acms_controller calls execution_planner with normalized gaps
+  - Call: execution_planner.cluster_gaps(max_files_per_workstream=10, category_based=True)
+  - Configuration options:
+    - max_files_per_workstream: Limit workstream scope
+    - category_based: Cluster by category vs. file proximity
+
+Step 27: execution_planner clusters gaps into workstreams
+  - Strategy 1: Category-based clustering
+    27a. Group gaps by category (e.g., all "testing" gaps together)
+    27b. Within each category, split by file count limit
+    27c. Create one workstream per group
+  
+  - Strategy 2: File proximity clustering
+    27a. Group gaps by file overlap (gaps affecting same files)
+    27b. Merge groups that share files
+    27c. Split large groups to respect file count limit
+
+Step 28: execution_planner assigns priority scores to workstreams
+  - Priority calculation factors:
+    - Maximum gap severity in workstream (critical > high > medium > low)
+    - Number of critical/high severity gaps
+    - Dependency depth (gaps with many dependents get higher priority)
+    - File scope size (smaller is prioritized for quick wins)
+  - Score range: 0.0 to 100.0
+
+Step 29: execution_planner orders workstreams by priority
+  - Sorted descending by priority_score
+  - Dependency-aware ordering (dependencies before dependents)
+
+Step 30: execution_planner generates workstream metadata
+  - For each workstream:
+    - workstream_id: "WS-<category>-<index>" (e.g., "WS-TESTING-001")
+    - name: Human-readable name
+    - description: Summary of included gaps
+    - gap_ids: List of gap_id strings
+    - priority_score: Calculated score
+    - dependencies: Other workstream_ids this depends on
+    - estimated_effort: "small", "medium", "large" based on gap count
+    - file_scope: Set of all affected files
+    - categories: Set of gap categories included
+    - metadata: Additional context
+
+Step 31: execution_planner validates workstreams
+  - Checks:
+    - No circular dependencies
+    - All gap_ids exist in gap_registry
+    - File paths are valid
+    - No workstream exceeds max_files limit
+  - Returns list of validation errors (warnings only, non-blocking)
+
+Step 32: execution_planner returns structured workstream definitions
+  - Returns: List[Workstream]
+  - Stored in: execution_planner.workstreams (Dict[str, Workstream])
+
+Step 33: acms_controller saves workstreams to disk
+  - Directory: .acms_runs/<RUN_ID>/workstreams/
+  - One JSON file per workstream: ws-<category>-<index>.json
+  - Format: Workstream.to_dict()
+
+Step 34: GUARDRAILS: Increment planning_attempts counter
+  - run_stats["planning_attempts"] += 1
+  - Tracks number of planning iterations
+  - Used to detect AP_PLANNING_LOOP anti-pattern
+
+Step 35: acms_controller logs planning completion
+  - Console: "✓ Created N UET workstreams"
+  - Ledger: {"event": "planning_complete", "workstream_count": N, "task_count": M, ...}
+  - State: workstream_count, workstreams_dir fields updated
+
+================================================================================
+PHASE 3: PHASE PLAN & WORKSTREAM PLAN GENERATION
+================================================================================
+
+Step 36: acms_controller calls phase_plan_compiler with workstreams
+  - Call: phase_plan_compiler.compile_from_workstreams(workstreams, repo_root, validate=True)
+
+Step 37: phase_plan_compiler transforms workstreams into MINI_PIPE tasks
+  - For each workstream:
+    37a. Extract gap_ids and file_scope
+    37b. Determine task_kind based on category:
+        - "testing" → "test_generation"
+        - "documentation" → "doc_update"
+        - "refactoring" → "code_refactor"
+        - etc.
+    37c. Create MiniPipeTask:
+        - task_id: "TASK-<workstream_id>-<index>"
+        - task_kind: Determined from category
+        - description: Workstream description
+        - depends_on: Task IDs for workstream dependencies
+        - metadata: {gap_ids, file_paths, pattern_id, ...}
+
+Step 38: GUARDRAILS: Validate pattern_ids in task metadata
+  - For each task with pattern_id in metadata:
+    38a. Call guardrails.validate_pattern_exists(pattern_id)
+    38b. Check pattern is enabled in PATTERN_INDEX.yaml
+    38c. Pre-validate path scope if file_paths present
+    38d. Pre-validate tool usage if tools specified
+    38e. Collect validation errors/warnings
+  - If critical violations found, halt compilation
+  - If warnings only, log and continue
+
+Step 39: phase_plan_compiler builds task dependency graph
+  - Convert workstream dependencies to task dependencies
+  - Validate no circular dependencies (would cause deadlock)
+  - Topological sort to ensure valid execution order
+
+Step 40: phase_plan_compiler creates MINI_PIPE execution plan
+  - MiniPipeExecutionPlan:
+    - plan_id: "PLAN-<run_id>"
+    - name: "Gap Remediation Plan"
+    - description: Summary of workstreams
+    - version: "1.0"
+    - tasks: List[MiniPipeTask]
+    - metadata: {run_id, repo_root, generated_at, ...}
+
+Step 41: phase_plan_compiler validates execution plan
+  - Schema validation (if schema available)
+  - Structural checks:
+    - All task dependencies reference valid task_ids
+    - No orphaned tasks
+    - DAG is acyclic
+    - All required task fields present
+
+Step 42: phase_plan_compiler writes MINI_PIPE execution plan to disk
+  - File: .acms_runs/<RUN_ID>/mini_pipe_execution_plan.json
+  - Format: MiniPipeExecutionPlan.to_dict()
+
+Step 43: GUARDRAILS: Check for AP_PLANNING_LOOP anti-pattern
+  - Conditions checked:
+    - planning_attempts > 3
+    - patches_applied == 0
+  - If detected:
+    - Log to console: "⚠️ ANTI-PATTERN DETECTED: AP_PLANNING_LOOP"
+    - Log to ledger: {"event": "anti_pattern_detected", "anti_pattern_id": "AP_PLANNING_LOOP", ...}
+    - Increment run_stats["anti_patterns_detected"]
+    - Display recommendation: "Simplify scope or force plan commitment"
+
+Step 44: acms_controller logs plan generation completion
+  - Console: "✓ UET workstreams ready with M tasks total"
+  - Ledger: {"event": "plan_generation_complete", "task_count": M, ...}
+  - State: task_count field updated
+
+Step 45: CHECKPOINT - PLANNING phase complete
+  - Workstreams created and saved
+  - Execution plan compiled and validated
+  - Guardrail checks passed (or warnings logged)
+  - Ready to proceed to execution
+
+Step 46: If mode == "plan_only", skip to DONE state
+  - acms_controller transitions to DONE
+  - Returns final run status
+  - Process exits successfully
+
+================================================================================
+PHASE 4: ACMS ↔ MINI_PIPE BRIDGE
+================================================================================
+
+Step 47: acms_controller logs state transition to EXECUTION
+  - Ledger entry: {"event": "enter_state", "state": "EXECUTION", ...}
+  - Console: [STATE] PLANNING → EXECUTION
+
+Step 48: acms_controller constructs AcmsMiniPipeAdapter
+  - Parameters:
+    - execution_plan_path: Path to mini_pipe_execution_plan.json
+    - repo_root: Repository root
+    - run_id: ACMS run identifier
+    - config: Execution configuration
+
+Step 49: acms_minipipe_adapter resolves integration strategy
+  - Options:
+    - Direct Python API: Import MINI_PIPE_orchestrator and call directly
+    - CLI invocation: Spawn subprocess with MINI_PIPE CLI
+  - Decision based on:
+    - adapter_type parameter ("auto", "python", "cli")
+    - Availability of MINI_PIPE_orchestrator module
+    - Performance considerations
+
+Step 50: acms_minipipe_adapter invokes MINI_PIPE_orchestrator
+  - Call: orchestrator.execute_plan(plan_path, variables)
+  - Registers new MINI_PIPE run with ACMS run_id linkage
+
+================================================================================
+PHASE 5: MINI_PIPE EXECUTION ENGINE
+================================================================================
+
+Step 51: MINI_PIPE_orchestrator stores execution plan
+  - Plan loaded from JSON file
+  - Validated against Plan schema (from plan_schema.py)
+  - Variable substitution: ${VAR} replaced with runtime values
+  - Stored in orchestrator.plan attribute
+
+Step 52: MINI_PIPE_orchestrator initializes internal state
+  - Creates run record in database (SQLite via core/state/db.py):
+    - run_id: Generated ULID or provided from ACMS
+    - project_id: From plan metadata
+    - phase_id: From plan metadata
+    - state: "pending"
+    - created_at: UTC timestamp
+    - metadata: {plan_id, plan_version, plan_path, ...}
+
+Step 53: MINI_PIPE_orchestrator transitions run to "running" state
+  - Updates database: state = "running", started_at = now()
+  - Emits event: {"event_type": "run_started", "run_id": "...", ...}
+  - Event stored in event bus (core/events/event_bus.py)
+
+Step 54: MINI_PIPE_orchestrator initializes event bus
+  - EventBus instance created with db_path
+  - Subscribes to run lifecycle events
+  - Enables event-driven integrations
+
+Step 55: MINI_PIPE_orchestrator hands plan to MINI_PIPE_scheduler
+  - Call: scheduler.build_dag(plan.steps)
+
+Step 56: MINI_PIPE_scheduler builds task DAG (Directed Acyclic Graph)
+  - For each StepDef in plan:
+    - Node: step.id
+    - Edges: step.depends_on → step.id
+  - Validates:
+    - All dependencies reference valid step_ids
+    - No circular dependencies
+    - DAG is connected
+
+Step 57: MINI_PIPE_scheduler computes ready/blocked tasks
+  - Ready: Steps with no unsatisfied dependencies (depends_on all succeeded)
+  - Blocked: Steps with at least one dependency not yet succeeded
+  - Returns: List of ready step_ids
+
+Step 58: MINI_PIPE_scheduler respects max_concurrency limit
+  - From plan.globals.max_concurrency (default: 1)
+  - If N steps ready and M already running:
+    - Can start: max(0, max_concurrency - M)
+  - Ensures system resource limits not exceeded
+
+Step 59: MINI_PIPE_orchestrator calls MINI_PIPE_executor with ready batch
+  - For each ready step:
+    - Call: executor.execute_step(run_id, step_def, plan)
+
+Step 60: MINI_PIPE_executor iterates over current batch
+  - Sequential processing of ready steps
+  - Each step executed in parallel (via subprocess)
+  - Results collected as steps complete
+
+Step 61: For each task, MINI_PIPE_executor consults MINI_PIPE_router
+  - Call: router.select_tool(step_def, plan)
+  - Router analyzes:
+    - step_def.command (e.g., "ai", "test", "lint")
+    - task metadata (task_kind, risk, file_scope)
+    - router_config.json rules
+
+Step 62: MINI_PIPE_router selects tool/adapter for task
+  - Decision tree:
+    - If command == "ai" → Select AI tool (Copilot/OpenAI/etc.)
+    - If command == "test" → Select test runner (pytest/jest/etc.)
+    - If command == "lint" → Select linter (ruff/eslint/etc.)
+    - Else → Use command as-is
+  - Returns: tool_id or adapter_id
+
+Step 63: MINI_PIPE_executor calls MINI_PIPE_tools to run selected tool
+  - Call: tools.execute_tool(tool_id, step_def, context)
+  - Optionally uses MINI_PIPE_process_spawner for subprocess management
+  - Optionally uses MINI_PIPE_resilient_executor for retry/circuit breaker
+
+Step 64: MINI_PIPE_tools renders command template or API call
+  - Template variables substituted:
+    - ${REPO_ROOT} → Actual repo path
+    - ${FILE_PATH} → Target file from step metadata
+    - ${TASK_KIND} → Task type
+    - etc.
+  - Example: "ai codegen --file ${FILE_PATH}" → "ai codegen --file src/utils.py"
+
+Step 65: MINI_PIPE_tools executes command with proper context
+  - Subprocess spawned with:
+    - cwd: step_def.cwd or repo_root
+    - shell: step_def.shell (default: False)
+    - env: Merged from plan.globals.env + step_def.env
+    - timeout: step_def.timeout_sec or plan.globals.default_timeout_sec
+    - stdout/stderr: Captured to PIPE
+
+Step 66: MINI_PIPE_tools captures stdout, stderr, exit code
+  - Wait for process completion (or timeout)
+  - If timeout: Kill process, set exit_code = -1, error = "Timeout after Ns"
+  - If completed: Read stdout/stderr, get exit_code
+
+Step 67: MINI_PIPE_tools extracts structured payload (if applicable)
+  - For AI tools: Parse JSON response from stdout
+  - For test tools: Parse JUnit XML or test results
+  - For linters: Parse JSON output
+  - Store in ToolResult.output_data
+
+Step 68: MINI_PIPE_tools returns normalized ToolResult to executor
+  - ToolResult:
+    - success: exit_code == 0
+    - exit_code: Integer
+    - stdout: String
+    - stderr: String
+    - output_data: Dict (structured payload)
+    - execution_time: Seconds
+
+Step 69: GUARDRAILS: Pre-execution checks (if pattern_id in task metadata)
+  - guardrails.pre_execution_checks(pattern_id, task_data)
+  - Validates:
+    - Pattern exists and is enabled
+    - File paths within pattern's path_scope
+    - Tools in pattern's allowed_tools list
+    - No forbidden_operations
+  - If critical violations: Task fails before execution
+  - Violations logged to run_stats
+
+Step 70: MINI_PIPE_executor records per-task results in run state
+  - Creates step_attempt record:
+    - step_attempt_id: Generated ULID
+    - run_id: Parent run
+    - sequence: Step index in plan
+    - tool_id: Tool used
+    - started_at: UTC timestamp
+    - state: "running"
+  - After completion, updates:
+    - state: "succeeded" | "failed" | "canceled"
+    - ended_at: UTC timestamp
+    - exit_code: Integer
+    - output_patch_id: If patch generated
+    - error_log: stderr (if failed)
+
+Step 71: GUARDRAILS: Post-execution checks (if pattern_id in task metadata)
+  - guardrails.post_execution_checks(pattern_id, task_result)
+  - Validates:
+    - Changes within pattern's max_changes limits
+    - No hallucinated success (AP_HALLUCINATED_SUCCESS):
+      - If status == "success" but exit_code != 0 → VIOLATION
+      - If status == "success" but tests_passed < tests_run → VIOLATION
+      - If status == "success" but expected files missing → VIOLATION
+  - If hallucination detected:
+    - Increment run_stats["hallucination_count"]
+    - Log anti-pattern detection
+    - If count >= 3: Escalate to CRITICAL
+
+Step 72: MINI_PIPE_executor emits task completion event
+  - Event: {"event_type": "step_completed", "step_attempt_id": "...", "status": "...", ...}
+  - Stored in event bus for monitoring/auditing
+
+Step 73: MINI_PIPE_orchestrator updates task statuses in DAG
+  - Mark completed step as SUCCESS or FAILED
+  - Update step state in database
+  - Emit state transition events
+
+Step 74: MINI_PIPE_orchestrator asks scheduler for next ready batch
+  - Call: scheduler.get_ready_steps(current_state)
+  - Scheduler recomputes:
+    - Which steps now have all dependencies satisfied
+    - Which steps are still blocked
+    - Which steps can run in parallel (up to max_concurrency)
+
+Step 75: MINI_PIPE_orchestrator handles step failures
+  - Apply failure policy from step_def.on_failure:
+    - "abort": Cancel all pending steps (if step.critical == true)
+    - "skip_dependents": Mark dependent steps as SKIPPED
+    - "continue": Allow independent steps to proceed
+  - Retry logic:
+    - If attempt < step_def.retries: Reset to PENDING, retry
+    - If no retries left: Apply failure policy
+
+Step 76: Steps 59-75 repeat in execution loop
+  - While has_pending_or_running_steps():
+    - Update running steps (check completion, timeouts)
+    - Find runnable steps (dependencies met)
+    - Start runnable steps (up to max_concurrency)
+    - Sleep 0.5s (polling interval)
+  - Exit when: All steps in terminal state (SUCCESS/FAILED/SKIPPED/CANCELED)
+
+Step 77: OPTIONAL: MINI_PIPE_patch_converter converts AI outputs to patches
+  - If patch_converter enabled in config:
+    77a. Read AI tool stdout (typically unified diff format)
+    77b. Parse into structured Patch objects
+    77c. Validate patch syntax and context
+    77d. Return normalized Patch to executor
+
+Step 78: OPTIONAL: MINI_PIPE_patch_ledger manages patch lifecycle
+  - If patch_ledger enabled:
+    78a. Store patch in ledger with state: "created"
+    78b. Validate patch applies cleanly → "validated"
+    78c. Queue for application → "queued"
+    78d. Apply patch to working tree → "applied"
+    78e. Verify (tests pass, builds succeed) → "verified"
+    78f. Commit or quarantine → "committed" | "quarantined"
+  - Ledger: JSON append-only log of all patch operations
+
+Step 79: MINI_PIPE_orchestrator computes final run status
+  - If any FAILED steps → run status = "failed"
+  - If all SUCCESS or SKIPPED → run status = "succeeded"
+  - If unexpected state → run status = "quarantined"
+
+Step 80: MINI_PIPE_orchestrator marks run complete
+  - Update database:
+    - state: "succeeded" | "failed" | "quarantined"
+    - ended_at: UTC timestamp
+    - exit_code: 0 (success) | 1 (failure)
+  - Emit event: {"event_type": "run_completed", "status": "...", ...}
+
+Step 81: MINI_PIPE_orchestrator persists final state
+  - Database transaction committed
+  - All step_attempts saved
+  - All events flushed to event bus
+  - Run record finalized
+
+================================================================================
+PHASE 6: RESULT INGESTION, GAP UPDATES, AND REPORTING
+================================================================================
+
+Step 82: acms_minipipe_adapter polls MINI_PIPE for completion
+  - Query: orchestrator.get_run_status(run_id)
+  - Wait for run state: "succeeded" | "failed" | "quarantined"
+
+Step 83: acms_minipipe_adapter collects aggregated execution results
+  - Queries:
+    - orchestrator.get_run_steps(run_id) → All step_attempt records
+    - orchestrator.get_run_events(run_id) → All events
+  - Summarizes:
+    - Total tasks
+    - Tasks succeeded
+    - Tasks failed
+    - Tasks skipped/canceled
+    - Execution duration
+    - Files modified
+
+Step 84: acms_minipipe_adapter returns execution summary to acms_controller
+  - ExecutionResult:
+    - success: Overall success/failure
+    - run_id: MINI_PIPE run identifier
+    - tasks_completed: Count of succeeded tasks
+    - tasks_failed: Count of failed tasks
+    - execution_time_seconds: Total duration
+    - error: Error message (if failed)
+    - output_data: Additional structured results
+
+Step 85: GUARDRAILS: Update patches_applied counter
+  - run_stats["patches_applied"] = <count from execution results>
+  - Used to detect planning loops (planning without execution)
+
+Step 86: acms_controller correlates execution results with original gaps
+  - For each task in execution results:
+    86a. Extract gap_ids from task metadata
+    86b. Look up gaps in gap_registry
+    86c. Determine if gap was addressed:
+        - If task succeeded AND verification passed → gap resolved
+        - If task failed → gap remains open or in_progress
+        - If task skipped → gap deferred
+
+Step 87: acms_controller updates gap_registry with new statuses
+  - For each gap:
+    - If addressed: gap.status = GapStatus.RESOLVED
+    - If attempted but failed: gap.status = GapStatus.IN_PROGRESS
+    - If not attempted: gap.status = GapStatus.DEFERRED
+  - Associate gap with run_id in metadata
+  - Associate gap with workstream_id and task_id
+
+Step 88: gap_registry persists updated statuses
+  - Save gap_registry.json with updated gap records
+  - Atomic write (temp file + rename)
+
+Step 89: GUARDRAILS: Final anti-pattern detection
+  - Call: anti_pattern_detector.detect_all(run_context)
+  - Checks:
+    - Hallucinated success (already checked per-task, this is final summary)
+    - Planning loop (final check after execution)
+    - Any other runbook-defined patterns
+  - Log all detections to ledger and console
+
+Step 90: acms_controller synthesizes unified RunStatus object
+  - Components:
+    - Run metadata (run_id, repo_root, timestamps)
+    - State transitions (from ledger)
+    - Gap statistics:
+      - gaps_discovered: Total gaps found
+      - gaps_resolved: Gaps with status RESOLVED
+      - gaps_in_progress: Gaps with status IN_PROGRESS
+      - gaps_deferred: Gaps with status DEFERRED
+    - Workstream statistics:
+      - workstreams_created: Number of workstreams
+      - tasks_total: Total tasks in plan
+      - tasks_executed: Tasks actually run
+      - tasks_succeeded: Successful tasks
+      - tasks_failed: Failed tasks
+    - Guardrails statistics:
+      - guardrails_enabled: Boolean
+      - planning_attempts: Number of planning iterations
+      - patches_applied: Number of patches applied
+      - hallucination_count: Number of hallucination detections
+      - anti_patterns_detected: List of detected anti-patterns
+    - Configuration:
+      - ai_adapter_type
+      - mode
+      - config settings
+    - Artifacts:
+      - Paths to all generated files (ledger, reports, plans, etc.)
+
+Step 91: acms_controller writes RunStatus JSON to disk
+  - File: .acms_runs/<RUN_ID>/run_status.json
+  - Format: Comprehensive JSON object with all run data
+  - Used by downstream tools and dashboards
+
+Step 92: acms_controller generates human-readable summary report
+  - File: .acms_runs/<RUN_ID>/summary_report.md (Markdown format)
+  - Contains:
+    - Executive summary
+    - Gap discovery results
+    - Planning results
+    - Execution results
+    - Guardrails summary (violations, anti-patterns)
+    - Recommendations
+    - Links to detailed artifacts
+
+Step 93: acms_controller logs state transition to SUMMARY
+  - Ledger entry: {"event": "enter_state", "state": "SUMMARY", ...}
+  - Console: [STATE] EXECUTION → SUMMARY
+
+Step 94: acms_controller prints summary to console
+  - Formatted table with key metrics
+  - Example:
+    ============================================================
+      RUN SUMMARY
+    ============================================================
+      Run ID: 20251207014530_A3F2C1D8E5B9
+      Phases: 6 completed
+      Gaps: 42 discovered, 38 resolved
+      Workstreams: 8
+      Tasks: 24 (22 succeeded, 2 failed)
+      Guardrails: 3 anti-patterns detected
+    ============================================================
+
+Step 95: acms_controller ensures code changes are safely stored
+  - Options:
+    - Create git branch: git checkout -b acms-run-<run_id>
+    - Commit changes: git add -A && git commit -m "ACMS run <run_id>"
+    - Leave in working tree: No git operations (user commits manually)
+    - Patch ledger: Changes tracked in patch ledger, not committed
+  - Controlled by config.commit_strategy
+
+Step 96: acms_controller logs state transition to DONE
+  - Ledger entry: {"event": "enter_state", "state": "DONE", ...}
+  - Console: [STATE] SUMMARY → DONE
+
+Step 97: acms_controller finalizes run ledger
+  - Final entry: {"event": "run_finalized", "status": "success|failed", ...}
+  - Ledger closed (no more writes)
+
+Step 98: acms_controller exits with appropriate exit code
+  - Exit code 0: Run succeeded (all critical tasks passed)
+  - Exit code 1: Run failed (critical tasks failed or ACMS errors)
+
+Step 99: CLI prints concise summary to stdout
+  - Format:
+    [ACMS] Run completed successfully
+    Run ID: 20251207014530_A3F2C1D8E5B9
+    Gaps resolved: 38/42
+    Tasks completed: 22/24
+    Reports: .acms_runs/20251207014530_A3F2C1D8E5B9/
+
+Step 100: Cleanup temporary files (if configured)
+  - Remove intermediate build artifacts
+  - Compress logs (if log_compression enabled)
+  - Archive old runs (if run_retention_days configured)
+
+================================================================================
+GUARDRAILS INTEGRATION CHECKPOINTS
+================================================================================
+
+The guardrails system is integrated at multiple checkpoints throughout the
+pipeline to enforce patterns and detect anti-patterns:
+
+CHECKPOINT 1: Phase Plan Compilation (Step 38)
+  - Validates pattern_id references in task metadata
+  - Ensures patterns exist and are enabled in PATTERN_INDEX.yaml
+  - Pre-validates path scope, tool usage, and operations
+  - Blocks compilation if critical violations found
+
+CHECKPOINT 2: Pre-Task Execution (Step 69)
+  - Validates task against pattern guardrails before execution
+  - Checks:
+    - Pattern exists and enabled
+    - File paths within allowed scope
+    - Tools in allowed_tools list
+    - No forbidden operations
+  - Fails task immediately if critical violations found
+
+CHECKPOINT 3: Post-Task Execution (Step 71)
+  - Validates task results against pattern limits
+  - Detects hallucinated success (AP_HALLUCINATED_SUCCESS)
+  - Checks change limits (max files, lines, hunks)
+  - Increments hallucination counter if detected
+
+CHECKPOINT 4: Post-Planning (Step 43)
+  - Detects planning loop anti-pattern (AP_PLANNING_LOOP)
+  - Triggers if planning_attempts > 3 and patches_applied == 0
+  - Logs recommendation to simplify scope
+
+CHECKPOINT 5: Final Summary (Step 89)
+  - Comprehensive anti-pattern detection across entire run
+  - Aggregates all violations and detections
+  - Generates guardrails section in summary report
+
+Anti-Pattern Automatic Responses:
+  - AP_HALLUCINATED_SUCCESS: Increment counter, escalate at 3+ occurrences
+  - AP_PLANNING_LOOP: Log recommendation, flag for manual review
+  - Future: Automatic remediation actions (circuit breakers, scope reduction)
+
+================================================================================
+KEY ARCHITECTURAL BOUNDARIES
+================================================================================
+
+1. ACMS ↔ MINI_PIPE Boundary (Steps 47-50)
+   - ACMS owns: Gap discovery, planning, high-level orchestration
+   - MINI_PIPE owns: Task execution, scheduling, state management
+   - Bridge: acms_minipipe_adapter translates between worlds
+   - Contract: Execution plan JSON format
+
+2. Planning ↔ Execution Boundary (Steps 36-46)
+   - Planning produces: MINI_PIPE execution plan (declarative)
+   - Execution consumes: Plan as input (imperative)
+   - No runtime feedback from execution to planning (one-way flow)
+   - Future: Adaptive planning based on execution results
+
+3. Gap Discovery ↔ Registry Boundary (Steps 11-22)
+   - Discovery produces: Raw AI-generated gap report
+   - Registry consumes: Normalizes and persists gaps
+   - Contract: Gap report JSON schema
+
+4. Guardrails ↔ Execution Boundary (Steps 69, 71)
+   - Guardrails validate: Pre/post execution conditions
+   - Execution respects: Guardrail decisions (fail tasks if violated)
+   - Contract: GuardrailViolation objects
+
+================================================================================
+STATE MACHINE TRANSITIONS
+================================================================================
+
+Valid state transitions (enforced by RunState enum in acms_golden_path.py):
+
+  INIT → GAP_ANALYSIS
+  GAP_ANALYSIS → PLANNING | DONE (if analyze_only)
+  PLANNING → EXECUTION | DONE (if plan_only)
+  EXECUTION → SUMMARY
+  SUMMARY → DONE
+  * → FAILED (from any state on error)
+
+Invalid transitions (will raise ValueError):
+  INIT → EXECUTION (must go through GAP_ANALYSIS and PLANNING)
+  GAP_ANALYSIS → SUMMARY (must go through PLANNING and EXECUTION)
+  DONE → * (terminal state)
+
+================================================================================
+ERROR HANDLING & RECOVERY
+================================================================================
+
+Component-Level Error Handling:
+  - AI Adapter: Retries with exponential backoff, fallback to mock on failure
+  - MINI_PIPE Executor: Per-task retry with retry_delay_sec
+  - Database: Transaction rollback on errors
+  - File I/O: Atomic writes (temp file + rename)
+
+Run-Level Error Handling:
+  - Caught exceptions transition run to FAILED state
+  - Error logged to ledger and run_status.json
+  - Partial results preserved (gaps discovered, plans generated)
+  - User can resume with mode=execute_only if planning succeeded
+
+Circuit Breakers:
+  - Hallucination circuit breaker: Abort run if hallucination_count >= 5
+  - Planning loop circuit breaker: Abort if planning_attempts >= 10
+  - Timeout circuit breaker: Abort run if total duration exceeds max_run_time
+
+Recovery Strategies:
+  - Resume from checkpoint: Load run state and continue from last phase
+  - Replay ledger: Reconstruct run state from ledger events
+  - Manual intervention: Edit gap_registry or plans, then execute_only
+
+================================================================================
+CONFIGURATION & CUSTOMIZATION
+================================================================================
+
+Key Configuration Options (acms_controller.config):
+  - ai_adapter_type: "mock" | "copilot" | "openai" | "anthropic"
+  - max_files_per_workstream: Integer (default: 10)
+  - max_concurrency: Integer (default: 1)
+  - commit_strategy: "branch" | "commit" | "none" | "patch_ledger"
+  - enable_guardrails: Boolean (default: true if PATTERN_INDEX.yaml exists)
+  - log_level: "DEBUG" | "INFO" | "WARNING" | "ERROR"
+  - timeout_seconds: Integer (default: 1800 for tasks, 300 for gap analysis)
+
+Pattern Customization (PATTERN_INDEX.yaml):
+  - Define custom patterns with guardrails
+  - Set path_scope (include/exclude globs)
+  - Set allowed_tools list
+  - Set max_changes limits
+  - Set forbidden_operations
+
+Anti-Pattern Customization (anti_patterns/AP_*.yaml):
+  - Define custom anti-pattern detection rules
+  - Set automatic response actions
+  - Set severity levels and escalation thresholds
+
+================================================================================
+MONITORING & OBSERVABILITY
+================================================================================
+
+Logging Outputs:
+  - Console: Structured log messages with [PHASE], [STATE], [EVENT] prefixes
+  - Ledger: .acms_runs/<RUN_ID>/run.ledger.jsonl (append-only event log)
+  - Database: SQLite database with runs, step_attempts, events tables
+  - Reports: JSON and Markdown summary reports
+
+Metrics Available:
+  - Run duration (per phase and total)
+  - Gap statistics (discovered, resolved, in_progress, deferred)
+  - Task statistics (total, succeeded, failed, skipped)
+  - Guardrail violations (per pattern, per anti-pattern)
+  - Resource usage (if monitoring enabled)
+
+Event Types:
+  - State transitions: enter_state, exit_state
+  - Lifecycle: run_created, run_started, run_completed, run_failed
+  - Tasks: step_started, step_completed, step_failed, step_retry, step_timeout
+  - Guardrails: anti_pattern_detected, guardrail_violation
+  - Planning: planning_complete, plan_generation_complete
+  - Gap discovery: gap_discovery_complete, gaps_clustered
+
+Integration Points:
+  - Event bus: Subscribe to events for real-time monitoring
+  - Database queries: Query run history, step results, gap status
+  - Ledger parsing: Replay events for audit or debugging
+  - REST API (future): Expose run status and metrics via HTTP
+
+================================================================================
+FILE ARTIFACTS GENERATED
+================================================================================
+
+Per-Run Directory: .acms_runs/<RUN_ID>/
+  ├── run.ledger.jsonl             (append-only event log)
+  ├── acms_state.json              (controller state snapshot)
+  ├── gap_analysis_report.json     (raw AI gap analysis output)
+  ├── gap_registry.json            (normalized gaps with status)
+  ├── mini_pipe_execution_plan.json (compiled execution plan)
+  ├── run_status.json              (comprehensive run summary)
+  ├── summary_report.md            (human-readable summary)
+  ├── workstreams/                 (individual workstream JSON files)
+  │   ├── ws-testing-001.json
+  │   ├── ws-documentation-001.json
+  │   └── ...
+  ├── logs/                        (execution logs)
+  │   ├── step_<id>.stdout.log
+  │   ├── step_<id>.stderr.log
+  │   └── ...
+  └── patches/                     (if patch ledger enabled)
+      ├── patch_<id>.diff
+      └── patch_ledger.jsonl
+
+Global Files (Repo Root):
+  ├── PATTERN_INDEX.yaml           (pattern definitions and guardrails)
+  ├── anti_patterns/               (anti-pattern runbooks)
+  │   ├── AP_HALLUCINATED_SUCCESS.yaml
+  │   ├── AP_PLANNING_LOOP.yaml
+  │   └── ...
+  ├── schemas/                     (JSON schemas for validation)
+  │   ├── gap_report.schema.json
+  │   ├── execution_plan.schema.json
+  │   └── pattern_spec.schema.json
+  └── .acms_runs/                  (all run directories)
+
+================================================================================
+DEPENDENCIES & PREREQUISITES
+================================================================================
+
+Required Python Packages:
+  - pyyaml: PATTERN_INDEX.yaml parsing
+  - jsonschema (optional): Schema validation
+  - requests (optional): For API-based AI adapters
+
+Required Files:
+  - PATTERN_INDEX.yaml: Pattern definitions (guardrails disabled without)
+  - anti_patterns/*.yaml: Anti-pattern runbooks (optional)
+  - OVERLAP_AUTOMATION_AND_MASTER_GAP_ANALYSIS.merged.json: Gap analysis prompt
+
+System Requirements:
+  - Python 3.8+
+  - Git (for commit_strategy="branch" or "commit")
+  - SQLite (for run database)
+
+Optional Integrations:
+  - GitHub Copilot CLI: For ai_adapter_type="copilot"
+  - OpenAI API key: For ai_adapter_type="openai"
+  - Anthropic API key: For ai_adapter_type="anthropic"
+
+================================================================================
+USAGE EXAMPLES
+================================================================================
+
+Example 1: Full pipeline with OpenAI adapter
+  $ python acms_controller.py /path/to/repo --mode full --ai-adapter openai
+
+Example 2: Gap analysis only with mock adapter
+  $ python acms_controller.py /path/to/repo --mode analyze_only --ai-adapter mock
+
+Example 3: Execute existing plan (skip gap analysis)
+  $ python acms_controller.py /path/to/repo --mode execute_only --run-id 20251207014530_A3F2C1D8E5B9
+
+Example 4: Disable guardrails
+  $ python acms_controller.py /path/to/repo --mode full --ai-adapter copilot --no-guardrails
+
+Example 5: Resume failed run (manual intervention)
+  1. Review failed run logs: .acms_runs/<RUN_ID>/
+  2. Edit gap_registry.json or execution plan if needed
+  3. Resume: python acms_controller.py /path/to/repo --mode execute_only --run-id <RUN_ID>
+
+================================================================================
+CHANGELOG
+================================================================================
+
+Version 2.0 (2025-12-07):
+  - Complete rewrite to match current codebase architecture
+  - Added comprehensive guardrails integration (6 checkpoints)
+  - Added anti-pattern detection (AP_HALLUCINATED_SUCCESS, AP_PLANNING_LOOP)
+  - Added state machine enforcement (INIT → GAP_ANALYSIS → PLANNING → EXECUTION → SUMMARY → DONE)
+  - Added run ledger (JSONL append-only event log)
+  - Added detailed step-by-step breakdown (100 steps)
+  - Added architectural boundaries documentation
+  - Added error handling and recovery strategies
+  - Added monitoring and observability details
+  - Added file artifacts reference
+  - Added usage examples
+
+Version 1.0 (Original):
+  - Initial documentation with 100 technical steps
+  - 50 non-technical steps translation
+  - Basic ACMS and MINI_PIPE integration overview
+
+================================================================================
+END OF DOCUMENT
+================================================================================

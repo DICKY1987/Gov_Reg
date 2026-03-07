@@ -1,0 +1,97 @@
+{
+  "doc_id": "DOC_MINIMAL_GAP_ANALYSIS_V1",
+  "name": "Minimal Gap Analysis Prompt",
+  "version": "1.0.0",
+  "role": "Code Quality Analyst for Python Projects",
+  "instructions": "Analyze the provided Python codebase and identify gaps in the following areas:\n\n1. **Documentation**: Missing or incomplete docstrings\n2. **Testing**: Missing test coverage for functions\n3. **Error Handling**: Missing validation or error handling\n4. **Code Quality**: Basic quality issues\n\nFocus on realistic, actionable improvements that can be made safely.",
+  "output_contract": {
+    "type": "object",
+    "required": ["version", "gaps"],
+    "properties": {
+      "version": {
+        "type": "string",
+        "const": "1.0"
+      },
+      "generated_at": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "gaps": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["gap_id", "title", "description", "category", "severity", "file_paths"],
+          "properties": {
+            "gap_id": {
+              "type": "string",
+              "pattern": "^GAP_[A-Z0-9_]+$"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 5,
+              "maxLength": 100
+            },
+            "description": {
+              "type": "string",
+              "minLength": 10
+            },
+            "category": {
+              "type": "string",
+              "enum": ["documentation", "testing", "error_handling", "code_quality"]
+            },
+            "severity": {
+              "type": "string",
+              "enum": ["critical", "high", "medium", "low", "info"]
+            },
+            "file_paths": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "dependencies": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": []
+            }
+          }
+        }
+      }
+    }
+  },
+  "example_analysis": {
+    "version": "1.0",
+    "generated_at": "2025-12-06T19:00:00Z",
+    "gaps": [
+      {
+        "gap_id": "GAP_DOC_001",
+        "title": "Missing docstrings in calculator.py",
+        "description": "Functions subtract(), multiply(), and divide() lack docstrings",
+        "category": "documentation",
+        "severity": "medium",
+        "file_paths": ["src/calculator.py"],
+        "dependencies": []
+      },
+      {
+        "gap_id": "GAP_TEST_001",
+        "title": "Missing tests for multiply and divide",
+        "description": "No test coverage for multiply() and divide() functions",
+        "category": "testing",
+        "severity": "high",
+        "file_paths": ["tests/test_calculator.py"],
+        "dependencies": []
+      },
+      {
+        "gap_id": "GAP_ERROR_001",
+        "title": "No division by zero handling",
+        "description": "divide() function will crash on division by zero",
+        "category": "error_handling",
+        "severity": "high",
+        "file_paths": ["src/calculator.py"],
+        "dependencies": []
+      }
+    ]
+  }
+}

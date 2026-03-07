@@ -1,0 +1,53 @@
+name: Project Item Sync
+
+on:
+  issues:
+    types: [opened, edited, labeled, unlabeled, closed, reopened]
+  pull_request:
+    types: [opened, edited, ready_for_review, converted_to_draft, closed, reopened, synchronize]
+
+jobs:
+  sync-project-item:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: read
+      project: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Sync project item
+        env:
+          TARGET_ORG: ${{ vars.TARGET_ORG || github.repository_owner }}
+          TARGET_REPO: ${{ vars.TARGET_REPO || github.event.repository.name }}
+          PROJECT_NUMBER: ${{ vars.PROJECT_NUMBER || '1' }}
+          PROJECT_NODE_ID: ${{ vars.PROJECT_NODE_ID }}
+          PHASE_FIELD_ID: ${{ vars.PROJECT_PHASE_FIELD_ID || vars.PHASE_FIELD_ID }}
+          STATUS_FIELD_ID: ${{ vars.PROJECT_STATUS_FIELD_ID || vars.STATUS_FIELD_ID }}
+          STATUS_TODO_ID: ${{ vars.STATUS_OPTION_ID_TODO }}
+          STATUS_IN_PROGRESS_ID: ${{ vars.STATUS_OPTION_ID_IN_PROGRESS }}
+          STATUS_IN_REVIEW_ID: ${{ vars.STATUS_OPTION_ID_IN_REVIEW }}
+          STATUS_DONE_ID: ${{ vars.STATUS_OPTION_ID_DONE }}
+          PHASE_LABEL_MAP_JSON: ${{ vars.PHASE_LABEL_MAP_JSON }}
+          PHASE_OPTION_MAP_JSON: ${{ vars.PHASE_OPTION_MAP_JSON }}
+          PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python .github/github_integration_v2/scripts/project_item_sync.py
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: project-sync-logs
+          path: ${{ runner.temp }}/_github_home/_logs

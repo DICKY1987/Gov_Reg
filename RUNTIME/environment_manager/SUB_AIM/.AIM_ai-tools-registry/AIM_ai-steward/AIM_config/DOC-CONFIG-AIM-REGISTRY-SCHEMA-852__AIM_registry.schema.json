@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "AIM_registry.schema.json",
+  "type": "object",
+  "required": [
+    "tools"
+  ],
+  "properties": {
+    "tools": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "name",
+          "detectCommands"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "detectCommands": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "versionCommand": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "installCommand": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "updateCommand": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "configPaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "logPaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "adapterScript": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "capabilities": {
+      "type": "object"
+    },
+    "crossToolRulesPath": {
+      "type": "string"
+    }
+  },
+  "doc_id": "DOC-CONFIG-AIM-REGISTRY-SCHEMA-852"
+}

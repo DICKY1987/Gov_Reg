@@ -23,7 +23,8 @@
 2. `file_id`: `\d{20}` (no prefix) - Example: `01999000042260124027`
 3. `doc_id`: `P_\d{20}` (Python prefix) - Example: `P_01999000042260124027`
 4. `dir_id`: 20-digit ID stored in `.dir_id` JSON files
-5. Allocator uses global counter: `%APPDATA%\GovReg\IdAllocator\COUNTER_STORE.json`
+5. `doc_id` is 22 characters total (`P_` + 20 digits) — this is NOT a separate "enhanced_id" type
+6. Allocator uses global counter: `%APPDATA%\GovReg\IdAllocator\COUNTER_STORE.json`
 
 ---
 

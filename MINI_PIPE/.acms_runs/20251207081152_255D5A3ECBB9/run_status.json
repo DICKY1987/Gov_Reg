@@ -1,0 +1,51 @@
+{
+  "run_id": "20251207081152_255D5A3ECBB9",
+  "repo_root": "C:\\Users\\richg\\ALL_AI\\MINI_PIPE",
+  "started_at": "2025-12-07T08:11:52.912405+00:00",
+  "completed_at": "2025-12-07T08:11:52.936121+00:00",
+  "final_status": "failed",
+  "error": "'.acms_runs\\\\20251207081152_255D5A3ECBB9\\\\workstreams' is not in the subpath of 'C:\\\\Users\\\\richg\\\\ALL_AI\\\\MINI_PIPE'",
+  "state_transitions": [
+    {
+      "state": "init",
+      "timestamp": "2025-12-07T08:11:52.912405+00:00",
+      "previous": "init"
+    },
+    {
+      "state": "gap_analysis",
+      "timestamp": "2025-12-07T08:11:52.914411+00:00",
+      "previous": "init"
+    },
+    {
+      "state": "planning",
+      "timestamp": "2025-12-07T08:11:52.924441+00:00",
+      "previous": "gap_analysis"
+    },
+    {
+      "state": "failed",
+      "timestamp": "2025-12-07T08:11:52.936121+00:00",
+      "previous": "planning"
+    }
+  ],
+  "metrics": {
+    "gaps_discovered": 1,
+    "gaps_resolved": 0,
+    "workstreams_created": 1,
+    "tasks_executed": 0,
+    "tasks_failed": 0
+  },
+  "config": {
+    "triggers_enabled": false,
+    "enable_resilience": false,
+    "enable_patch_ledger": false,
+    "max_concurrent_tasks": 4,
+    "timeout_seconds": 3600
+  },
+  "artifacts": {
+    "ledger": ".acms_runs\\20251207081152_255D5A3ECBB9\\run.ledger.jsonl",
+    "state": "acms_state.json",
+    "gap_registry": "gap_registry.json",
+    "workstreams": null,
+    "execution_plan": null
+  }
+}

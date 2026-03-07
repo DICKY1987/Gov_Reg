@@ -1,0 +1,82 @@
+doc_id: DOC-GUIDE-MODULE-ID-VALIDATION-680
+name: Module ID Validation
+
+on:
+  pull_request:
+    paths:
+      - 'doc_id/specs/DOC_ID_REGISTRY.yaml'
+      - 'doc_id/specs/module_taxonomy.yaml'
+  push:
+    branches: [main]
+    paths:
+      - 'doc_id/specs/DOC_ID_REGISTRY.yaml'
+      - 'doc_id/specs/module_taxonomy.yaml'
+
+jobs:
+  validate-module-ids:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+
+      - name: Check module_id coverage
+        run: |
+          python -c "
+          import yaml
+          import sys
+
+          # Load registry
+          with open('doc_id/specs/DOC_ID_REGISTRY.yaml', 'r') as f:
+              registry = yaml.safe_load(f)
+
+          # Load taxonomy
+          try:
+              with open('doc_id/specs/module_taxonomy.yaml', 'r') as f:
+                  taxonomy = yaml.safe_load(f)
+              valid_modules = set(taxonomy['module_taxonomy'].keys())
+          except:
+              valid_modules = set()
+              print('Warning: Could not load module taxonomy')
+
+          # Count docs with module_id
+          docs = registry.get('docs', [])
+          total = len(docs)
+          with_module_id = sum(1 for doc in docs if 'module_id' in doc)
+          invalid_modules = []
+
+          # Check for invalid module_ids
+          if valid_modules:
+              for doc in docs:
+                  module_id = doc.get('module_id')
+                  if module_id and module_id not in valid_modules and module_id != 'unassigned':
+                      invalid_modules.append((doc.get('doc_id'), module_id))
+
+          coverage = (with_module_id / total * 100) if total > 0 else 0
+
+          print(f'Module ID Coverage: {with_module_id}/{total} ({coverage:.1f}%)')
+
+          if invalid_modules:
+              print(f'\\nInvalid module_ids found:')
+              for doc_id, module_id in invalid_modules[:10]:
+                  print(f'  - {doc_id}: {module_id}')
+              if len(invalid_modules) > 10:
+                  print(f'  ... and {len(invalid_modules) - 10} more')
+              sys.exit(1)
+
+          if coverage < 85:
+              print(f'\\nFAIL: Module ID coverage {coverage:.1f}% below 85% threshold')
+              sys.exit(1)
+
+          print(f'\\nPASS: Module ID validation successful')
+          "

@@ -1,0 +1,3 @@
+# DOC_LINK: DOC-CORE-TESTS-INIT-1060
+"""Tests for PSScriptAnalyzer plugin."""
+DOC_ID: DOC-CORE-TESTS-INIT-1060

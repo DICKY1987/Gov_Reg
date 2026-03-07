@@ -1,0 +1,320 @@
+# DOC_LINK: DOC-CONFIG-PFA-DIRECTORY-INTEGRATION-PROCESS-STEPS-SCHEMA-999
+doc_id: DOC-CONFIG-PFA-DIRECTORY-INTEGRATION-PROCESS-STEPS-SCHEMA-999
+meta:
+  process_id: DIRECTORY_INTEGRATION_PROCESS_STEPS_SCHEMA
+  source_file: PROCESS_STEP_LIB\PFA_DIRECTORY_INTEGRATION_PROCESS_STEPS_SCHEMA.yaml
+  description: Process steps for directory integration E2E coverage - Phase 2, 6, 7, and 9 operations
+  created_from_analysis: FOLDER_STEP_INTERSECTION_ANALYSIS.md and NON_INTERSECTING_DIRECTORIES_ANALYSIS.md
+steps:
+# Phase 2 - Design/Request Building Steps
+- step_id: DIR-INT-PHASE2-001
+  phase: DESIGN
+  name: Validate I/O Contract Pipeline
+  description: |
+    Validate input/output contracts for all system boundaries using SUB_IO_CONTRACT_PIPELINE tools.
+    Ensures all phase interfaces have defined contracts with proper pre/post-conditions.
+  responsible_component: io_contract_validator
+  operation_kind: validation
+  inputs:
+    - 'contracts_dir: WORKFLOWS/planning/PHASE_2_REQUEST_BUILDING/contracts/SUB_IO_CONTRACT_PIPELINE/'
+    - 'phase_interfaces: List of phase boundary definitions'
+  expected_outputs:
+    - I/O contract validation report
+    - Contract compliance status for each interface
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+    - WORKFLOWS/planning/PHASE_2_REQUEST_BUILDING/contracts/
+  guardrail_checkpoint: true
+  guardrail_checkpoint_id: GC-IO-CONTRACT-VALIDATION
+
+- step_id: DIR-INT-PHASE2-002
+  phase: DESIGN
+  name: Validate System Determinism Contract
+  description: |
+    Validate SYSTEM_DETERMINISM_CONTRACT.json to ensure all code follows determinism requirements:
+    - Explicit seed parameters (no unseeded random())
+    - Clock injection for timestamps (no datetime.now())
+    - Hermetic execution (all outputs to designated run directory)
+    - Stable IDs (no UUID generation)
+  responsible_component: determinism_validator
+  operation_kind: validation
+  inputs:
+    - 'determinism_contract: WORKFLOWS/planning/PHASE_2_REQUEST_BUILDING/SYSTEM_DETERMINISM_CONTRACT.json'
+    - 'codebase_scan: Python/JS code files to validate'
+  expected_outputs:
+    - Determinism compliance report
+    - List of violations with file/line references
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+    - WORKFLOWS/planning/PHASE_2_REQUEST_BUILDING/SYSTEM_DETERMINISM_CONTRACT.json
+  guardrail_checkpoint: true
+  guardrail_checkpoint_id: GC-DETERMINISM-VALIDATION
+
+# Phase 6 - Error Recovery Steps
+- step_id: DIR-INT-PHASE6-001
+  phase: RECOVERY
+  name: Execute Migration Validation
+  description: |
+    Validate migration artifacts and state using migration tools from PHASE_6_ERROR_RECOVERY/migration/.
+    Checks migration integrity, rollback readiness, and artifact version consistency.
+  responsible_component: migration_validator
+  operation_kind: validation
+  inputs:
+    - 'migration_config: generated/PHASE_6_ERROR_RECOVERY/migration/config.yaml'
+    - 'migration_log: generated/PHASE_6_ERROR_RECOVERY/migration/migration_log.txt'
+  expected_outputs:
+    - Migration validation report
+    - Rollback readiness status
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+    - generated/PHASE_6_ERROR_RECOVERY/migration/
+  guardrail_checkpoint: false
+
+- step_id: DIR-INT-PHASE6-002
+  phase: RECOVERY
+  name: Rollback Artifacts on Failure
+  description: |
+    Execute rollback procedures using migration/rollback/ tools when execution failures occur.
+    Restores system to last known good state using migration tracking data.
+  responsible_component: rollback_orchestrator
+  operation_kind: execution
+  inputs:
+    - 'failure_context: Error details and failed step ID'
+    - 'rollback_scripts: generated/PHASE_6_ERROR_RECOVERY/migration/rollback/'
+  expected_outputs:
+    - Rollback execution report
+    - System state restoration confirmation
+  requires_human_confirmation: true
+  pattern_ids: []
+  artifact_registry_refs:
+    - generated/PHASE_6_ERROR_RECOVERY/migration/rollback/
+  guardrail_checkpoint: false
+
+# Phase 7 - Monitoring Steps
+- step_id: DIR-INT-PHASE7-001
+  phase: MONITORING
+  name: Aggregate Execution Logs
+  description: |
+    Collect and aggregate execution logs from all phases using SUB_LOG_REVIEW tools.
+    Consolidates logs from multiple sources into unified log store for analysis.
+  responsible_component: log_aggregator
+  operation_kind: aggregation
+  inputs:
+    - 'log_sources: RUNTIME/runs/{run_id}/logs/'
+    - 'aggregation_script: generated/PHASE_7_MONITORING/logs/log_review/aggregate-logs.ps1'
+  expected_outputs:
+    - Aggregated log database
+    - Log aggregation summary report
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+    - generated/PHASE_7_MONITORING/logs/log_review/
+  guardrail_checkpoint: false
+
+- step_id: DIR-INT-PHASE7-002
+  phase: MONITORING
+  name: Analyze Log Patterns for Issues
+  description: |
+    Mine execution logs for error patterns, anomalies, and performance issues using multi_ai_log_miner.py.
+    Extracts insights from structured logs to identify systemic issues.
+  responsible_component: log_analyzer
+  operation_kind: analysis
+  inputs:
+    - 'aggregated_logs: SQLite database from log aggregation'
+    - 'analysis_script: generated/PHASE_7_MONITORING/logs/log_review/SUB_LOG_REVIEW/multi_ai_log_miner.py'
+  expected_outputs:
+    - Log pattern analysis report
+    - Identified error patterns and anomalies
+    - Performance bottleneck recommendations
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+    - generated/PHASE_7_MONITORING/logs/log_review/SUB_LOG_REVIEW/
+  guardrail_checkpoint: false
+
+- step_id: DIR-INT-PHASE7-003
+  phase: MONITORING
+  name: Export Logs to Data Store
+  description: |
+    Export analyzed logs to persistent data store (SQLite/JSON) using export-logs.ps1.
+    Ensures log history is preserved for trend analysis and auditing.
+  responsible_component: log_exporter
+  operation_kind: persistence
+  inputs:
+    - 'analyzed_logs: Analysis results from log pattern mining'
+    - 'export_script: generated/PHASE_7_MONITORING/logs/log_review/export-logs.ps1'
+  expected_outputs:
+    - Exported log database
+    - Export completion confirmation
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+    - generated/PHASE_7_MONITORING/logs/log_review/
+  guardrail_checkpoint: false
+
+# Phase 8/9 - Execution/Enforcement Steps
+- step_id: DIR-INT-PHASE9-000
+  phase: EXECUTION
+  name: Load Phase 8 Execution Instances
+  description: |
+    Load Phase 8 task configuration instances (pattern execution configs) from workstreams/instances/.
+    Prepares execution context for Phase 9 workstream processing.
+  responsible_component: instance_loader
+  operation_kind: initialization
+  inputs:
+    - 'instances_dir: generated/PHASE_9_ENFORCEMENT/workstreams/instances/'
+    - 'instance_files: phase8_task*.json'
+  expected_outputs:
+    - Loaded execution instances
+    - Instance validation report
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+    - generated/PHASE_9_ENFORCEMENT/workstreams/instances/
+  guardrail_checkpoint: false
+
+- step_id: DIR-INT-PHASE9-001
+  phase: EXECUTION
+  name: Execute WS-001 Git Pre-Commit Hook Setup
+  description: |
+    Execute workstream WS-PHASE9-001 to set up Git pre-commit hooks for governance validation.
+    Installs hooks that validate SSOT, run gates, and enforce commit message standards.
+  responsible_component: git_hook_installer
+  operation_kind: execution
+  inputs:
+    - 'workstream_config: generated/PHASE_9_ENFORCEMENT/workstreams/WS-PHASE9-001_git_pre_commit.json'
+    - 'hook_templates: .github/hooks/'
+  expected_outputs:
+    - Git pre-commit hook installed
+    - Hook execution test results
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+    - generated/PHASE_9_ENFORCEMENT/workstreams/WS-PHASE9-001_git_pre_commit.json
+  guardrail_checkpoint: false
+
+- step_id: DIR-INT-PHASE9-002
+  phase: EXECUTION
+  name: Execute WS-002 GitHub Actions CI Validation
+  description: |
+    Execute workstream WS-PHASE9-002 to configure GitHub Actions CI workflows for automated validation.
+    Sets up aggregate gate, SSOT validation, and path compliance checks.
+  responsible_component: ci_workflow_configurator
+  operation_kind: execution
+  inputs:
+    - 'workstream_config: generated/PHASE_9_ENFORCEMENT/workstreams/WS-PHASE9-002_github_actions_ci.json'
+    - 'workflow_templates: .github/workflows/'
+  expected_outputs:
+    - GitHub Actions workflows configured
+    - CI validation test results
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+    - generated/PHASE_9_ENFORCEMENT/workstreams/WS-PHASE9-002_github_actions_ci.json
+    - .github/workflows/
+  guardrail_checkpoint: false
+
+- step_id: DIR-INT-PHASE9-003
+  phase: EXECUTION
+  name: Execute WS-003 Atomic ID Assignment
+  description: |
+    Execute workstream WS-PHASE9-003 to set up atomic ID assignment automation.
+    Ensures all artifacts receive stable, unique DOC IDs automatically.
+  responsible_component: atomic_id_assigner
+  operation_kind: execution
+  inputs:
+    - 'workstream_config: generated/PHASE_9_ENFORCEMENT/workstreams/WS-PHASE9-003_atomic_assignment.json'
+    - 'id_registry: RUNTIME/doc_id/DOC_ID_REGISTRY.yaml'
+  expected_outputs:
+    - Atomic ID assignment automation configured
+    - ID registry updated
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+    - generated/PHASE_9_ENFORCEMENT/workstreams/WS-PHASE9-003_atomic_assignment.json
+  guardrail_checkpoint: false
+
+- step_id: DIR-INT-PHASE9-004
+  phase: EXECUTION
+  name: Execute WS-004 Filesystem Watcher Setup
+  description: |
+    Execute workstream WS-PHASE9-004 to set up filesystem watchers for automatic regeneration.
+    Monitors source files and triggers pipeline rebuilds on changes.
+  responsible_component: filesystem_watcher
+  operation_kind: execution
+  inputs:
+    - 'workstream_config: generated/PHASE_9_ENFORCEMENT/workstreams/WS-PHASE9-004_filesystem_watcher.json'
+    - 'watch_targets: schemas/source/, config/'
+  expected_outputs:
+    - Filesystem watcher configured
+    - Watch targets registered
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+    - generated/PHASE_9_ENFORCEMENT/workstreams/WS-PHASE9-004_filesystem_watcher.json
+  guardrail_checkpoint: false
+
+- step_id: DIR-INT-PHASE9-005
+  phase: EXECUTION
+  name: Execute WS-005 Reconciliation Engine
+  description: |
+    Execute workstream WS-PHASE9-005 to run reconciliation engine for artifact consistency.
+    Detects and resolves inconsistencies between registries, manifests, and filesystem state.
+  responsible_component: reconciliation_engine
+  operation_kind: execution
+  inputs:
+    - 'workstream_config: generated/PHASE_9_ENFORCEMENT/workstreams/WS-PHASE9-005_reconciliation.json'
+    - 'registries: All DOC_ID, artifact, and relationship registries'
+  expected_outputs:
+    - Reconciliation report
+    - Consistency issues resolved
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+    - generated/PHASE_9_ENFORCEMENT/workstreams/WS-PHASE9-005_reconciliation.json
+  guardrail_checkpoint: false
+
+- step_id: DIR-INT-PHASE9-006
+  phase: EXECUTION
+  name: Execute WS-006 Cross-Reference Validator
+  description: |
+    Execute workstream WS-PHASE9-006 to validate cross-references between all artifacts.
+    Ensures DOC IDs, step IDs, pattern IDs, and artifact references are valid and consistent.
+  responsible_component: cross_reference_validator
+  operation_kind: validation
+  inputs:
+    - 'workstream_config: generated/PHASE_9_ENFORCEMENT/workstreams/WS-PHASE9-006_cross_reference.json'
+    - 'all_artifacts: Complete artifact inventory'
+  expected_outputs:
+    - Cross-reference validation report
+    - Broken references identified and logged
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+    - generated/PHASE_9_ENFORCEMENT/workstreams/WS-PHASE9-006_cross_reference.json
+  guardrail_checkpoint: true
+  guardrail_checkpoint_id: GC-CROSS-REFERENCE-VALIDATION
+
+# Bootstrap Step (Cross-cutting)
+- step_id: DIR-INT-BOOTSTRAP-001
+  phase: INIT
+  name: Load Templates Registry
+  description: |
+    Load template registry from REFERENCE/templates/SUB_TEMPLATES during bootstrap.
+    Makes template definitions available for code generation and artifact creation.
+  responsible_component: template_loader
+  operation_kind: initialization
+  inputs:
+    - 'templates_registry: REFERENCE/templates/SUB_TEMPLATES/registry/'
+    - 'template_schemas: REFERENCE/templates/SUB_TEMPLATES/schemas/'
+  expected_outputs:
+    - Loaded template registry
+    - Template validation report
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+    - REFERENCE/templates/SUB_TEMPLATES/
+  guardrail_checkpoint: false

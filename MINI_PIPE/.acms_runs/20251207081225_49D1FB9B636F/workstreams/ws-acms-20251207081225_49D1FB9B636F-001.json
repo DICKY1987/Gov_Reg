@@ -1,0 +1,45 @@
+{
+  "ws_id": "ws-acms-20251207081225_49D1FB9B636F-001",
+  "name": "Testing - Batch 1",
+  "description": "Workstream for 1 gaps in category 'testing'",
+  "tasks": [
+    {
+      "task_id": "ws-acms-20251207081225_49D1FB9B636F-001-task-001",
+      "pattern_id": "generic_fix",
+      "operation_kind": "EXEC-AIDER-EDIT",
+      "file_scope": [],
+      "dependencies": [],
+      "inputs": {
+        "gap_id": "GAP_0001",
+        "description": "Placeholder gap for testing pipeline",
+        "severity": "low",
+        "category": "testing"
+      },
+      "timeout_seconds": 1800,
+      "metadata": {
+        "gap_source": "ACMS",
+        "gap_category": "testing"
+      }
+    }
+  ],
+  "parallelism": 1,
+  "workspace_ref": {
+    "ws_id": "ws_20251207081225_49D1FB9B636F",
+    "root_path": "C:\\Users\\richg\\ALL_AI\\MINI_PIPE",
+    "branch_name": "feature/phase1-automation-quick-wins",
+    "commit_sha": null,
+    "created_at": "2025-12-07T08:12:25.850962Z"
+  },
+  "gap_ids": [
+    "GAP_0001"
+  ],
+  "priority_score": 3.0,
+  "dependencies": [],
+  "metadata": {
+    "category": "testing",
+    "run_id": "20251207081225_49D1FB9B636F",
+    "file_count": 0,
+    "gap_count": 1
+  },
+  "created_at": "2025-12-07T08:12:25.864603Z"
+}

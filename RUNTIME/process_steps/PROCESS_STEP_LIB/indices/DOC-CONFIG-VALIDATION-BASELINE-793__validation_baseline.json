@@ -1,0 +1,27 @@
+{
+  "timestamp": "2025-12-18",
+  "schema_path": "PFA_E2E_UNIFIED_PROCESS_STEPS_SCHEMA.yaml",
+  "index_path": "master_index.json",
+  "docs_dir": "..\\docs\\e2e",
+  "results": {
+    "schema_validation": true,
+    "index_validation": true,
+    "documentation_validation": false,
+    "cross_reference_validation": false,
+    "overall": false
+  },
+  "statistics": {
+    "total_steps": 274,
+    "total_phases": 9,
+    "total_components": 0,
+    "total_workflows": 0
+  },
+  "errors": [
+    "HTML missing required elements: ['Vue.js', 'filterSteps']"
+  ],
+  "warnings": [
+    "Only 0.0% of components documented"
+  ],
+  "info": [],
+  "doc_id": "DOC-CONFIG-VALIDATION-BASELINE-793"
+}

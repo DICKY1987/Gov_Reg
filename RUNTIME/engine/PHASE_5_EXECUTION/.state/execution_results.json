@@ -1,0 +1,49 @@
+{
+  "run_id": "test-run-001",
+  "results": [
+    {
+      "run_id": "test-run-001",
+      "task_id": "task-001",
+      "task_kind": "lint",
+      "status": "completed",
+      "tool_id": "ruff",
+      "exit_code": 0,
+      "output_patch_id": null,
+      "error": null,
+      "metadata": {}
+    },
+    {
+      "run_id": "test-run-001",
+      "task_id": "task-002",
+      "task_kind": "format",
+      "status": "in_progress",
+      "tool_id": "black",
+      "exit_code": null,
+      "output_patch_id": null,
+      "error": null,
+      "metadata": {}
+    },
+    {
+      "run_id": "test-run-001",
+      "task_id": "task-003",
+      "task_kind": "test",
+      "status": "failed",
+      "tool_id": "pytest",
+      "exit_code": 1,
+      "output_patch_id": null,
+      "error": "AssertionError: test_feature failed",
+      "metadata": {}
+    },
+    {
+      "run_id": "test-run-001",
+      "task_id": "task-004",
+      "task_kind": "build",
+      "status": "pending",
+      "tool_id": null,
+      "exit_code": null,
+      "output_patch_id": null,
+      "error": null,
+      "metadata": {}
+    }
+  ]
+}

@@ -1,0 +1,312 @@
+# DOC_LINK: DOC-CONFIG-AI-POLICIES-014
+doc_id: DOC-CONFIG-AI-POLICIES-014
+# ai_policies.yaml
+# AI Codebase Structure Specification - Edit Policies and Invariants
+# Generated: 2025-11-22
+# Version: 1.0.0
+
+metadata:
+  description: "Machine-readable edit policies and invariants for AI tools"
+  source: "AGENTS.md, repository structure analysis"
+  last_updated: "2025-11-22"
+  applies_to: ["copilot", "claude", "aider", "autonomous-agents"]
+
+# Edit zones - define what AI tools can safely modify
+zones:
+  safe_to_modify:
+    description: "Areas where AI tools can make changes without human review"
+    paths:
+      # Core sections - safe with tests
+      - "core/**/*.py"
+      - "engine/**/*.py"
+      - "error/plugins/**/*.py"
+      - "error/engine/**/*.py"
+      - "aim/**/*.py"
+      - "pm/**/*.py"
+      - "specifications/tools/**/*.py"
+
+      # Tests - always safe to extend
+      - "tests/**/*.py"
+
+      # Scripts - automation and tooling
+      - "scripts/**/*.py"
+      - "scripts/**/*.ps1"
+
+      # Documentation (non-canonical)
+      - "docs/*.md"
+      - "meta/plans/*.md"
+      - "*.md"
+
+    conditions:
+      - "All tests must pass after changes"
+      - "Follow section-based import patterns"
+      - "Update related tests when changing behavior"
+
+    validation:
+      - command: "pytest -q"
+        required: true
+      - command: "python scripts/validate_workstreams.py"
+        required: false
+
+  review_required:
+    description: "Areas requiring human review before merging"
+    paths:
+      # Schema and contracts
+      - "schema/**/*.yaml"
+      - "schema/**/*.json"
+      - "schema/**/*.sql"
+
+      # Configuration
+      - "config/**/*.yaml"
+      - "config/**/*.json"
+
+      # Database operations
+      - "core/state/db.py"
+      - "core/state/db_sqlite.py"
+
+      # Canonical documentation
+      - "docs/DOCUMENTATION_INDEX.md"
+      - "docs/SECTION_REFACTOR_MAPPING.md"
+      - "docs/CI_PATH_STANDARDS.md"
+      - "CODEBASE_INDEX.yaml"
+      - "QUALITY_GATE.yaml"
+      - "PROJECT_PROFILE.yaml"
+
+      # Specifications content
+      - "specifications/content/**"
+      - "openspec/**/*.yaml"
+
+      # Infrastructure
+      - "infra/**"
+      - ".github/**"
+
+    rationale:
+      schema: "Breaking changes affect all consumers"
+      config: "Impacts runtime behavior across modules"
+      db: "Schema migrations must be carefully coordinated"
+      canonical_docs: "Central references used by many systems"
+      specifications: "Contract definitions require review"
+      infra: "CI/CD changes affect entire pipeline"
+
+  read_only:
+    description: "Areas that should never be modified by AI tools"
+    paths:
+      # Legacy code - archived
+      - "legacy/**"
+      - "src/pipeline/**"
+      - "MOD_ERROR_PIPELINE/**"
+
+      # ADRs - historical record
+      - "docs/adr/**"
+
+      # Runtime directories
+      - ".worktrees/**"
+      - ".ledger/**"
+      - ".tasks/**"
+      - ".runs/**"
+      - ".venv/**"
+      - "__pycache__/**"
+      - "*.pyc"
+
+      # Build artifacts
+      - "node_modules/**"
+      - "dist/**"
+      - "build/**"
+
+      # Generated AI context (regenerate instead)
+      - ".meta/ai_context/*.json"
+      - ".meta/ai_context/*.md"
+
+    rationale:
+      legacy: "Deprecated code, use modern sections instead"
+      adr: "Historical decisions, create new ADR if needed"
+      runtime: "Generated at runtime, not source controlled"
+      generated: "Auto-generated, modify source and regenerate"
+
+# Invariants - rules that must always hold
+invariants:
+  - id: "INV-SECTION-IMPORTS"
+    name: "Section-Based Import Patterns"
+    description: "All imports must use section-based paths (enforced by CI)"
+    enforcement: "ci"
+    affected_paths:
+      - "core/**"
+      - "engine/**"
+      - "error/**"
+      - "aim/**"
+      - "pm/**"
+      - "specifications/**"
+    examples:
+      correct:
+        - "from core.state.db import init_db"
+        - "from error.engine.error_engine import ErrorEngine"
+        - "from specifications.tools.indexer.indexer import generate_index"
+      forbidden:
+        - "from src.pipeline.db import init_db"
+        - "from MOD_ERROR_PIPELINE.error_engine import ErrorEngine"
+    validation:
+      script: "scripts/check_deprecated_paths.py"
+      ci_enforced: true
+
+  - id: "INV-DB-SCHEMA"
+    name: "Database Schema Migrations"
+    description: "Database schema changes MUST be accompanied by migrations"
+    enforcement: "manual-review"
+    affected_paths:
+      - "core/state/db_sqlite.py"
+      - "schema/**/*.sql"
+    rules:
+      - "All ALTER TABLE statements require migration script"
+      - "Schema version must be incremented"
+      - "Migration must be idempotent"
+    validation:
+      script: null
+      ci_enforced: false
+      review_required: true
+
+  - id: "INV-PHASE-K-DOCS"
+    name: "Phase K Documentation Canonical"
+    description: "Phase K documentation is the canonical reference"
+    enforcement: "manual-review"
+    affected_paths:
+      - "docs/DOCUMENTATION_INDEX.md"
+      - "docs/IMPLEMENTATION_LOCATIONS.md"
+      - "DIRECTORY_GUIDE.md"
+      - "AGENTS.md"
+    rules:
+      - "Changes require documentation team review"
+      - "Must maintain cross-references"
+      - "Index files auto-generated where possible"
+
+  - id: "INV-MODULE-BOUNDARIES"
+    name: "Module Boundary Enforcement"
+    description: "Modules can only depend on modules in same or lower layers"
+    enforcement: "validation"
+    layers:
+      order: ["infra", "domain", "api", "ui"]
+    rules:
+      - "infra modules have no dependencies (foundational)"
+      - "domain can depend on infra only"
+      - "api can depend on infra and domain"
+      - "ui can depend on any layer"
+    validation:
+      script: "python scripts/generate_code_graph.py"
+      check: "acyclic graph validation"
+
+  - id: "INV-QUALITY-GATES"
+    name: "Quality Gates Must Pass"
+    description: "All required quality gates must pass before merge"
+    enforcement: "ci"
+    gates:
+      - name: "pytest"
+        command: "pytest -q"
+        required: true
+      - name: "workstream-validation"
+        command: "python scripts/validate_workstreams.py"
+        required: true
+      - name: "path-standards"
+        command: "python scripts/check_deprecated_paths.py"
+        required: true
+    validation:
+      ci_enforced: true
+      reference: "QUALITY_GATE.yaml"
+
+  - id: "INV-TEST-COVERAGE"
+    name: "Test Coverage for Core Changes"
+    description: "Changes to core/ or engine/ require corresponding tests"
+    enforcement: "manual-review"
+    affected_paths:
+      - "core/**/*.py"
+      - "engine/**/*.py"
+    rules:
+      - "New functions require unit tests"
+      - "Bug fixes require regression tests"
+      - "Public APIs require integration tests"
+    exceptions:
+      - "Documentation-only changes"
+      - "Type hint additions"
+
+# AI tool-specific guidance
+ai_guidance:
+  context_priority:
+    description: "Module priority for AI context inclusion"
+    high:
+      - "core.state"
+      - "core.engine"
+      - "error.engine"
+      - "specifications.tools"
+      - "CODEBASE_INDEX.yaml"
+      - "QUALITY_GATE.yaml"
+    medium:
+      - "core.planning"
+      - "engine"
+      - "error.plugins"
+      - "aim"
+      - "pm"
+    low:
+      - "scripts"
+      - "tests"
+      - "docs"
+      - "legacy"
+
+  safe_patterns:
+    description: "Common safe editing patterns"
+    patterns:
+      - pattern: "Add new plugin to error/plugins/"
+        safety: "safe"
+        template: "Copy existing plugin structure, implement parse() method"
+
+      - pattern: "Add new script to scripts/"
+        safety: "safe"
+        requirements: ["Add to QUALITY_GATE.yaml if validation script"]
+
+      - pattern: "Extend existing tests in tests/"
+        safety: "safe"
+        requirements: ["Follow existing test structure"]
+
+      - pattern: "Update module documentation (MODULE.md)"
+        safety: "safe"
+        requirements: ["Cross-reference CODEBASE_INDEX.yaml module IDs"]
+
+  forbidden_patterns:
+    description: "Patterns that should never be done by AI"
+    patterns:
+      - pattern: "Modify legacy/ directory"
+        reason: "Archived code, use modern sections instead"
+        alternative: "Update core/*, engine/*, error/* instead"
+
+      - pattern: "Change database schema without migration"
+        reason: "Breaking change, requires careful coordination"
+        alternative: "Create migration script first"
+
+      - pattern: "Use deprecated import paths"
+        reason: "CI will reject, use section-based imports"
+        examples:
+          - forbidden: "from src.pipeline import *"
+            correct: "from core.state import *"
+
+# Regeneration instructions
+regeneration:
+  description: "When to regenerate AI context artifacts"
+  triggers:
+    - "CODEBASE_INDEX.yaml updated"
+    - "New module added to repository"
+    - "Module dependencies changed"
+    - "Major refactoring completed"
+
+  commands:
+    - script: "python scripts/generate_repo_summary.py"
+      generates: [".meta/ai_context/repo_summary.json", ".meta/ai_context/repo_summary.md"]
+
+    - script: "python scripts/generate_code_graph.py"
+      generates: [".meta/ai_context/code_graph.json"]
+
+  frequency: "After every module structure change"
+  automation: "Consider adding to pre-commit hook"
+
+# Version history
+version_history:
+  - version: "1.0.0"
+    date: "2025-11-22"
+    changes: "Initial AI policies definition for Phase 2"
+    author: "PH-ACS Implementation"

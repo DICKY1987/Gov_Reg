@@ -1,0 +1,480 @@
+# PATTERN_INDEX.yaml
+# Authoritative registry of all execution patterns in the ACMS/MINI_PIPE system
+# Every task MUST reference a pattern_id from this index
+# No ad-hoc execution modes allowed
+
+meta:
+  version: "1.0.0"
+  description: "Pattern registry with guardrails enforcement"
+  last_updated: "2025-12-07"
+  validation_required: true
+  
+# Core execution patterns
+patterns:
+  
+  # ============================================================================
+  # CODE CREATION & MODIFICATION PATTERNS
+  # ============================================================================
+  
+  atomic_create:
+    enabled: true
+    spec_path: "patterns/atomic_create.spec.yaml"
+    schema_path: "schemas/atomic_create.schema.json"
+    executor: "MINI_PIPE_executor.execute_atomic_create"
+    description: "Create a new file atomically with validation"
+    category: "code_creation"
+    stability: "stable"
+    requires_patterns:
+      - pytest_green
+    guardrails:
+      allowed_tools:
+        - file_create
+        - syntax_check
+        - pytest
+      path_scope:
+        include:
+          - "**/*.py"
+          - "**/*.json"
+          - "**/*.yaml"
+          - "**/*.md"
+        exclude:
+          - ".git/**"
+          - ".acms_runs/**"
+          - "__pycache__/**"
+          - "*.pyc"
+          - "PATTERN_INDEX.yaml"
+      max_changes:
+        files: 1
+        lines: 500
+      required_prechecks:
+        - git_status_clean
+        - path_valid
+        - no_file_exists
+      required_postchecks:
+        - file_exists
+        - syntax_valid
+        - tests_pass_or_na
+      forbidden_operations:
+        - git_push
+        - delete_tests
+        - modify_pattern_index
+        - modify_schemas
+  
+  refactor_patch:
+    enabled: true
+    spec_path: "patterns/refactor_patch.spec.yaml"
+    schema_path: "schemas/refactor_patch.schema.json"
+    executor: "MINI_PIPE_executor.execute_refactor_patch"
+    description: "Apply surgical refactoring via patch"
+    category: "code_modification"
+    stability: "stable"
+    requires_patterns:
+      - pytest_green
+    guardrails:
+      allowed_tools:
+        - patch_create
+        - patch_validate
+        - patch_apply
+        - pytest
+        - pyrefact
+        - snake_shift
+      path_scope:
+        include:
+          - "**/*.py"
+        exclude:
+          - ".git/**"
+          - ".acms_runs/**"
+          - "__pycache__/**"
+          - "PATTERN_INDEX.yaml"
+          - "schemas/**"
+      max_changes:
+        files: 5
+        lines: 200
+        hunks: 10
+      required_prechecks:
+        - git_status_clean
+        - files_exist
+        - backup_created
+      required_postchecks:
+        - patch_applied_cleanly
+        - syntax_valid
+        - tests_pass
+      forbidden_operations:
+        - git_push
+        - delete_files
+        - modify_pattern_index
+  
+  bulk_rename:
+    enabled: true
+    spec_path: "patterns/bulk_rename.spec.yaml"
+    schema_path: "schemas/bulk_rename.schema.json"
+    executor: "MINI_PIPE_executor.execute_bulk_rename"
+    description: "Bulk rename symbols/files safely"
+    category: "code_modification"
+    stability: "stable"
+    requires_patterns:
+      - pytest_green
+    guardrails:
+      allowed_tools:
+        - snake_shift
+        - pyrefact
+        - git_mv
+        - pytest
+      path_scope:
+        include:
+          - "**/*.py"
+        exclude:
+          - ".git/**"
+          - ".acms_runs/**"
+          - "PATTERN_INDEX.yaml"
+      max_changes:
+        files: 20
+        renames: 100
+      required_prechecks:
+        - git_status_clean
+        - dry_run_success
+      required_postchecks:
+        - all_references_updated
+        - tests_pass
+        - imports_valid
+      forbidden_operations:
+        - git_push
+        - delete_files
+  
+  # ============================================================================
+  # VALIDATION & TESTING PATTERNS
+  # ============================================================================
+  
+  pytest_green:
+    enabled: true
+    spec_path: "patterns/pytest_green.spec.yaml"
+    schema_path: "schemas/pytest_green.schema.json"
+    executor: "MINI_PIPE_executor.execute_pytest_green"
+    description: "Run pytest and verify all tests pass"
+    category: "validation"
+    stability: "stable"
+    guardrails:
+      allowed_tools:
+        - pytest
+      path_scope:
+        include:
+          - "**/*"
+        exclude: []
+      max_changes:
+        files: 0  # Read-only pattern
+      required_prechecks:
+        - pytest_installed
+        - tests_exist
+      required_postchecks:
+        - all_tests_passed
+        - coverage_acceptable
+      forbidden_operations:
+        - modify_files
+        - git_push
+  
+  schema_validate:
+    enabled: true
+    spec_path: "patterns/schema_validate.spec.yaml"
+    schema_path: "schemas/schema_validate.schema.json"
+    executor: "MINI_PIPE_executor.execute_schema_validate"
+    description: "Validate JSON/YAML against schemas"
+    category: "validation"
+    stability: "stable"
+    guardrails:
+      allowed_tools:
+        - jsonschema_validate
+        - yaml_validate
+      path_scope:
+        include:
+          - "**/*.json"
+          - "**/*.yaml"
+        exclude: []
+      max_changes:
+        files: 0  # Read-only
+      required_prechecks:
+        - schema_exists
+        - file_exists
+      required_postchecks:
+        - validation_passed
+      forbidden_operations:
+        - modify_files
+  
+  lint_check:
+    enabled: true
+    spec_path: "patterns/lint_check.spec.yaml"
+    schema_path: "schemas/lint_check.schema.json"
+    executor: "MINI_PIPE_executor.execute_lint_check"
+    description: "Run linters (pyrefact, flake8, etc.)"
+    category: "validation"
+    stability: "stable"
+    guardrails:
+      allowed_tools:
+        - pyrefact
+        - flake8
+        - black_check
+      path_scope:
+        include:
+          - "**/*.py"
+        exclude:
+          - "__pycache__/**"
+      max_changes:
+        files: 0  # Read-only
+      required_prechecks:
+        - linter_installed
+      required_postchecks:
+        - no_critical_issues
+      forbidden_operations:
+        - modify_files
+  
+  # ============================================================================
+  # GIT & BRANCH MANAGEMENT PATTERNS
+  # ============================================================================
+  
+  worktree_create:
+    enabled: true
+    spec_path: "patterns/worktree_create.spec.yaml"
+    schema_path: "schemas/worktree_create.schema.json"
+    executor: "MINI_PIPE_executor.execute_worktree_create"
+    description: "Create isolated git worktree for changes"
+    category: "git_management"
+    stability: "stable"
+    guardrails:
+      allowed_tools:
+        - git_worktree_add
+        - git_branch
+      path_scope:
+        include:
+          - ".git/**"
+        exclude: []
+      max_changes:
+        worktrees: 1
+      required_prechecks:
+        - git_repo_exists
+        - branch_name_valid
+        - worktree_not_exists
+      required_postchecks:
+        - worktree_created
+        - branch_checked_out
+      forbidden_operations:
+        - git_push
+        - modify_main_branch
+  
+  worktree_cleanup:
+    enabled: true
+    spec_path: "patterns/worktree_cleanup.spec.yaml"
+    schema_path: "schemas/worktree_cleanup.schema.json"
+    executor: "MINI_PIPE_executor.execute_worktree_cleanup"
+    description: "Clean up worktree after completion"
+    category: "git_management"
+    stability: "stable"
+    guardrails:
+      allowed_tools:
+        - git_worktree_remove
+        - git_branch_delete
+      path_scope:
+        include:
+          - ".git/**"
+        exclude: []
+      required_prechecks:
+        - worktree_exists
+        - changes_committed_or_discarded
+      required_postchecks:
+        - worktree_removed
+        - branch_deleted_if_temp
+      forbidden_operations:
+        - delete_main_branch
+        - force_delete_unmerged
+  
+  # ============================================================================
+  # SELF-HEALING & RECOVERY PATTERNS
+  # ============================================================================
+  
+  self_heal:
+    enabled: true
+    spec_path: "patterns/self_heal.spec.yaml"
+    schema_path: "schemas/self_heal.schema.json"
+    executor: "MINI_PIPE_executor.execute_self_heal"
+    description: "Auto-recover from known failure patterns"
+    category: "recovery"
+    stability: "beta"
+    guardrails:
+      allowed_tools:
+        - git_reset
+        - git_clean
+        - patch_revert
+        - worktree_cleanup
+      path_scope:
+        include:
+          - "**/*"
+        exclude:
+          - ".git/objects/**"
+      max_changes:
+        files: 50  # Can touch many files during cleanup
+      required_prechecks:
+        - failure_detected
+        - recovery_strategy_known
+      required_postchecks:
+        - clean_state_restored
+        - anti_pattern_cleared
+      forbidden_operations:
+        - git_push
+        - delete_original_files
+  
+  rollback:
+    enabled: true
+    spec_path: "patterns/rollback.spec.yaml"
+    schema_path: "schemas/rollback.schema.json"
+    executor: "MINI_PIPE_executor.execute_rollback"
+    description: "Rollback failed changes to last known good state"
+    category: "recovery"
+    stability: "stable"
+    guardrails:
+      allowed_tools:
+        - git_reset
+        - git_checkout
+        - patch_revert
+      path_scope:
+        include:
+          - "**/*"
+        exclude:
+          - ".git/objects/**"
+      required_prechecks:
+        - last_good_state_known
+      required_postchecks:
+        - state_restored
+        - tests_pass
+      forbidden_operations:
+        - git_push
+        - permanent_delete
+  
+  # ============================================================================
+  # PLANNING & COORDINATION PATTERNS
+  # ============================================================================
+  
+  gap_analysis:
+    enabled: true
+    spec_path: "patterns/gap_analysis.spec.yaml"
+    schema_path: "schemas/gap_analysis.schema.json"
+    executor: "MINI_PIPE_executor.execute_gap_analysis"
+    description: "Analyze codebase to discover gaps"
+    category: "planning"
+    stability: "stable"
+    guardrails:
+      allowed_tools:
+        - ai_agent
+        - static_analysis
+        - grep
+        - glob
+      path_scope:
+        include:
+          - "**/*"
+        exclude:
+          - ".git/**"
+          - "__pycache__/**"
+      max_changes:
+        files: 0  # Read-only
+      required_prechecks:
+        - gap_framework_loaded
+        - codebase_accessible
+      required_postchecks:
+        - gaps_discovered
+        - gap_registry_valid
+      forbidden_operations:
+        - modify_files
+        - git_push
+  
+  plan_compile:
+    enabled: true
+    spec_path: "patterns/plan_compile.spec.yaml"
+    schema_path: "schemas/plan_compile.schema.json"
+    executor: "MINI_PIPE_executor.execute_plan_compile"
+    description: "Compile execution plan from gaps"
+    category: "planning"
+    stability: "stable"
+    guardrails:
+      allowed_tools:
+        - plan_compiler
+        - schema_validator
+      path_scope:
+        include:
+          - ".acms_runs/**/*.json"
+        exclude: []
+      max_changes:
+        files: 1  # Only create plan file
+      required_prechecks:
+        - gap_registry_valid
+        - pattern_index_valid
+      required_postchecks:
+        - plan_valid
+        - all_patterns_exist
+        - no_circular_deps
+      forbidden_operations:
+        - modify_code
+        - git_push
+
+# Pattern categories for bulk operations
+categories:
+  code_creation:
+    - atomic_create
+  code_modification:
+    - refactor_patch
+    - bulk_rename
+  validation:
+    - pytest_green
+    - schema_validate
+    - lint_check
+  git_management:
+    - worktree_create
+    - worktree_cleanup
+  recovery:
+    - self_heal
+    - rollback
+  planning:
+    - gap_analysis
+    - plan_compile
+
+# Global enforcement rules (apply to ALL patterns)
+global_guardrails:
+  
+  # Hard limits
+  absolute_limits:
+    max_execution_time_minutes: 30
+    max_file_size_mb: 10
+    max_concurrent_tasks: 5
+    max_retry_attempts: 3
+  
+  # Protected paths (NEVER touch)
+  protected_paths:
+    - ".git/objects/**"
+    - ".git/refs/heads/main"
+    - "PATTERN_INDEX.yaml"
+    - "schemas/*.schema.json"
+    - "SYSTEM_INVARIANTS.md"
+  
+  # Required environment
+  required_env:
+    - git_available
+    - python_available
+    - repo_root_accessible
+  
+  # Anti-pattern detection
+  anti_pattern_detection_enabled: true
+  anti_pattern_runbook_path: "anti_patterns/"
+  
+  # Validation gates
+  validation_gates:
+    pre_execution:
+      - pattern_exists_in_index
+      - pattern_enabled
+      - guardrails_valid
+      - prechecks_passed
+    post_execution:
+      - postchecks_passed
+      - no_protected_paths_touched
+      - anti_patterns_clear
+
+# Audit trail
+audit:
+  log_all_pattern_executions: true
+  log_path: ".acms_runs/{run_id}/pattern_audit.jsonl"
+  include_guardrail_checks: true

@@ -1,0 +1,3 @@
+# DOC_LINK: DOC-CORE-TESTS-INIT-1037
+"""Tests for Gitleaks plugin."""
+DOC_ID: DOC-CORE-TESTS-INIT-1037

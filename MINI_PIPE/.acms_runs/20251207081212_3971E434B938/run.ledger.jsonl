@@ -1,0 +1,8 @@
+{"ts": "2025-12-07T08:12:12.453049+00:00", "run_id": "20251207081212_3971E434B938", "state": "init", "event": "enter_state", "previous_state": "init", "meta": {"message": "Run initialized", "guardrails": true}}
+{"ts": "2025-12-07T08:12:12.453049+00:00", "run_id": "20251207081212_3971E434B938", "state": "gap_analysis", "event": "enter_state", "previous_state": "init", "meta": {"mode": "full"}}
+{"ts": "2025-12-07T08:12:12.470768+00:00", "run_id": "20251207081212_3971E434B938", "state": "gap_analysis", "event": "gap_discovery_complete", "meta": {"gap_count": 1}}
+{"ts": "2025-12-07T08:12:12.470768+00:00", "run_id": "20251207081212_3971E434B938", "state": "planning", "event": "enter_state", "previous_state": "gap_analysis", "meta": {"mode": "full"}}
+{"ts": "2025-12-07T08:12:12.502535+00:00", "run_id": "20251207081212_3971E434B938", "state": "planning", "event": "planning_complete", "meta": {"workstream_count": 1, "task_count": 1, "planning_attempt": 1}}
+{"ts": "2025-12-07T08:12:12.503557+00:00", "run_id": "20251207081212_3971E434B938", "state": "execution", "event": "enter_state", "previous_state": "planning", "meta": {"mode": "full"}}
+{"ts": "2025-12-07T08:12:12.504576+00:00", "run_id": "20251207081212_3971E434B938", "state": "failed", "event": "enter_state", "previous_state": "execution", "meta": {"error": "No module named 'contracts.uet_workstream_adapter'"}}
+{"ts": "2025-12-07T08:12:12.515724+00:00", "run_id": "20251207081212_3971E434B938", "state": "failed", "event": "run_finalized", "meta": {"status": "failed", "run_stats": {"planning_attempts": 1, "patches_applied": 0, "hallucination_count": 0, "anti_patterns_detected": []}}}

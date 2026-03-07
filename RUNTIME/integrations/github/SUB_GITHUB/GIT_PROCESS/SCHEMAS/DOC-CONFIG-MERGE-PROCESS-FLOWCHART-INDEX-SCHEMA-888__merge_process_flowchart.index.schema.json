@@ -1,0 +1,233 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Merge Process Flowchart Index",
+  "type": "object",
+  "required": [
+    "meta",
+    "phases",
+    "steps",
+    "edges"
+  ],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": [
+        "name",
+        "version",
+        "total_steps",
+        "total_phases"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Human-friendly name for the indexed flowchart"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Monotonic index version"
+        },
+        "source_file": {
+          "type": "string",
+          "description": "Path or identifier of source markdown/spec file"
+        },
+        "total_steps": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Total number of numbered steps indexed"
+        },
+        "total_phases": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Total number of phases (including pre-flight, etc.)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "phases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "phase_id",
+          "phase_number",
+          "name"
+        ],
+        "properties": {
+          "phase_id": {
+            "type": "string",
+            "pattern": "^PHASE_[0-9]{2}$",
+            "description": "Stable phase identifier, e.g. PHASE_00"
+          },
+          "phase_number": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Display ordering, starting at 0 for pre-flight"
+          },
+          "name": {
+            "type": "string",
+            "description": "Phase title, e.g. PRE-FLIGHT PHASE"
+          },
+          "step_range": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "[start_step, end_step] inclusive"
+          },
+          "description": {
+            "type": "string",
+            "description": "Optional longer description for the phase"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "step_number",
+          "node_id",
+          "phase_id",
+          "role",
+          "label"
+        ],
+        "properties": {
+          "step_number": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Numeric step from the markdown flowchart (1\u2013135)"
+          },
+          "node_id": {
+            "type": "string",
+            "pattern": "^STEP_[0-9]{3}$",
+            "description": "Stable ID used in draw.io XML, e.g. STEP_070"
+          },
+          "phase_id": {
+            "type": "string",
+            "pattern": "^PHASE_[0-9]{2}$",
+            "description": "Phase that owns this step"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "P",
+              "M",
+              "BOTH",
+              "MERGE",
+              "VERIFY",
+              "ROLLBACK"
+            ],
+            "description": "From the legend: [P], [M], [BOTH], [MERGE], [VERIFY], [ROLLBACK]"
+          },
+          "repo": {
+            "type": "string",
+            "enum": [
+              "pipeline",
+              "minipipe",
+              "both",
+              "merge_workspace",
+              "n/a"
+            ],
+            "description": "Primary repo or workspace the step operates on"
+          },
+          "label": {
+            "type": "string",
+            "description": "Short natural-language description of the step"
+          },
+          "category": {
+            "type": "string",
+            "description": "Optional high-level category, e.g. pre-flight, snapshot, remote-sync, SSOT, validation"
+          },
+          "commands": {
+            "type": "array",
+            "description": "Concrete commands run in this step (if any)",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tags": {
+            "type": "array",
+            "description": "Freeform tags for filtering/searching steps",
+            "items": {
+              "type": "string"
+            }
+          },
+          "risk_flags": {
+            "type": "array",
+            "description": "Codes referencing Critical Risks & Technical Bottlenecks",
+            "items": {
+              "type": "string"
+            }
+          },
+          "doc_refs": {
+            "type": "array",
+            "description": "Optional references to documentation IDs, paragraphs, or sections",
+            "items": {
+              "type": "string"
+            }
+          },
+          "notes": {
+            "type": "string",
+            "description": "Optional freeform note (hint, caveat, pointer)"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "edges": {
+      "type": "array",
+      "description": "Directed connections between steps for draw.io arrows / graph traversal",
+      "items": {
+        "type": "object",
+        "required": [
+          "edge_id",
+          "from_step",
+          "to_step"
+        ],
+        "properties": {
+          "edge_id": {
+            "type": "string",
+            "pattern": "^EDGE_[0-9]{3}_[0-9]{3}$",
+            "description": "Stable ID for the edge, e.g. EDGE_001_002"
+          },
+          "from_step": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Step number where the arrow starts"
+          },
+          "to_step": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Step number where the arrow ends"
+          },
+          "edge_type": {
+            "type": "string",
+            "enum": [
+              "normal",
+              "rollback",
+              "conditional",
+              "loop"
+            ],
+            "default": "normal",
+            "description": "Semantic type of this transition"
+          },
+          "label": {
+            "type": "string",
+            "description": "Optional edge label, e.g. 'on success', 'if failed'"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "doc_id": "DOC-CONFIG-MERGE-PROCESS-FLOWCHART-INDEX-SCHEMA-888"
+}

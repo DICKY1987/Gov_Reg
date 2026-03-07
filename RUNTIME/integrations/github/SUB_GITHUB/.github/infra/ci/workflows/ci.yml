@@ -1,0 +1,64 @@
+doc_id: DOC-CONFIG-CI-061
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    name: Unit tests (${ { matrix.os } })
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.12"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r infra/ci/requirements.txt
+
+      - name: Run targeted tests (exclude integration)
+        run: |
+          python -m pytest -q --ignore=tests/integration
+
+  tests-ghsync:
+    name: Unit tests with GH sync (${ { matrix.os } })
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.12"]
+
+    env:
+      ENABLE_GH_SYNC: "true"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r infra/ci/requirements.txt
+
+      - name: Run GH sync unit tests
+        run: |
+          python -m pytest -q -k "github_sync" --ignore=tests/integration

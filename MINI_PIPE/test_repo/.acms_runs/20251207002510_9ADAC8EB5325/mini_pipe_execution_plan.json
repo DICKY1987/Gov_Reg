@@ -1,0 +1,58 @@
+{
+  "plan_id": "PLAN_20251207_002510",
+  "name": "Gap-Driven Execution Plan",
+  "description": "Execution plan for 1 workstreams",
+  "tasks": [
+    {
+      "task_id": "TASK_0001",
+      "task_kind": "analysis",
+      "description": "Analyze files for testing",
+      "depends_on": [],
+      "metadata": {
+        "workstream_id": "WS_TESTING_0001",
+        "gap_ids": [
+          "MOCK_GAP_001"
+        ],
+        "file_scope": [],
+        "repo_root": "C:\\Users\\richg\\ALL_AI\\MINI_PIPE\\test_repo"
+      }
+    },
+    {
+      "task_id": "TASK_0002",
+      "task_kind": "implementation",
+      "description": "Implement fixes for testing",
+      "depends_on": [
+        "TASK_0001"
+      ],
+      "metadata": {
+        "workstream_id": "WS_TESTING_0001",
+        "gap_ids": [
+          "MOCK_GAP_001"
+        ],
+        "file_scope": [],
+        "repo_root": "C:\\Users\\richg\\ALL_AI\\MINI_PIPE\\test_repo",
+        "categories": [
+          "testing"
+        ]
+      }
+    },
+    {
+      "task_id": "TASK_0003",
+      "task_kind": "test",
+      "description": "Test changes for testing",
+      "depends_on": [
+        "TASK_0002"
+      ],
+      "metadata": {
+        "workstream_id": "WS_TESTING_0001",
+        "file_scope": [],
+        "repo_root": "C:\\Users\\richg\\ALL_AI\\MINI_PIPE\\test_repo"
+      }
+    }
+  ],
+  "metadata": {
+    "repo_root": "C:\\Users\\richg\\ALL_AI\\MINI_PIPE\\test_repo",
+    "workstream_count": 1,
+    "generated_at": "2025-12-07T00:25:10.819247+00:00"
+  }
+}

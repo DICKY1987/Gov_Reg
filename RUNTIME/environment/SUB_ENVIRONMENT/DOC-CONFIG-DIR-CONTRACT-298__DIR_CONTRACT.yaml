@@ -1,0 +1,40 @@
+# DOC_LINK: DOC-CONFIG-DIR-CONTRACT-298
+doc_id: DOC-CONFIG-DIR-CONTRACT-298
+directory_id: D-ENVIRONMENT-001
+contract_version: "1.0.0"
+
+inputs:
+  - type: PathRegistry
+    description: Initialized PathRegistry instance for path resolution
+  - type: allowed_write_keys
+    description: List of semantic key prefixes allowed for write operations
+
+outputs:
+  - type: GitAdapter
+    description: Git operations with deterministic output and audit logging
+    methods: [status, diff, log, list_changed_files, is_clean, export_audit_log]
+  - type: FilesystemAdapter
+    description: Filesystem operations with write containment and secrets detection
+    methods: [read_file, write_file, read_json, write_json, list_directory, export_audit_log]
+  - type: DatabaseAdapter
+    description: Database adapter stub (NotImplementedError)
+
+invariants:
+  - description: All file operations must use semantic keys from PathRegistry
+    enforcement: Adapters reject direct Path objects
+  - description: Write operations only to approved semantic key prefixes
+    enforcement: FilesystemAdapter.write_file() validates against allowed_write_keys
+  - description: All operations logged to audit trail
+    enforcement: Every method appends to internal audit log
+
+constraints:
+  - No direct filesystem paths in adapter methods (semantic keys only)
+  - Write containment strictly enforced (raises exception on violation)
+  - Git operations produce sorted, deterministic output
+  - Secrets detection prevents credential leaks
+
+testing_requirements:
+  - Unit tests with mocked PathRegistry
+  - Integration tests with real filesystem
+  - Audit log verification
+  - Write containment violation tests

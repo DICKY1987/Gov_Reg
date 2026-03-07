@@ -1,0 +1,5121 @@
+{
+  "model": [
+    {
+      "path": "acms_test_harness.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "multi_agent_orchestrator.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "Background_Worker_Pool_Implementation\\workstream_worker_pool.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\ai_adapter.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\execution_planner.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\gap_registry.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\guardrails.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\loop_detection.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\minipipe_adapter.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\monitoring.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\notifications.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\phase_plan_compiler.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\result_validation.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\rollback.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\schema_utils.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\uet_submodule_io_contracts.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\minipipe\\circuit_breakers.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\minipipe\\daemon_orchestrator.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\minipipe\\executor.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\minipipe\\patch_converter.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\minipipe\\patch_ledger.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\minipipe\\process_spawner.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\minipipe\\recovery.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\minipipe\\tools.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\minipipe\\workstream_worker_pool.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\minipipe\\worktree_manager.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tools\\profiling\\profile_runner.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\CLP_PROCESS\\extracted_files\\complete_debug_prompts.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\CLP_PROCESS\\extracted_files\\file_reconstructor.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\CLP_PROCESS\\extracted_files\\ssot_extractor.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\core\\config_manager.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\core\\event_capture.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\core\\exceptions.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\core\\schema_registry.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\ccis.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\pa.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\phase_plan.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\pjf.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\psjp.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\tp.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\tr.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\uci.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\ws.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\ai_adapter.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\execution_planner.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\gap_registry.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\guardrails.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\loop_detection.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\minipipe_adapter.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\monitoring.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\notifications.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\phase_plan_compiler.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\result_validation.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\rollback.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\schema_utils.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\uet_submodule_io_contracts.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\minipipe\\circuit_breakers.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\minipipe\\executor.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\minipipe\\patch_converter.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\minipipe\\patch_ledger.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\minipipe\\process_spawner.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\minipipe\\recovery.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\minipipe\\tools.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "SSOT\\state_machines\\phase4_integration\\session_orchestrator.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "SSOT\\state_machines\\phase5_api_ui\\rest_api.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "state_machines\\phase4_integration\\session_orchestrator.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "state_machines\\phase5_api_ui\\rest_api.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "Background_Worker_Pool_Implementation\\WORKSTREAM_WORKER_POOL.md",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_docs\\WORKSTREAM_WORKER_POOL.md",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "docs\\specs\\DOC_AIDER_CONTRACT.md",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\CLP_PROCESS\\CONCEPTS_&_REFERENCE\\CLP_PROCCESSPROMTANDTEMPLATE.txt",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "CLP_PROCESS\\extracted_files\\complete_debug_prompts.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\checklist\\evaluator.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\checklist\\tool_executor.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\contracts\\llm_response_contract.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\debug_engine\\debug_prompt_runner.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\debug_engine\\llm_client.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\orchestrator\\debug_audit_orchestrator.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\orchestrator\\execution_context.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\orchestrator\\executor_plugin.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\orchestrator\\state_machine.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\orchestrator\\worker_pool.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\pipeline\\runtime_pipeline.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\remediation\\patch_engine.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\remediation\\remediation_instruction_parser.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\unit\\test_llm_client.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\core\\config_manager.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\core\\event_capture.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\core\\exceptions.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\core\\schema_registry.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\ccis.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\pa.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\phase_plan.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\pjf.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\psjp.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\tp.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\tr.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\uci.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\ws.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "ChatGPT-Grouping Python files systematically.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "plugin_orchestration_pattern.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\ARCHITECTURE.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\DATA_FLOW.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\remediation_manual.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\SYSTEM_EVALUATION_2025-12-12.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\CHAT_GPT_CHATS\\ChatGPT-Validate orchestration pattern code.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\PLANS_AND_EXECUTION_REPORTS\\Phase Plan_CLP_PROCESS to 100% Production-Ready System.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\40_DEBUG_PROMPT\\CLP_PROCCESSPROMTANDTEMPLATE.txt",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "core\\ui_cli.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\ui_models.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\alert_monitor.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\detect_doc_drift.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\doc_id_assigner.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "LOG_REVIEW_SUB_SYS\\audit_logger.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "LOG_REVIEW_SUB_SYS\\multi_ai_log_miner.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "MASTER_SPLINTER\\multi_agent_workstream_coordinator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\analyze_cleanup_candidates.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\analyze_folder_purposes.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\analyze_folder_versions.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\analyze_folder_versions_v2.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\comprehensive_archival_analyzer.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\detect_parallel_implementations.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\entry_point_reachability.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\glossary_ssot_policy.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\implement_uet_phases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\multi_agent_orchestrator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\scan_incomplete_implementation.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\test_coverage_archival.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\validate_phase_plan.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "AI_SSOT\\state_machines\\phase4_integration\\session_orchestrator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "AI_SSOT\\state_machines\\phase5_api_ui\\rest_api.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\adapters\\base.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\ast\\extractors.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\ast\\import_graph.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\ast\\signature_extractor.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\autonomous\\error_analyzer.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\autonomous\\feature_flags.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\autonomous\\reflexion.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\cli\\wrapper.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\contracts\\schema_registry.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\contracts\\types.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\circuit_breakers.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\context_estimator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\cost_tracker.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\executor.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\integration_worker.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\patch_converter.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\patch_ledger.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\phase_coordinator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\plan_schema.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\process_spawner.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\prompt_engine.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\recovery.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\test_gate.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\tools.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\worker_lifecycle.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\events\\event_bus.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\indexing\\raptor.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\knowledge\\knowledge_graph.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\memory\\episodic_memory.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\planning\\ccpm_integration.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\search\\hyde.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\state\\bundles.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\state\\dag_utils.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\state\\task_queue.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\terminal\\state_capture.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\testing\\auto_triage.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\monitoring\\progress_tracker.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\monitoring\\run_monitor.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\triggers\\trigger_engine.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\events\\alerting\\alert_manager.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "error\\automation\\patch_applier.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\ui_core\\layout_config.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\ui_core\\panel_context.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\ui_core\\pattern_client.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\ui_core\\state_client.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\tui_app\\config\\layout_config.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\tui_app\\core\\panel_plugin.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\tui_app\\core\\pattern_client.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\tui_app\\core\\state_client.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\tui_app\\panels\\tool_health_panel.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\decisions\\decision_registry.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\invoke\\__init__.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\pattern_event_system\\pattern_events.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\detectors\\duplicate_detector.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\detectors\\execution_detector.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\detectors\\file_pattern_miner.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\detectors\\import_pattern_analyzer.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\runtime\\cleanup_executor.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase1_planning\\modules\\workstream_planner\\docs\\plans\\pm\\github_sync.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\src\\aim\\audit.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\src\\aim\\pool_interface.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\src\\aim\\aim-environment\\m01001B_health.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\src\\aim\\aim-environment\\m01001B_installer.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\src\\aim\\aim-environment\\m01001B_scanner.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\src\\aim\\aim-environment\\m01001B_version_control.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\generation\\generate_implementation_map.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\generation\\generate_spec_index.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\generation\\generate_spec_mapping.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\pattern-extraction\\detectors\\base_detector.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\pattern-extraction\\parsers\\base_parser.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\error_engine\\src\\engine\\agent_adapters.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\error_engine\\src\\engine\\error_context.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\error_engine\\src\\engine\\retry_coordinator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\error_engine\\src\\shared\\utils\\thresholds.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\error_engine\\src\\shared\\utils\\types.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\alerting\\src\\alert_engine.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\gui_components\\src\\gui\\tui_app\\config\\layout_config.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\gui_components\\src\\gui\\tui_app\\core\\panel_plugin.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\gui_components\\src\\gui\\tui_app\\core\\pattern_client.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\gui_components\\src\\gui\\tui_app\\core\\state_client.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\gui_components\\src\\gui\\tui_app\\panels\\tool_health_panel.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\glossary\\update_term.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\contracts\\test_contract_validation.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\contracts\\test_decorators.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\syntax_analysis\\test_python.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\src\\coverage_analyzer\\base.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\executors\\lib\\templates.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "COMMIT_SUMMARY\\README_Commit Summary Generator  .md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "error\\DOC_EXAMPLE_03_ERROR_HANDLING.md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\UI_DATA_REQUIREMENTS.md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\execution\\EXEC-002-BATCH-VALIDATION.md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\execution\\EXEC-003-TOOL-AVAILABILITY-GUARDS.md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "GITPROCCESSPROMTANDTEMPLATE.txt",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase1_planning\\modules\\workstream_planner\\docs\\plans\\workstreams\\ws-26-pipeline-plus-phase3-prompt-engine.json",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    }
+  ],
+  "cli": [
+    {
+      "path": "acms_test_harness.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "execute_phase_plan.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "multi_agent_orchestrator.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "validate_phase1.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "validate_phase2.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "validate_wave1.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "Background_Worker_Pool_Implementation\\execute_phase_plan.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "Background_Worker_Pool_Implementation\\test_workstream_worker_pool.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "Background_Worker_Pool_Implementation\\workstream_execution_example.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_examples\\workstream_execution_example.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\test_guardrails_integration.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\test_integration_uet_alignment.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\test_path_registry.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\test_plan_compiler_guardrails.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\test_uet_tool_adapters.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\test_uet_workstream_adapter.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\test_workstream_worker_pool.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PFA_validate_glossary_schema.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PFA_validate_master_splinter_schema.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PFA_validate_patterns_schema.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PFA_validate_process_steps_schema.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\test_guardrails_integration.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\test_integration_uet_alignment.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\test_path_registry.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\test_plan_compiler_guardrails.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\test_uet_tool_adapters.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\test_uet_workstream_adapter.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\controller.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\guardrails.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\path_registry.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\schema_utils.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\show_run.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\cli\\demo_acms_pipeline.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\cli\\demo_minimal_scenario.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\cli\\validate_everything.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\e2e\\test_determinism.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\e2e\\test_failure_paths.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\e2e\\test_full_run.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\integration\\test_phase_execution.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\integration\\test_phase_gap_discovery.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\integration\\test_phase_planning.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\integration\\test_phase_summary.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\performance\\test_regression.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\performance\\test_wave1_benchmarks.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\performance\\test_wave2_benchmarks.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\unit\\test_acms_minipipe_adapter.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\unit\\test_controller_init.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\unit\\test_diff_stats.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\unit\\test_execution_planner.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\unit\\test_gap_registry.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\unit\\test_phase_plan_compiler.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tools\\profiling\\baseline_scenarios.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tools\\profiling\\compare_benchmarks.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tools\\profiling\\create_minimal_baseline.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tools\\profiling\\establish_baseline.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tools\\profiling\\profile_runner.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\CLP_PROCESS\\extracted_files\\complete_debug_prompts.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\CLP_PROCESS\\extracted_files\\file_reconstructor.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\CLP_PROCESS\\extracted_files\\ssot_extractor.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\debug_audit_cli.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\controller.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\guardrails.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\path_registry.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\schema_utils.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\show_run.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\cli\\demo_acms_pipeline.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\cli\\demo_minimal_scenario.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\cli\\validate_everything.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\minipipe\\monitoring_trigger.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\minipipe\\router_trigger.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "SSOT\\process\\tools\\generate_full_yaml.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "SSOT\\process\\tools\\generate_process_docs.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "SSOT\\process\\tools\\test_system.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "SSOT\\process\\tools\\update_docs.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "SSOT\\process\\tools\\validate_process_schema.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "SSOT\\state_machines\\phase5_api_ui\\cli.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "state_machines\\phase5_api_ui\\cli.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\e2e\\test_determinism.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\e2e\\test_failure_paths.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\e2e\\test_full_run.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\integration\\test_phase_execution.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\integration\\test_phase_gap_discovery.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\integration\\test_phase_planning.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\integration\\test_phase_summary.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\performance\\test_wave1_benchmarks.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\unit\\test_acms_minipipe_adapter.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\unit\\test_controller_init.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\unit\\test_execution_planner.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\unit\\test_gap_registry.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\unit\\test_phase_plan_compiler.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "DEVELOPMENT_TEMP_DOCS\\AUTOMATION_CHAIN_ANALYSIS_REPORT.md",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PFA_validate_glossary_schema.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PFA_validate_master_splinter_schema.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PFA_validate_patterns_schema.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PFA_validate_process_steps_schema.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\examples\\01_basic_single_prompt.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\examples\\02_multi_prompt_audit.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\examples\\03_with_caching.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\examples\\04_custom_executor.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\examples\\05_tool_integration.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\examples\\06_full_pipeline.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\extracted_files\\complete_debug_prompts.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tools\\audit_ledger_analysis.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tools\\enforce_templates.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tools\\generate_checklist_specs.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tools\\validate_ssot.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\cli\\main.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\integration\\test_cli_e2e.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\unit\\test_cli.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\debug_audit_cli.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\tests\\integration_test.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\tests\\manual_test_runner.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\tests\\test_ccis_to_phase_plan.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\converters\\ccis_to_phase_plan.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\converters\\master_splinter_bridge.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\converters\\phase_plan_validator.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "ChatGPT-Grouping Python files systematically.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "plugin_orchestration_pattern.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "GIT_PROCESS\\AI_COMPREHENSION_IMPROVEMENTS.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "GIT_PROCESS\\INTEGRATION_PLAN.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\OPTION_3_MASTER_SPLINTER_IMPLEMENTATION_PLAN.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "core\\ui_cli.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\ui_settings_cli.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\alert_monitor.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\apply_doc_id_changes_to_files.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\cleanup_invalid_doc_ids.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\cli_wrapper.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\detect_doc_drift.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\doc_id_assigner.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\doc_id_coverage_trend.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\doc_id_scanner.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\file_watcher.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\fix_duplicate_doc_ids.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\fix_invalid_doc_ids.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\fix_registry_categories.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\install_pre_commit_hook.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\module_id_assigner.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\pre_commit_hook.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\scheduled_report_generator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\setup_scheduled_tasks.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\sync_registries.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\test_doc_id_system.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\update_files_with_new_doc_ids.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\validate_doc_id_coverage.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "examples\\parallel_refactor.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "examples\\test_cluster_api.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "glossary\\validate_glossary_schema.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\validate_gui.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "LOG_REVIEW_SUB_SYS\\export_to_sqlite.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "LOG_REVIEW_SUB_SYS\\multi_ai_log_miner.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "LOG_REVIEW_SUB_SYS\\sync_log_summary.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "MASTER_SPLINTER\\multi_agent_workstream_coordinator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "MASTER_SPLINTER\\phase_plan_to_workstream.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "MASTER_SPLINTER\\run_master_splinter.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "MASTER_SPLINTER\\sync_workstreams_to_github.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "MASTER_SPLINTER\\validate_master_splinter_schema.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\validate_automation.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\validate_patterns_schema.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase3_implementation\\validate_schema.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "prompts\\validate_process_steps_schema.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\aim_audit_query.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\aim_status.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\ai_conflict_resolver.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\analyze_cleanup_candidates.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\analyze_folder_purposes.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\analyze_folder_versions.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\analyze_folder_versions_v2.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\analyze_imports.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\analyze_local_changes.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\analyze_overlap.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\analyze_safe_removals.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\analyze_test_results.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\auto_migrate_imports.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\auto_pattern_detector.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\batch_file_creator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\batch_migrate_modules.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\batch_rename_docs.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\batch_rename_docs_phase2.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\check_deprecated_usage.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\check_src_necessity.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\classify_module_registry.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\cleanup_state_files.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\clean_registry_duplicates.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\compare_incomplete_scans.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\complete_test_run.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\comprehensive_archival_analyzer.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\convert_two_prompts_to_json.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\create_init_files.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\create_init_files_v2.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\create_init_files_v3.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\create_module_from_inventory.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\create_test_run.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\db_inspect.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\debug_auto.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\deep_search.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\detect_parallel_implementations.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\doc_triage.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\enforce_guards.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\entry_point_reachability.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\exec016_import_standardizer.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\execute_next_workstreams.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\fix_test_imports.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\fix_ulid_imports.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\generate_readmes.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\generate_repository_map.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\gh_epic_sync.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\gh_issue_update.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\glossary_ssot_policy.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\implement_uet_phases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\index_codebase.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\init_db.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\merge_file_classifier.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\merge_timestamp_resolver.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\migrate_imports.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\migrate_plugins_to_invoke.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\migrate_specs_to_patterns.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\migrate_spec_folders.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\migrate_to_uet_engine.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\monitor_error_automation.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\monitor_parallel.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\multi_agent_orchestrator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\multi_clone_guard.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\nested_repo_detector.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\nested_repo_normalizer.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\pattern_discovery.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\pipe_classify.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\pipe_tree.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\preflight_validator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\process_patches.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\query_graph.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\rank_modules.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\recovery.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\regenerate_automation_report.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\rename_module_files.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\report_metrics.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\rewrite_all_imports.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\rewrite_imports.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\rewrite_imports_simple.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\rewrite_imports_v2.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\run_error_automation.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\run_error_engine.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\run_workstream.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\run_ws_wrapper.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\safe_cleanup_deprecated_folders.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\safe_merge_emit_event.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\scan_incomplete_implementation.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\spec_to_workstream.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\splinter_sync_phase_to_github.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\start_monitoring_daemon.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\sync_workstreams_to_github.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\template_renderer.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\test_adapters.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\test_coverage_archival.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\test_state_store.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\track_workstream_status.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\uet_tool_adapter.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\validate_archival_safety.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\validate_config.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\validate_contracts.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\validate_dependency_graph.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\validate_monitoring_implementation.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\validate_phase_plan.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\validate_registry.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\view_events.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\worktree_manager.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "templates\\validate_templates.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_ccpm_openspec_integration.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_cli_adapter.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_incomplete_scanner.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_invoke_config.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_invoke_utils.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\normalize_phase_readmes.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\pat_check_readme_001.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "AI_SSOT\\state_machines\\phase5_api_ui\\cli.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\automation\\monitoring_trigger.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\automation\\router_trigger.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\bootstrap\\discovery.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\bootstrap\\generator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\bootstrap\\orchestrator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\bootstrap\\selector.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\bootstrap\\validator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\cli\\orchestrator_cli.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\executor_cli.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\state_machine.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\__main__.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\planning\\planner.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\DOC_ID_tests\\test_drift_detection.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\tools\\doc_id_registry_cli.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\ui_infrastructure_usage.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\ui_tool_selection_demo.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\gui_app\\main.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\gui_app_v2\\main.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\tui_app\\main.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "LOG_REVIEW_SUB_SYS\\tests\\test_audit_logger.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "LOG_REVIEW_SUB_SYS\\tests\\test_integration.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "LOG_REVIEW_SUB_SYS\\tests\\test_structured_logger.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "MASTER_SPLINTER\\safe_merge\\scripts\\merge_file_classifier.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "MASTER_SPLINTER\\safe_merge\\scripts\\multi_clone_guard.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "MASTER_SPLINTER\\safe_merge\\scripts\\nested_repo_detector.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "MASTER_SPLINTER\\safe_merge\\scripts\\nested_repo_normalizer.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\cli\\pattern_orchestrate.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\pattern_event_system\\pattern_events_example.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\pattern_event_system\\pattern_inspect.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\detectors\\duplicate_detector.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\detectors\\import_pattern_analyzer.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\detectors\\staleness_scorer.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\discovery\\pattern_scanner.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\generators\\doc_suite_generator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\generators\\example_generator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\lifecycle\\auto_approval.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\lifecycle\\event_launcher.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\monitoring\\dashboard.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\monitoring\\health_monitor_daemon.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\runtime\\cleanup_executor.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\runtime\\zero_touch_workflow.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\validators\\registry_validator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\validators\\validate_schemas.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\tests\\integration\\test_orchestrator_hooks.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase1_planning\\modules\\workstream_planner\\src\\planner.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase1_planning\\modules\\workstream_planner\\docs\\plans\\templates\\migrate_module.template.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase1_planning\\modules\\workstream_planner\\docs\\plans\\templates\\rewrite_imports.template.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase1_planning\\modules\\workstream_planner\\docs\\plans\\templates\\contracts\\TEMPLATE_LOGGING_CALLSITE.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase1_planning\\modules\\workstream_planner\\docs\\plans\\templates\\adapters\\subprocess\\tool-adapter-template.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase2_implementation\\examples\\circuit_breaker_demo.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase2_implementation\\tools\\manage_db.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase2_implementation\\tests\\state\\test_circuit_breaker.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase2_implementation\\tests\\state\\test_run.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase2_implementation\\tests\\state\\test_task.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase2_implementation\\tests\\state\\test_workstream_worker.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase2_implementation\\tests\\uet\\test_uet_state_machines.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase3_implementation\\tools\\manage_db.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase3_implementation\\tests\\integration\\test_dao_layer.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\tests\\manual_test_pool.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\tests\\validate_pool.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\src\\aim\\aim-cli\\m01001A_main.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\tests\\fixtures\\mock_aider.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\tests\\integration\\test_aider_pool.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\apply_doc_move_plan.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\check_doc_orphans.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\doc_inventory.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\guard.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\indexer.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\patcher.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\renderer.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\resolver.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\validate_doc_org.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\workstream_converter.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\workstream_validator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\generation\\generate_code_graph.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\generation\\generate_doc_index.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\generation\\generate_implementation_map.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\generation\\generate_repo_summary.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\generation\\generate_spec_index.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\generation\\generate_spec_mapping.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\generation\\generate_workstreams.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\generation\\generate_workstreams_from_openspec.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\speed_demon\\batch_create.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\speed_demon\\verify_ground_truth.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\validation\\validate_acs_conformance.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\validation\\validate_diagrams.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\validation\\validate_engine.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\validation\\validate_error_imports.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\validation\\validate_plan.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\validation\\validate_workstreams.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\validation\\validate_workstreams_authoring.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\path_standardizer\\src\\path_standardizer\\plugin.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\gui_components\\src\\gui\\ui_infrastructure_usage.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\gui_components\\src\\gui\\ui_tool_selection_demo.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\gui_components\\src\\gui\\tests\\test_tool_settings.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\gui_components\\src\\gui\\tui_app\\main.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\monitoring_daemon\\src\\monitor_daemon.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\monitoring_daemon\\tests\\test_smoke.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\agents\\workstream_generator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\automation_fixes\\add_github_actions_cache.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\automation_fixes\\add_json_output_flags.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\automation_fixes\\add_non_interactive_flags.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\automation_fixes\\add_subprocess_timeouts.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\dev\\generate_path_index.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\dev\\normalize_paths.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\dev\\paths_index_cli.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\dev\\paths_resolve_cli.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\dev\\update_markdown_paths.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\glossary\\update_term.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\glossary\\validate_glossary.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\migration\\analyze_dependencies.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\migration\\create_migration_plan.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\migration\\execute_batch.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\migration\\scan_duplicates.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\patterns\\readme_presence_scan.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\safe_merge\\merge_file_classifier.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\safe_merge\\multi_clone_guard.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\safe_merge\\nested_repo_detector.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\safe_merge\\nested_repo_normalizer.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\aim\\manual_test_pool.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\aim\\validate_pool.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\interfaces\\test_config_manager.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\interfaces\\test_event_bus_logger.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\interfaces\\test_process_executor.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\interfaces\\test_state_store.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\interfaces\\test_tool_adapter.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\interfaces\\test_waves_3_4.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\interfaces\\test_workstream_service.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\plugins\\run_tests.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\schema\\test_doc_meta.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\aim\\fixtures\\mock_aider.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_security.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_test_runner_parsing.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\test-aider-comprehensive.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\test-aider-deepseek.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\executors\\module_creation_001_executor.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\executors\\module_creation_convergence_executor.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "error\\DOC_EXAMPLE_03_ERROR_HANDLING.md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "GITPROCCESSPROMTANDTEMPLATE.txt",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    }
+  ],
+  "config": [
+    {
+      "path": "execute_phase_plan.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "Background_Worker_Pool_Implementation\\execute_phase_plan.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "Background_Worker_Pool_Implementation\\test_workstream_worker_pool.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "Background_Worker_Pool_Implementation\\workstream_bridge.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "Background_Worker_Pool_Implementation\\workstream_execution_example.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "Background_Worker_Pool_Implementation\\workstream_worker_pool.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_examples\\workstream_execution_example.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\test_guardrails_integration.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\test_integration_uet_alignment.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\test_workstream_worker_pool.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\test_guardrails_integration.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\test_integration_uet_alignment.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\controller.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\notifications.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\real_minipipe_adapter.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\acms\\show_run.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\cli\\demo_minimal_scenario.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\minipipe\\daemon_orchestrator.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\minipipe\\executor.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\minipipe\\invoke_tools.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\minipipe\\recovery.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\minipipe\\router.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\minipipe\\tools.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\minipipe\\workstream_bridge.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_src\\minipipe\\workstream_worker_pool.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\unit\\test_daemon_orchestrator.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\CLP_PROCESS\\extracted_files\\complete_debug_prompts.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\CLP_PROCESS\\extracted_files\\ssot_extractor.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\debug_audit_cli.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\core\\config_manager.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\core\\event_capture.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\core\\exceptions.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\ccis.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\pa.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\phase_plan.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\pjf.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\psjp.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\tp.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\tr.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\uci.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\ws.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\controller.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\notifications.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\real_minipipe_adapter.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\show_run.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\uet_tool_adapters.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\cli\\demo_minimal_scenario.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\minipipe\\executor.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\minipipe\\recovery.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\minipipe\\router.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\minipipe\\tools.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_FIND_UPPERCASE_FILES_SCRIPT\\Find-UppercaseNoteFiles.ps1",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\FileOrganizer.Tests.ps1",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tools\\FileOrganizer.ps1",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "REC_006_OPTIONAL_FEATURES_GUIDE.md",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "Background_Worker_Pool_Implementation\\IMPLEMENTATION_SUMMARY.md",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "Background_Worker_Pool_Implementation\\INDEX.md",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "Background_Worker_Pool_Implementation\\QUICKSTART_WORKSTREAM_EXECUTION.md",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "Background_Worker_Pool_Implementation\\README.md",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "Background_Worker_Pool_Implementation\\WORKSTREAM_WORKER_POOL.md",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "DEVELOPMENT_TEMP_DOCS\\TODO_REMAINING_ACTIONS.md",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_docs\\IMPLEMENTATION_SUMMARY.md",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_docs\\QUICKSTART_WORKSTREAM_EXECUTION.md",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_docs\\README_WORKSTREAM_EXECUTION.md",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_docs\\WORKSTREAM_WORKER_POOL.md",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "SSOT\\ACMS_SSOT.md",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\CLP_PROCESS\\CONCEPTS_&_REFERENCE\\FOR_PROMNT_AND_SPEC_IMPROVMENT_CASE_STUDY.md",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\CLP_PROCESS\\CONCEPTS_&_REFERENCE\\CLP_PROCCESSPROMTANDTEMPLATE.txt",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\requirements.txt",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "CLP_PROCESS\\examples\\06_full_pipeline.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\extracted_files\\complete_debug_prompts.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\checklist\\tool_executor.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\cli\\config.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\orchestrator\\debug_audit_orchestrator.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\orchestrator\\execution_context.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\pipeline\\runtime_pipeline.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\cli\\commands\\audit.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\cli\\commands\\validate.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\integration\\test_cli_e2e.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\integration\\test_runtime_pipeline.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\unit\\test_ci_integration.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\unit\\test_cli.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\integration\\orchestrator\\test_parallel_orchestration.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\debug_audit_cli.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\core\\config_manager.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\core\\event_capture.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\core\\exceptions.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\ccis.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\pa.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\phase_plan.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\pjf.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\psjp.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\tp.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\tr.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\uci.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\src\\schemas\\ws.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\AI_GUIDE.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\CLAUDE.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\developer_onboarding.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\README.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\SYSTEM_EVALUATION_2025-12-12.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\DEV_CONCEPTS_&_REFERENCE\\FOR_PROMNT_AND_SPEC_IMPROVMENT_CASE_STUDY.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\PLANS_AND_EXECUTION_REPORTS\\Phase Plan_CLP_PROCESS to 100% Production-Ready System.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\PLANS_AND_EXECUTION_REPORTS\\Workstream_C_Completion_Report.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\pipeline\\RELATED.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\40_DEBUG_PROMPT\\CLP_PROCCESSPROMTANDTEMPLATE.txt",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\requirements.txt",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "core\\ui_models.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\ui_settings.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\ui_settings_cli.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\validate_automation.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\glossary_ssot_policy.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\pipe_classify.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\pipe_tree.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\splinter_sync_phase_to_github.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\uet_tool_adapter.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_adapters.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_integration.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_invoke_config.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_retry_policy.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_tui_integration.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_validators.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\adapters\\base.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\adapters\\registry.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\bootstrap\\enhanced_validator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\bootstrap\\validator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\executor.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\phase_coordinator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\recovery.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\router.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\tools.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\triggers\\trigger_engine.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\events\\alerting\\alert_manager.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\ui_tool_selection_demo.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\gui_app\\main.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\tui_app\\main.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\ui_core\\layout_config.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\gui_app\\core\\gui_app.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\gui_app\\panels\\log_stream_panel.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\invoke\\__init__.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\detectors\\duplicate_detector.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\detectors\\import_pattern_analyzer.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\detectors\\staleness_scorer.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\integration\\orchestrator_hooks.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\lifecycle\\auto_approval.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\runtime\\cleanup_executor.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase1_planning\\modules\\workstream_planner\\docs\\plans\\templates\\adapters\\subprocess\\tool-adapter-template.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\src\\aim\\exceptions.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\src\\aim\\process_pool.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\src\\aim\\aim-cli\\m01001A_main.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\src\\aim\\aim-environment\\m01001B_health.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\src\\aim\\aim-environment\\m01001B_installer.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\src\\aim\\aim-environment\\m01001B_version_control.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\src\\aim\\aim-registry\\m01001C_config_loader.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\tests\\test_base.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\tests\\test_registry.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\tests\\test_subprocess_adapter.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\error_engine\\src\\engine\\agent_adapters.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\alerting\\src\\alert_engine.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\gui_components\\src\\gui\\ui_tool_selection_demo.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\gui_components\\src\\gui\\tests\\test_tool_settings.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\gui_components\\src\\gui\\tui_app\\main.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\adapters\\test_base.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\adapters\\test_registry.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\adapters\\test_subprocess_adapter.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\contracts\\test_decorators.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\engine\\test_executor.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\engine\\test_phase_coordinator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\engine\\test_routing.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\engine\\test_worker_lifecycle.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\interfaces\\test_config_manager.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\pattern_tests\\test_error_path.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_agent_adapters.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_agent_adapters_additional.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\test_base.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\src\\coverage_analyzer\\registry.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\src\\coverage_analyzer\\__init__.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\src\\coverage_analyzer\\adapters\\base_adapter.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\src\\coverage_analyzer\\adapters\\coverage_py_adapter.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\src\\coverage_analyzer\\adapters\\pester_adapter.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\src\\coverage_analyzer\\analyzers\\complexity.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\src\\coverage_analyzer\\analyzers\\mutation.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\src\\coverage_analyzer\\analyzers\\operational.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\src\\coverage_analyzer\\analyzers\\sca.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\src\\coverage_analyzer\\analyzers\\static_analysis.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\src\\coverage_analyzer\\analyzers\\structural.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\analyzers\\test_complexity.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\analyzers\\test_mutation.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\analyzers\\test_operational.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\analyzers\\test_sca.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\analyzers\\test_static_analysis.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\analyzers\\test_structural.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "LOG_REVIEW_SUB_SYS\\setup-scheduled-task.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\add-aider-to-profile.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\Sync-UetPhaseStatusToGitHub.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\test-aider-comprehensive.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\executors\\lib\\templates.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\patterns\\Schedule-ZeroTouchAutomation.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "FOR_PROMNT_AND_SPEC_IMPROVMENT_CASE_STUDY.md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "AI_SSOT\\ACMS_SSOT.md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "glossary\\GLOSSARY (2).md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\UI_INTERACTIVE_TOOL_SELECTION.md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\UI_TOOL_SELECTION_QUICK_REF (2).md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\execution\\EXEC-002-BATCH-VALIDATION.md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "GITPROCCESSPROMTANDTEMPLATE.txt",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\behavioral\\configuration_setup.pattern.yaml",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\behavioral\\integration_hook.pattern.yaml",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    }
+  ],
+  "test": [
+    {
+      "path": "tasks.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "validate_wave1.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "Background_Worker_Pool_Implementation\\test_workstream_worker_pool.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\test_dependency_derivation.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\test_guardrails_integration.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\test_integration_uet_alignment.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\test_path_registry.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\test_plan_compiler_guardrails.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\test_uet_tool_adapters.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\test_uet_workstream_adapter.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\test_workstream_worker_pool.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\test_dependency_derivation.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\test_guardrails_integration.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\test_integration_uet_alignment.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\test_path_registry.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\test_plan_compiler_guardrails.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\test_uet_tool_adapters.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\test_uet_workstream_adapter.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\e2e\\test_determinism.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\e2e\\test_failure_paths.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\e2e\\test_full_run.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\integration\\test_phase_execution.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\integration\\test_phase_gap_discovery.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\integration\\test_phase_planning.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\integration\\test_phase_summary.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\performance\\conftest.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\performance\\test_performance_benchmarks.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\performance\\test_regression.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\performance\\test_wave1_benchmarks.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\performance\\test_wave2_benchmarks.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\unit\\test_acms_minipipe_adapter.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\unit\\test_async_patch_review.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\unit\\test_controller_init.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\unit\\test_daemon_orchestrator.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\unit\\test_diff_stats.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\unit\\test_execution_planner.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\unit\\test_gap_registry.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\unit\\test_invoke_tools.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\unit\\test_phase_plan_compiler.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\unit\\test_session_registry.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\unit\\test_tui_monitor.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\unit\\test_worktree_manager.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_test_repo\\tests\\test_calculator.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "SSOT\\process\\tools\\test_system.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\e2e\\test_determinism.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\e2e\\test_failure_paths.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\e2e\\test_full_run.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\integration\\test_phase_execution.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\integration\\test_phase_gap_discovery.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\integration\\test_phase_planning.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\integration\\test_phase_summary.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\performance\\test_wave1_benchmarks.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\unit\\test_acms_minipipe_adapter.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\unit\\test_controller_init.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\unit\\test_execution_planner.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\unit\\test_gap_registry.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "tests\\unit\\test_phase_plan_compiler.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "test_repo\\tests\\test_calculator.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "docs\\guardrails\\GUARDRAILS_INTEGRATION_CHECKLIST.md",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "PROCESS_FOR_ALL\\PLANNING_PROCESS\\deterministic_debug_audit_system\\COMPLETE_IMPLEMENTATION.md",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "analysis_frameworks\\gap-finding_systematic.json",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "docs\\analysis_frameworks\\gap-finding_systematic.json",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\conftest.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\fixtures\\llm_mocks.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\integration\\test_checklist_integration.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\integration\\test_cli_e2e.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\integration\\test_full_pipeline.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\integration\\test_llm_execution.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\integration\\test_runtime_pipeline.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\unit\\test_audit_ledger_analysis.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\unit\\test_checklist_evaluator.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\unit\\test_ci_integration.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\unit\\test_cli.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\unit\\test_debug_prompt_runner.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\unit\\test_llm_client.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\unit\\test_template_enforcement.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\integration\\orchestrator\\test_parallel_orchestration.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\unit\\orchestrator\\test_plugin_registry.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\unit\\orchestrator\\test_state_machine.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\unit\\orchestrator\\test_task_graph.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\unit\\orchestrator\\test_worker_pool.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\tests\\integration_test.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\tests\\manual_test_runner.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\tests\\test_ccis_to_phase_plan.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\CLAUDE.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\COMPONENT_DEPENDENCIES.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\determinism_guarantees.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\OPTION_3_MASTER_SPLINTER_IMPLEMENTATION_PLAN.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\CHAT_GPT_CHATS\\ChatGPT-Validate orchestration pattern code.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\DEV_CONCEPTS_&_REFERENCE\\testing_handbook.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\PLANS_AND_EXECUTION_REPORTS\\Phase Plan_CLP_PROCESS to 100% Production-Ready System.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\PLANS_AND_EXECUTION_REPORTS\\Workstream_A_Completion_Report.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "PLANNING_PROCESS\\deterministic_debug_audit_system\\COMPLETE_IMPLEMENTATION.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "doc_id\\test_doc_id_compliance.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\test_doc_id_system.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "examples\\test_cluster_api.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\analyze_test_results.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\test_adapters.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\test_coverage_archival.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\test_state_store.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\conftest.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_adapters.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_agent_coordinator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_audit_logger.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_ccpm_openspec_integration.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_cli_adapter.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_cost_tracking.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_decision_registry.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_deterministic_execution.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_engine_determinism.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_entry_point_reachability.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_escalation.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_event_bus.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_github_sync.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_github_sync_cli_path.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_incomplete_scanner.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_incremental_cache.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_integration.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_invoke_config.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_invoke_utils.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_job_queue.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_job_wrapper.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_openspec_convert.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_openspec_parser.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_orchestrator_lifecycle_sync.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_parallelism_detection.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_parallel_dependencies.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_parallel_orchestrator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_patch_manager.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_path_registry.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_path_standardizer.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_pattern_sqlite_backend.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_pipeline_integration.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_prompt_engine.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_quality_gates.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_queue_manager.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_retry_policy.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_spec_validator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_sqlite_backend.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_state_cleanup.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_task_queue.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_tui_integration.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_validators.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_worker_lifecycle.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\test_worker_pool.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\engine\\test_gate.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "core\\testing\\auto_triage.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_id\\DOC_ID_tests\\test_drift_detection.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\tests\\test_gui_smoke.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\tests\\tui_panel_framework\\test_layout_manager.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\tests\\tui_panel_framework\\test_panels_smoke.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\tests\\tui_panel_framework\\test_panel_registry.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\tests\\tui_panel_framework\\test_pattern_client.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\tests\\tui_panel_framework\\test_state_client.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "LOG_REVIEW_SUB_SYS\\tests\\test_audit_logger.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "LOG_REVIEW_SUB_SYS\\tests\\test_integration.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "LOG_REVIEW_SUB_SYS\\tests\\test_structured_logger.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\automation\\tests\\integration\\test_orchestrator_hooks.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase2_implementation\\core\\uet\\state\\test_gate.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase2_implementation\\tests\\state\\test_circuit_breaker.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase2_implementation\\tests\\state\\test_run.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase2_implementation\\tests\\state\\test_task.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase2_implementation\\tests\\state\\test_workstream_worker.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase2_implementation\\tests\\uet\\test_uet_state_machines.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase3_implementation\\core\\dao\\test_gate_dao.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase3_implementation\\tests\\integration\\test_dao_layer.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\tests\\conftest.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\tests\\manual_test_pool.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\tests\\test_process_pool.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\tests\\validate_pool.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\src\\aim\\aim-tests\\m01001E_conftest.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\aim_tools\\tests\\integration\\test_aider_pool.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\tests\\test_base.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\tests\\test_registry.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\tests\\test_subprocess_adapter.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase4_routing\\modules\\tool_adapters\\src\\tools\\validation\\validate_engine.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\codespell\\tests\\test_plugin_detection.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\codespell\\tests\\test_plugin_edge_cases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\echo\\tests\\test_plugin_detection.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\echo\\tests\\test_plugin_edge_cases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\echo\\tests\\test_plugin_fix.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\gitleaks\\tests\\test_plugin_detection.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\gitleaks\\tests\\test_plugin_edge_cases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\gitleaks\\tests\\test_plugin_fix.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\json_jq\\tests\\test_plugin_detection.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\json_jq\\tests\\test_plugin_edge_cases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\js_eslint\\tests\\test_plugin_detection.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\js_eslint\\tests\\test_plugin_edge_cases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\js_prettier_fix\\tests\\test_plugin_edge_cases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\js_prettier_fix\\tests\\test_plugin_fix.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\md_markdownlint\\tests\\test_plugin_detection.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\md_markdownlint\\tests\\test_plugin_edge_cases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\md_mdformat_fix\\tests\\test_plugin_edge_cases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\md_mdformat_fix\\tests\\test_plugin_fix.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\path_standardizer\\tests\\test_plugin_detection.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\path_standardizer\\tests\\test_plugin_edge_cases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\path_standardizer\\tests\\test_plugin_fix.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\powershell_pssa\\tests\\test_plugin_detection.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\powershell_pssa\\tests\\test_plugin_edge_cases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\powershell_pssa\\tests\\test_plugin_fix.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\python_bandit\\tests\\test_plugin_detection.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\python_bandit\\tests\\test_plugin_edge_cases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\python_black_fix\\tests\\test_plugin_edge_cases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\python_black_fix\\tests\\test_plugin_fix.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\python_isort_fix\\tests\\test_plugin_edge_cases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\python_isort_fix\\tests\\test_plugin_fix.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\python_mypy\\tests\\test_plugin_detection.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\python_mypy\\tests\\test_plugin_edge_cases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\python_pylint\\tests\\test_plugin_detection.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\python_pylint\\tests\\test_plugin_edge_cases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\python_pyright\\tests\\test_plugin_detection.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\python_pyright\\tests\\test_plugin_edge_cases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\python_safety\\tests\\test_plugin_detection.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\python_safety\\tests\\test_plugin_edge_cases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\semgrep\\tests\\test_plugin_detection.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\semgrep\\tests\\test_plugin_edge_cases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\semgrep\\tests\\test_plugin_fix.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\yaml_yamllint\\tests\\test_plugin_detection.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\yaml_yamllint\\tests\\test_plugin_edge_cases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\gui_components\\src\\gui\\tests\\test_tool_settings.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\monitoring_daemon\\tests\\test_smoke.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\adapters\\test_base.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\adapters\\test_registry.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\adapters\\test_subprocess_adapter.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\aim\\conftest.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\aim\\manual_test_pool.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\aim\\test_cluster_manager.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\aim\\test_process_pool.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\aim\\test_routing.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\aim\\validate_pool.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\ast_analysis\\test_parser.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\ast_analysis\\test_python.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\autonomous\\test_reflexion.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\bootstrap\\test_validator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\contracts\\test_contract_validation.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\contracts\\test_decorators.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\engine\\test_cost_tracker.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\engine\\test_executor.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\engine\\test_patch_ledger.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\engine\\test_phase_coordinator.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\engine\\test_plan_execution.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\engine\\test_routing.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\engine\\test_run_lifecycle.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\engine\\test_scheduling.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\engine\\test_test_gate.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\engine\\test_worker_lifecycle.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\conftest.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\indexing\\test_raptor.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\integration\\test_aider_sandbox.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\integration\\test_aim_end_to_end.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\integration\\test_aim_orchestrator_integration.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\integration\\test_phase4_e2e.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\integration\\test_uet_migration.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\interfaces\\test_config_manager.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\interfaces\\test_event_bus_logger.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\interfaces\\test_process_executor.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\interfaces\\test_state_store.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\interfaces\\test_tool_adapter.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\interfaces\\test_waves_3_4.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\interfaces\\test_workstream_service.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\knowledge\\test_knowledge_graph.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\knowledge\\test_query_engine.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\memory\\test_episodic_memory.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\monitoring\\test_progress_tracker.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\monitoring\\test_run_monitor.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\orchestrator\\test_parallel_src.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\patterns\\test_pattern_registry.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\pattern_tests\\test_boundary_patterns.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\pattern_tests\\test_error_path.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\pattern_tests\\test_pattern_analyzer.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\pattern_tests\\test_state_transition.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\pipeline\\test_aim_bridge.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\pipeline\\test_bundles.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\pipeline\\test_fix_loop.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\pipeline\\test_openspec_parser_src.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\pipeline\\test_orchestrator_single.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\pipeline\\test_workstream_authoring.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\planning\\test_planner.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\plugins\\conftest.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\plugins\\run_tests.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\plugins\\test_cross_cutting.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\plugins\\test_integration.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\plugins\\test_markup_data.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\plugins\\test_path_standardizer_plugin_unit.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\plugins\\test_powershell_js.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\plugins\\test_python_fix.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\plugins\\test_python_lint.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\plugins\\test_python_security.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\plugins\\test_python_type.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\resilience\\test_circuit_breaker.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\resilience\\test_resilient_executor.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\resilience\\test_retry.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\schema\\test_all_schemas.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\schema\\test_doc_meta.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\search\\test_hyde.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\search\\test_semantic_search.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\syntax_analysis\\test_parser.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\syntax_analysis\\test_python.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\terminal\\test_state_capture.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\aim\\integration\\test_aider_integration.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\core\\cli\\test_wrapper.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\core\\state\\test_dag_utils.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\core\\state\\test_db_unified.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\core\\testing\\test_auto_triage.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\core\\engine\\triggers\\test_trigger_engine.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\integration\\test_ai_agent_escalation.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\integration\\test_circuit_breaker_integration.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\integration\\test_error_classification_layers.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\integration\\test_full_pipeline_javascript.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\integration\\test_full_pipeline_python.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\integration\\test_hash_cache_invalidation.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\integration\\test_jsonl_event_streaming.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\integration\\test_mechanical_autofix_flow.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\integration\\test_multi_plugin_coordination.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\integration\\test_state_machine_transitions.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_agent_adapters.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_agent_adapters_additional.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_env_utils.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_error_context_dataclass.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_error_engine_shim.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_error_state_machine_additional.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_file_hash_cache_additional.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_hashing_utils.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_jsonl_manager_additional.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_pipeline_engine_additional.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_plugin_manager_custom.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_security.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_state_machine.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_test_runner_parsing.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_time_utils_additional.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\gui\\tui_panel_framework\\test_layout_manager.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\gui\\tui_panel_framework\\test_panels_smoke.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\gui\\tui_panel_framework\\test_panel_registry.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\gui\\tui_panel_framework\\test_pattern_client.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\gui\\tui_panel_framework\\test_state_client.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\conftest.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\test_base.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\test_registry.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\adapters\\test_coverage_py_adapter.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\adapters\\test_locust_adapter.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\adapters\\test_mutation_adapter.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\adapters\\test_pester_adapter.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\adapters\\test_sca_adapters.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\adapters\\test_static_analysis_adapters.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\analyzers\\test_complexity.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\analyzers\\test_mutation.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\analyzers\\test_operational.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\analyzers\\test_sca.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\analyzers\\test_static_analysis.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tools\\coverage_analyzer\\tests\\analyzers\\test_structural.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "LOG_REVIEW_SUB_SYS\\run-all-tests.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\executors\\atomic_create_executor.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\executors\\lib\\templates.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "doc_ssot_state_machines.md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "DECISION_ELIMINATION\\DECISION_ELIMINATION_GUIDE.md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "templates\\NEW_SHARED_MODULE_TEMPLATE.md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "LOG_REVIEW_SUB_SYS\\tests\\README_Test Configuration and Documentation.md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\execution\\EXEC-001-TYPE-SAFE-OPERATIONS.md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\execution\\EXEC-002-BATCH-VALIDATION.md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\execution\\EXEC-003-TOOL-AVAILABILITY-GUARDS.md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\execution\\EXEC-004-ATOMIC-OPERATIONS.md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "GITPROCCESSPROMTANDTEMPLATE.txt",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": ".reports\\pat_check_readme_001.json",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "MASTER_SPLINTER\\workstreams\\ws-automation-foundation.json",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\behavioral\\integration_hook.pattern.yaml",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "MASTER_SPLINTER\\plans\\phases\\PH-AUTO-001_ws-automation-foundation.yml",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    }
+  ],
+  "integration": [
+    {
+      "path": "MINI_PIPE_src\\acms\\ai_adapter.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\ai_adapter.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "SSOT\\state_machines\\phase5_api_ui\\cli.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "state_machines\\phase5_api_ui\\cli.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "DEVELOPMENT_TEMP_DOCS\\AUTOMATION_CHAIN_ANALYSIS_REPORT.md",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "DEVELOPMENT_TEMP_DOCS\\TODO_ERROR_AUTOMATION_REMAINING_TASKS.md",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "analysis_frameworks\\gap-finding_systematic.json",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "docs\\analysis_frameworks\\gap-finding_systematic.json",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "CLP_PROCESS\\src\\debug_engine\\llm_client.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\tests\\unit\\test_llm_client.py",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\ARCHITECTURE.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\PLANS_AND_EXECUTION_REPORTS\\Phase Plan_CLP_PROCESS to 100% Production-Ready System.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "examples\\test_cluster_api.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\setup_monitoring.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "AI_SSOT\\state_machines\\phase5_api_ui\\cli.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "error\\automation\\alerting.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\ui_tool_selection_demo.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\ui_core\\pattern_client.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\ui_core\\state_client.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\tui_app\\core\\pattern_client.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\src\\tui_app\\core\\state_client.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "LOG_REVIEW_SUB_SYS\\tests\\test_integration.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\gitleaks\\tests\\test_plugin_detection.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\python_isort_fix\\tests\\test_plugin_edge_cases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\python_safety\\tests\\test_plugin_detection.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\python_safety\\tests\\test_plugin_edge_cases.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase6_error_recovery\\modules\\plugins\\semgrep\\tests\\test_plugin_detection.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\alerting\\src\\alert_engine.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\gui_components\\src\\gui\\ui_tool_selection_demo.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\gui_components\\src\\gui\\tui_app\\core\\pattern_client.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "phase7_monitoring\\modules\\gui_components\\src\\gui\\tui_app\\core\\state_client.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\pattern_tests\\test_error_path.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_agent_adapters.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_security.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "error\\DOC_EXAMPLE_03_ERROR_HANDLING.md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "error\\TODO_ERROR_AUTOMATION_REMAINING_TASKS.md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "gui\\HEADLESS_CLI_SUPERVISION_PLAN.json",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "MASTER_SPLINTER\\workstreams\\ws-automation-foundation.json",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "MASTER_SPLINTER\\plans\\phases\\PH-AUTO-001_ws-automation-foundation.yml",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    }
+  ],
+  "utils": [
+    {
+      "path": "MINI_PIPE_src\\acms\\uet_tool_adapters.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "MINI_PIPE_tests\\performance\\test_performance_benchmarks.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "src\\acms\\uet_tool_adapters.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "CLP_PROCESS\\developer_onboarding.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "tests\\test_retry_policy.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\engine\\test_routing.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\syntax_analysis\\test_python.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "tests\\error\\unit\\test_error_context_dataclass.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\executors\\atomic_create_executor.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\executors\\glossary_export_executor.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\executors\\glossary_link_check_executor.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\executors\\glossary_patch_apply_executor.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\executors\\glossary_sync_executor.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\executors\\glossary_term_add_executor.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\executors\\glossary_validate_executor.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "scripts\\validate\\validate_repo_checklist.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\PATTERN_REGISTRATION_PROCESS.md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    }
+  ],
+  "api": [
+    {
+      "path": "SSOT\\state_machines\\phase5_api_ui\\rest_api.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "state_machines\\phase5_api_ui\\rest_api.py",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "analysis_frameworks\\gap-finding_systematic.json",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "docs\\analysis_frameworks\\gap-finding_systematic.json",
+      "root_dir": "MINI_PIPE"
+    },
+    {
+      "path": "ChatGPT-Grouping Python files systematically.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "CLP_PROCESS\\PLANS_AND_EXECUTION_REPORTS\\Phase Plan_CLP_PROCESS to 100% Production-Ready System.md",
+      "root_dir": "PROCESS_FOR_ALL"
+    },
+    {
+      "path": "AI_SSOT\\state_machines\\phase5_api_ui\\rest_api.py",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "patterns\\executors\\lib\\templates.ps1",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    },
+    {
+      "path": "COMPLETE_IMPLEMENTATION_SUMMARY.md",
+      "root_dir": "Complete AI Development Pipeline \u2013 Canonical Phase Plan"
+    }
+  ],
+  "doc_id": "DOC-CONFIG-SEMANTIC-INDEX-805"
+}

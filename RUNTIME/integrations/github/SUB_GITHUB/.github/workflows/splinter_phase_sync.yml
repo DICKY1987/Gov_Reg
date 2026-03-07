@@ -1,0 +1,55 @@
+name: Sync SPLINTER Phase Plan to GitHub Projects
+
+on:
+  push:
+    paths:
+      - "phases/**/*.yml"
+      - "phases/**/*.yaml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+  # Note: Projects write permission requires organization-level PAT or GitHub App
+
+jobs:
+  sync_phase_to_github:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml requests jsonschema
+
+      - name: Determine changed SPLINTER phase files
+        id: changed
+        run: |
+          # Collect phase files changed in this push
+          files=$(git diff --name-only HEAD~1 HEAD | grep -E '^phases/.*\.ya?ml$' || true)
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$files" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Sync phase files
+        if: steps.changed.outputs.files != ''
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "${{ steps.changed.outputs.files }}" | while read file; do
+            [ -z "$file" ] && continue
+            echo "Syncing $file"
+
+            python .github/github_integration_v2/scripts/splinter_sync_phase_to_github.py \
+              --phase-file "$file" \
+              --github-repo "${{ github.repository }}" \
+              --github-token "$GITHUB_TOKEN"
+          done

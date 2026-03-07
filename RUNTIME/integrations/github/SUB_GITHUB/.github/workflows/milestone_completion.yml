@@ -1,0 +1,48 @@
+name: Milestone Completion Sync
+
+on:
+  issues:
+    types: [closed, reopened]
+  pull_request:
+    types: [closed, reopened]
+
+jobs:
+  milestone-completion:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: read
+      project: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Sync milestone state
+        env:
+          TARGET_ORG: ${{ vars.TARGET_ORG || github.repository_owner }}
+          TARGET_REPO: ${{ vars.TARGET_REPO || github.repository }}
+          PROJECT_NUMBER: ${{ vars.PROJECT_NUMBER || '1' }}
+          PROJECT_NODE_ID: ${{ vars.PROJECT_NODE_ID }}
+          STATUS_FIELD_ID: ${{ vars.PROJECT_STATUS_FIELD_ID || vars.STATUS_FIELD_ID }}
+          STATUS_DONE_ID: ${{ vars.STATUS_OPTION_ID_DONE }}
+          COMPLETION_FIELD_ID: ${{ vars.PROJECT_COMPLETION_FIELD_ID || vars.COMPLETION_FIELD_ID }}
+          PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python .github/github_integration_v2/scripts/milestone_completion_sync.py
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: milestone-sync-logs
+          path: ${{ runner.temp }}/_github_home/_logs

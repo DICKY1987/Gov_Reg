@@ -1,0 +1,29 @@
+contracts:
+  provides:
+  - Execution prompt templates
+  - Phase plan templates
+  requires: []
+dependencies:
+  required_artifacts: []
+  required_directories:
+  - PHASE5_ENTRY_GATE_DELIVERABLES
+directory:
+  name: IO_CONTRACT_FOR_START_PHASE_5
+  path: IO_CONTRACT_FOR_START_PHASE_5
+  purpose: Input/output contracts and prompt templates for Phase 5 initialization
+    with variable placeholders and execution templates
+  status: active
+doc_id: DOC-CONFIG-DIR-MANIFEST-IO-CONTRACT-P5
+meta:
+  dir_id: DIR-ade9c42b
+  schema_version: 1.0.0
+  updated_utc: '2026-01-04T00:37:00Z'
+  version: 1.0.0
+ownership:
+  owned_artifacts: []
+  owned_files:
+  - ChatGPT-Prompt contract template.md
+  - EXECUTION_PROMPT_TEMPLATE_V2_DAG_MULTI_WORKSTREAM.json
+  - MASTER_SPLINTER_Phase_Plan_Template.json
+  - MASTER_SPLINTER_Phase_Plan_Template.yml
+  - PHASE_9_ENFORCEMENT_LAYER.yml

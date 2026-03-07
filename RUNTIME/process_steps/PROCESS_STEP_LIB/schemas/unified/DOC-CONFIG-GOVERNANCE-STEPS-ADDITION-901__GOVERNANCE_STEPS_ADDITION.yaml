@@ -1,0 +1,907 @@
+# DOC_LINK: DOC-CONFIG-GOVERNANCE-STEPS-ADDITION-901
+doc_id: DOC-CONFIG-GOVERNANCE-STEPS-ADDITION-901
+meta:
+  schema_id: GOVERNANCE_STEPS_ADDITION
+  version: 1.0.0
+  description: "25 additional governance steps to ensure 5-Layer Governance Model compliance"
+  source: "Gap analysis against .github/copilot-instructions.md governance requirements"
+  generated_at: "2026-01-01T22:16:50Z"
+  steps_added: 25
+  new_total_steps: 299
+
+governance_layers_coverage:
+  layer_1_process:
+    description: "Work ID linked, Runbook created"
+    steps_added: 3
+    step_ids: [E2E-1-020, E2E-2-023, E2E-1-021]
+  layer_2_quality:
+    description: "BDD Spec (stable ID) → Failing Test → Code → Pass"
+    steps_added: 6
+    step_ids: [E2E-3-040, E2E-3-041, E2E-4-005, E2E-7-039, E2E-4-006, E2E-7-040]
+  layer_3_infra:
+    description: "No drift. Infrastructure-as-Code only"
+    steps_added: 5
+    step_ids: [E2E-3-042, E2E-4-007, E2E-8-012, E2E-6-124, E2E-6-125]
+  layer_4_observability:
+    description: "Trace ID + Run ID propagation"
+    steps_added: 1
+    step_ids: [E2E-1-022]
+    note: "Already well covered with 421 mentions, added explicit initialization step"
+  layer_5_knowledge:
+    description: "Docs-as-Code. SSOT updated"
+    steps_added: 1
+    step_ids: [E2E-7-041]
+    note: "Already well covered, added explicit manifest update step"
+  gate_enforcement:
+    description: "Gate A/C/D/E validation and human approval"
+    steps_added: 5
+    step_ids: [E2E-4-008, E2E-4-009, E2E-4-010, E2E-4-011, E2E-4-012]
+  governance_maintenance:
+    description: "Ongoing governance compliance auditing"
+    steps_added: 3
+    step_ids: [E2E-8-013, E2E-8-014, E2E-8-015]
+  cross_cutting:
+    description: "Compliance reporting and utilities"
+    steps_added: 1
+    step_ids: [E2E-9-014]
+
+new_steps:
+  # ============================================================================
+  # LAYER 1: PROCESS (Work ID & Runbook) - 3 steps
+  # ============================================================================
+  - step_id: E2E-1-020
+    original_step_id: GOV-PROC-001
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 1_BOOTSTRAP
+    original_phase: BOOTSTRAP
+    substage: work_id_validation
+    unified_operation_category: validation
+    original_operation_kind: validation
+    name: "Validate Work ID Presence"
+    description: |
+      Verify work ID exists in context (commit message, CLI args, or config).
+      Supported formats: #123, GH-123, WI-123, JIRA-123.
+      Fail fast if work ID missing and governance enforcement enabled.
+    responsible_component: "governance::work_id_validator"
+    operation_kind: validation
+    inputs:
+      - "git commit message"
+      - "CLI --work-id argument"
+      - "config.work_id field"
+    expected_outputs:
+      - "work_id: string (validated format)"
+      - "work_id_source: enum(commit|cli|config)"
+    requires_human_confirmation: false
+    guardrail_checkpoint: true
+    guardrail_checkpoint_id: "GATE-WORK-ID"
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/work_id_validator.py"
+    artifacts_created: []
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.work_id.validation.result"
+      - "governance.work_id.source"
+
+  - step_id: E2E-2-023
+    original_step_id: GOV-PROC-002
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 2_DISCOVERY
+    original_phase: DISCOVERY
+    substage: runbook_generation
+    unified_operation_category: generation
+    original_operation_kind: generation
+    name: "Generate Runbook Template"
+    description: |
+      Create runbook skeleton with work ID, context, execution steps.
+      Template includes: work_id, run_id, timestamp, objectives, steps[], rollback_plan.
+      Saved to runbooks/{work_id}_{run_id}.md
+    responsible_component: "governance::runbook_generator"
+    operation_kind: generation
+    inputs:
+      - "work_id: string"
+      - "run_id: ULID"
+      - "execution_plan: dict"
+    expected_outputs:
+      - "runbook_path: runbooks/{work_id}_{run_id}.md"
+      - "runbook_doc_id: DOC-RUNBOOK-{work_id}-{seq}"
+    requires_human_confirmation: false
+    guardrail_checkpoint: false
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/runbook_generator.py"
+    artifacts_created:
+      - "runbooks/{work_id}_{run_id}.md"
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.runbook.created"
+
+  - step_id: E2E-1-021
+    original_step_id: GOV-PROC-003
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 1_BOOTSTRAP
+    original_phase: BOOTSTRAP
+    substage: work_id_linking
+    unified_operation_category: registration
+    original_operation_kind: registration
+    name: "Link Work ID to Execution Context"
+    description: |
+      Associate work_id with run_id, trace_id, span_id for complete audit trail.
+      Persist linkage in run ledger and RELATIONSHIP_INDEX.json.
+    responsible_component: "governance::context_linker"
+    operation_kind: registration
+    inputs:
+      - "work_id: string"
+      - "run_id: ULID"
+      - "trace_id: hex string"
+    expected_outputs:
+      - "context_linkage: persisted in run ledger"
+      - "relationship_index_updated: true"
+    requires_human_confirmation: false
+    guardrail_checkpoint: false
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/context_linker.py"
+      - "data/RELATIONSHIP_INDEX.json"
+    artifacts_created: []
+    artifacts_updated:
+      - "data/RELATIONSHIP_INDEX.json"
+      - "RUNTIME/runs/{run_id}/run_ledger.jsonl"
+    metrics_emitted:
+      - "governance.context.linked"
+
+  # ============================================================================
+  # LAYER 2: QUALITY (BDD/TDD Workflow) - 6 steps
+  # ============================================================================
+  - step_id: E2E-3-040
+    original_step_id: GOV-QUAL-001
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 3_DESIGN
+    original_phase: DESIGN
+    substage: bdd_spec_generation
+    unified_operation_category: generation
+    original_operation_kind: generation
+    name: "Generate BDD Spec with Stable ID"
+    description: |
+      Create or update BDD specification in specs/behaviors/ with DOC-SPEC-* stable ID.
+      Format: Given/When/Then scenarios with acceptance criteria.
+      Register in ID registry and link to implementation artifacts.
+    responsible_component: "governance::bdd_spec_generator"
+    operation_kind: generation
+    inputs:
+      - "requirement_description: string"
+      - "acceptance_criteria: list[string]"
+    expected_outputs:
+      - "bdd_spec_path: specs/behaviors/SPEC-{token}-{seq}.md"
+      - "bdd_spec_id: DOC-SPEC-{token}-{seq}"
+    requires_human_confirmation: false
+    guardrail_checkpoint: false
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/bdd_spec_generator.py"
+    artifacts_created:
+      - "specs/behaviors/SPEC-{token}-{seq}.md"
+    artifacts_updated:
+      - "data/id_registry.json"
+    metrics_emitted:
+      - "governance.bdd_spec.created"
+
+  - step_id: E2E-3-041
+    original_step_id: GOV-QUAL-002
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 3_DESIGN
+    original_phase: DESIGN
+    substage: test_stub_generation
+    unified_operation_category: generation
+    original_operation_kind: generation
+    name: "Write Failing Test Linked to Spec"
+    description: |
+      Generate test stub referencing BDD spec stable ID in docstring/metadata.
+      Test should fail initially (no implementation yet).
+      Include @pytest.mark.bdd_spec("DOC-SPEC-XXX-YYY") decorator.
+    responsible_component: "governance::test_stub_generator"
+    operation_kind: generation
+    inputs:
+      - "bdd_spec_id: DOC-SPEC-{token}-{seq}"
+      - "test_framework: enum(pytest|unittest|jest)"
+    expected_outputs:
+      - "test_file_path: tests/test_{feature}.py"
+      - "test_linkage: @pytest.mark.bdd_spec decorator"
+    requires_human_confirmation: false
+    guardrail_checkpoint: false
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/test_stub_generator.py"
+    artifacts_created:
+      - "tests/test_{feature}.py"
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.test_stub.created"
+
+  - step_id: E2E-4-005
+    original_step_id: GOV-QUAL-003
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 4_APPROVAL
+    original_phase: APPROVAL
+    substage: pre_implementation_test
+    unified_operation_category: validation
+    original_operation_kind: validation
+    name: "Execute Test Suite (Pre-Implementation)"
+    description: |
+      Run tests to confirm failure before code changes (Red phase of TDD).
+      Log failing test IDs and failure reasons.
+    responsible_component: "governance::test_executor"
+    operation_kind: validation
+    inputs:
+      - "test_suite: pytest | npm test"
+    expected_outputs:
+      - "test_results: dict (failures expected)"
+      - "failing_test_ids: list[string]"
+    requires_human_confirmation: false
+    guardrail_checkpoint: true
+    guardrail_checkpoint_id: "GATE-TDD-RED"
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/test_executor.py"
+    artifacts_created:
+      - "RUNTIME/runs/{run_id}/test_results_pre.json"
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.test.pre_implementation.failures"
+
+  - step_id: E2E-7-039
+    original_step_id: GOV-QUAL-004
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 7_CONSOLIDATION
+    original_phase: CONSOLIDATION
+    substage: post_implementation_test
+    unified_operation_category: validation
+    original_operation_kind: validation
+    name: "Execute Test Suite (Post-Implementation)"
+    description: |
+      Verify all tests pass after code implementation (Green phase of TDD).
+      Compare pre/post results to ensure previously failing tests now pass.
+    responsible_component: "governance::test_executor"
+    operation_kind: validation
+    inputs:
+      - "test_suite: pytest | npm test"
+      - "pre_implementation_results: dict"
+    expected_outputs:
+      - "test_results: dict (all passing)"
+      - "test_delta: dict (before/after comparison)"
+    requires_human_confirmation: false
+    guardrail_checkpoint: true
+    guardrail_checkpoint_id: "GATE-TDD-GREEN"
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/test_executor.py"
+    artifacts_created:
+      - "RUNTIME/runs/{run_id}/test_results_post.json"
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.test.post_implementation.passed"
+      - "governance.test.delta.newly_passing"
+
+  - step_id: E2E-4-006
+    original_step_id: GOV-QUAL-005
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 4_APPROVAL
+    original_phase: APPROVAL
+    substage: test_spec_linkage_validation
+    unified_operation_category: validation
+    original_operation_kind: validation
+    name: "Validate Test-Spec Linkage"
+    description: |
+      Confirm all tests reference valid BDD spec stable IDs.
+      Scan for @pytest.mark.bdd_spec decorators and validate IDs exist in registry.
+    responsible_component: "governance::test_spec_linker"
+    operation_kind: validation
+    inputs:
+      - "test_files: list[Path]"
+      - "id_registry: data/id_registry.json"
+    expected_outputs:
+      - "linkage_valid: bool"
+      - "orphaned_tests: list[string] (tests without spec)"
+      - "invalid_spec_ids: list[string]"
+    requires_human_confirmation: false
+    guardrail_checkpoint: true
+    guardrail_checkpoint_id: "GATE-TEST-SPEC-LINKAGE"
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/test_spec_linker.py"
+    artifacts_created: []
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.test_spec_linkage.orphaned_tests"
+      - "governance.test_spec_linkage.invalid_spec_ids"
+
+  - step_id: E2E-7-040
+    original_step_id: GOV-QUAL-006
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 7_CONSOLIDATION
+    original_phase: CONSOLIDATION
+    substage: test_coverage_calculation
+    unified_operation_category: analysis
+    original_operation_kind: analysis
+    name: "Calculate Test Coverage"
+    description: |
+      Measure code coverage using pytest-cov or similar tool.
+      Enforce ≥80% threshold (configurable via config/governance.yaml).
+      Generate coverage report and fail gate if below threshold.
+    responsible_component: "governance::coverage_analyzer"
+    operation_kind: analysis
+    inputs:
+      - "test_results: dict"
+      - "coverage_threshold: float (default 80.0)"
+    expected_outputs:
+      - "coverage_percentage: float"
+      - "coverage_report_path: RUNTIME/runs/{run_id}/coverage.html"
+      - "coverage_passed: bool"
+    requires_human_confirmation: false
+    guardrail_checkpoint: true
+    guardrail_checkpoint_id: "GATE-COVERAGE"
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/coverage_analyzer.py"
+    artifacts_created:
+      - "RUNTIME/runs/{run_id}/coverage.html"
+      - "RUNTIME/runs/{run_id}/coverage.json"
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.coverage.percentage"
+      - "governance.coverage.threshold"
+      - "governance.coverage.passed"
+
+  # ============================================================================
+  # LAYER 3: INFRASTRUCTURE (IaC & Drift Detection) - 5 steps
+  # ============================================================================
+  - step_id: E2E-3-042
+    original_step_id: GOV-INFRA-001
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 3_DESIGN
+    original_phase: DESIGN
+    substage: iac_template_generation
+    unified_operation_category: generation
+    original_operation_kind: generation
+    name: "Generate Infrastructure-as-Code Templates"
+    description: |
+      Create Terraform/Pulumi configs for infrastructure changes.
+      Templates stored in RUNTIME/infra/{run_id}/.
+      Include provider config, resources, outputs, and state backend.
+    responsible_component: "governance::iac_generator"
+    operation_kind: generation
+    inputs:
+      - "infrastructure_requirements: dict"
+      - "iac_tool: enum(terraform|pulumi)"
+    expected_outputs:
+      - "iac_templates: list[Path]"
+      - "iac_plan_path: RUNTIME/infra/{run_id}/plan.json"
+    requires_human_confirmation: false
+    guardrail_checkpoint: false
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/iac_generator.py"
+    artifacts_created:
+      - "RUNTIME/infra/{run_id}/main.tf"
+      - "RUNTIME/infra/{run_id}/variables.tf"
+      - "RUNTIME/infra/{run_id}/outputs.tf"
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.iac.templates_generated"
+
+  - step_id: E2E-4-007
+    original_step_id: GOV-INFRA-002
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 4_APPROVAL
+    original_phase: APPROVAL
+    substage: iac_validation
+    unified_operation_category: validation
+    original_operation_kind: validation
+    name: "Validate IaC Syntax"
+    description: |
+      Run terraform validate / pulumi preview to check syntax and plan.
+      Fail gate if validation errors detected.
+    responsible_component: "governance::iac_validator"
+    operation_kind: validation
+    inputs:
+      - "iac_templates: list[Path]"
+    expected_outputs:
+      - "validation_result: bool"
+      - "validation_errors: list[string]"
+      - "plan_output: string"
+    requires_human_confirmation: false
+    guardrail_checkpoint: true
+    guardrail_checkpoint_id: "GATE-IAC-SYNTAX"
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/iac_validator.py"
+    artifacts_created:
+      - "RUNTIME/infra/{run_id}/validation.log"
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.iac.validation.result"
+
+  - step_id: E2E-8-012
+    original_step_id: GOV-INFRA-003
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 8_MAINTENANCE
+    original_phase: MAINTENANCE
+    substage: drift_detection
+    unified_operation_category: analysis
+    original_operation_kind: analysis
+    name: "Detect Infrastructure Drift"
+    description: |
+      Compare deployed state vs IaC definitions (terraform plan -detailed-exitcode).
+      Detect resources created/modified/deleted outside IaC.
+      Generate drift report with recommended remediation.
+    responsible_component: "governance::drift_detector"
+    operation_kind: analysis
+    inputs:
+      - "iac_templates: list[Path]"
+      - "state_backend: string"
+    expected_outputs:
+      - "drift_detected: bool"
+      - "drift_report: RUNTIME/infra/drift_report_{timestamp}.json"
+      - "drifted_resources: list[dict]"
+    requires_human_confirmation: false
+    guardrail_checkpoint: false
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/drift_detector.py"
+    artifacts_created:
+      - "RUNTIME/infra/drift_report_{timestamp}.json"
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.drift.detected"
+      - "governance.drift.resources_count"
+
+  - step_id: E2E-6-124
+    original_step_id: GOV-INFRA-004
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 6_EXECUTION
+    original_phase: EXECUTION
+    substage: iac_deployment
+    unified_operation_category: execution
+    original_operation_kind: execution
+    name: "Apply Infrastructure Changes"
+    description: |
+      Execute terraform apply / pulumi up with audit logging.
+      Capture state changes, resource IDs, and outputs.
+      Store state snapshot in RUNTIME/infra/{run_id}/state_snapshot.json.
+    responsible_component: "governance::iac_deployer"
+    operation_kind: execution
+    inputs:
+      - "iac_plan_path: Path"
+      - "apply_auto_approve: bool (default false)"
+    expected_outputs:
+      - "deployment_result: dict"
+      - "state_snapshot: Path"
+      - "deployed_resources: list[dict]"
+    requires_human_confirmation: true
+    guardrail_checkpoint: true
+    guardrail_checkpoint_id: "GATE-IAC-APPLY"
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/iac_deployer.py"
+    artifacts_created:
+      - "RUNTIME/infra/{run_id}/state_snapshot.json"
+      - "RUNTIME/infra/{run_id}/apply.log"
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.iac.apply.result"
+      - "governance.iac.resources_deployed"
+
+  - step_id: E2E-6-125
+    original_step_id: GOV-INFRA-005
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 6_EXECUTION
+    original_phase: EXECUTION
+    substage: iac_rollback
+    unified_operation_category: execution
+    original_operation_kind: execution
+    name: "Rollback Infrastructure Changes"
+    description: |
+      Revert infrastructure to previous known-good state on failure.
+      Use terraform state rollback or pulumi stack rollback.
+      Triggered automatically on critical failures or manually via CLI.
+    responsible_component: "governance::iac_rollback_handler"
+    operation_kind: execution
+    inputs:
+      - "state_snapshot: Path (previous known-good state)"
+      - "rollback_reason: string"
+    expected_outputs:
+      - "rollback_result: dict"
+      - "rollback_log: Path"
+    requires_human_confirmation: true
+    guardrail_checkpoint: false
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/iac_rollback_handler.py"
+    artifacts_created:
+      - "RUNTIME/infra/{run_id}/rollback.log"
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.iac.rollback.triggered"
+      - "governance.iac.rollback.result"
+
+  # ============================================================================
+  # LAYER 4: OBSERVABILITY (Explicit Initialization) - 1 step
+  # ============================================================================
+  - step_id: E2E-1-022
+    original_step_id: GOV-OBSY-001
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 1_BOOTSTRAP
+    original_phase: BOOTSTRAP
+    substage: otel_initialization
+    unified_operation_category: initialization
+    original_operation_kind: initialization
+    name: "Inject OpenTelemetry Context"
+    description: |
+      Initialize trace_id, span_id propagation for all operations.
+      Configure OTLP exporter (Jaeger/Zipkin/Honeycomb/stdout).
+      Set global tracer and propagate context to all child operations.
+    responsible_component: "governance::otel_initializer"
+    operation_kind: initialization
+    inputs:
+      - "otel_config: config/otel.yaml"
+      - "service_name: string"
+    expected_outputs:
+      - "tracer: opentelemetry.trace.Tracer"
+      - "trace_id: hex string"
+      - "root_span: Span"
+    requires_human_confirmation: false
+    guardrail_checkpoint: false
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/otel_initializer.py"
+      - "config/otel.yaml"
+    artifacts_created: []
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.otel.initialized"
+      - "governance.otel.tracer_enabled"
+
+  # ============================================================================
+  # LAYER 5: KNOWLEDGE (Explicit Manifest Update) - 1 step
+  # ============================================================================
+  - step_id: E2E-7-041
+    original_step_id: GOV-KNOW-001
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 7_CONSOLIDATION
+    original_phase: CONSOLIDATION
+    substage: manifest_update
+    unified_operation_category: persistence
+    original_operation_kind: persistence
+    name: "Update DIR_MANIFEST on File Changes"
+    description: |
+      Auto-update DIR_MANIFEST.yaml when artifacts added/removed/moved.
+      Detect file changes via git diff or filesystem scan.
+      Regenerate manifest sections: files[], dependencies[], outputs[].
+    responsible_component: "governance::manifest_updater"
+    operation_kind: persistence
+    inputs:
+      - "changed_files: list[Path]"
+      - "directory: Path"
+    expected_outputs:
+      - "manifest_updated: bool"
+      - "manifest_path: {directory}/DIR_MANIFEST.yaml"
+    requires_human_confirmation: false
+    guardrail_checkpoint: false
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/manifest_updater.py"
+    artifacts_created: []
+    artifacts_updated:
+      - "{directory}/DIR_MANIFEST.yaml"
+    metrics_emitted:
+      - "governance.manifest.updated"
+      - "governance.manifest.files_added"
+      - "governance.manifest.files_removed"
+
+  # ============================================================================
+  # GATE ENFORCEMENT - 5 steps
+  # ============================================================================
+  - step_id: E2E-4-008
+    original_step_id: GOV-GATE-A
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 4_APPROVAL
+    original_phase: APPROVAL
+    substage: gate_a_structure_identity
+    unified_operation_category: validation
+    original_operation_kind: validation
+    name: "Run Gate A: Structure & Identity"
+    description: |
+      Verify DIR_MANIFEST.yaml coverage, .dir_id presence in all directories.
+      Ensure all tracked directories have manifest + stable identity.
+      Fail gate if coverage < 100% (or configured threshold).
+    responsible_component: "governance::gate_checker"
+    operation_kind: validation
+    inputs:
+      - "repo_root: Path"
+      - "coverage_threshold: float (default 100.0)"
+    expected_outputs:
+      - "gate_a_passed: bool"
+      - "missing_manifests: list[Path]"
+      - "missing_dir_ids: list[Path]"
+    requires_human_confirmation: false
+    guardrail_checkpoint: true
+    guardrail_checkpoint_id: "GATE-A"
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_enforcement/gate_check.sh"
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/validate_manifest_coverage.py"
+    artifacts_created:
+      - "RUNTIME/runs/{run_id}/gate_a_report.json"
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.gate_a.passed"
+      - "governance.gate_a.missing_manifests"
+
+  - step_id: E2E-4-009
+    original_step_id: GOV-GATE-C
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 4_APPROVAL
+    original_phase: APPROVAL
+    substage: gate_c_determinism
+    unified_operation_category: validation
+    original_operation_kind: validation
+    name: "Run Gate C: Determinism Check"
+    description: |
+      Scan for unseeded random(), uncontained output paths, timestamps without clock injection.
+      Enforce SYSTEM_DETERMINISM_CONTRACT.json rules.
+      Fail gate if determinism violations detected.
+    responsible_component: "governance::gate_checker"
+    operation_kind: validation
+    inputs:
+      - "repo_root: Path"
+      - "determinism_contract: SYSTEM_DETERMINISM_CONTRACT.json"
+    expected_outputs:
+      - "gate_c_passed: bool"
+      - "violations: list[dict]"
+    requires_human_confirmation: false
+    guardrail_checkpoint: true
+    guardrail_checkpoint_id: "GATE-C"
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_enforcement/gate_check.sh"
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/determinism_checker.py"
+    artifacts_created:
+      - "RUNTIME/runs/{run_id}/gate_c_report.json"
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.gate_c.passed"
+      - "governance.gate_c.violations"
+
+  - step_id: E2E-4-010
+    original_step_id: GOV-GATE-D
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 4_APPROVAL
+    original_phase: APPROVAL
+    substage: gate_d_tdd_validation
+    unified_operation_category: validation
+    original_operation_kind: validation
+    name: "Run Gate D: TDD Validation"
+    description: |
+      Verify test linkage to BDD specs, coverage threshold met.
+      Ensure all tests pass and reference valid spec IDs.
+      Fail gate if tests failing or coverage below threshold.
+    responsible_component: "governance::gate_checker"
+    operation_kind: validation
+    inputs:
+      - "test_results: dict"
+      - "coverage_percentage: float"
+      - "test_spec_linkage: dict"
+    expected_outputs:
+      - "gate_d_passed: bool"
+      - "failing_tests: list[string]"
+      - "coverage_met: bool"
+    requires_human_confirmation: false
+    guardrail_checkpoint: true
+    guardrail_checkpoint_id: "GATE-D"
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_enforcement/gate_check.sh"
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/tdd_validator.py"
+    artifacts_created:
+      - "RUNTIME/runs/{run_id}/gate_d_report.json"
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.gate_d.passed"
+      - "governance.gate_d.failing_tests"
+
+  - step_id: E2E-4-011
+    original_step_id: GOV-GATE-E
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 4_APPROVAL
+    original_phase: APPROVAL
+    substage: gate_e_ssot_validation
+    unified_operation_category: validation
+    original_operation_kind: validation
+    name: "Run Gate E: SSOT Validation"
+    description: |
+      Execute validate_ssot.py schema + integrity checks.
+      Verify SSOT_CURRENT_APPROACH.json integrity, patch application, schema compliance.
+      Fail gate if SSOT validation fails.
+    responsible_component: "governance::gate_checker"
+    operation_kind: validation
+    inputs:
+      - "ssot_path: GOVERNANCE/ssot/SSOT_System/SSOT_CURRENT_APPROACH.json"
+      - "patches_dir: GOVERNANCE/ssot/SSOT_System/SSOT_SYS_patches/"
+    expected_outputs:
+      - "gate_e_passed: bool"
+      - "ssot_errors: list[string]"
+    requires_human_confirmation: false
+    guardrail_checkpoint: true
+    guardrail_checkpoint_id: "GATE-E"
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_enforcement/gate_check.sh"
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/validate_ssot.py"
+    artifacts_created:
+      - "RUNTIME/runs/{run_id}/gate_e_report.json"
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.gate_e.passed"
+      - "governance.gate_e.ssot_errors"
+
+  - step_id: E2E-4-012
+    original_step_id: GOV-GATE-HUMAN
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 4_APPROVAL
+    original_phase: APPROVAL
+    substage: human_approval_gate
+    unified_operation_category: approval
+    original_operation_kind: approval
+    name: "Human Approval Gate (if required)"
+    description: |
+      Pause for human review when confidence < threshold or high-risk changes detected.
+      Display summary of changes, gate results, and risk assessment.
+      Continue only after explicit human approval (Y/n prompt or API callback).
+    responsible_component: "governance::human_approval_gate"
+    operation_kind: approval
+    inputs:
+      - "confidence_score: float"
+      - "risk_level: enum(low|medium|high|critical)"
+      - "gate_results: dict"
+    expected_outputs:
+      - "approval_granted: bool"
+      - "approver: string (username or 'automated')"
+      - "approval_timestamp: ISO8601"
+    requires_human_confirmation: true
+    guardrail_checkpoint: true
+    guardrail_checkpoint_id: "GATE-HUMAN"
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/human_approval_gate.py"
+    artifacts_created:
+      - "RUNTIME/runs/{run_id}/approval_decision.json"
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.human_approval.requested"
+      - "governance.human_approval.granted"
+
+  # ============================================================================
+  # GOVERNANCE MAINTENANCE - 3 steps
+  # ============================================================================
+  - step_id: E2E-8-013
+    original_step_id: GOV-MAINT-001
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 8_MAINTENANCE
+    original_phase: MAINTENANCE
+    substage: governance_violation_scan
+    unified_operation_category: analysis
+    original_operation_kind: analysis
+    name: "Scan for Governance Violations"
+    description: |
+      Detect files missing DOC IDs, unstable IDs, policy violations.
+      Scan for direct SSOT edits, unregistered artifacts, orphaned tests.
+      Generate violation report with severity levels.
+    responsible_component: "governance::violation_scanner"
+    operation_kind: analysis
+    inputs:
+      - "repo_root: Path"
+      - "governance_policies: config/governance.yaml"
+    expected_outputs:
+      - "violations: list[dict]"
+      - "violation_report: RUNTIME/maintenance/violations_{timestamp}.json"
+    requires_human_confirmation: false
+    guardrail_checkpoint: false
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/violation_scanner.py"
+    artifacts_created:
+      - "RUNTIME/maintenance/violations_{timestamp}.json"
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.violations.count"
+      - "governance.violations.critical"
+
+  - step_id: E2E-8-014
+    original_step_id: GOV-MAINT-002
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 8_MAINTENANCE
+    original_phase: MAINTENANCE
+    substage: manifest_gap_remediation
+    unified_operation_category: maintenance
+    original_operation_kind: maintenance
+    name: "Auto-Remediate Manifest Gaps"
+    description: |
+      Generate missing DIR_MANIFEST.yaml, .dir_id files for untracked directories.
+      Infer manifest content from directory contents and git history.
+      Requires human confirmation before committing changes.
+    responsible_component: "governance::manifest_remediator"
+    operation_kind: maintenance
+    inputs:
+      - "missing_manifests: list[Path]"
+      - "missing_dir_ids: list[Path]"
+    expected_outputs:
+      - "manifests_created: int"
+      - "dir_ids_created: int"
+      - "remediation_log: Path"
+    requires_human_confirmation: true
+    guardrail_checkpoint: false
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/manifest_remediator.py"
+    artifacts_created:
+      - "{directory}/DIR_MANIFEST.yaml"
+      - "{directory}/.dir_id"
+      - "RUNTIME/maintenance/remediation_{timestamp}.log"
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.remediation.manifests_created"
+      - "governance.remediation.dir_ids_created"
+
+  - step_id: E2E-8-015
+    original_step_id: GOV-MAINT-003
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 8_MAINTENANCE
+    original_phase: MAINTENANCE
+    substage: id_registry_audit
+    unified_operation_category: validation
+    original_operation_kind: validation
+    name: "Audit Stable ID Registry Integrity"
+    description: |
+      Check for ID collisions, orphaned references, gaps in sequences.
+      Validate all DOC-*, A-*, R-*, T-* IDs in registry vs actual artifacts.
+      Generate integrity report with recommended fixes.
+    responsible_component: "governance::id_registry_auditor"
+    operation_kind: validation
+    inputs:
+      - "id_registry: data/id_registry.json"
+      - "repo_root: Path"
+    expected_outputs:
+      - "audit_passed: bool"
+      - "collisions: list[dict]"
+      - "orphaned_refs: list[dict]"
+      - "sequence_gaps: list[dict]"
+      - "audit_report: RUNTIME/maintenance/id_audit_{timestamp}.json"
+    requires_human_confirmation: false
+    guardrail_checkpoint: false
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/id_registry_auditor.py"
+    artifacts_created:
+      - "RUNTIME/maintenance/id_audit_{timestamp}.json"
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.id_registry.collisions"
+      - "governance.id_registry.orphaned_refs"
+
+  # ============================================================================
+  # CROSS-CUTTING (Compliance Reporting) - 1 step
+  # ============================================================================
+  - step_id: E2E-9-014
+    original_step_id: GOV-REPORT-001
+    source_schema: GOVERNANCE_STEPS_ADDITION
+    universal_phase: 9_SYNC_AND_FINALIZE
+    original_phase: SYNC_AND_FINALIZE
+    substage: compliance_reporting
+    unified_operation_category: reporting
+    original_operation_kind: reporting
+    name: "Generate Compliance Report"
+    description: |
+      Summarize 5-layer compliance status with violations list.
+      Include: work ID tracing, test coverage, IaC drift, observability metrics, SSOT integrity.
+      Format: JSON + Markdown summary for human review.
+    responsible_component: "governance::compliance_reporter"
+    operation_kind: reporting
+    inputs:
+      - "run_id: ULID"
+      - "gate_results: dict"
+      - "metrics: dict"
+    expected_outputs:
+      - "compliance_report: RUNTIME/runs/{run_id}/compliance_report.json"
+      - "compliance_summary: RUNTIME/runs/{run_id}/compliance_report.md"
+      - "overall_compliance: enum(PASS|FAIL|WARN)"
+    requires_human_confirmation: false
+    guardrail_checkpoint: false
+    implementation_files:
+      - "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tools/compliance_reporter.py"
+    artifacts_created:
+      - "RUNTIME/runs/{run_id}/compliance_report.json"
+      - "RUNTIME/runs/{run_id}/compliance_report.md"
+    artifacts_updated: []
+    metrics_emitted:
+      - "governance.compliance.overall_status"
+      - "governance.compliance.layer_1_passed"
+      - "governance.compliance.layer_2_passed"
+      - "governance.compliance.layer_3_passed"
+      - "governance.compliance.layer_4_passed"
+      - "governance.compliance.layer_5_passed"

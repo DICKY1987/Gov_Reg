@@ -1,0 +1,72 @@
+name: Block Incomplete Implementations
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run incomplete implementation scanner
+        run: |
+          python System_Analyze/SYS_scan_incomplete_implementation.py \
+            --paths core/ error/ engine/ aim/ pm/ gui/ specifications/ \
+            --report-json incomplete_report.json \
+            --strict
+
+      - name: Check for violations
+        run: |
+          if [ ! -f incomplete_report.json ]; then
+            echo "❌ Scanner did not produce report"
+            exit 1
+          fi
+
+          VIOLATION_COUNT=$(jq '.summary.total_violations' incomplete_report.json 2>/dev/null || echo "0")
+          echo "📊 Total violations found: $VIOLATION_COUNT"
+
+          # Start permissive: Allow up to 100 violations initially
+          # Will ratchet down to 0 over time
+          THRESHOLD=100
+
+          if [ "$VIOLATION_COUNT" -gt "$THRESHOLD" ]; then
+            echo "❌ INCOMPLETE IMPLEMENTATIONS DETECTED ($VIOLATION_COUNT > $THRESHOLD)"
+            echo ""
+            echo "Top violations:"
+            jq -r '.violations[] | "[\(.severity)] \(.file):\(.line) - \(.reason)"' incomplete_report.json | head -n 20
+            echo ""
+            echo "See full report in artifacts"
+            exit 1
+          else
+            echo "✅ Violations within acceptable threshold ($VIOLATION_COUNT ≤ $THRESHOLD)"
+          fi
+
+      - name: Upload scan results
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: incomplete-scan-results
+          path: incomplete_report.json
+          retention-days: 30

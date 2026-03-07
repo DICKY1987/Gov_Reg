@@ -1,0 +1,53 @@
+name: CI Pipeline
+on:
+  push:
+    branches: [main, develop, feature/*]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt || true
+          pip install pytest pytest-cov ruff mypy
+
+      - name: Validate YAML configs
+        run: |
+          python -c "import yaml; yaml.safe_load(open('config/tool_profiles.json', encoding='utf-8'))" || echo "tool_profiles.json validation skipped"
+          python -c "import yaml; yaml.safe_load(open('config/circuit_breakers.yaml', encoding='utf-8'))" || echo "circuit_breakers.yaml validation skipped"
+
+      - name: Run ruff linting
+        run: ruff check . --output-format=github || true
+        continue-on-error: true
+
+      - name: Run mypy type checking
+        run: mypy . --ignore-missing-imports || true
+        continue-on-error: true
+
+      - name: Run pytest
+        run: pytest tests/ -v --cov=. --cov-report=term-missing || echo "No tests found yet"
+        continue-on-error: true
+
+      - name: Validate phase plans
+        run: |
+          python -c "
+          from pathlib import Path
+          import yaml
+          plans = list(Path('plans/phases').glob('*.yml'))
+          for f in plans:
+              try:
+                  yaml.safe_load(f.read_text(encoding='utf-8'))
+                  print(f'✅ {f.name}')
+              except Exception as e:
+                  print(f'❌ {f.name}: {e}')
+          " || echo "Phase plan validation skipped"

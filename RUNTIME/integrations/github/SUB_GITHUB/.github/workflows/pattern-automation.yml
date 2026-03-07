@@ -1,0 +1,107 @@
+name: Pattern Automation
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours: Pattern detection
+    - cron: '0 0 * * 0'    # Weekly (Sunday): Performance reports
+    - cron: '0 0 1 * *'    # Monthly: Pattern cleanup
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  detect_patterns:
+    name: Detect New Patterns
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 */6 * * *' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml
+
+      - name: Analyze executions
+        run: |
+          python scripts/auto_pattern_detector.py --analyze
+
+      - name: Generate suggestions
+        run: |
+          python scripts/auto_pattern_detector.py --suggest > pattern_suggestions.txt
+
+      - name: Create PR if patterns found
+        run: |
+          if [ -d "UNIVERSAL_EXECUTION_TEMPLATES_FRAMEWORK/patterns/drafts" ]; then
+            git config user.name "Pattern Automation Bot"
+            git config user.email "automation@example.com"
+            git checkout -b auto-patterns-$(date +%Y%m%d-%H%M%S)
+            git add UNIVERSAL_EXECUTION_TEMPLATES_FRAMEWORK/patterns/drafts/
+            git commit -m "Auto-detected patterns from execution telemetry"
+            git push origin HEAD
+            gh pr create --title "Auto-detected patterns" \
+                         --body "$(cat pattern_suggestions.txt)" \
+                         --label "automation,pattern-candidate"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  performance_report:
+    name: Weekly Performance Report
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 0 * * 0' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+
+      - name: Generate report
+        run: |
+          python scripts/auto_pattern_detector.py --report
+
+      - name: Commit report
+        run: |
+          git config user.name "Pattern Automation Bot"
+          git config user.email "automation@example.com"
+          git add UNIVERSAL_EXECUTION_TEMPLATES_FRAMEWORK/patterns/reports/weekly/
+          git add UNIVERSAL_EXECUTION_TEMPLATES_FRAMEWORK/patterns/anti_patterns/
+          git commit -m "Weekly pattern performance report" || echo "No changes"
+          git push || echo "No changes to push"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  cleanup_patterns:
+    name: Monthly Pattern Cleanup
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 0 1 * *' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Archive unused patterns
+        run: |
+          # Archive patterns not used in 90 days
+          python scripts/cleanup_patterns.py --archive-unused --days 90
+        continue-on-error: true
+
+      - name: Update registry
+        run: |
+          python scripts/update_pattern_metrics.py
+        continue-on-error: true
+
+      - name: Commit cleanup
+        run: |
+          git config user.name "Pattern Automation Bot"
+          git config user.email "automation@example.com"
+          git add UNIVERSAL_EXECUTION_TEMPLATES_FRAMEWORK/patterns/
+          git commit -m "Monthly pattern cleanup" || echo "No changes"
+          git push || echo "No changes to push"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

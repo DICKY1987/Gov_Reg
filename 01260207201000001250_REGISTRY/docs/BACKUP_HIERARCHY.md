@@ -106,6 +106,14 @@ git revert <commit-hash>
 
 ---
 
+## Historical Backup Records
+
+| Date | Original | Backup | Size | SHA256 |
+|------|----------|--------|------|--------|
+| 2026-02-03 17:14:30 | `01999000042260124503_REGISTRY_file.json` | `01999000042260124503_REGISTRY_file.json.20260203_171422.backup` | 0.61 MB | `D646FBFA...C94CD0EF` |
+
+---
+
 ## Backup Retention Policy
 
 **Git History:** Keep all commits (prune periodically after major milestones)  

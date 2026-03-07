@@ -1,0 +1,120 @@
+# Trigger A: Remote Changes Handler
+# Runs when changes are pushed to main branch on GitHub
+# Prevents infinite loop by checking for sync marker in commit message
+
+name: Remote Sync Handler
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/**'
+      - '.sync-*'
+      - 'README.md'
+
+jobs:
+  check-sync-source:
+    name: Detect Sync Source
+    runs-on: ubuntu-latest
+    outputs:
+      is_sync_commit: ${{ steps.check.outputs.is_sync }}
+
+    steps:
+      - name: Check commit message
+        id: check
+        run: |
+          commit_msg="${{ github.event.head_commit.message }}"
+          if [[ "$commit_msg" == sync:* ]]; then
+            echo "is_sync=true" >> $GITHUB_OUTPUT
+            echo "ℹ️ Commit originated from sync - skipping to prevent loop"
+          else
+            echo "is_sync=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ User commit detected - will notify local"
+          fi
+
+  notify-local-sync:
+    name: Notify Local to Pull
+    runs-on: ubuntu-latest
+    needs: check-sync-source
+    if: needs.check-sync-source.outputs.is_sync_commit == 'false'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Need current + previous for diff
+
+      - name: Get changed files
+        id: changes
+        run: |
+          echo "### Changed Files" >> $GITHUB_STEP_SUMMARY
+          git diff --name-status HEAD~1 HEAD | tee changed_files.txt
+          cat changed_files.txt >> $GITHUB_STEP_SUMMARY
+
+          # Count changes
+          modified=$(grep -c "^M" changed_files.txt || echo 0)
+          added=$(grep -c "^A" changed_files.txt || echo 0)
+          deleted=$(grep -c "^D" changed_files.txt || echo 0)
+
+          echo "modified=$modified" >> $GITHUB_OUTPUT
+          echo "added=$added" >> $GITHUB_OUTPUT
+          echo "deleted=$deleted" >> $GITHUB_OUTPUT
+
+      - name: Create sync notification
+        run: |
+          # Create notification file for local watcher to detect
+          cat > .sync-notification.json << EOF
+          {
+            "event": "remote_push",
+            "commit_sha": "${{ github.sha }}",
+            "commit_message": "${{ github.event.head_commit.message }}",
+            "author": "${{ github.event.head_commit.author.name }}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "changes": {
+              "modified": ${{ steps.changes.outputs.modified }},
+              "added": ${{ steps.changes.outputs.added }},
+              "deleted": ${{ steps.changes.outputs.deleted }}
+            }
+          }
+          EOF
+
+          cat .sync-notification.json
+
+      # Optional: Use repository dispatch to trigger webhook
+      - name: Send webhook to local listener
+        if: env.SYNC_WEBHOOK_URL != ''
+        env:
+          SYNC_WEBHOOK_URL: ${{ secrets.SYNC_WEBHOOK_URL }}
+        run: |
+          curl -X POST "$SYNC_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -H "X-GitHub-Event: remote-sync" \
+            -d @.sync-notification.json || echo "Webhook failed (optional)"
+
+      - name: Summary
+        run: |
+          echo "## Remote Sync Notification Sent" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Modified: ${{ steps.changes.outputs.modified }} files" >> $GITHUB_STEP_SUMMARY
+          echo "- Added: ${{ steps.changes.outputs.added }} files" >> $GITHUB_STEP_SUMMARY
+          echo "- Deleted: ${{ steps.changes.outputs.deleted }} files" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Local repository should detect this change and pull automatically." >> $GITHUB_STEP_SUMMARY
+
+  prevent-infinite-loop:
+    name: Prevent Loop (Sync Commit)
+    runs-on: ubuntu-latest
+    needs: check-sync-source
+    if: needs.check-sync-source.outputs.is_sync_commit == 'true'
+
+    steps:
+      - name: Log prevention
+        run: |
+          echo "## Sync Loop Prevention" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "⏭️ Detected sync-originated commit" >> $GITHUB_STEP_SUMMARY
+          echo "⏭️ Skipping local notification to prevent infinite loop" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Commit: ${{ github.event.head_commit.message }}" >> $GITHUB_STEP_SUMMARY
+

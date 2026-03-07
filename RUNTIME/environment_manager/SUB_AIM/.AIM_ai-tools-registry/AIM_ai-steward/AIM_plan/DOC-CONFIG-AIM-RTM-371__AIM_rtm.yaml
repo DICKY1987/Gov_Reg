@@ -1,0 +1,16 @@
+# DOC_LINK: DOC-CONFIG-AIM-RTM-371
+doc_id: DOC-CONFIG-AIM-RTM-371
+rtm:
+  cli_entrypoint:
+    contracts: [cli_contract]
+    tests: [AIM_tests/AIM_StewardCli.Tests.ps1]
+  registry_module:
+    contracts: [registry_schema, audit_schema, coordination_rules_schema, adapters_interface]
+    tests: [AIM_tests/AIM_AIToolsRegistry.Tests.ps1, AIM_tests/AIM_Contracts.Tests.ps1]
+  adapters_mvp:
+    contracts: [adapters_interface]
+    tests: [AIM_tests/AIM_AIToolsRegistry.Tests.ps1]
+  runtime_registry_bootstrap:
+    contracts: [registry_schema, coordination_rules_schema]
+    tests: [AIM_tests/AIM_Contracts.Tests.ps1]
+

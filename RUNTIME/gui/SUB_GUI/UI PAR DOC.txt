@@ -1,0 +1,423 @@
+---
+doc_id: DOC-GUIDE-UI-PAR-DOC-131
+---
+
+
+
+---
+
+## 1. What the interface must display (visibility)
+
+### 1.1 Global status header
+
+At the very top (GUI) / top line (TUI), you want a **single-glance summary**:
+
+* Current **project / section / phase plan** name
+* Overall **pipeline state**: `IDLE`, `RUNNING`, `PAUSED`, `DEGRADED`, `ERROR-MODE`
+* Current **OS mode**: `NORMAL`, `FOCUS_DEV`, `CRITICAL_PIPELINE`
+* **Parallelism snapshot**:
+
+  * `tasks: ready / running / blocked`
+  * `workers: active / idle / drained`
+* **Error indicator**:
+
+  * last error type + quick status (`self-healing`, `needs human`, `quarantined`)
+* **Cost & resource summary** (high level):
+
+  * estimated tokens & $ this run,
+  * CPU/RAM bands (green/yellow/red),
+  * budget status (under / approaching / exceeded)
+
+This is your “am I in trouble?” bar.
+
+---
+
+### 1.2 Phase / DAG view
+
+You need a way to see *where* in the plan you are.
+
+GUI: center panel
+TUI: a textual graph / tree listing
+
+Show:
+
+* **Phase list** with progress:
+
+  * `PH-01 Spec`, `PH-02 Impl`, `PH-03 Tests`, `PH-04 Docs`, etc.
+  * with per-phase status (`PENDING`, `RUNNING`, `BLOCKED`, `DONE`, `FAILED`).
+* Within the selected phase:
+
+  * **Task DAG**:
+
+    * nodes = tasks/workstreams,
+    * color/markers for `READY`, `RUNNING`, `SUCCEEDED`, `FAILED`, `SKIPPED`.
+* **Parallelism window**:
+
+  * “Current slice: N tasks could run in parallel, M actually running”
+  * Must show if you’re under-utilizing or hitting max.
+
+This gives the human & AI a shared mental model of “where are we in the plan”.
+
+---
+
+### 1.3 Workers & tools panel
+
+This is the **“who’s doing what”** board.
+
+For each worker (CLI instance):
+
+* Worker ID and **tool** (Codex, Claude Code, Aider, etc.)
+* **Role**: impl / tests / docs / background / sweeper / integration / spike
+* **Sandbox**: which branch/worktree it’s bound to
+* **State**: `SPAWNING`, `IDLE`, `BUSY`, `DRAINING`, `TERMINATED`
+* **Current task**:
+
+  * task ID + short description
+* **Health**:
+
+  * last heartbeat time,
+  * last exit code,
+  * error streak (e.g., “3 fails in a row”)
+
+For MCP services:
+
+* Service name (fs, github, jira, etc.)
+* State: `STARTING`, `READY`, `IDLE`, `STOPPING`, `FAILED`
+* Who is using it (workers/tasks)
+
+This is crucial for both AI and humans to see if a particular worker/service is stuck or overloaded.
+
+---
+
+### 1.4 Task queue & error stream
+
+A combined view of **what’s queued** and **what’s broken**:
+
+**Task queue tab:**
+
+* Lists tasks grouped by state:
+
+  * READY (show why they’re ready),
+  * RUNNING,
+  * BLOCKED (and what is blocking them),
+  * QUARANTINED.
+* Filters:
+
+  * by phase, kind (design/impl/tests/etc.), worker, priority.
+
+**Error stream tab:**
+
+For each `error_event`:
+
+* Error ID, type (`E_TOOL_FAILURE`, `E_MCP_FAILURE`, `E_RESOURCE_LIMIT`, etc.)
+* Where it happened:
+
+  * phase + task + worker + sandbox
+* Current error pipeline state:
+
+  * `AUTO_RETRY`, `CONTEXT_REPAIR`, `AGENT_REVIEW`, `WAITING_FOR_HUMAN`, `QUARANTINED`
+* Summary of last attempt
+* Kernel’s **proposed next action** (so the user can override if needed)
+
+This is your “Control Tower” for triage.
+
+---
+
+### 1.5 Resources, OS mode & circuit breakers
+
+This panel tells you whether the **machine itself** is happy.
+
+Display:
+
+* Live **CPU**, **RAM**, maybe **Disk I/O**, with:
+
+  * soft/hard thresholds,
+  * current level (green/yellow/red).
+* Current **OS mode**:
+
+  * which apps/services are “blacklisted” in this mode,
+  * whether we’re in a “development blackout”.
+* **Circuit breaker state**:
+
+  * `NORMAL`, `SOFT_LIMIT_ACTIVE`, `HARD_LIMIT_ACTIVE`, `DEGRADED_MODE`.
+* Actions taken:
+
+  * “Stopped spinning up new workers due to soft CPU limit”
+  * “Suspended background jobs due to RAM hard limit”
+
+Both AI and human need to *see* when the system is in “slow down, we’re overloaded” mode.
+
+---
+
+### 1.6 Cost and usage panel
+
+Even if it’s basic at first:
+
+* Tokens used (input/output) per:
+
+  * worker,
+  * phase,
+  * overall run.
+* Approximate $ cost.
+* Budget:
+
+  * configured limit,
+  * % consumed.
+* “Top spenders”:
+
+  * which phases or workers are responsible.
+
+This is the “don’t accidentally spend $200 by ramping up 12 workers” panel.
+
+---
+
+## 2. What controls the AI must have (automatic remediation)
+
+These don’t have to be big UI buttons – they’re **capabilities** the kernel/AI can exercise based on policies. But they should be reflected in the UI so humans can see what’s happening.
+
+### 2.1 Task-level controls
+
+The AI/kernel must be able to:
+
+* **Retry a task** (with same or slightly adjusted parameters).
+* **Switch tool** for a task:
+
+  * e.g., Codex failed → try Claude Code for the same task.
+* **Split a task**:
+
+  * when context is too large / too complex:
+  * create smaller subtasks with narrower `files_scope`.
+* **Rebuild task context**:
+
+  * regenerate prompt from phase plan + latest repo state.
+* **Requeue / defer**:
+
+  * put task back into READY or BLOCKED queue if external conditions needed.
+
+### 2.2 Worker & parallelism controls
+
+AI/kernel must be able to:
+
+* **Spin up workers**:
+
+  * choose tool, role, sandbox according to plan and parallelism chart.
+* **Drain and shut down workers**:
+
+  * stop assigning new tasks, wait for finishing, then terminate.
+* **Reduce parallelism**:
+
+  * e.g., circuit breaker triggered → scale down allowed workers / background jobs.
+* **Quarantine a worker**:
+
+  * if one instance is error-prone → stop using it, mark its sandbox for inspection.
+
+### 2.3 MCP & OS-level controls
+
+AI/kernel must:
+
+* **Start/stop MCP services** based on:
+
+  * phase needs,
+  * parallelism,
+  * health.
+* **Change OS mode**:
+
+  * enter `FOCUS_DEV` or `CRITICAL_PIPELINE`,
+  * then restore `NORMAL` after the critical phase.
+* **Enforce circuit breakers**:
+
+  * stop new tasks, throttle background jobs,
+  * gracefully wind down low-priority work when hard limits are hit.
+
+### 2.4 Error pipeline controls
+
+For each error event, AI must be able to:
+
+* Choose and apply:
+
+  * **Auto retry**,
+  * **Context repair**,
+  * **Tool switch**,
+  * **Task split**,
+  * **Rollback** or **compensation phase** for that chunk of work.
+* Decide when to:
+
+  * **Escalate to a stronger agent** (e.g., a “reviewer” model),
+  * **Quarantine** the task/branch,
+  * Finally **escalate to human**.
+
+All of that should happen without human intervention *by default* – human only steps in when the AI pipeline runs out of options or policy requires it.
+
+---
+
+## 3. What controls the *user* must have (manual recovery)
+
+These are the big red buttons, sliders, and toggles you surface in GUI + equivalent keybindings/menus in TUI.
+
+### 3.1 Global pipeline controls
+
+User must be able to:
+
+* **Pause all new work**:
+
+  * no new tasks assigned, current ones finish.
+* **Resume**:
+
+  * return to normal scheduling.
+* **Emergency stop**:
+
+  * cancel or abort all running tasks,
+  * leave repo state untouched or revert to last clean checkpoint (policy).
+* **Switch execution mode**:
+
+  * e.g., from “AUTO” to “STEP THROUGH PHASES” where user confirms after each phase.
+
+### 3.2 Parallelism & resource controls
+
+User must be able to:
+
+* Adjust **max workers** at runtime:
+
+  * “Cap at 2 workers for now, system feels sluggish”.
+* Adjust **background job limit**:
+
+  * “Don’t run more than 1 background test job at a time”.
+* Override **OS mode**:
+
+  * temporarily force `NORMAL` or `FOCUS_DEV` if blackout is misbehaving.
+* Override **resource thresholds**:
+
+  * e.g., bump hard CPU limit from 80 → 90 if they know machine can handle it (with warnings).
+
+### 3.3 Worker & task controls
+
+From the worker panel and task queue, user must be able to:
+
+* For a worker:
+
+  * **Kill / terminate** worker now.
+  * **Drain** worker (let it finish task then terminate).
+  * **Restart** worker.
+  * **Reassign role** or sandbox (advanced).
+* For a task:
+
+  * **Retry now**.
+  * **Force tool choice**:
+
+    * “Do this with Claude Code, not Codex.”
+  * **Skip / mark as done (manual override)**:
+
+    * when they’ve fixed it outside the pipeline.
+  * **Quarantine**:
+
+    * take the task out of rotation but keep its context.
+  * **Rollback**:
+
+    * revert this task’s effects to last safe checkpoint (if supported).
+
+These are your “hand on the wheel” controls.
+
+---
+
+### 3.4 Error resolution controls
+
+On each error entry in the error stream, user must see:
+
+* What the kernel **plans to do next** (auto action).
+* Buttons/options to:
+
+  * **Accept** the auto plan.
+  * **Choose a different action**:
+
+    * e.g., skip further retries, escalate to human review now, or quarantine.
+  * **Open detailed log / diff**:
+
+    * inspect what the worker was doing,
+    * see file changes in sandbox.
+  * **Trigger compensation / rollback**:
+
+    * if they decide the cleanest path is backing up a phase.
+
+This is the “if the AI self-healing is going sideways, give me the wheel” interface.
+
+---
+
+### 3.5 Plan & reality re-sync controls
+
+When “the system falls apart” (someone edits files manually, branches drift, etc.) you need explicit ways to get back to a consistent state:
+
+User-initiated actions like:
+
+* **Re-scan repository**:
+
+  * recompute file scopes, detect drift vs plan.
+* **Rebuild DAG**:
+
+  * based on current phase plan + repo state.
+* **Re-anchor to checkpoint**:
+
+  * choose a checkpoint (commit / phase gate) and:
+
+    * roll back sandboxes,
+    * reset tasks after that point to `PENDING` or `READY`.
+* **Regenerate prompts / task contexts**:
+
+  * “Throw away stale context for this phase, rebuild context from current spec + code.”
+
+These are the tools to “put the system back on track” without just nuking everything.
+
+---
+
+## 4. How this looks in the hybrid GUI/TUI
+
+You don’t need pixel-perfect design yet, but conceptually:
+
+**GUI:**
+
+* Top bar: global status header (run state, phase, OS mode, errors, cost).
+* Left: project/phase/workstream tree.
+* Center:
+
+  * Phase/DAG view,
+  * with toggles for “graph” vs “timeline”.
+* Right:
+
+  * Tabs:
+
+    * Workers & MCP,
+    * Tasks & queue,
+    * Resources & OS mode,
+    * Cost/metrics.
+* Bottom:
+
+  * Log / error stream with inline controls for each event.
+  * “Control palette” row: Pause, Resume, Emergency Stop, Max workers slider, etc.
+
+**TUI:**
+
+* Top line: global status.
+* Left half:
+
+  * Phase list + task summary (selectable).
+* Right half:
+
+  * Tabbed panels (using keybindings):
+
+    * [W] Workers,
+    * [Q] Queue,
+    * [E] Errors,
+    * [R] Resources,
+    * [C] Cost.
+* Command palette:
+
+  * key shortcuts for `pause`, `resume`, `drain-worker`, `retry-task`, `rollback-phase`, etc.
+
+Same concepts, just text instead of pixels.
+
+---
+
+If you’d like, next step we can take your existing `Hybrid UI_GUI shell_terminal_TUI engine` doc and map this into:
+
+* **concrete panels/regions**,
+* a **canonical state model for the UI itself**,
+* and a **minimal initial subset** to implement first (so you don’t have to build everything at once).

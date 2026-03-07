@@ -1,0 +1,125 @@
+# DOC_LINK: DOC-CONFIG-CONFIDENCE-RULES-001
+doc_id: "DOC-CONFIG-CONFIDENCE-RULES-001"
+meta:
+  version: "1.0.0"
+  description: "Confidence tier definitions and rules for relationship edge classification"
+  last_updated: "2025-12-31"
+
+# Confidence Tiers
+# The relationship index uses a binary confidence model:
+# - 1.0 (high): Edge verified through AST parsing or schema extraction
+# - 0.0 (broken): Target doc_id not found in registry (broken link)
+
+confidence_tiers:
+  high:
+    value: 1.0
+    description: "Edge verified through deterministic extraction (AST, JSON parsing)"
+    criteria:
+      - "Source file parsed successfully"
+      - "Target file resolved to a doc_id in registry"
+      - "Extraction method is deterministic (not regex-based guessing)"
+
+  medium:
+    value: 0.8
+    description: "Edge extracted via regex with context validation"
+    criteria:
+      - "Extracted using regex with bounded context"
+      - "Target path appears valid"
+      - "Target doc_id found in registry"
+
+  broken:
+    value: 0.0
+    description: "Edge extracted but target doc_id not found (broken link)"
+    criteria:
+      - "Source file parsed successfully"
+      - "Target path resolved but doc_id lookup failed"
+      - "Indicates missing file or unregistered dependency"
+
+# Extraction Method to Confidence Mapping
+extraction_methods:
+  python_ast_import:
+    confidence_tier: "high"
+    analyzer: "python_import_analyzer"
+    description: "Python import statement parsed via AST module"
+    fallback_to_broken: true  # If target not found, mark as broken (0.0)
+
+  json_schema_ref:
+    confidence_tier: "high"
+    analyzer: "schema_reference_analyzer"
+    description: "JSON $ref field extracted via JSON parsing"
+    fallback_to_broken: true
+
+  powershell_ast:
+    confidence_tier: "high"
+    analyzer: "powershell_import_analyzer"
+    description: "PowerShell dot-sourcing detected via AST/regex"
+    fallback_to_broken: true
+
+  markdown_inline_link:
+    confidence_tier: "medium"
+    analyzer: "markdown_link_analyzer"
+    description: "Markdown inline link [text](path) extracted via regex"
+    fallback_to_broken: true
+
+  markdown_reference_link:
+    confidence_tier: "medium"
+    analyzer: "markdown_link_analyzer"
+    description: "Markdown reference link [text][ref] extracted via regex"
+    fallback_to_broken: true
+
+  yaml_include:
+    confidence_tier: "high"
+    analyzer: "yaml_reference_analyzer"
+    description: "YAML !include directive extracted via regex"
+    fallback_to_broken: true
+
+  test_naming_convention:
+    confidence_tier: "high"
+    analyzer: "test_link_analyzer"
+    description: "Test file linked to implementation via naming convention"
+    fallback_to_broken: true
+
+  test_import_analysis:
+    confidence_tier: "medium"
+    analyzer: "test_link_analyzer"
+    description: "Test file linked to implementation via import analysis"
+    fallback_to_broken: true
+
+  test_bdd_reference:
+    confidence_tier: "high"
+    analyzer: "test_link_analyzer"
+    description: "Test file linked to BDD spec via stable ID reference"
+    fallback_to_broken: true
+
+# Broken Edge Policy
+broken_edge_policy:
+  include_in_index: true
+  description: "Broken edges are included in the index with confidence=0.0 and target_missing flag"
+  rationale: "Broken edges are valuable for identifying missing dependencies and dead code"
+  flags:
+    - "target_missing"
+
+# Edge Flag Definitions
+edge_flags:
+  target_missing:
+    description: "Target doc_id not found in registry"
+    confidence_impact: "Forces confidence to 0.0"
+
+  ambiguous_target:
+    description: "Multiple possible target files matched (not used in MVP)"
+    confidence_impact: "Future: May lower confidence to 0.5"
+
+  external_dependency:
+    description: "Target is external (stdlib, third-party package)"
+    confidence_impact: "No impact - external deps not added to index in MVP"
+
+# Validation Rules
+validation_rules:
+  edge_must_have_evidence: true
+  evidence_must_have_location: true
+  evidence_must_have_snippet: true
+  evidence_must_have_extraction_method: true
+  extraction_method_must_be_valid: true
+  analyzer_id_must_match_extraction_method: true
+  confidence_must_be_0_or_1: false  # Now supports 0.0, 0.8, 0.9, 1.0
+  broken_edges_must_have_target_missing_flag: true

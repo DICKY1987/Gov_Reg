@@ -1,0 +1,159 @@
+name: Glossary Validation and Patch Application
+
+on:
+  pull_request:
+    paths:
+      - 'glossary/**'
+  push:
+    branches: [main]
+    paths:
+      - 'glossary/updates/*.yaml'
+
+jobs:
+  validate:
+    name: Validate Glossary
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml
+
+      - name: Validate glossary structure
+        run: |
+          cd glossary
+          python scripts/validate_glossary.py
+
+      - name: Check for orphaned terms
+        run: |
+          cd glossary
+          python scripts/validate_glossary.py --check-orphans
+
+      - name: Verify implementation paths
+        run: |
+          cd glossary
+          python scripts/validate_glossary.py --check-paths
+        continue-on-error: true  # Warn but don't fail
+
+  apply-patches:
+    name: Apply Patches (on merge to main)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2  # Need previous commit for diff
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml
+
+      - name: Find new patch specifications
+        id: find_patches
+        run: |
+          cd glossary
+          NEW_PATCHES=$(git diff --name-only HEAD~1 HEAD -- updates/*.yaml | grep -v "example-" || echo "")
+          echo "Found patches: $NEW_PATCHES"
+          echo "patches=$NEW_PATCHES" >> $GITHUB_OUTPUT
+
+      - name: Apply patches
+        if: steps.find_patches.outputs.patches != ''
+        run: |
+          cd glossary
+          for patch in ${{ steps.find_patches.outputs.patches }}; do
+            echo "===================================="
+            echo "Applying patch: $patch"
+            echo "===================================="
+
+            python scripts/update_term.py --spec "$patch" --apply --validate
+
+            if [ $? -eq 0 ]; then
+              echo "✅ Successfully applied $patch"
+            else
+              echo "❌ Failed to apply $patch"
+              exit 1
+            fi
+          done
+
+      - name: Commit automated changes
+        if: steps.find_patches.outputs.patches != ''
+        run: |
+          git config user.name "Glossary Bot"
+          git config user.email "bot@github-actions"
+
+          git add glossary/.glossary-metadata.yaml
+          git add glossary/docs/DOC_GLOSSARY_CHANGELOG.md
+
+          git diff --staged --quiet || git commit -m "glossary: auto-apply patches from ${{ github.sha }}"
+
+      - name: Push changes
+        if: steps.find_patches.outputs.patches != ''
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+
+  check-quality:
+    name: Quality Metrics Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml
+
+      - name: Check quality metrics
+        run: |
+          cd glossary
+          python scripts/validate_glossary.py
+
+          echo ""
+          echo "Quality Metrics:"
+          echo "================"
+          echo "Terms: $(grep -c '^  TERM-' .glossary-metadata.yaml)"
+          echo "Active: $(grep 'status: active' .glossary-metadata.yaml | wc -l)"
+          echo "Deprecated: $(grep 'status: deprecated' .glossary-metadata.yaml | wc -l)"
+
+      - name: Comment on PR (if applicable)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+
+            // Run validation and capture output
+            const { execSync } = require('child_process');
+            const output = execSync('cd glossary && python scripts/validate_glossary.py',
+              { encoding: 'utf-8' });
+
+            // Post as comment
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## Glossary Validation Results\n\n\`\`\`\n${output}\n\`\`\``
+            });

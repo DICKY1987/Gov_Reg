@@ -1,0 +1,45 @@
+# DOC_LINK: DOC-CONFIG-DIR-CONTRACT-303
+doc_id: DOC-CONFIG-DIR-CONTRACT-303
+directory_id: D-PATH-REGISTRY-001
+contract_version: "1.0.0"
+
+inputs:
+  - type: none
+    description: Path registry is a configuration directory with no runtime inputs
+
+outputs:
+  - type: yaml_config
+    location: path_index.yaml
+    description: Semantic key to path mappings
+    schema: |
+      meta:
+        version: string
+      paths:
+        <semantic_key>: <relative_path>
+    consumers:
+      - modules/path_abstraction/path_registry.py
+      - SUB_ENVIRONMENT/adapters/*
+
+invariants:
+  - description: All paths in path_index.yaml must be relative to repo root
+    enforcement: PathRegistry validation on load
+
+  - description: Semantic keys follow namespace pattern (namespace:component:resource)
+    enforcement: Schema validation
+
+  - description: All referenced paths must exist in repository
+    enforcement: scripts/dev/paths_resolve_cli.py validate
+
+  - description: No duplicate semantic keys
+    enforcement: YAML parser + PathRegistry.load()
+
+constraints:
+  - Path index must be valid YAML
+  - Minimum 10 entries required
+  - Namespace prefixes: ssot:, phase:, sub:, modules:, common:, data:, scripts:
+  - Maximum path depth: 5 levels
+
+testing_requirements:
+  - Unit tests: path_registry module must validate path_index.yaml format
+  - Integration tests: Adapters must successfully resolve all registered paths
+  - Validation: CI must run paths_resolve_cli.py validate on every commit

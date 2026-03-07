@@ -167,6 +167,17 @@ def main():
 
     result = tag_file_capabilities(file_path)
 
+    # Handle --json flag
+    if '--json' in sys.argv:
+        idx = sys.argv.index('--json')
+        out_path = sys.argv[idx + 1] if idx + 1 < len(sys.argv) else None
+        if out_path:
+            with open(out_path, 'w') as f:
+                json.dump(result, f, indent=2, sort_keys=True)
+        else:
+            print(json.dumps(result, indent=2, sort_keys=True))
+        sys.exit(0)
+
     if result["success"]:
         print(f"Capabilities: {', '.join(result['py_capability_tags'])}")
         print(json.dumps(result, indent=2))

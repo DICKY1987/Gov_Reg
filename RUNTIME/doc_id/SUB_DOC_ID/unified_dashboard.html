@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified Stable ID Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .stat-value.production {
+            color: #10b981;
+        }
+
+        .stat-value.planned {
+            color: #3b82f6;
+        }
+
+        .stat-sublabel {
+            font-size: 0.85em;
+            color: #999;
+        }
+
+        .types-section {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            margin-bottom: 24px;
+            color: #333;
+        }
+
+        .type-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .type-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .type-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #111;
+        }
+
+        .type-id {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #6366f1;
+            margin-top: 4px;
+        }
+
+        .type-status {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .type-status.production {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .type-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .type-stat {
+            text-align: center;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 6px;
+        }
+
+        .type-stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #10b981;
+        }
+
+        .type-stat-label {
+            font-size: 0.85em;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .updated {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 Unified Stable ID Dashboard</h1>
+            <p class="subtitle">Real-time monitoring of all ID types across the system</p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total ID Types</div>
+                <div class="stat-value production">44</div>
+                <div class="stat-sublabel">Registered in meta-registry</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Production</div>
+                <div class="stat-value production">4</div>
+                <div class="stat-sublabel">Fully operational</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Total IDs</div>
+                <div class="stat-value production">3,321</div>
+                <div class="stat-sublabel">Across all production types</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Planned</div>
+                <div class="stat-value planned">0</div>
+                <div class="stat-sublabel">Ready for implementation</div>
+            </div>
+        </div>
+
+        <div class="types-section">
+            <h2 class="section-title">Production ID Types</h2>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div>
+                        <div class="type-name">Document Identifier</div>
+                        <div class="type-id">doc_id</div>
+                    </div>
+                    <div class="type-status production">Production</div>
+                </div>
+                <div class="type-stats">
+                    <div class="type-stat">
+                        <div class="type-stat-value">3296</div>
+                        <div class="type-stat-label">Total IDs</div>
+                    </div>
+                    <div class="type-stat">
+                        <div class="type-stat-value">100%</div>
+                        <div class="type-stat-label">Coverage</div>
+                    </div>
+                    <div class="type-stat">
+                        <div class="type-stat-value">5</div>
+                        <div class="type-stat-label">Validators</div>
+                    </div>
+                </div>
+                <div style="margin-top: 12px; font-size: 0.9em; color: #6b7280;">
+                    Format: <code style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px;">DOC-{CATEGORY}-{NAME}-{SEQ}</code>
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div>
+                        <div class="type-name">Automation Trigger Identifier</div>
+                        <div class="type-id">trigger_id</div>
+                    </div>
+                    <div class="type-status production">Production</div>
+                </div>
+                <div class="type-stats">
+                    <div class="type-stat">
+                        <div class="type-stat-value">13</div>
+                        <div class="type-stat-label">Total IDs</div>
+                    </div>
+                    <div class="type-stat">
+                        <div class="type-stat-value">100%</div>
+                        <div class="type-stat-label">Coverage</div>
+                    </div>
+                    <div class="type-stat">
+                        <div class="type-stat-value">4</div>
+                        <div class="type-stat-label">Validators</div>
+                    </div>
+                </div>
+                <div style="margin-top: 12px; font-size: 0.9em; color: #6b7280;">
+                    Format: <code style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px;">TRIGGER-{CATEGORY}-{NAME}-{SEQ}</code>
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div>
+                        <div class="type-name">Execution Pattern Identifier</div>
+                        <div class="type-id">pattern_id</div>
+                    </div>
+                    <div class="type-status production">Production</div>
+                </div>
+                <div class="type-stats">
+                    <div class="type-stat">
+                        <div class="type-stat-value">12</div>
+                        <div class="type-stat-label">Total IDs</div>
+                    </div>
+                    <div class="type-stat">
+                        <div class="type-stat-value">75%</div>
+                        <div class="type-stat-label">Coverage</div>
+                    </div>
+                    <div class="type-stat">
+                        <div class="type-stat-value">5</div>
+                        <div class="type-stat-label">Validators</div>
+                    </div>
+                </div>
+                <div style="margin-top: 12px; font-size: 0.9em; color: #6b7280;">
+                    Format: <code style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px;">PATTERN-{CATEGORY}-{NAME}-{SEQ}</code>
+                </div>
+            </div>
+
+            <div class="type-card">
+                <div class="type-header">
+                    <div>
+                        <div class="type-name">Directory Identifier</div>
+                        <div class="type-id">dir_id</div>
+                    </div>
+                    <div class="type-status production">Production</div>
+                </div>
+                <div class="type-stats">
+                    <div class="type-stat">
+                        <div class="type-stat-value">37</div>
+                        <div class="type-stat-label">Total IDs</div>
+                    </div>
+                    <div class="type-stat">
+                        <div class="type-stat-value">100%</div>
+                        <div class="type-stat-label">Coverage</div>
+                    </div>
+                    <div class="type-stat">
+                        <div class="type-stat-value">1</div>
+                        <div class="type-stat-label">Validators</div>
+                    </div>
+                </div>
+                <div style="margin-top: 12px; font-size: 0.9em; color: #6b7280;">
+                    Format: <code style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px;">DIR-{PATH_TOKEN}-{HASH}</code>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="updated">
+            Last updated: 2026-01-03 13:17:15
+        </div>
+    </div>
+</body>
+</html>

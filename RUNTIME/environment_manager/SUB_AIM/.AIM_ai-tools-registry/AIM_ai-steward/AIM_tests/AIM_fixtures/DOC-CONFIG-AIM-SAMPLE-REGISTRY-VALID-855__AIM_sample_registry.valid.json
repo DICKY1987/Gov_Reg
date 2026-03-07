@@ -1,0 +1,23 @@
+{
+  "tools": {
+    "jules": {
+      "name": "Jules CLI",
+      "detectCommands": [
+        "jules",
+        "C:/Users/richg/AppData/Roaming/npm/jules.cmd"
+      ],
+      "configPaths": [
+        "%USERPROFILE%/.jules"
+      ],
+      "logPaths": [
+        "%USERPROFILE%/.jules/cache/cli.log"
+      ],
+      "capabilities": [
+        "code_generation"
+      ],
+      "adapterScript": "%USERPROFILE%/.AIM_ai-tools-registry/AIM_adapters/AIM_jules.ps1"
+    }
+  },
+  "crossToolRulesPath": "%USERPROFILE%/.AIM_ai-tools-registry/AIM_cross-tool/AIM_coordination-rules.json",
+  "doc_id": "DOC-CONFIG-AIM-SAMPLE-REGISTRY-VALID-855"
+}

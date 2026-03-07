@@ -1,0 +1,152 @@
+# Pattern Specification: atomic_create
+# Creates a single file atomically with full validation
+
+pattern_id: atomic_create
+version: "1.0.0"
+description: "Create a new file atomically with syntax checking and optional test validation"
+category: code_creation
+stability: stable
+executor: "MINI_PIPE_executor.execute_atomic_create"
+schema_path: "schemas/atomic_create.schema.json"
+
+requires_patterns:
+  - pytest_green  # For optional test validation
+
+guardrails:
+  allowed_tools:
+    - file_create
+    - syntax_check
+    - pytest
+    - git_add
+  
+  path_scope:
+    include:
+      - "**/*.py"
+      - "**/*.json"
+      - "**/*.yaml"
+      - "**/*.yml"
+      - "**/*.md"
+      - "**/*.txt"
+    exclude:
+      - ".git/**"
+      - ".acms_runs/**"
+      - "__pycache__/**"
+      - "*.pyc"
+      - "PATTERN_INDEX.yaml"
+      - "schemas/**"
+      - "SYSTEM_INVARIANTS.md"
+  
+  max_changes:
+    files: 1
+    lines: 500
+  
+  required_prechecks:
+    - git_status_clean       # Repo must be clean
+    - path_valid             # Target path must be valid
+    - no_file_exists         # File must not already exist
+    - parent_dir_exists      # Parent directory must exist
+  
+  required_postchecks:
+    - file_exists            # File must be created
+    - syntax_valid           # Syntax must be valid (if applicable)
+    - file_readable          # File must be readable
+    - tests_pass_or_na       # Tests pass OR not applicable
+  
+  forbidden_operations:
+    - git_push
+    - delete_files
+    - modify_existing_files
+    - modify_pattern_index
+    - modify_schemas
+  
+  requires_manual_review: false
+  timeout_minutes: 5
+
+inputs:
+  file_path:
+    type: string
+    required: true
+    description: "Path to file to create (relative to repo root)"
+  
+  content:
+    type: string
+    required: true
+    description: "Content of the file"
+  
+  file_type:
+    type: string
+    required: false
+    enum: ["python", "json", "yaml", "markdown", "text"]
+    description: "File type for syntax validation"
+  
+  run_tests:
+    type: boolean
+    required: false
+    default: false
+    description: "Whether to run tests after creation"
+  
+  test_pattern:
+    type: string
+    required: false
+    description: "Test pattern to run (if run_tests is true)"
+
+outputs:
+  created_file:
+    type: string
+    description: "Path to created file"
+  
+  syntax_valid:
+    type: boolean
+    description: "Whether syntax check passed"
+  
+  tests_passed:
+    type: boolean
+    description: "Whether tests passed (null if not run)"
+
+examples:
+  - description: "Create a simple Python module"
+    inputs:
+      file_path: "src/utils.py"
+      content: |
+        def hello():
+            return "world"
+      file_type: "python"
+      run_tests: false
+    expected_outcome: "File created with valid Python syntax"
+  
+  - description: "Create a config file with validation"
+    inputs:
+      file_path: "config/settings.json"
+      content: |
+        {
+          "version": "1.0.0",
+          "enabled": true
+        }
+      file_type: "json"
+    expected_outcome: "JSON file created with valid syntax"
+
+failure_modes:
+  - mode: "file_already_exists"
+    description: "Target file already exists"
+    recovery_pattern: "rollback"
+  
+  - mode: "syntax_error"
+    description: "Generated content has syntax errors"
+    recovery_pattern: "self_heal"
+  
+  - mode: "tests_fail"
+    description: "Tests fail after file creation"
+    recovery_pattern: "rollback"
+  
+  - mode: "permission_denied"
+    description: "Insufficient permissions to create file"
+    recovery_pattern: "rollback"
+
+tests:
+  unit_tests: "tests/test_atomic_create.py"
+  integration_tests: "tests/integration/test_atomic_create_workflow.py"
+
+changelog:
+  - version: "1.0.0"
+    date: "2025-12-07"
+    changes: "Initial pattern specification with full guardrails"

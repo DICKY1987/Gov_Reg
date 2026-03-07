@@ -1,0 +1,75 @@
+module: "core.engine"
+purpose: "Orchestration: run management, task scheduling, routing, state tracking"
+layer: "domain"
+
+entry_points:
+  - file: "orchestrator.py"
+    function: "Orchestrator"
+    description: "Main orchestration engine - manages runs, coordinates scheduler/router/state machine"
+
+  - file: "scheduler.py"
+    function: "Scheduler"
+    description: "Dependency resolution and task scheduling from workstream DAGs"
+
+  - file: "router.py"
+    function: "Router"
+    description: "Task-to-tool routing based on capability matching"
+
+  - file: "state_machine.py"
+    function: "StateMachine"
+    description: "Run state transitions (pending → running → complete/failed)"
+
+key_patterns:
+  - "Orchestrator owns the run lifecycle and coordinates all components"
+  - "Scheduler builds execution plan from workstream dependencies (DAG)"
+  - "Router matches task requirements to available tool capabilities"
+  - "State machine enforces valid state transitions"
+  - "All state persisted to SQLite via core.state.db"
+  - "Resilience handled by circuit breakers and retry logic"
+
+common_tasks:
+  - task: "Start new orchestration run"
+    code: |
+      from core.engine.orchestrator import Orchestrator
+      orch = Orchestrator(db_path=".worktrees/pipeline_state.db")
+      run_id = orch.start_run(workstreams, router_config)
+    approach: "Create Orchestrator, call start_run() with workstream specs"
+
+  - task: "Check run status"
+    code: |
+      status = orch.get_run_status(run_id)
+      # Returns: pending, running, complete, failed
+    approach: "Query state machine via get_run_status()"
+
+  - task: "Resume paused run"
+    code: |
+      orch.resume_run(run_id)
+    approach: "State machine transitions from paused → running"
+
+gotchas:
+  - "Scheduler requires DAG validation - circular dependencies will fail"
+  - "Router needs valid router_config.json with tool capabilities"
+  - "State transitions are one-way (can't go from failed → running)"
+  - "Database path defaults to .worktrees/pipeline_state.db if not specified"
+  - "Orchestrator is NOT thread-safe - use one instance per process"
+
+dependencies:
+  external:
+    - "sqlalchemy (via core.state)"
+  internal:
+    - "core.state.db"
+    - "core.adapters"
+    - "core.engine.resilience"
+    - "core.engine.monitoring"
+
+status:
+  maturity: "stable"
+  test_coverage: "100%"
+  production_ready: true
+  breaking_changes_expected: false
+
+ai_quick_reference:
+  start_run: "orch = Orchestrator(db_path); orch.start_run(workstreams, config)"
+  check_status: "orch.get_run_status(run_id)"
+  get_results: "orch.get_run_results(run_id)"
+  list_runs: "orch.list_runs()"

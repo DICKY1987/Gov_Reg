@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Text Normalizer - Phase A Core Script
-Produces: py_text_normalized_hash, py_encoding_detected, py_newline_style
+Produces: py_canonical_text_hash, py_encoding_detected, py_newline_style
 
 Deterministic text normalization with canonical encoding detection.
 Stdlib-only implementation with defined fallback sequence.
@@ -133,7 +133,7 @@ def analyze_file(file_path: Path) -> dict:
     Analyze a single file and return normalization results.
 
     Returns dict with:
-    - py_text_normalized_hash: str
+    - py_canonical_text_hash: str
     - py_encoding_detected: str
     - py_newline_style: str
     - success: bool
@@ -158,7 +158,7 @@ def analyze_file(file_path: Path) -> dict:
         text_hash = compute_canonical_hash(normalized)
 
         return {
-            "py_text_normalized_hash": text_hash,
+            "py_canonical_text_hash": text_hash,
             "py_encoding_detected": encoding,
             "py_newline_style": newline_style,
             "success": True,
@@ -167,7 +167,7 @@ def analyze_file(file_path: Path) -> dict:
 
     except UnicodeDecodeError as e:
         return {
-            "py_text_normalized_hash": None,
+            "py_canonical_text_hash": None,
             "py_encoding_detected": "UNKNOWN",
             "py_newline_style": "UNKNOWN",
             "success": False,
@@ -176,7 +176,7 @@ def analyze_file(file_path: Path) -> dict:
 
     except Exception as e:
         return {
-            "py_text_normalized_hash": None,
+            "py_canonical_text_hash": None,
             "py_encoding_detected": "ERROR",
             "py_newline_style": "ERROR",
             "success": False,
@@ -197,9 +197,20 @@ def main():
         sys.exit(1)
 
     result = analyze_file(file_path)
+    
+    # Handle --json flag
+    if '--json' in sys.argv:
+        idx = sys.argv.index('--json')
+        out_path = sys.argv[idx + 1] if idx + 1 < len(sys.argv) else None
+        if out_path:
+            with open(out_path, 'w') as f:
+                json.dump(result, f, indent=2, sort_keys=True)
+        else:
+            print(json.dumps(result, indent=2, sort_keys=True))
+        sys.exit(0)
 
     if result["success"]:
-        print(f"Hash: {result['py_text_normalized_hash']}")
+        print(f"Hash: {result['py_canonical_text_hash']}")
         print(f"Encoding: {result['py_encoding_detected']}")
         print(f"Newlines: {result['py_newline_style']}")
     else:

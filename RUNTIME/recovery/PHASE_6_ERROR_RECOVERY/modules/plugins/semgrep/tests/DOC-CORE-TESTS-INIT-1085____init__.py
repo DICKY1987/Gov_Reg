@@ -1,0 +1,3 @@
+# DOC_LINK: DOC-CORE-TESTS-INIT-1085
+"""Tests for Semgrep plugin."""
+DOC_ID: DOC-CORE-TESTS-INIT-1085

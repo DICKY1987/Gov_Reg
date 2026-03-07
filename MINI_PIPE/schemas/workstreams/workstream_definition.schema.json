@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Workstream Definition",
+  "type": "object",
+  "required": ["workstream_id", "name", "gap_ids", "priority"],
+  "properties": {
+    "workstream_id": {"type": "string", "pattern": "^WS_[A-Z0-9_]+$"},
+    "name": {"type": "string", "minLength": 5, "maxLength": 100},
+    "gap_ids": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "priority": {"type": "integer", "minimum": 1, "maximum": 10}
+  }
+}

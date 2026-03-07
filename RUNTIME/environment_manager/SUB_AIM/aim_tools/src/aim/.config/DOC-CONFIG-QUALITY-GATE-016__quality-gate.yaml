@@ -1,0 +1,419 @@
+# DOC_LINK: DOC-CONFIG-QUALITY-GATE-016
+doc_id: DOC-CONFIG-QUALITY-GATE-016
+# QUALITY_GATE.yaml
+# AI Codebase Structure Specification - Quality Gates
+# Generated: 2025-11-22
+# Format Version: 1.0.0
+
+metadata:
+  repository: "Complete AI Development Pipeline – Canonical Phase Plan"
+  version: "2.0.0-phase-k"
+  last_updated: "2025-11-22"
+  ci_reference: "docs/CI_PATH_STANDARDS.md"
+
+# Quality gates grouped by category
+gates:
+  # === TESTING ===
+  - id: "test.pytest"
+    name: "Python Unit Tests"
+    category: "testing"
+    command: "python -m pytest -q tests"
+    required: true
+    timeout_seconds: 300
+    description: "Run all pytest tests in tests/ directory"
+    prerequisites:
+      - "Python 3.8+"
+      - "pytest installed (see requirements.txt)"
+    failure_action: "block"
+    env_vars:
+      PYTHONPATH: "."
+    documentation: "pytest.ini"
+    notes: "Runs with -ra flag for all test output. Excludes sandbox_repos/ by default."
+
+  - id: "test.workstream_validation"
+    name: "Workstream Validation"
+    category: "testing"
+    command: "python scripts/validate_workstreams.py"
+    required: true
+    timeout_seconds: 60
+    description: "Validate all workstream JSON bundles against schema"
+    prerequisites:
+      - "Python 3.8+"
+      - "jsonschema installed"
+    failure_action: "block"
+    documentation: "workstreams/README.md"
+    notes: "Validates workstreams/ against schema/workstream.schema.json"
+
+  - id: "test.workstream_authoring"
+    name: "Workstream Authoring Standards"
+    category: "testing"
+    command: "python scripts/validate_workstreams_authoring.py"
+    required: false
+    timeout_seconds: 60
+    description: "Check workstream authoring quality (optional)"
+    prerequisites:
+      - "Python 3.8+"
+    failure_action: "warn"
+    documentation: "docs/workstream_authoring_guide.md"
+    notes: "Checks for best practices in workstream design"
+
+  - id: "test.openspec_smoke"
+    name: "OpenSpec Flow Smoke Test"
+    category: "testing"
+    command: |
+      python -c "import core.openspec_parser; print('ok')" &&
+      python scripts/generate_workstreams_from_openspec.py --change-id test-001 --files-scope core/openspec_parser.py
+    required: false
+    timeout_seconds: 120
+    description: "Test OpenSpec parsing and workstream generation"
+    prerequisites:
+      - "openspec/changes/test-001/ exists"
+    failure_action: "warn"
+    notes: "Non-fatal smoke test for OpenSpec integration"
+
+  # === PATH STANDARDS (CI ENFORCED) ===
+  - id: "ci.path_standards"
+    name: "Import Path Standards"
+    category: "ci"
+    command: "python scripts/paths_index_cli.py scan --root . --db refactor_paths.db --reset && python scripts/paths_index_cli.py gate --db refactor_paths.db --regex \"src/pipeline|MOD_ERROR_PIPELINE\""
+    required: true
+    timeout_seconds: 180
+    description: "Enforce post-Phase E import path standards (CI enforced)"
+    prerequisites:
+      - "Python 3.8+"
+    failure_action: "block"
+    env_vars:
+      LEGACY_PATH_GATE: "1"
+    documentation: "docs/CI_PATH_STANDARDS.md"
+    forbidden_patterns:
+      - pattern: "from src.pipeline.*"
+        replacement: "from core.*"
+        reason: "Post-Phase E refactor"
+      - pattern: "from MOD_ERROR_PIPELINE.*"
+        replacement: "from error.*"
+        reason: "Post-Phase E refactor"
+      - pattern: "from legacy.*"
+        replacement: "Do not import legacy code"
+        reason: "Archived code - see docs/SECTION_REFACTOR_MAPPING.md"
+    notes: "Automatically enforced in CI. Set LEGACY_PATH_GATE=1 to enable locally."
+
+  - id: "ci.deprecated_usage"
+    name: "Deprecated Code Usage Check"
+    category: "ci"
+    command: "python scripts/check_deprecated_usage.py"
+    required: false
+    timeout_seconds: 60
+    description: "Check for usage of deprecated APIs and patterns"
+    failure_action: "warn"
+    documentation: "docs/DEPRECATION_PLAN.md"
+
+  # === LINTING ===
+  - id: "lint.markdown"
+    name: "Markdown Linting"
+    category: "linting"
+    command: "markdownlint **/*.md"
+    required: false
+    timeout_seconds: 120
+    description: "Lint Markdown files for consistency"
+    prerequisites:
+      - "markdownlint-cli installed (npm install -g markdownlint-cli)"
+    failure_action: "warn"
+    notes: "Optional - only runs if markdownlint is installed"
+
+  - id: "lint.python_ruff"
+    name: "Python Linting (Ruff)"
+    category: "linting"
+    command: "ruff check ."
+    required: false
+    timeout_seconds: 120
+    description: "Fast Python linting with Ruff"
+    prerequisites:
+      - "ruff installed (pip install ruff)"
+    failure_action: "warn"
+    notes: "Optional - faster alternative to flake8/pylint"
+
+  # === ERROR DETECTION ===
+  - id: "error.engine_run"
+    name: "Error Detection Pipeline"
+    category: "error_detection"
+    command: "python scripts/run_error_engine.py"
+    required: false
+    timeout_seconds: 300
+    description: "Run error detection engine with all plugins"
+    prerequisites:
+      - "Error plugins configured in error/plugins/"
+    failure_action: "warn"
+    documentation: "error/README.md"
+    notes: "Runs all enabled error detection plugins"
+
+  - id: "error.import_validation"
+    name: "Error Module Import Validation"
+    category: "error_detection"
+    command: "python scripts/validate_error_imports.py"
+    required: true
+    timeout_seconds: 60
+    description: "Validate error module imports are correct"
+    failure_action: "block"
+    notes: "Ensures error.* imports follow section standards"
+
+  # === SPEC VALIDATION ===
+  - id: "spec.index_generation"
+    name: "Spec Index Generation"
+    category: "spec_validation"
+    command: "python scripts/generate_spec_index.py"
+    required: false
+    timeout_seconds: 120
+    description: "Generate specification index"
+    prerequisites:
+      - "specifications/content/ exists"
+    failure_action: "warn"
+    documentation: "specifications/README.md"
+    notes: "Regenerates spec index from specifications/content/"
+
+  - id: "spec.mapping_generation"
+    name: "Spec Mapping Generation"
+    category: "spec_validation"
+    command: "python scripts/generate_spec_mapping.py"
+    required: false
+    timeout_seconds: 120
+    description: "Generate specification mapping"
+    failure_action: "warn"
+    documentation: "specifications/README.md"
+    notes: "Maps specs to implementation locations"
+
+  # === ENGINE VALIDATION ===
+  - id: "engine.validation"
+    name: "Engine Components Validation"
+    category: "engine_validation"
+    command: "python scripts/validate_engine.py"
+    required: false
+    timeout_seconds: 120
+    description: "Validate engine components and adapters"
+    failure_action: "warn"
+    documentation: "engine/README.md"
+    notes: "Validates job execution engine components"
+
+  - id: "engine.state_store_test"
+    name: "Engine State Store Test"
+    category: "engine_validation"
+    command: "python scripts/test_state_store.py"
+    required: false
+    timeout_seconds: 60
+    description: "Test engine state store operations"
+    failure_action: "warn"
+    notes: "Tests job state persistence"
+
+  - id: "engine.adapters_test"
+    name: "Engine Adapters Test"
+    category: "engine_validation"
+    command: "python scripts/test_adapters.py"
+    required: false
+    timeout_seconds: 120
+    description: "Test engine tool adapters"
+    failure_action: "warn"
+    notes: "Tests aider, codex, git, and test adapters"
+
+  # === DATABASE ===
+  - id: "db.initialization"
+    name: "Database Initialization Check"
+    category: "database"
+    command: "python scripts/init_db.py"
+    required: false
+    timeout_seconds: 60
+    description: "Verify database initialization works"
+    failure_action: "warn"
+    documentation: "core/state/README.md"
+    notes: "Creates/validates pipeline_state.db structure"
+
+  - id: "db.inspection"
+    name: "Database Inspection"
+    category: "database"
+    command: "python scripts/db_inspect.py"
+    required: false
+    timeout_seconds: 30
+    description: "Inspect database schema and contents"
+    failure_action: "info"
+    notes: "Diagnostic tool for database state"
+
+  # === DOCUMENTATION ===
+  - id: "docs.index_generation"
+    name: "Documentation Index Generation"
+    category: "documentation"
+    command: "python scripts/generate_doc_index.py"
+    required: false
+    timeout_seconds: 60
+    description: "Generate documentation index"
+    failure_action: "info"
+    notes: "Updates docs/DOCUMENTATION_INDEX_AUTO.md"
+
+  - id: "docs.diagram_validation"
+    name: "Architecture Diagram Validation"
+    category: "documentation"
+    command: "python scripts/validate_diagrams.py"
+    required: false
+    timeout_seconds: 60
+    description: "Validate architecture diagrams are up-to-date"
+    failure_action: "warn"
+    documentation: "docs/ARCHITECTURE_DIAGRAMS.md"
+    notes: "Checks diagrams match current architecture"
+
+  # === AIM INTEGRATION ===
+  - id: "aim.status"
+    name: "AIM Status Check"
+    category: "aim"
+    command: "python scripts/aim_status.py"
+    required: false
+    timeout_seconds: 30
+    description: "Check AIM registry and environment status"
+    failure_action: "info"
+    documentation: "aim/README.md"
+    notes: "Reports AIM tool availability and health"
+
+  # === BOOTSTRAP ===
+  - id: "bootstrap"
+    name: "Repository Bootstrap"
+    category: "setup"
+    command: "pwsh scripts/bootstrap.ps1"
+    required: false
+    timeout_seconds: 120
+    description: "Initialize repository structure and dependencies"
+    prerequisites:
+      - "PowerShell (pwsh)"
+    failure_action: "info"
+    documentation: "README.md"
+    notes: "Run once on initial clone or major updates"
+
+# Gate execution order (recommended)
+execution_order:
+  - name: "Pre-commit checks (fast)"
+    gates:
+      - "test.pytest"
+      - "test.workstream_validation"
+      - "ci.path_standards"
+      - "error.import_validation"
+    parallel: true
+    required: true
+
+  - name: "Full validation (comprehensive)"
+    gates:
+      - "test.workstream_authoring"
+      - "test.openspec_smoke"
+      - "lint.markdown"
+      - "lint.python_ruff"
+      - "error.engine_run"
+      - "spec.index_generation"
+      - "spec.mapping_generation"
+      - "engine.validation"
+      - "docs.index_generation"
+    parallel: true
+    required: false
+
+  - name: "Diagnostic checks (information only)"
+    gates:
+      - "db.inspection"
+      - "aim.status"
+      - "docs.diagram_validation"
+    parallel: true
+    required: false
+
+# CI/CD integration
+ci_integration:
+  github_actions:
+    path_standards: ".github/workflows/path_standards.yml"
+    pytest: ".github/workflows/pytest.yml"
+
+  pre_commit_hooks:
+    - "test.pytest"
+    - "ci.path_standards"
+    - "test.workstream_validation"
+
+  pre_push_hooks:
+    - "test.workstream_authoring"
+    - "error.import_validation"
+
+  pull_request_checks:
+    - "test.pytest"
+    - "ci.path_standards"
+    - "test.workstream_validation"
+    - "error.import_validation"
+    - "lint.markdown"
+
+# Failure policies
+failure_policies:
+  block:
+    description: "Must pass before merge/commit"
+    action: "Prevent commit/merge"
+    examples:
+      - "test.pytest"
+      - "ci.path_standards"
+      - "error.import_validation"
+
+  warn:
+    description: "Should pass but not blocking"
+    action: "Display warning, allow merge"
+    examples:
+      - "test.workstream_authoring"
+      - "lint.markdown"
+      - "error.engine_run"
+
+  info:
+    description: "Informational only"
+    action: "Display info, no blocking"
+    examples:
+      - "db.inspection"
+      - "aim.status"
+
+# Environment setup
+environment:
+  python:
+    version: ">=3.8"
+    required_packages:
+      - "pytest>=7.0"
+      - "jsonschema"
+      - "pyyaml"
+      - "click"
+    install_command: "pip install -r requirements.txt"
+
+  powershell:
+    version: ">=7.0"
+    note: "Required for .ps1 scripts on Windows"
+
+  optional_tools:
+    - name: "markdownlint-cli"
+      install: "npm install -g markdownlint-cli"
+      gates: ["lint.markdown"]
+
+    - name: "ruff"
+      install: "pip install ruff"
+      gates: ["lint.python_ruff"]
+
+# Quick reference commands
+quick_commands:
+  run_all_required:
+    description: "Run all required quality gates"
+    command: |
+      python -m pytest -q tests &&
+      python scripts/validate_workstreams.py &&
+      LEGACY_PATH_GATE=1 python scripts/paths_index_cli.py scan --root . --db refactor_paths.db --reset &&
+      LEGACY_PATH_GATE=1 python scripts/paths_index_cli.py gate --db refactor_paths.db --regex "src/pipeline|MOD_ERROR_PIPELINE" &&
+      python scripts/validate_error_imports.py
+
+  run_fast_checks:
+    description: "Run fast pre-commit checks"
+    command: "python -m pytest -q tests && python scripts/validate_workstreams.py"
+
+  run_full_suite:
+    description: "Run comprehensive quality suite"
+    command: "pwsh scripts/test.ps1"
+
+  bootstrap:
+    description: "Initial repository setup"
+    command: "pwsh scripts/bootstrap.ps1"
+
+# References
+references:
+  - "docs/CI_PATH_STANDARDS.md - Import path enforcement details"
+  - "docs/SECTION_REFACTOR_MAPPING.md - Old vs new path mappings"
+  - "pytest.ini - Test configuration"
+  - "AGENTS.md - Coding guidelines and conventions"
+  - "CODEBASE_INDEX.yaml - Module structure and dependencies"

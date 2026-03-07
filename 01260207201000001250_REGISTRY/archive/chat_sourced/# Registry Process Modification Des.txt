@@ -1,0 +1,337 @@
+# Registry Process Modification Design Document
+# STATUS: PROPOSAL — Conflicts with current single-SSOT architecture. Not adopted.
+# (Based on This Conversation + Project Artifacts)
+
+## 1) Problem statement
+
+Your current system is architecturally aimed at “columns as contracts” (scope + derivation + presence), with deterministic header selection and dependency-ordered population, but the **current registry shape and discriminator drift prevent the contract system from reliably firing**. The result is:
+
+* A single canonical file (`REGISTRY_file.json`) with multiple parallel arrays and uneven governance.
+* **Severe sparsity** on schema-critical classification fields.
+* **No edges** despite a strong edge schema (meaning the relationship graph is not being built).
+* Conflicting discriminator vocabularies across data, dictionary, derivations, and ingest spec, causing silent non-population failures.
+
+This design modifies the process to keep SSOT discipline while eliminating “giant sparse table” costs by splitting canonical stores by kind, introducing a bundle-manifest SSOT, and adding a fail-closed drift gate.
+
+---
+
+## 2) Current baseline (what exists today)
+
+### 2.1 Deterministic ingest + population planning already exists
+
+* Contracts are loaded and pinned; header applicability is decided by predicates; header order is a DAG topo sort with stable tie-break. 
+* Contract drift is already defined as fatal (“Contracts changed during execution”). 
+* Phase-grouped population concepts exist (identity fields → scan fields → inference fields). 
+
+### 2.2 Single-writer atomic commit exists
+
+* Current end-to-end process defines single-writer lock, backup, policy enforcement, patch apply, normalize, recompute derived fields, schema validate, referential integrity validate, then atomic temp→replace→fsync with rollback triggers. 
+
+### 2.3 Write policy + derivations are real contracts
+
+* Write policy defines update policies (immutable / recompute_on_scan / recompute_on_build / manual_patch_only / normalize_on_ingest) and validation rules (e.g., derived columns must be tool_only, completeness expectations). 
+* Derivations already implement “manual override with inferred fallback” via `COALESCE(INPUT.x, inferred_x)` for fields like `layer`, `artifact_kind`, `canonicality`, `status`. 
+
+### 2.4 Schema v3 strongly defines edges (but edges[] is empty)
+
+* Edge schema requires `source_file_id`, `edge_type`, and `evidence`, and requires either `target_file_id` or `target_schema_id`. 
+* Evidence is structured (type, locator, status required). 
+
+### 2.5 Known discriminator drift (silent failure risk)
+
+The conversation confirmed multiple competing vocabularies for `record_kind` and other enums (data vs dictionary vs write policy vs ingest spec). 
+This mismatch breaks predicates and derivation conditions (example: derivations checking `record_kind == 'relationship'` won’t fire if records never use that value). 
+
+---
+
+## 3) Target end state (architectural decisions)
+
+### 3.1 Split canonical registries by kind
+
+Canonical stores become:
+
+* `REGISTRY_ENTITIES.json`
+* `REGISTRY_EDGES.json`
+* `REGISTRY_GENERATORS.json`
+
+Unified “one file view” becomes derived-only, not canonical. 
+
+### 3.2 Keep one shared Column Dictionary as the contract layer
+
+The Column Dictionary remains the single catalog of headers, but becomes **multi-registry aware** (see §6.2). 
+
+### 3.3 Produce a unified view as a derived artifact
+
+* `REGISTRY_UNIFIED_VIEW.json` is generated deterministically from canonical registries + pinned contracts, and is not hand-edited. 
+
+### 3.4 Enforce a bundle-manifest SSOT
+
+* `REGISTRY_BUNDLE_MANIFEST.json` becomes the single authoritative entrypoint that pins artifact hashes, schema versions, row counts, contract pins, and commit trace. 
+* Commit validity requires all registry artifacts + manifest to validate together. 
+
+### 3.5 Add enum canon + drift gate (fail closed)
+
+* Introduce `REGISTRY_ENUMS_CANON.json` and a preflight validator that checks all literals used in predicates/derivations/schema enums and all discriminator values in data. 
+* Drift gate integrates with existing “contract drift fatal” pattern. 
+
+---
+
+## 4) Key design principle from the header-order discussion
+
+You want “common headers first so nulls group to the right.” That fits **only as a derived/view concern**, not as the population order.
+
+* **Population order** is already defined as `H02_header_order` from topo sort. 
+* We add **Display order** as `H03_display_order`, computed after population for exports and unified view rendering.
+
+This preserves determinism while improving human usability.
+
+---
+
+## 5) New and modified artifacts
+
+### 5.1 New canonical artifacts
+
+1. `REGISTRY_ENTITIES.json`
+2. `REGISTRY_EDGES.json`
+3. `REGISTRY_GENERATORS.json`
+4. `REGISTRY_BUNDLE_MANIFEST.json`
+5. `REGISTRY_ENUMS_CANON.json`
+
+### 5.2 Derived artifacts (non-canonical)
+
+6. `REGISTRY_UNIFIED_VIEW.json`
+7. `H03_display_order.json` (per-scope column ordering)
+8. `COLUMN_FILL_STATS.json` (per-scope fill rates and key-existence stats)
+
+### 5.3 Legacy handling: stop having schema-unvalidated parallel arrays
+
+Current schema v3 effectively governs “files + edges” and does not structurally govern the extra arrays; this is a structural integrity gap. 
+
+**Change:**
+
+* Move legacy arrays into explicit overlays with their own schemas:
+
+  * `overlays/REGISTRY_ENTITIES_STUBS_LEGACY.json`
+  * `overlays/REGISTRY_ENTRIES_OVERLAY_LEGACY.json`
+* Manifest includes overlays, but labels them non-authoritative and validates them against overlay schemas.
+
+---
+
+## 6) Contract changes (Column Dictionary, Write Policy, Derivations, Schema)
+
+### 6.1 Schema evolution
+
+**Current:** v3 includes FileRecord and EdgeRecord; EdgeRecord is strong. 
+**Change:** introduce a schema family:
+
+* `schema.entities.v4.json`
+* `schema.edges.v4.json`
+* `schema.generators.v4.json`
+* `schema.bundle_manifest.v4.json`
+* optional `schema.unified_view.v4.json`
+* `schema.overlays.v1.json`
+
+### 6.2 Column Dictionary: make it multi-registry aware
+
+Today, headers already encode scope/presence/derivation modes in the generated header doc. 
+**Add fields:**
+
+* `applies_to_registry`: `entities | edges | generators | *` 
+* `display_section` and `display_section_rank` (for stable “common-first” ordering)
+* optional `display_bucket_policy` (tiering rules for fill-rate buckets)
+
+### 6.3 Write Policy: split per registry artifact
+
+Current write policy is keyed to one registry file (`applies_to_registry: UNIFIED_SSOT_REGISTRY.json`). 
+**Change:**
+
+* Create three write policies:
+
+  * `WRITE_POLICY_ENTITIES.yaml`
+  * `WRITE_POLICY_EDGES.yaml`
+  * `WRITE_POLICY_GENERATORS.yaml`
+* Keep the same update_policy enums and validation logic (immutability, recompute policies, normalize_on_ingest). 
+
+### 6.4 Derivations: align discriminator vocab + split by registry
+
+Derivations already support on_create_only vs recompute_on_scan/build triggers.  
+**Required fixes:**
+
+* Normalize all derivation predicates to the canonical discriminator vocabulary (fix cases like `record_kind == 'relationship'`). 
+* Split derivations into:
+
+  * `DERIVATIONS_ENTITIES.yaml`
+  * `DERIVATIONS_EDGES.yaml`
+  * `DERIVATIONS_GENERATORS.yaml`
+    or add `applies_to_registry` inside each derivation block.
+
+---
+
+## 7) Process changes (end-to-end pipeline)
+
+This section describes the modified pipeline as an evolution of your existing ingest spec + atomic commit flow.
+
+### 7.1 Phase 0: Enum canon + drift gate (new hard prerequisite)
+
+**New step (preflight):** `S00A_VALIDATE_ENUM_CANON`
+
+* Inputs: Column Dictionary, Write Policies, Derivations, Schemas, Enum Canon, staged outputs.
+* Checks: literal scan across predicates/derivations/schema enums; data conformance; cross-contract alignment. 
+* Outputs:
+
+  * `EVIDENCE_ENUM_DRIFT_REPORT.json`
+  * `EVIDENCE_ENUM_NORMALIZATION_PATCH.json`
+* Gate: FAIL CLOSED.
+
+### 7.2 Phase 0.5: Canonicalize the entity set (remove ambiguity)
+
+**New step:** `S00B_CANONICALIZE_ENTITY_SET`
+
+* Declare `REGISTRY_ENTITIES.json` as the only authoritative entity store.
+* Move `entities[]` and `entries[]` into overlays or deterministically merge with strict precedence rules (canonical > overlay > stub).  
+
+### 7.3 Phase 1: Backfill the schema-required entity fields
+
+The end-to-end process already documents deterministic inference mappings for `artifact_kind`, `governance_domain`, `layer`, and defaults for `canonicality` and `has_tests`. 
+Derivations also already support override→inferred fallback via `COALESCE`. 
+
+**Change:** make Phase 1 a required batch operation:
+
+* Normalize discriminator values and apply alias mapping (canon file).
+* Run inference/backfill for the required set at scale.
+* Emit `EVIDENCE_BACKFILL_REPORT.json`.
+* Gate: reach a defined schema-validity threshold (recommend starting ≥95%).
+
+### 7.4 Phase 2: Edge generation from evidence (not extraction)
+
+Your edge schema already demands evidence with `evidence_type`, `evidence_locator`, `status`. 
+So this phase must create edges by deterministic evidence methods:
+
+* import parsing, schema references, config references, validator↔schema pairing, test discovery, etc. (and label evidence accordingly). 
+
+**Edge dedup rules:**
+
+* Canonical key: `(source_file_id, edge_type, target_id, evidence_locator_hash)` and deterministic merge behavior. 
+
+Outputs and gates:
+
+* `REGISTRY_EDGES.json`
+* `EVIDENCE_EDGE_DISCOVERY_REPORT.json`
+* Gates: 100% schema-valid edges; referential integrity across endpoints. 
+
+### 7.5 Phase 3: Generators become first-class records
+
+Generators are tool-run records describing what ran, inputs/outputs, and produced evidence; linkage is via edges (`GENERATES`, `CONSUMES`). 
+This cleanly matches existing derivations that already reference generator name/version on build triggers. 
+
+### 7.6 Phase 4: Bundle-manifest commit + derived unified view
+
+This is an evolution of your existing single-writer atomic commit:
+
+**Current commit sequence** includes policy enforcement, patch apply, normalize, recompute, schema validate, referential integrity validate, atomic write, rollback on failure. 
+
+**New commit object:** a bundle of:
+
+* entities, edges, generators (+ overlays)
+* manifest written last
+* derived unified view written after commit (non-authoritative)  
+
+---
+
+## 8) Display and export header ordering (your “common-first” requirement)
+
+### 8.1 Keep population order unchanged
+
+Population order remains `H02_header_order` generated by topo sort from dependencies. 
+
+### 8.2 Add a display order stage
+
+Add `SXX_COMPUTE_DISPLAY_ORDER` after population and validation:
+
+* Input: canonical registry artifact + Column Dictionary (with `display_section`)
+* Compute:
+
+  * per-scope fill rates and presence rates
+  * sort order within each section by fill-rate buckets, then name
+* Output:
+
+  * `H03_display_order.json` per scope (entity:file / edge / generator)
+
+### 8.3 Header sections (how to structure columns before ordering)
+
+Use the existing header doc’s scope model (entity:file vs edge vs generator vs All) as the first partition. 
+Within each scope, recommended sections:
+
+1. Identity & discriminators
+2. Locators (paths, repo_root_id)
+3. Scan primitives (sha256, size, mtime, is_directory)
+4. Classification/governance (artifact_kind, layer, governance_domain, canonicality, has_tests)
+5. Ownership/grouping (GEU/bundle)
+6. Process mapping
+7. Quality/test
+8. Language-specific analysis families (`py_*`)
+9. Evidence outputs / derived artifact linkage
+
+This gives stable “common-left, sparse-right” while keeping column order deterministic and diff-friendly.
+
+---
+
+## 9) Concrete modifications to existing documents
+
+### 9.1 Update `INGEST_SPEC_UNIFIED_REGISTRY.txt`
+
+**Keep:**
+
+* Contract loading/pinning and header selection steps. 
+
+**Add:**
+
+* `S00A_VALIDATE_ENUM_CANON` (preflight drift gate)
+* Multi-registry modes:
+
+  * `MODE=entities|edges|generators`
+  * `S02_SELECT_HEADERS` runs per mode/context (bounded record context remains the predicate evaluation base). 
+* `H03_display_order` emission step (for view/export only)
+
+### 9.2 Update `END_TO_END_REGISTRY_PROCESS.md`
+
+**Keep the single-writer atomic commit structure** but change the committed object:
+
+* Replace “write REGISTRY_file.json” with “write bundle artifacts + manifest”. 
+* Insert drift gate before patch apply/normalize.
+* Validate overlays with overlay schemas.
+* Keep rollback triggers (schema fail, atomic write fail) but operate at the bundle level. 
+
+### 9.3 Update derivations to remove discriminator mismatch
+
+Fix formulas that assume non-existent record_kind values. 
+Continue using COALESCE override patterns for backfill and future stability. 
+
+---
+
+## 10) Acceptance criteria (definition of “done”)
+
+1. **Enum drift gate exists and is fail-closed** (unknown literals or casing mismatches halt the run). 
+2. Canonical entity store is unambiguous (no parallel canonical arrays).
+3. Entity registry reaches high schema validity for required fields (threshold defined and enforced).
+4. `REGISTRY_EDGES.json` is non-empty and 100% schema-valid with evidence and referential integrity. 
+5. Generator records exist and link inputs/outputs via edges. 
+6. Bundle manifest pins hashes, contract pins, and commit trace; commit validity requires all artifacts.  
+7. Display/export ordering exists as `H03_display_order` without affecting population order. 
+
+---
+
+## 11) Summary of “what changes in the registry process”
+
+* You keep the deterministic core (contracts, predicate-driven header selection, topo-sorted population, single-writer atomic commit).  
+* You add the missing safety and structure:
+
+  * enum canon + drift gate
+  * canonical entity set (overlays explicitly non-authoritative)
+  * backfill phase for schema-critical fields
+  * evidence-driven edge generation
+  * generator records as first-class
+  * bundle-manifest SSOT
+  * unified view + common-first header ordering as derived artifacts
+
+If you want the next deliverable in the same style as your ingest spec: I can output a step-indexed “process contract” that defines the new steps (`S00A`, `S00B`, `SXX`) with inputs/outputs/failure modes and the exact new artifact list pinned in the manifest.

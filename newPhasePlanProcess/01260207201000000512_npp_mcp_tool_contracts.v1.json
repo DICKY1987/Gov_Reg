@@ -162,6 +162,8 @@
     {
       "tool": "plan.validate_structure",
       "tool_version": "1.0.0",
+      "gate_id": "GATE-001",
+      "gate_name": "Schema Validation",
       "description": "Validate plan structure (required sections, nesting, ID formats). Writes evidence JSON and returns pass/fail with normalized defects.",
       "default_evidence_path_template": ".state/evidence/mcp/{run_id}/plan_validate_structure.json",
       "input_schema": {
@@ -223,6 +225,8 @@
     {
       "tool": "plan.validate_step_contracts",
       "tool_version": "1.0.0",
+      "gate_id": "GATE-003",
+      "gate_name": "Step Contracts Complete",
       "description": "Validate step-level contract completeness and consistency (required fields, step_id uniqueness/patterns, artifact refs, command fields). Writes evidence JSON and returns defects.",
       "default_evidence_path_template": ".state/evidence/mcp/{run_id}/plan_validate_step_contracts.json",
       "input_schema": {
@@ -294,6 +298,8 @@
     {
       "tool": "plan.validate_ssot",
       "tool_version": "1.0.0",
+      "gate_id": "GATE-017",
+      "gate_name": "Single Source of Truth",
       "description": "Validate Single Source of Truth (SSOT) inside the plan (duplicate facts, contradictions). Writes evidence JSON and returns defects.",
       "default_evidence_path_template": ".state/evidence/mcp/{run_id}/plan_validate_ssot.json",
       "input_schema": {
@@ -457,8 +463,11 @@
     {
       "tool": "planning.extract_file_mutation_set",
       "tool_version": "1.0.0",
+      "gate_id": "GATE-FILE-MUTATIONS",
+      "gate_name": "File Mutations Valid",
       "description": "Emit a proposed Planning File Mutation Set (PFMS) from a plan (created/modified/deleted/moved files). Does not apply mutations; writes PFMS artifact + evidence.",
       "default_evidence_path_template": ".state/evidence/mcp/{run_id}/planning_extract_file_mutation_set.json",
+      "default_mutation_set_path": ".state/planning/{plan_id}/file_mutations.json",
       "input_schema": {
         "type": "object",
         "required": ["context", "plan_path", "mutation_set_path"],
@@ -469,7 +478,8 @@
           "mutation_set_path": {
             "type": "string",
             "minLength": 1,
-            "description": "Where to write PFMS JSON artifact (under repo_root)."
+            "description": "Where to write PFMS JSON artifact (under repo_root). Default: .state/planning/{plan_id}/file_mutations.json",
+            "default": ".state/planning/{plan_id}/file_mutations.json"
           },
           "mode": {
             "type": "string",

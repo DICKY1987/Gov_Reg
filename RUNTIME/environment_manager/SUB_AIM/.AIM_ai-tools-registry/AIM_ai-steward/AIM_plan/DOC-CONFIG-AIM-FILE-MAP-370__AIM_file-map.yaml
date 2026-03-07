@@ -1,0 +1,22 @@
+# DOC_LINK: DOC-CONFIG-AIM-FILE-MAP-370
+doc_id: DOC-CONFIG-AIM-FILE-MAP-370
+repo_root: C:\\Users\\richg\\AIM_ai-steward\\
+files:
+  AIM_ai-steward.ps1: [cli_entrypoint]
+  AIM_modules/AIM_AIToolsRegistry.psm1: [registry_module]
+  AIM_config/AIM_registry.schema.json: [registry_schema]
+  AIM_config/AIM_audit.schema.json: [audit_schema]
+  AIM_config/AIM_coordination-rules.schema.json: [coordination_rules_schema]
+  AIM_docs/AIM_ADAPTERS_INTERFACE.md: [adapters_interface_spec]
+  AIM_tests/AIM_AIToolsRegistry.Tests.ps1: [tests_unit_module]
+  AIM_tests/AIM_StewardCli.Tests.ps1: [tests_cli_entrypoint]
+  AIM_tests/AIM_Contracts.Tests.ps1: [tests_contracts]
+  AIM_docs/AIM_README.md: [docs_user_guide]
+  AIM_docs/AIM_REGISTRY_FORMAT.md: [docs_registry_format]
+runtime_root: C:\\Users\\richg\\.AIM_ai-tools-registry\\
+runtime_files:
+  AIM_registry.json: [runtime_registry_bootstrap]
+  AIM_adapters/AIM_jules.ps1: [adapters_mvp:jules_adapter]
+  AIM_adapters/AIM_claude-cli.ps1: [adapters_mvp:claude_cli_adapter]
+  AIM_cross-tool/AIM_coordination-rules.json: [runtime_registry_bootstrap]
+

@@ -1,0 +1,73 @@
+name: Generate Changelog
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to generate changelog for'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  changelog:
+    name: Generate and Update Changelog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for changelog
+
+      - name: Determine tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ -n "${{ inputs.tag }}" ]; then
+            echo "tag=${{ inputs.tag }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install git-cliff
+        run: |
+          wget https://github.com/orhun/git-cliff/releases/download/v2.6.1/git-cliff-2.6.1-x86_64-unknown-linux-gnu.tar.gz
+          tar -xzf git-cliff-2.6.1-x86_64-unknown-linux-gnu.tar.gz
+          sudo mv git-cliff-2.6.1/git-cliff /usr/local/bin/
+          git-cliff --version
+
+      - name: Generate changelog
+        run: |
+          git-cliff --tag ${{ steps.tag.outputs.tag }} --output CHANGELOG.md
+
+      - name: Commit changelog
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          if git diff --staged --quiet; then
+            echo "No changes to CHANGELOG.md"
+          else
+            git commit -m "docs: update CHANGELOG for ${{ steps.tag.outputs.tag }}"
+            git push
+          fi
+
+      - name: Extract release notes
+        id: release_notes
+        run: |
+          git-cliff --tag ${{ steps.tag.outputs.tag }} --unreleased --strip header > RELEASE_NOTES.md
+          echo "Release notes generated"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          body_path: RELEASE_NOTES.md
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

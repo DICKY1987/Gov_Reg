@@ -1,0 +1,437 @@
+{
+  "plan_id": "PLAN_20251206_192915",
+  "name": "Gap-Driven Execution Plan",
+  "description": "Execution plan for 10 workstreams",
+  "tasks": [
+    {
+      "task_id": "TASK_0001",
+      "task_kind": "analysis",
+      "description": "Analyze files for integration",
+      "depends_on": [],
+      "metadata": {
+        "workstream_id": "WS_INTEGRATION_0003",
+        "gap_ids": [
+          "GAP_INT_0001",
+          "GAP_INT_0002",
+          "GAP_PATCH_0001"
+        ],
+        "file_scope": [
+          "acms_controller.py"
+        ],
+        "repo_root": "."
+      }
+    },
+    {
+      "task_id": "TASK_0002",
+      "task_kind": "implementation",
+      "description": "Implement fixes for integration",
+      "depends_on": [
+        "TASK_0001"
+      ],
+      "metadata": {
+        "workstream_id": "WS_INTEGRATION_0003",
+        "gap_ids": [
+          "GAP_INT_0001",
+          "GAP_INT_0002",
+          "GAP_PATCH_0001"
+        ],
+        "file_scope": [
+          "acms_controller.py"
+        ],
+        "repo_root": ".",
+        "categories": [
+          "integration"
+        ]
+      }
+    },
+    {
+      "task_id": "TASK_0003",
+      "task_kind": "analysis",
+      "description": "Analyze files for testing",
+      "depends_on": [],
+      "metadata": {
+        "workstream_id": "WS_TESTING_0002",
+        "gap_ids": [
+          "GAP_TEST_0001"
+        ],
+        "file_scope": [
+          "gap_registry.py",
+          "phase_plan_compiler.py",
+          "execution_planner.py",
+          "acms_controller.py"
+        ],
+        "repo_root": "."
+      }
+    },
+    {
+      "task_id": "TASK_0004",
+      "task_kind": "implementation",
+      "description": "Implement fixes for testing",
+      "depends_on": [
+        "TASK_0003"
+      ],
+      "metadata": {
+        "workstream_id": "WS_TESTING_0002",
+        "gap_ids": [
+          "GAP_TEST_0001"
+        ],
+        "file_scope": [
+          "gap_registry.py",
+          "phase_plan_compiler.py",
+          "execution_planner.py",
+          "acms_controller.py"
+        ],
+        "repo_root": ".",
+        "categories": [
+          "testing"
+        ]
+      }
+    },
+    {
+      "task_id": "TASK_0005",
+      "task_kind": "test",
+      "description": "Test changes for testing",
+      "depends_on": [
+        "TASK_0004"
+      ],
+      "metadata": {
+        "workstream_id": "WS_TESTING_0002",
+        "file_scope": [
+          "gap_registry.py",
+          "phase_plan_compiler.py",
+          "execution_planner.py",
+          "acms_controller.py"
+        ],
+        "repo_root": "."
+      }
+    },
+    {
+      "task_id": "TASK_0006",
+      "task_kind": "analysis",
+      "description": "Analyze files for reliability",
+      "depends_on": [],
+      "metadata": {
+        "workstream_id": "WS_RELIABILITY_0004",
+        "gap_ids": [
+          "GAP_ERROR_0001"
+        ],
+        "file_scope": [
+          "acms_controller.py"
+        ],
+        "repo_root": "."
+      }
+    },
+    {
+      "task_id": "TASK_0007",
+      "task_kind": "implementation",
+      "description": "Implement fixes for reliability",
+      "depends_on": [
+        "TASK_0006"
+      ],
+      "metadata": {
+        "workstream_id": "WS_RELIABILITY_0004",
+        "gap_ids": [
+          "GAP_ERROR_0001"
+        ],
+        "file_scope": [
+          "acms_controller.py"
+        ],
+        "repo_root": ".",
+        "categories": [
+          "reliability"
+        ]
+      }
+    },
+    {
+      "task_id": "TASK_0008",
+      "task_kind": "analysis",
+      "description": "Analyze files for safety",
+      "depends_on": [],
+      "metadata": {
+        "workstream_id": "WS_SAFETY_0010",
+        "gap_ids": [
+          "GAP_GIT_0001"
+        ],
+        "file_scope": [
+          "acms_controller.py"
+        ],
+        "repo_root": "."
+      }
+    },
+    {
+      "task_id": "TASK_0009",
+      "task_kind": "implementation",
+      "description": "Implement fixes for safety",
+      "depends_on": [
+        "TASK_0008"
+      ],
+      "metadata": {
+        "workstream_id": "WS_SAFETY_0010",
+        "gap_ids": [
+          "GAP_GIT_0001"
+        ],
+        "file_scope": [
+          "acms_controller.py"
+        ],
+        "repo_root": ".",
+        "categories": [
+          "safety"
+        ]
+      }
+    },
+    {
+      "task_id": "TASK_0010",
+      "task_kind": "analysis",
+      "description": "Analyze files for documentation",
+      "depends_on": [],
+      "metadata": {
+        "workstream_id": "WS_DOCUMENTATION_0001",
+        "gap_ids": [
+          "GAP_DOCS_0001"
+        ],
+        "file_scope": [
+          "gap_registry.py",
+          "phase_plan_compiler.py",
+          "execution_planner.py"
+        ],
+        "repo_root": "."
+      }
+    },
+    {
+      "task_id": "TASK_0011",
+      "task_kind": "implementation",
+      "description": "Implement fixes for documentation",
+      "depends_on": [
+        "TASK_0010"
+      ],
+      "metadata": {
+        "workstream_id": "WS_DOCUMENTATION_0001",
+        "gap_ids": [
+          "GAP_DOCS_0001"
+        ],
+        "file_scope": [
+          "gap_registry.py",
+          "phase_plan_compiler.py",
+          "execution_planner.py"
+        ],
+        "repo_root": ".",
+        "categories": [
+          "documentation"
+        ]
+      }
+    },
+    {
+      "task_id": "TASK_0012",
+      "task_kind": "analysis",
+      "description": "Analyze files for configuration",
+      "depends_on": [],
+      "metadata": {
+        "workstream_id": "WS_CONFIGURATION_0005",
+        "gap_ids": [
+          "GAP_CONFIG_0001"
+        ],
+        "file_scope": [
+          "execution_planner.py",
+          "acms_controller.py"
+        ],
+        "repo_root": "."
+      }
+    },
+    {
+      "task_id": "TASK_0013",
+      "task_kind": "implementation",
+      "description": "Implement fixes for configuration",
+      "depends_on": [
+        "TASK_0012"
+      ],
+      "metadata": {
+        "workstream_id": "WS_CONFIGURATION_0005",
+        "gap_ids": [
+          "GAP_CONFIG_0001"
+        ],
+        "file_scope": [
+          "execution_planner.py",
+          "acms_controller.py"
+        ],
+        "repo_root": ".",
+        "categories": [
+          "configuration"
+        ]
+      }
+    },
+    {
+      "task_id": "TASK_0014",
+      "task_kind": "analysis",
+      "description": "Analyze files for validation",
+      "depends_on": [],
+      "metadata": {
+        "workstream_id": "WS_VALIDATION_0006",
+        "gap_ids": [
+          "GAP_VAL_0001"
+        ],
+        "file_scope": [
+          "gap_registry.py"
+        ],
+        "repo_root": "."
+      }
+    },
+    {
+      "task_id": "TASK_0015",
+      "task_kind": "implementation",
+      "description": "Implement fixes for validation",
+      "depends_on": [
+        "TASK_0014"
+      ],
+      "metadata": {
+        "workstream_id": "WS_VALIDATION_0006",
+        "gap_ids": [
+          "GAP_VAL_0001"
+        ],
+        "file_scope": [
+          "gap_registry.py"
+        ],
+        "repo_root": ".",
+        "categories": [
+          "validation"
+        ]
+      }
+    },
+    {
+      "task_id": "TASK_0016",
+      "task_kind": "test",
+      "description": "Test changes for validation",
+      "depends_on": [
+        "TASK_0015"
+      ],
+      "metadata": {
+        "workstream_id": "WS_VALIDATION_0006",
+        "file_scope": [
+          "gap_registry.py"
+        ],
+        "repo_root": "."
+      }
+    },
+    {
+      "task_id": "TASK_0017",
+      "task_kind": "analysis",
+      "description": "Analyze files for observability",
+      "depends_on": [],
+      "metadata": {
+        "workstream_id": "WS_OBSERVABILITY_0008",
+        "gap_ids": [
+          "GAP_LOG_0001"
+        ],
+        "file_scope": [
+          "gap_registry.py",
+          "phase_plan_compiler.py",
+          "execution_planner.py",
+          "acms_controller.py"
+        ],
+        "repo_root": "."
+      }
+    },
+    {
+      "task_id": "TASK_0018",
+      "task_kind": "implementation",
+      "description": "Implement fixes for observability",
+      "depends_on": [
+        "TASK_0017"
+      ],
+      "metadata": {
+        "workstream_id": "WS_OBSERVABILITY_0008",
+        "gap_ids": [
+          "GAP_LOG_0001"
+        ],
+        "file_scope": [
+          "gap_registry.py",
+          "phase_plan_compiler.py",
+          "execution_planner.py",
+          "acms_controller.py"
+        ],
+        "repo_root": ".",
+        "categories": [
+          "observability"
+        ]
+      }
+    },
+    {
+      "task_id": "TASK_0019",
+      "task_kind": "analysis",
+      "description": "Analyze files for performance",
+      "depends_on": [],
+      "metadata": {
+        "workstream_id": "WS_PERFORMANCE_0007",
+        "gap_ids": [
+          "GAP_PERF_0001"
+        ],
+        "file_scope": [
+          "execution_planner.py"
+        ],
+        "repo_root": "."
+      }
+    },
+    {
+      "task_id": "TASK_0020",
+      "task_kind": "implementation",
+      "description": "Implement fixes for performance",
+      "depends_on": [
+        "TASK_0019"
+      ],
+      "metadata": {
+        "workstream_id": "WS_PERFORMANCE_0007",
+        "gap_ids": [
+          "GAP_PERF_0001"
+        ],
+        "file_scope": [
+          "execution_planner.py"
+        ],
+        "repo_root": ".",
+        "categories": [
+          "performance"
+        ]
+      }
+    },
+    {
+      "task_id": "TASK_0021",
+      "task_kind": "analysis",
+      "description": "Analyze files for usability",
+      "depends_on": [],
+      "metadata": {
+        "workstream_id": "WS_USABILITY_0009",
+        "gap_ids": [
+          "GAP_CLI_0001"
+        ],
+        "file_scope": [
+          "acms_controller.py"
+        ],
+        "repo_root": "."
+      }
+    },
+    {
+      "task_id": "TASK_0022",
+      "task_kind": "implementation",
+      "description": "Implement fixes for usability",
+      "depends_on": [
+        "TASK_0021"
+      ],
+      "metadata": {
+        "workstream_id": "WS_USABILITY_0009",
+        "gap_ids": [
+          "GAP_CLI_0001"
+        ],
+        "file_scope": [
+          "acms_controller.py"
+        ],
+        "repo_root": ".",
+        "categories": [
+          "usability"
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "repo_root": ".",
+    "workstream_count": 10,
+    "generated_at": "2025-12-06T19:29:15.620517+00:00"
+  }
+}

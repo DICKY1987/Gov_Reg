@@ -1,0 +1,13 @@
+{
+  "capabilities": {
+    "code_generation": {
+      "primary": "jules",
+      "fallback": [
+        "aider",
+        "claude-cli"
+      ],
+      "loadBalance": false
+    }
+  },
+  "doc_id": "DOC-CONFIG-AIM-COORDINATION-RULES-849"
+}

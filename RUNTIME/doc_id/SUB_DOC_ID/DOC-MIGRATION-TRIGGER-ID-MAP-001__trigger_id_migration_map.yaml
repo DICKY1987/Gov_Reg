@@ -1,0 +1,96 @@
+# DOC_LINK: DOC-MIGRATION-TRIGGER-ID-MAP-001
+---
+doc_id: DOC-MIGRATION-TRIGGER-ID-MAP-001
+version: 1.0.0
+created: 2026-01-03
+purpose: Migration mapping from old trigger_id format to new framework format
+migration_type: format_update
+id_count: 13
+
+format_change:
+  old: "TRIGGER-{CATEGORY}-{SEQ}"
+  new: "TRIGGER-{CATEGORY}-{NAME}-{SEQ}"
+
+mappings:
+  - old_id: TRIGGER-HOOK-DETECT-CHANGES-001
+    new_id: TRIGGER-HOOK-DETECT-CHANGES-001
+    category: hook
+    name: detect_changes
+    file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\detect_changes.py
+
+  - old_id: TRIGGER-WATCHER-FILE-WATCHER-001
+    new_id: TRIGGER-WATCHER-FILE-WATCHER-001
+    category: watcher
+    name: file_watcher
+    file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\file_watcher.py
+
+  - old_id: TRIGGER-HOOK-INSTALL-PRE-COMMIT-HOOK-002
+    new_id: TRIGGER-HOOK-INSTALL-PRE-COMMIT-HOOK-002
+    category: hook
+    name: install_pre_commit_hook
+    file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\install_pre_commit_hook.py
+
+  - old_id: TRIGGER-SCHED-INSTALL-V3-SCHEDULED-TASKS-001
+    new_id: TRIGGER-SCHED-INSTALL-V3-SCHEDULED-TASKS-001
+    category: scheduled
+    name: install_v3_scheduled_tasks
+    file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\install_v3_scheduled_tasks.py
+
+  - old_id: TRIGGER-HOOK-PRE-COMMIT-HOOK-003
+    new_id: TRIGGER-HOOK-PRE-COMMIT-HOOK-003
+    category: hook
+    name: pre_commit_hook
+    file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\pre_commit_hook.py
+
+  - old_id: TRIGGER-SCHED-SETUP-SCHEDULED-TASKS-002
+    new_id: TRIGGER-SCHED-SETUP-SCHEDULED-TASKS-002
+    category: scheduled
+    name: setup_scheduled_tasks
+    file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\setup_scheduled_tasks.py
+
+  - old_id: TRIGGER-RUNNER-V3-AUTOMATION-RUNNER-001
+    new_id: TRIGGER-RUNNER-V3-AUTOMATION-RUNNER-001
+    category: runner
+    name: v3_automation_runner
+    file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\v3_automation_runner.py
+
+  - old_id: TRIGGER-WATCHER-V3-FILE-WATCHER-002
+    new_id: TRIGGER-WATCHER-V3-FILE-WATCHER-002
+    category: watcher
+    name: v3_file_watcher
+    file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\v3_file_watcher.py
+
+  - old_id: TRIGGER-HOOK-V3-PRE-COMMIT-004
+    new_id: TRIGGER-HOOK-V3-PRE-COMMIT-004
+    category: hook
+    name: v3_pre_commit
+    file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\v3_pre_commit.py
+
+  - old_id: TRIGGER-RUNNER-AUTOMATION-RUNNER-002
+    new_id: TRIGGER-RUNNER-AUTOMATION-RUNNER-002
+    category: runner
+    name: automation_runner
+    file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\automation_runner.ps1
+
+  - old_id: TRIGGER-RUNNER-RUN-DASHBOARD-003
+    new_id: TRIGGER-RUNNER-RUN-DASHBOARD-003
+    category: runner
+    name: run_dashboard
+    file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\run_dashboard.bat
+
+  - old_id: TRIGGER-RUNNER-RUN-HEALTH-CHECK-004
+    new_id: TRIGGER-RUNNER-RUN-HEALTH-CHECK-004
+    category: runner
+    name: run_health_check
+    file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\run_health_check.bat
+
+  - old_id: TRIGGER-RUNNER-RUN-NIGHTLY-SCAN-005
+    new_id: TRIGGER-RUNNER-RUN-NIGHTLY-SCAN-005
+    category: runner
+    name: run_nightly_scan
+    file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\run_nightly_scan.bat
+
+validation:
+  all_ids_mapped: true
+  no_duplicates: true
+  names_extracted_from_registry: true

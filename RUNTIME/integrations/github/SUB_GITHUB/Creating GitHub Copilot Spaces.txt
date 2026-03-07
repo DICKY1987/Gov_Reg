@@ -1,0 +1,186 @@
+Creating GitHub Copilot Spaces
+Create spaces to organize and centralize relevant content that grounds Copilot’s responses in the right context for a specific task.
+
+Who can use this feature?
+Anyone with a Copilot license can use Spaces.
+
+In this article
+For an overview of Copilot Spaces, see About GitHub Copilot Spaces.
+
+Creating a space
+To create a space, go to https://github.com/copilot/spaces, and click Create space.
+
+Give your space a name.
+
+Choose whether the space is owned by you or by an organization you belong to. Organization-owned Spaces can be shared using GitHub’s built-in permission model.
+
+Click Create Space.
+
+Optionally, once you are in the space, under the space name, add a description. This does not affect the responses Copilot gives in the space, but it can help others understand the context of the space.
+
+Note
+
+You can change the name and description of your space at any time by hovering over them and clicking .
+
+Adding context to a space
+You can add two types of context to your space:
+
+Instructions: Free text that describes what Copilot should focus on within this space. Include its areas of expertise, what kinds of tasks it should help with, and what it should avoid. This helps Copilot give more relevant responses based on your intent.
+
+For example:
+
+You are a SQL generator. Your job is to take the sample queries and data schemas defined in the attached files and generate SQL queries based on the user's goals.
+
+Sources: This context will be used to provide more relevant answers to your questions. Additionally, Spaces will always refer to the latest version of the code on the main branch of the repository.
+
+To add sources, click  Add sources, then choose one of the following options:
+
+ Add files and repositories: You can add files, folders, and entire GitHub repositories. When you add a repository, Copilot searches its contents to find relevant information, but adding specific files or folders that are most relevant to your work will give you the best results. This can include code files, documentation, and other content that helps Copilot understand the context of your space.
+ Link files, pull requests, and issues: You can paste the URLs of the GitHub content, including pull requests and issues.
+ Upload a file: You can upload files directly from your local machine. This includes images, text files, rich documents, and spreadsheets.
+ Add text content: You can type or paste free-text content, such as transcripts, notes, or any other relevant information that can help Copilot understand the context of your space.
+
+
+
+
+
+
+
+
+
+
+
+
+Speeding up development work with GitHub Copilot Spaces
+Learn how to use Copilot Spaces to help you with development work.
+
+Who can use this feature?
+Anyone with a Copilot license can use Spaces.
+
+In this article
+If you're starting a new feature, trying to understand a system, or picking up a task in a codebase you’re still learning, Copilot Spaces can help you:
+
+Stay focused by organizing the context you need in one place.
+Get better help from Copilot by grounding it in relevant code and documentation.
+Move faster without switching between tools or asking others for background information.
+To create a space, go to https://github.com/copilot/spaces, and click Create space.
+
+Below are some examples of how to use Spaces to help you with development work.
+
+Developing a new feature
+When working on a specific feature, you can save time and produce higher-quality results by using a space. Add the relevant code, a product spec, and any supporting materials—like notes from a design review or mockup images. Copilot can help you:
+
+Summarize how the current implementation works.
+Suggest changes or additions based on the spec.
+Draft a first implementation or outline next steps.
+Flag missing elements or inconsistencies.
+Instructions:
+
+This space contains the new user registration form for a healthcare nonprofit providing low-cost testing. It is built using React and Tailwind.
+
+Suggested prompt:
+
+How should I add support for 2FA?
+
+Defining the logic for a small, frequent task
+When working on repetitive tasks like tracking telemetry events or handling event emissions, it’s useful to document the logic once and share it with others through Spaces. This allows everyone to stay consistent and saves time when performing the task. If you have a process flowchart for a task, you can upload this to your space for reference. Copilot can assist by:
+
+Suggesting efficient patterns based on your previous work.
+Helping write reusable functions or templates.
+Reviewing the logic to ensure it aligns with project standards.
+Providing examples of how similar tasks have been handled in the codebase.
+Instructions:
+
+You help developers implement telemetry events. You should (1) validate what the user's goals are for the event, (2) propose a new event structure based on examples of existing events (and using the common telemetry schema), and (3) create a new version of the telemetry config file.
+
+Suggested prompt:
+
+Help me log when a user clicks on an in-app notification.
+
+Sharing knowledge with teammates
+In situations where people tend to ask similar questions, such as how authentication or search works in your project, Copilot can help:
+
+Explain how the code works.
+Answer questions grounded in the latest documentation.
+Guide new team members on the best practices.
+Instructions:
+
+You contain the code and documentation associated with our authentication system.
+
+Suggested prompt:
+
+How does SSO work?
+
+Hands-on practice
+Try the Scale institutional knowledge using Copilot Spaces Skills exercise for practical experience to do the following:
+
+Centralize scattered project management knowledge in Copilot Spaces
+Convert tacit team insights into searchable, versioned artifacts
+Give all team members equal access to processes, decisions, and rationale
+Connect a repository as a structured knowledge source
+Extract, refine, and standardize workflows collaboratively
+Feed validated improvements back into living documentation
+Accelerate onboarding and reduce single-person dependency risk
+Enable consistent, repeatable project execution
+
+
+
+
+
+
+
+Creating GitHub Copilot Spaces
+Create spaces to organize and centralize relevant content that grounds Copilot’s responses in the right context for a specific task.
+
+Who can use this feature?
+Anyone with a Copilot license can use Spaces.
+
+In this article
+For an overview of Copilot Spaces, see About GitHub Copilot Spaces.
+
+Creating a space
+To create a space, go to https://github.com/copilot/spaces, and click Create space.
+
+Give your space a name.
+
+Choose whether the space is owned by you or by an organization you belong to. Organization-owned Spaces can be shared using GitHub’s built-in permission model.
+
+Click Create Space.
+
+Optionally, once you are in the space, under the space name, add a description. This does not affect the responses Copilot gives in the space, but it can help others understand the context of the space.
+
+Note
+
+You can change the name and description of your space at any time by hovering over them and clicking .
+
+Adding context to a space
+You can add two types of context to your space:
+
+Instructions: Free text that describes what Copilot should focus on within this space. Include its areas of expertise, what kinds of tasks it should help with, and what it should avoid. This helps Copilot give more relevant responses based on your intent.
+
+For example:
+
+You are a SQL generator. Your job is to take the sample queries and data schemas defined in the attached files and generate SQL queries based on the user's goals.
+
+Sources: This context will be used to provide more relevant answers to your questions. Additionally, Spaces will always refer to the latest version of the code on the main branch of the repository.
+
+To add sources, click  Add sources, then choose one of the following options:
+
+ Add files and repositories: You can add files, folders, and entire GitHub repositories. When you add a repository, Copilot searches its contents to find relevant information, but adding specific files or folders that are most relevant to your work will give you the best results. This can include code files, documentation, and other content that helps Copilot understand the context of your space.
+ Link files, pull requests, and issues: You can paste the URLs of the GitHub content, including pull requests and issues.
+ Upload a file: You can upload files directly from your local machine. This includes images, text files, rich documents, and spreadsheets.
+ Add text content: You can type or paste free-text content, such as transcripts, notes, or any other relevant information that can help Copilot understand the context of your space.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

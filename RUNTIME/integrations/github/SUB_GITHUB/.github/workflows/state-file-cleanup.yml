@@ -1,0 +1,37 @@
+name: State File Cleanup
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2 AM UTC
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  cleanup:
+    name: Clean Up State Files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Run cleanup (dry-run preview)
+        run: |
+          python scripts/cleanup_state_files.py --dry-run --days 30
+
+      - name: Run cleanup (actual)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          python scripts/cleanup_state_files.py --days 30
+
+      - name: Upload cleanup report
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: cleanup-report
+          path: .state/cleanup_summary.txt
+          retention-days: 7

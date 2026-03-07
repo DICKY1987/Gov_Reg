@@ -1,0 +1,996 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uet-pipeline.org/schemas/phase5-execution-packet/v1.0.0",
+  "title": "Phase 5 Execution Packet",
+  "description": "Single authoritative input contract for Phase 5 execution. Combines phase plan, prompt template, and runtime bindings into one validated artifact.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "meta",
+    "identity",
+    "scope",
+    "dag",
+    "execution",
+    "prompt",
+    "validation",
+    "acceptance",
+    "observability",
+    "signatures"
+  ],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "description": "Packet metadata and provenance",
+      "additionalProperties": false,
+      "required": [
+        "contract_kind",
+        "schema_version",
+        "packet_id",
+        "created_at",
+        "source_provenance"
+      ],
+      "properties": {
+        "contract_kind": {
+          "type": "string",
+          "const": "phase5_execution_packet",
+          "description": "Fixed contract type identifier"
+        },
+        "schema_version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Semantic version of this schema"
+        },
+        "packet_id": {
+          "type": "string",
+          "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$",
+          "description": "ULID identifier for this packet"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of packet creation"
+        },
+        "created_by": {
+          "type": "string",
+          "description": "Tool or user that created this packet"
+        },
+        "source_provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "phase_plan_doc_id",
+            "prompt_template_id",
+            "compiler_version"
+          ],
+          "properties": {
+            "phase_plan_doc_id": {
+              "type": "string",
+              "description": "Source phase plan document ID"
+            },
+            "phase_plan_template_version": {
+              "type": "integer",
+              "description": "Version of phase plan template used"
+            },
+            "prompt_template_id": {
+              "type": "string",
+              "description": "Prompt template identifier"
+            },
+            "prompt_template_version": {
+              "type": "string",
+              "description": "Prompt template version"
+            },
+            "prompt_template_hash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$",
+              "description": "SHA-256 hash of canonical prompt template"
+            },
+            "compiler_version": {
+              "type": "string",
+              "description": "Version of compiler that generated this packet"
+            },
+            "git_commit": {
+              "type": "string",
+              "description": "Git commit SHA at compilation time"
+            }
+          }
+        },
+        "engine_min_version": {
+          "type": "string",
+          "description": "Minimum execution engine version required"
+        }
+      }
+    },
+    "identity": {
+      "type": "object",
+      "description": "Phase and workstream identity",
+      "additionalProperties": false,
+      "required": [
+        "phase_id",
+        "workstream_id",
+        "objective",
+        "repo_root"
+      ],
+      "properties": {
+        "phase_id": {
+          "type": "string",
+          "pattern": "^PH-[A-Z0-9]+$",
+          "description": "Phase identifier"
+        },
+        "workstream_id": {
+          "type": "string",
+          "pattern": "^ws-[a-z0-9-]+$",
+          "description": "Workstream identifier"
+        },
+        "objective": {
+          "type": "string",
+          "minLength": 10,
+          "description": "Mission objective for this phase"
+        },
+        "repo_root": {
+          "type": "string",
+          "description": "Repository root path"
+        },
+        "target_branch": {
+          "type": "string",
+          "description": "Target branch for execution"
+        },
+        "worktree": {
+          "type": "string",
+          "description": "Worktree path if using worktree isolation"
+        },
+        "workspace_path": {
+          "type": "string",
+          "description": "Absolute workspace path for execution"
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "description": "File scope enforcement rules",
+      "additionalProperties": false,
+      "required": [
+        "read_only_paths",
+        "allowed_modify_paths",
+        "allowed_create_paths",
+        "forbidden_paths"
+      ],
+      "properties": {
+        "read_only_paths": {
+          "type": "array",
+          "description": "File patterns that may only be read",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "allowed_modify_paths": {
+          "type": "array",
+          "description": "File patterns that may be modified",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "allowed_create_paths": {
+          "type": "array",
+          "description": "Directory patterns where files may be created",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "forbidden_paths": {
+          "type": "array",
+          "description": "Paths that must never be touched",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "glob_policy": {
+          "type": "object",
+          "description": "Glob pattern interpretation rules",
+          "additionalProperties": false,
+          "properties": {
+            "engine": {
+              "type": "string",
+              "enum": [
+                "python-pathlib",
+                "python-glob",
+                "gitignore-style"
+              ],
+              "description": "Glob engine to use for pattern matching"
+            },
+            "case_sensitive": {
+              "type": "boolean",
+              "description": "Whether glob patterns are case-sensitive"
+            }
+          }
+        },
+        "scope_hashes": {
+          "type": "object",
+          "description": "SHA-256 hashes of scope lists for integrity verification",
+          "additionalProperties": false,
+          "properties": {
+            "read_only_hash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "modify_hash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "create_hash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "forbidden_hash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        }
+      }
+    },
+    "dag": {
+      "type": "object",
+      "description": "Directed Acyclic Graph of execution steps",
+      "additionalProperties": false,
+      "required": [
+        "nodes",
+        "edges"
+      ],
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "description": "DAG nodes (execution steps)",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "node_id",
+              "step_id"
+            ],
+            "properties": {
+              "node_id": {
+                "type": "string",
+                "description": "Unique node identifier in DAG"
+              },
+              "step_id": {
+                "type": "string",
+                "description": "Corresponding execution step ID"
+              },
+              "operation_kind": {
+                "type": "string",
+                "description": "Type of operation this node performs"
+              },
+              "inputs": {
+                "type": "array",
+                "description": "Input artifacts consumed by this node",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "outputs": {
+                "type": "array",
+                "description": "Output artifacts produced by this node",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "edges": {
+          "type": "array",
+          "description": "DAG edges (dependencies between nodes)",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "from",
+              "to"
+            ],
+            "properties": {
+              "from": {
+                "type": "string",
+                "description": "Source node ID"
+              },
+              "to": {
+                "type": "string",
+                "description": "Target node ID"
+              },
+              "dependency_type": {
+                "type": "string",
+                "enum": [
+                  "hard",
+                  "soft",
+                  "artifact"
+                ],
+                "description": "Type of dependency"
+              }
+            }
+          }
+        },
+        "invariants": {
+          "type": "object",
+          "description": "DAG invariants that must hold",
+          "additionalProperties": false,
+          "properties": {
+            "must_be_acyclic": {
+              "type": "boolean",
+              "const": true
+            },
+            "max_parallelism": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "dependency_mode": {
+              "type": "string",
+              "enum": [
+                "strict",
+                "best-effort"
+              ]
+            }
+          }
+        },
+        "io_contracts": {
+          "type": "array",
+          "description": "Explicit artifact contracts between nodes",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "producer_node",
+              "consumer_node",
+              "artifact_id"
+            ],
+            "properties": {
+              "producer_node": {
+                "type": "string"
+              },
+              "consumer_node": {
+                "type": "string"
+              },
+              "artifact_id": {
+                "type": "string"
+              },
+              "artifact_type": {
+                "type": "string"
+              },
+              "required": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "description": "Execution steps and runtime profile",
+      "additionalProperties": false,
+      "required": [
+        "steps",
+        "runtime_profile"
+      ],
+      "properties": {
+        "steps": {
+          "type": "array",
+          "description": "Ordered execution steps",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "step_id",
+              "name",
+              "operation_kind",
+              "tool_id"
+            ],
+            "properties": {
+              "step_id": {
+                "type": "string",
+                "pattern": "^step-[0-9]{2,}-[a-z0-9-]+$",
+                "description": "Unique step identifier"
+              },
+              "name": {
+                "type": "string",
+                "description": "Human-readable step name"
+              },
+              "operation_kind": {
+                "type": "string",
+                "description": "Operation type for this step"
+              },
+              "pattern_ids": {
+                "type": "array",
+                "description": "Pattern IDs applied to this step",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "tool_id": {
+                "type": "string",
+                "description": "Tool used to execute this step"
+              },
+              "description": {
+                "type": "string",
+                "description": "Detailed step description"
+              },
+              "commands": {
+                "type": "array",
+                "description": "Commands to execute",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "actions": {
+                "type": "array",
+                "description": "Structured actions to perform",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "inputs": {
+                "type": "object",
+                "description": "Step input parameters"
+              },
+              "expected_outputs": {
+                "type": "array",
+                "description": "Expected outputs from this step",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "description"
+                  ],
+                  "properties": {
+                    "description": {
+                      "type": "string"
+                    },
+                    "artifact_id": {
+                      "type": "string"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "requires_human_confirmation": {
+                "type": "boolean",
+                "description": "Whether human approval is required"
+              },
+              "stop_conditions": {
+                "type": "array",
+                "description": "Conditions that stop step execution",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "rollback_hint": {
+                "type": "string",
+                "description": "Hint for rolling back this step"
+              },
+              "pattern_waiver": {
+                "type": "object",
+                "description": "Waiver if no patterns are declared",
+                "additionalProperties": false,
+                "required": [
+                  "reason"
+                ],
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "minLength": 20
+                  },
+                  "approved_by": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "runtime_profile": {
+          "type": "object",
+          "description": "Runtime execution configuration",
+          "additionalProperties": false,
+          "required": [
+            "run_mode"
+          ],
+          "properties": {
+            "run_mode": {
+              "type": "string",
+              "enum": [
+                "plan_only",
+                "dry_run",
+                "execute"
+              ],
+              "description": "Execution mode"
+            },
+            "concurrency": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Maximum parallel step execution"
+            },
+            "max_runtime_minutes": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Maximum runtime before timeout"
+            },
+            "retry_policy": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "max_attempts": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "backoff_strategy": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "linear",
+                    "exponential"
+                  ]
+                }
+              }
+            },
+            "timeout_behavior": {
+              "type": "string",
+              "enum": [
+                "abort",
+                "mark_failed",
+                "continue"
+              ]
+            },
+            "dry_run": {
+              "type": "boolean",
+              "description": "Whether to run in dry-run mode"
+            }
+          }
+        }
+      }
+    },
+    "prompt": {
+      "type": "object",
+      "description": "Prompt template reference and rendered prompt",
+      "additionalProperties": false,
+      "required": [
+        "prompt_template_ref",
+        "placeholder_bindings",
+        "rendered_prompt",
+        "output_contract"
+      ],
+      "properties": {
+        "prompt_template_ref": {
+          "type": "object",
+          "description": "Reference to source prompt template",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "version",
+            "sha256"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Prompt template identifier"
+            },
+            "version": {
+              "type": "string",
+              "description": "Template version"
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$",
+              "description": "SHA-256 hash of template"
+            }
+          }
+        },
+        "placeholder_bindings": {
+          "type": "object",
+          "description": "Placeholder to value mappings",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "rendered_prompt": {
+          "type": "string",
+          "description": "Fully rendered prompt with all placeholders substituted",
+          "minLength": 100
+        },
+        "output_contract": {
+          "type": "object",
+          "description": "JSON schema the agent must follow for output"
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "description": "Validation rules and checks",
+      "additionalProperties": false,
+      "required": [
+        "required_passes"
+      ],
+      "properties": {
+        "structural_validations": {
+          "type": "array",
+          "description": "Structural validation checks",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "description"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "check_type": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "semantic_validations": {
+          "type": "array",
+          "description": "Semantic validation rules",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "description"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "rule": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "toolchain_validations": {
+          "type": "array",
+          "description": "Pre-flight toolchain checks",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "description",
+              "command"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "command": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "tool_id",
+                  "args"
+                ],
+                "properties": {
+                  "tool_id": {
+                    "type": "string"
+                  },
+                  "args": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "success_pattern": {
+                "type": "string"
+              },
+              "on_fail": {
+                "type": "string",
+                "enum": [
+                  "abort",
+                  "attempt_repair_phase",
+                  "mark_blocked",
+                  "warn"
+                ]
+              }
+            }
+          }
+        },
+        "policy_validations": {
+          "type": "array",
+          "description": "Policy enforcement checks",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "description",
+              "policy_type"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "policy_type": {
+                "type": "string",
+                "enum": [
+                  "scope_enforcement",
+                  "forbidden_paths",
+                  "secrets_check",
+                  "anti_pattern"
+                ]
+              }
+            }
+          }
+        },
+        "required_passes": {
+          "type": "array",
+          "description": "Ordered list of validation IDs that must pass",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "acceptance": {
+      "type": "object",
+      "description": "Acceptance tests and completion criteria",
+      "additionalProperties": false,
+      "required": [
+        "tests",
+        "completion_gate",
+        "required_artifacts"
+      ],
+      "properties": {
+        "tests": {
+          "type": "array",
+          "description": "Acceptance tests that must pass",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "description",
+              "command",
+              "success_pattern",
+              "must_pass"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "command": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "tool_id",
+                  "args"
+                ],
+                "properties": {
+                  "tool_id": {
+                    "type": "string"
+                  },
+                  "args": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "success_pattern": {
+                "type": "string",
+                "description": "Regex pattern for success detection"
+              },
+              "must_pass": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "completion_gate": {
+          "type": "object",
+          "description": "Deterministic completion gate rules",
+          "additionalProperties": false,
+          "required": [
+            "rules"
+          ],
+          "properties": {
+            "rules": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "dependencies_done": {
+                  "type": "boolean"
+                },
+                "pre_flight_passed": {
+                  "type": "boolean"
+                },
+                "acceptance_tests_all_passed": {
+                  "type": "boolean"
+                },
+                "required_artifacts_present": {
+                  "type": "boolean"
+                },
+                "no_scope_violations_detected": {
+                  "type": "boolean"
+                },
+                "circuit_breakers_not_tripped": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "manual_override": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "allowed": {
+                  "type": "boolean"
+                },
+                "justification_required": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        },
+        "required_artifacts": {
+          "type": "array",
+          "description": "Artifacts that must exist post-execution",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "artifact_id",
+              "path",
+              "must_exist"
+            ],
+            "properties": {
+              "artifact_id": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "patch",
+                  "log",
+                  "doc",
+                  "db_migration",
+                  "config",
+                  "test_report"
+                ]
+              },
+              "must_exist": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
+    "observability": {
+      "type": "object",
+      "description": "Observability and metrics configuration",
+      "additionalProperties": false,
+      "properties": {
+        "log_paths": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "execution_log": {
+              "type": "string"
+            },
+            "error_log": {
+              "type": "string"
+            },
+            "metrics_log": {
+              "type": "string"
+            }
+          }
+        },
+        "jsonl_event_stream_path": {
+          "type": "string",
+          "description": "Path to JSONL event stream output"
+        },
+        "metrics_required": {
+          "type": "array",
+          "description": "Metrics that must be collected",
+          "items": {
+            "type": "string",
+            "enum": [
+              "duration",
+              "files_touched",
+              "test_results",
+              "error_count",
+              "token_usage",
+              "api_cost"
+            ]
+          }
+        },
+        "event_tags": {
+          "type": "array",
+          "description": "Tags to apply to all events",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "signatures": {
+      "type": "object",
+      "description": "Cryptographic signatures and integrity hashes",
+      "additionalProperties": false,
+      "required": [
+        "packet_hash"
+      ],
+      "properties": {
+        "packet_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 hash of canonical packet JSON (excluding this field)"
+        },
+        "sign_off": {
+          "type": "array",
+          "description": "Optional approval signatures",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "role",
+              "timestamp"
+            ],
+            "properties": {
+              "role": {
+                "type": "string",
+                "enum": [
+                  "human_operator",
+                  "ai_agent",
+                  "automated_system"
+                ]
+              },
+              "identity": {
+                "type": "string"
+              },
+              "timestamp": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "signature": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "doc_id": "DOC-CONFIG-PHASE5-EXECUTION-PACKET-SCHEMA-599"
+}

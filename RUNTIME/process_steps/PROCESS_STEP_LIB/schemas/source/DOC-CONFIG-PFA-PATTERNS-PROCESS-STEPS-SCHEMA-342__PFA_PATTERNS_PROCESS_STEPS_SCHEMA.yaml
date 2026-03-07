@@ -1,0 +1,740 @@
+# DOC_LINK: DOC-CONFIG-PFA-PATTERNS-PROCESS-STEPS-SCHEMA-342
+doc_id: DOC-CONFIG-PFA-PATTERNS-PROCESS-STEPS-SCHEMA-342
+meta:
+  process_id: PATTERNS_PROCESS_STEPS_SCHEMA
+  source_file: PROCESS_STEP_LIB\PFA_PATTERNS_PROCESS_STEPS_SCHEMA.yaml
+  normalized_by: pfa_normalize_steps.py
+steps:
+- step_id: PAT-INIT-001
+  phase: INIT
+  name: Validate Directory Structure
+  description: 'Check required directories exist:
+
+    - specs/ (pattern specifications)
+
+    - executors/ (executor scripts)
+
+    - schemas/ (JSON schemas)
+
+    - examples/ (instance examples)
+
+    - registry/ (pattern index)
+
+    - automation/ (automation components)
+
+    Create missing directories with exist_ok=True.'
+  responsible_component: pattern_orchestrate
+  operation_kind: initialization
+  inputs:
+  - 'patterns_dir: patterns/'
+  expected_outputs:
+  - All required directories created or validated
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - specs/
+  - executors/
+  - registry/
+  guardrail_checkpoint: false
+  _content_hash: 9d4512aa8b37f8668e6e7e291cc02855d6ddc6a5
+- step_id: PAT-INIT-002
+  phase: INIT
+  name: Initialize Pattern Database
+  description: 'Create SQLite database with tables:
+
+    - executions (pattern run telemetry)
+
+    - detected_patterns (auto-discovered patterns)
+
+    - performance_metrics (analytics)
+
+    - error_learning (self-healing data)'
+  responsible_component: zero_touch_workflow
+  operation_kind: initialization
+  inputs:
+  - 'db_path: automation/pattern_automation.db'
+  expected_outputs:
+  - SQLite database created with schema
+  - 'Tables: executions, detected_patterns, performance_metrics, error_learning'
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - automation/pattern_automation.db
+  guardrail_checkpoint: false
+  _content_hash: 121f277950d655ab25bd9f20dc23454e072df504
+- step_id: PAT-INIT-003
+  phase: INIT
+  name: Load Pattern Registry
+  description: 'Load PATTERN_INDEX.yaml to memory.
+
+    Validate registry structure and pattern entries.
+
+    Current status: 33 registered patterns.'
+  responsible_component: pattern_orchestrate
+  operation_kind: initialization
+  inputs:
+  - 'registry_path: registry/PATTERN_INDEX.yaml'
+  expected_outputs:
+  - 'Pattern registry loaded: List[Pattern]'
+  - 'Registry validation: schema compliance checked'
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - registry/PATTERN_INDEX.yaml
+  guardrail_checkpoint: true
+  _content_hash: 858bce7e715d803a786f9d08933b39438ca103c4
+- step_id: PAT-DISC-001
+  phase: DISCOVERY
+  name: Scan Pattern Specifications
+  description: 'Scan specs/*.pattern.yaml for new pattern files.
+
+    Parse YAML and extract pattern metadata.
+
+    Validate against pattern schema.'
+  responsible_component: pattern_scanner
+  operation_kind: pattern_discovery
+  inputs:
+  - 'specs_dir: specs/'
+  - 'Pattern glob: *.pattern.yaml'
+  expected_outputs:
+  - 'List of discovered patterns: List[Pattern]'
+  - Count of new patterns vs. existing registry
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - specs/*.pattern.yaml
+  guardrail_checkpoint: false
+  _content_hash: a76942559ec1504d03ee05140339f1c414765355
+- step_id: PAT-DISC-002
+  phase: DISCOVERY
+  name: Discover Executors
+  description: 'Scan executors/*.ps1 for executor scripts.
+
+    Match executors to patterns by naming conventions:
+
+    - Exact match: PAT-ATOMIC-CREATE-001 → atomic_create_001_executor.ps1
+
+    - Base match: PAT-ATOMIC-CREATE-001 → atomic_create_executor.ps1
+
+    - ID match: Check pattern.executor field'
+  responsible_component: pattern_scanner
+  operation_kind: pattern_discovery
+  inputs:
+  - 'executors_dir: executors/'
+  - Pattern list from DISC-001
+  expected_outputs:
+  - 'Executor mapping: {pattern_id: executor_file}'
+  - Unmatched patterns logged as warnings
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - executors/*.ps1
+  guardrail_checkpoint: false
+  _content_hash: b13554769beb925a3b910363266d3b5af5f0bc34
+- step_id: PAT-DISC-003
+  phase: DISCOVERY
+  name: Detect Duplicates
+  description: 'Calculate similarity between patterns.
+
+    Detect duplicates with similarity ≥85%.
+
+    Suggest consolidation for high-similarity pairs.'
+  responsible_component: duplicate_detector
+  operation_kind: pattern_validation
+  inputs:
+  - Pattern list from DISC-001
+  - 'Similarity threshold: 0.85'
+  expected_outputs:
+  - 'Duplicate pairs: List[{pattern_a, pattern_b, similarity}]'
+  - Consolidation suggestions
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs: []
+  guardrail_checkpoint: true
+  _content_hash: 544fae9e81d12723228ca5dc09ca3215b92d2f4a
+- step_id: PAT-DISC-004
+  phase: DISCOVERY
+  name: Score Pattern Staleness
+  description: 'Calculate staleness based on last usage timestamp.
+
+    Classify patterns:
+
+    - Fresh: last_used < 30 days
+
+    - Stale: 30-90 days
+
+    - Obsolete: > 90 days
+
+    Suggest archival for obsolete patterns.'
+  responsible_component: staleness_scorer
+  operation_kind: pattern_validation
+  inputs:
+  - Pattern list with usage metadata
+  - Current timestamp
+  expected_outputs:
+  - 'Staleness scores: {pattern_id: {score, classification}}'
+  - 'Archival candidates: List[pattern_id]'
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs: []
+  guardrail_checkpoint: false
+  _content_hash: 956a1844c934a71e8703185e2501081ae9b7a07b
+- step_id: PAT-MINE-001
+  phase: MINING
+  name: Mine AI Tool Logs
+  description: 'Mine logs from AI tools (nightly scheduled):
+
+    - Claude conversation logs (.claude/ directory)
+
+    - GitHub Copilot logs (if available)
+
+    - Codex execution logs (if available)
+
+
+    Extract user requests with timestamps and context.
+
+    Current performance: 8 executions logged, 7 patterns detected (87.5% accuracy).'
+  responsible_component: zero_touch_workflow
+  operation_kind: ai_log_mining
+  inputs:
+  - 'Log paths: .claude/, copilot_logs/, codex_logs/'
+  - 'Time window: last 24 hours'
+  expected_outputs:
+  - 'User requests: List[{phrase, timestamp, context, tool}]'
+  - Request count per AI tool
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs: []
+  guardrail_checkpoint: false
+  _content_hash: a4cde1bfe5e992d425fa8743fda51eddc69983f5
+- step_id: PAT-DETECT-001
+  phase: DETECTION
+  name: Cluster Similar Requests
+  description: 'Cluster user requests by similarity.
+
+    Use text similarity algorithms (Levenshtein, cosine similarity).
+
+    Group requests with similarity ≥75%.'
+  responsible_component: zero_touch_workflow
+  operation_kind: similarity_detection
+  inputs:
+  - User requests from MINE-001
+  - 'Similarity threshold: 0.75'
+  expected_outputs:
+  - 'Request clusters: List[{phrase, requests[], confidence}]'
+  - Cluster count
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs: []
+  guardrail_checkpoint: false
+  _content_hash: 178b8d3245d66f4f2c646b22766c9a8a0b99aeb6
+- step_id: PAT-DETECT-002
+  phase: DETECTION
+  name: Calculate Confidence Scores
+  description: 'Calculate confidence for each cluster based on:
+
+    - Number of occurrences (min: 3)
+
+    - Similarity score between requests
+
+    - Consistency of execution context
+
+
+    Current average confidence: 86.5%.'
+  responsible_component: zero_touch_workflow
+  operation_kind: similarity_detection
+  inputs:
+  - Request clusters from DETECT-001
+  expected_outputs:
+  - 'Confidence scores: {cluster_id: confidence_score}'
+  - 'High-confidence clusters (≥90%): auto-approval candidates'
+  - 'Medium-confidence clusters (75-90%): manual review'
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs: []
+  guardrail_checkpoint: false
+  _content_hash: 2619605fe5d1ec0a434e1eaec5398593a7406af4
+- step_id: PAT-DETECT-003
+  phase: DETECTION
+  name: Detect Anti-Patterns
+  description: 'Scan detected patterns for anti-pattern violations:
+
+    - ANTI-GIANT-REFACTOR: Scope too broad
+
+    - ANTI-EDIT-OUTSIDE-SCOPE: File access violations
+
+    - ANTI-SKIP-TESTS: Missing validation
+
+
+    Block anti-patterns before generation.'
+  responsible_component: anti_pattern_detector
+  operation_kind: self_healing
+  inputs:
+  - Request clusters from DETECT-001
+  - 'Anti-pattern registry: schemas/anti_patterns.schema.json'
+  expected_outputs:
+  - 'Anti-pattern violations: List[{cluster_id, anti_pattern_id, reason}]'
+  - 'Blocked clusters: removed from pipeline'
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - schemas/anti_patterns.schema.json
+  guardrail_checkpoint: true
+  _content_hash: 57050ca6c106f2700d74b33fdb9303ac9e90d6d4
+- step_id: PAT-GEN-001
+  phase: GENERATION
+  name: Generate Pattern Specifications
+  description: 'Auto-generate pattern YAML specs from high-confidence clusters.
+
+    Include:
+
+    - Pattern metadata (id, title, description)
+
+    - Execution steps extracted from request context
+
+    - Example instances
+
+    - Confidence score'
+  responsible_component: zero_touch_workflow
+  operation_kind: pattern_generation
+  inputs:
+  - High-confidence clusters from DETECT-002
+  - 'Pattern template: templates/pattern-schema.json'
+  expected_outputs:
+  - 'Draft patterns: drafts/AUTO-*.yaml'
+  - Pattern count generated
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - drafts/AUTO-*.yaml
+  - templates/pattern-schema.json
+  guardrail_checkpoint: false
+  _content_hash: 19e8bbb4eb9c54e4b8747c04c61582982fea9e9f
+- step_id: PAT-GEN-002
+  phase: GENERATION
+  name: Generate Documentation Suite
+  description: 'Auto-generate complete documentation for new patterns:
+
+    - README.md with usage instructions
+
+    - Example instances (full, minimal, test)
+
+    - JSON schema for validation
+
+    - Integration guide'
+  responsible_component: doc_suite_generator
+  operation_kind: doc_suite_generation
+  inputs:
+  - Draft patterns from GEN-001
+  expected_outputs:
+  - 'Pattern docs: docs/{pattern_id}/*.md'
+  - 'Pattern examples: examples/{pattern_id}/instance_*.json'
+  - 'Pattern schema: schemas/{pattern_id}.schema.json'
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - docs/
+  - examples/
+  - schemas/
+  guardrail_checkpoint: false
+  _content_hash: 71199e712f842376b486403605ee14194e36dcff
+- step_id: PAT-VAL-001
+  phase: VALIDATION
+  name: Schema Validation
+  description: 'Validate draft patterns against JSON schema.
+
+    Check required fields, data types, constraints.
+
+    Validate examples against pattern schema.'
+  responsible_component: pattern_scanner
+  operation_kind: pattern_validation
+  inputs:
+  - 'Draft patterns: drafts/AUTO-*.yaml'
+  - 'Schema: templates/pattern-schema.json'
+  expected_outputs:
+  - 'Validation results: {pattern_id: {valid, errors[]}}'
+  - Valid patterns passed to approval
+  - Invalid patterns logged for review
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - templates/pattern-schema.json
+  guardrail_checkpoint: true
+  _content_hash: 95917fd286e76a7adf7ee6cb0c1df540fcd24d2b
+- step_id: PAT-VAL-002
+  phase: VALIDATION
+  name: Duplicate Check
+  description: 'Check if generated pattern is duplicate of existing.
+
+    Use similarity threshold: 85%.
+
+    Reject duplicates, suggest using existing pattern.'
+  responsible_component: duplicate_detector
+  operation_kind: pattern_validation
+  inputs:
+  - Valid patterns from VAL-001
+  - Existing registry patterns
+  expected_outputs:
+  - 'Duplicate check: {pattern_id: {is_duplicate, similar_to}}'
+  - Unique patterns passed to approval
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - registry/PATTERN_INDEX.yaml
+  guardrail_checkpoint: true
+  _content_hash: 5de174003d671ad51fc97ebf73eaf7e5a6714abb
+- step_id: PAT-APPR-001
+  phase: APPROVAL
+  name: Confidence-Based Auto-Approval
+  description: 'Auto-approve patterns based on confidence:
+
+    - High confidence (≥90%): Auto-approved
+
+    - Medium confidence (75-90%): Flag for manual review
+
+    - Low confidence (<75%): Reject
+
+
+    Current stats: All 7 patterns auto-approved at 86.5% avg confidence.'
+  responsible_component: zero_touch_workflow
+  operation_kind: auto_approval
+  inputs:
+  - Validated patterns from VAL-002
+  - Confidence scores from DETECT-002
+  - 'Thresholds: {high: 0.90, medium: 0.75}'
+  expected_outputs:
+  - 'Auto-approved patterns: List[pattern_id]'
+  - 'Manual review queue: List[pattern_id]'
+  - 'Rejected patterns: List[pattern_id]'
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs: []
+  guardrail_checkpoint: false
+  _content_hash: b730c2b7ebae31fde27f9f2526bc6b7e66602bef
+- step_id: PAT-APPR-002
+  phase: APPROVAL
+  name: Generate Approval Report
+  description: 'Generate approval report with:
+
+    - Patterns approved with confidence scores
+
+    - Patterns flagged for manual review with reasons
+
+    - Patterns rejected with explanations
+
+    - Recommendations for threshold tuning'
+  responsible_component: zero_touch_workflow
+  operation_kind: pattern_generation
+  inputs:
+  - Approval results from APPR-001
+  expected_outputs:
+  - 'Approval report: reports/approval_*.json'
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - reports/approval_*.json
+  guardrail_checkpoint: false
+  _content_hash: 655950d1c13db8516a96cc73a0cdc7bd7e2ee5a7
+- step_id: PAT-REG-001
+  phase: REGISTRATION
+  name: Update Pattern Registry
+  description: 'Add approved patterns to PATTERN_INDEX.yaml.
+
+    Assign pattern IDs sequentially.
+
+    Update doc_id_mapping.json.'
+  responsible_component: zero_touch_workflow
+  operation_kind: registry_update
+  inputs:
+  - Auto-approved patterns from APPR-001
+  - 'Current registry: registry/PATTERN_INDEX.yaml'
+  expected_outputs:
+  - Updated registry with new patterns
+  - 'Pattern IDs assigned: PAT-XXX-NNN'
+  - doc_id_mapping.json updated
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - registry/PATTERN_INDEX.yaml
+  - registry/doc_id_mapping.json
+  guardrail_checkpoint: false
+  _content_hash: 43e69a884f97aaf958ad536b2f8e82af89a73af8
+- step_id: PAT-REG-002
+  phase: REGISTRATION
+  name: Move Drafts to Specs
+  description: 'Move approved patterns from drafts/ to specs/.
+
+    Rename: drafts/AUTO-001.yaml → specs/PAT-XXX-001.pattern.yaml.
+
+    Archive rejected drafts for review.'
+  responsible_component: zero_touch_workflow
+  operation_kind: persistence
+  inputs:
+  - Approved patterns from REG-001
+  expected_outputs:
+  - Pattern files in specs/
+  - Drafts cleaned up
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - specs/*.pattern.yaml
+  guardrail_checkpoint: false
+  _content_hash: 0a106c2e3108aa84c250e5e04efaba21c3fec2c9
+- step_id: PATTERN-EXEC-DOC-ID-SCANNING-001
+  phase: EXECUTION
+  name: Load Pattern and Instance
+  description: 'Load pattern from registry by ID.
+
+    Load instance YAML/JSON if provided.
+
+    Validate instance against pattern schema.'
+  responsible_component: pattern_orchestrate
+  operation_kind: pattern_execution
+  inputs:
+  - 'Pattern ID from CLI: --pattern-id PAT-XXX'
+  - 'Instance file: --instance instance.yaml (optional)'
+  expected_outputs:
+  - Pattern dict loaded from registry
+  - Instance dict validated against schema
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - registry/PATTERN_INDEX.yaml
+  guardrail_checkpoint: true
+  _content_hash: 0f015eba1b6cf13b99c4589847868f34edd864cf
+- step_id: PATTERN-EXEC-DOC-ID-AUTO-ASSIGNMENT-002
+  phase: EXECUTION
+  name: Match Executor
+  description: 'Find executor for pattern using discovery logic.
+
+    Check executor existence in executors/*.ps1.
+
+    Fallback to generic executor if pattern-specific not found.'
+  responsible_component: pattern_orchestrate
+  operation_kind: pattern_execution
+  inputs:
+  - Pattern from EXEC-001
+  - 'Executors directory: executors/'
+  expected_outputs:
+  - 'Executor path: executors/{pattern_id}_executor.ps1'
+  - Error if no executor found
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - executors/*.ps1
+  guardrail_checkpoint: true
+  _content_hash: 88921f90a6bab9cfd5ab43c2df1c702e407db0c4
+- step_id: PATTERN-EXEC-DOC-ID-REGISTRY-SYNC-003
+  phase: EXECUTION
+  name: Execute Pattern via Executor
+  description: 'Invoke executor script with pattern and instance.
+
+    Apply timeout enforcement (default: 300 seconds).
+
+    Capture stdout/stderr and exit code.
+
+    Emit telemetry events to event bus.'
+  responsible_component: pattern_orchestrate
+  operation_kind: pattern_execution
+  inputs:
+  - Executor path from EXEC-002
+  - Pattern and instance data
+  - 'Timeout: --timeout N (default 300)'
+  expected_outputs:
+  - 'Execution result: {success, stdout, stderr, duration}'
+  - Telemetry event emitted
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs: []
+  guardrail_checkpoint: false
+  _content_hash: e2def3014ef399bd4d9103f792b45eaedb8f2256
+- step_id: PATTERN-EXEC-DOC-ID-PRE-COMMIT-HOOK-004
+  phase: EXECUTION
+  name: Log Execution Telemetry
+  description: 'Log execution to SQLite database:
+
+    - pattern_id
+
+    - timestamp
+
+    - duration
+
+    - success (boolean)
+
+    - error_msg (if failed)
+
+
+    Current: 8 executions logged, 87.5% success rate.'
+  responsible_component: pattern_orchestrate
+  operation_kind: persistence
+  inputs:
+  - Execution result from EXEC-003
+  - 'Database: automation/pattern_automation.db'
+  expected_outputs:
+  - Execution record in database
+  - Updated performance metrics
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - automation/pattern_automation.db
+  guardrail_checkpoint: false
+  _content_hash: 3e66436bd9958cad290ece6c79930395ff25ba43
+- step_id: PATTERN-EXEC-DOC-ID-SCHEDULED-REPORTS-005
+  phase: EXECUTION
+  name: Handle Execution Errors
+  description: 'If execution failed:
+
+    - Extract error type and message
+
+    - Search error_learning database for known fixes
+
+    - Auto-suggest fix pattern if available
+
+    - Log error for future learning'
+  responsible_component: error_learner
+  operation_kind: self_healing
+  inputs:
+  - Execution result from EXEC-003
+  - Error learning database
+  expected_outputs:
+  - Fix suggestion (if available)
+  - Error logged for learning
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - automation/pattern_automation.db
+  guardrail_checkpoint: false
+  _content_hash: 92e21877d2257accef6e18af70f34c4004b468fe
+- step_id: PAT-MON-001
+  phase: MONITORING
+  name: Calculate Performance Metrics
+  description: 'Calculate metrics per pattern:
+
+    - Average execution time
+
+    - Success rate (last 30 days)
+
+    - Failure modes distribution
+
+    - Last usage timestamp
+
+    - ROI (time saved vs. manual execution)'
+  responsible_component: performance_analyzer
+  operation_kind: performance_analysis
+  inputs:
+  - Execution telemetry from database
+  expected_outputs:
+  - 'Performance metrics: {pattern_id: {avg_time, success_rate, roi}}'
+  - Top performers and underperformers
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - automation/pattern_automation.db
+  guardrail_checkpoint: false
+  _content_hash: 7f8cfe9382b6b810bd1f7114969a4267bfeefb10
+- step_id: PAT-MON-002
+  phase: MONITORING
+  name: Check System Health
+  description: 'Monitor system health:
+
+    - Overall success rate (target: ≥85%)
+
+    - Detection accuracy (current: 87.5%)
+
+    - Database size and growth
+
+    - Pattern execution frequency'
+  responsible_component: health_monitor_daemon
+  operation_kind: performance_analysis
+  inputs:
+  - System telemetry from database
+  expected_outputs:
+  - 'Health status: {overall: HEALTHY/DEGRADED/CRITICAL}'
+  - Alert if failure rate > 15%
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - automation/pattern_automation.db
+  guardrail_checkpoint: false
+  _content_hash: 34cf1a39813de364444f5eb0a4be659255dcdc99
+- step_id: PAT-MON-003
+  phase: MONITORING
+  name: Generate Dashboard
+  description: 'Render real-time dashboard with:
+
+    - Pattern execution count (8 executions)
+
+    - Auto-detection status (7 patterns detected)
+
+    - Confidence scores distribution
+
+    - Success rate trends
+
+    - ROI and time savings'
+  responsible_component: dashboard
+  operation_kind: performance_analysis
+  inputs:
+  - Metrics from MON-001
+  - Health status from MON-002
+  expected_outputs:
+  - Dashboard HTML/JSON
+  - Console summary
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs: []
+  guardrail_checkpoint: false
+  _content_hash: b0c5a4997eb8a25f0b088c1b59ef8d159b869f58
+- step_id: PAT-DONE-001
+  phase: DONE
+  name: Generate Workflow Report
+  description: 'Generate comprehensive workflow report:
+
+    - All phases executed (mining, detection, generation, approval, etc.)
+
+    - Patterns auto-approved with confidence scores
+
+    - Documentation suites generated
+
+    - Registry updates applied
+
+    - Performance metrics summary
+
+    - Recommendations for next workflow'
+  responsible_component: zero_touch_workflow
+  operation_kind: persistence
+  inputs:
+  - Workflow results from all phases
+  expected_outputs:
+  - 'Workflow report: reports/workflow_*.json'
+  - Console summary
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - reports/workflow_*.json
+  guardrail_checkpoint: false
+  _content_hash: 0d00a36b429859021fc2411adf5bacf8142ae938
+- step_id: PAT-DONE-002
+  phase: DONE
+  name: Print Execution Summary
+  description: 'Print formatted summary to console:
+
+    - Total patterns registered: 33+
+
+    - Patterns auto-detected: 7 (87.5% accuracy)
+
+    - Patterns auto-approved: 7 (100%)
+
+    - Average confidence: 86.5%
+
+    - System status: ✅ COMPLETE'
+  responsible_component: pattern_orchestrate
+  operation_kind: orchestration
+  inputs:
+  - System metrics from MON-001
+  expected_outputs:
+  - Formatted console output
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs: []
+  guardrail_checkpoint: false
+  _content_hash: 171d1b2c8932511d66ee3dfa7f0faace8e59e215

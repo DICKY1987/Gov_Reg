@@ -1,0 +1,42 @@
+# DOC_LINK: DOC-CONFIG-DIR-MANIFEST-TRIGGER-ID-001
+contracts:
+  provides:
+  - trigger_id scanning service
+  - trigger_id assignment service
+  - trigger_id validation service
+  - automation inventory reports
+  requires:
+  - access to 3_AUTOMATION_HOOKS directory
+  - read/write to registry files
+dependencies:
+  required_artifacts:
+  - DOC_ID_REGISTRY.yaml
+  required_directories:
+  - common
+  - SUB_DOC_ID/3_AUTOMATION_HOOKS
+directory:
+  name: trigger_id
+  path: SUB_DOC_ID/trigger_id
+  purpose: Stable identity system for automation triggers (watchers, hooks, scheduled
+    tasks, runners)
+  status: active
+doc_id: DOC-CONFIG-DIR-MANIFEST-TRIGGER-ID-001
+meta:
+  created_utc: '2025-12-29T09:47:30Z'
+  dir_id: DIR-SUB-TRIGGER-ID-001
+  schema_version: 1.0.0
+  updated_utc: '2025-12-29T10:00:00Z'
+  version: 1.0.0
+ownership:
+  owned_artifacts:
+  - TRIGGER-SCRIPT-TRIGGER-SCANNER-001
+  - TRIGGER-SCRIPT-TRIGGER-ASSIGNER-002
+  - DOC-REGISTRY-TRIGGER-001
+  owned_files:
+  - 1_CORE_OPERATIONS/trigger_id_scanner.py
+  - 1_CORE_OPERATIONS/trigger_id_assigner.py
+  - 2_VALIDATION_FIXING/validate_trigger_coverage.py
+  - 5_REGISTRY_DATA/TRG_ID_REGISTRY.yaml
+  - 5_REGISTRY_DATA/triggers_inventory.jsonl
+  - README.md
+  - IMPLEMENTATION_COMPLETE.md

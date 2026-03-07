@@ -1,0 +1,28 @@
+doc_id: DOC-CONFIG-DIR-CONTRACT-IO-CONTRACT-P5
+meta:
+  dir_id: DIR-ade9c42b
+  version: 1.0.0
+  updated_utc: '2026-01-04T00:37:00Z'
+inputs:
+  required: []
+  optional: []
+outputs:
+  guaranteed:
+    - name: prompt_templates
+      type: json
+      description: "Prompt templates with ${var} placeholders"
+    - name: phase_plan_templates
+      type: json/yaml
+      description: "Phase plan template structures"
+  conditional: []
+invariants:
+  pre_conditions: []
+  post_conditions:
+    - "Templates must be immutable (reference by hash)"
+  constraints:
+    - "All placeholders must be documented"
+    - "Templates must validate against schema"
+side_effects:
+  filesystem: []
+  network: []
+  external_systems: []

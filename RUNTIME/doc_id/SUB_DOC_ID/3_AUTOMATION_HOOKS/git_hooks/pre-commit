@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+"""
+WS-001: Git Pre-Commit Hook
+Validates doc_ids before commit
+"""
+
+import sys
+import subprocess
+import json
+
+def main():
+    print("🔍 Checking doc_id compliance...")
+
+    # Get staged files
+    result = subprocess.run(
+        ["git", "diff", "--cached", "--name-only"],
+        capture_output=True,
+        text=True
+    )
+
+    if result.returncode != 0:
+        print("✗ Could not get staged files")
+        return 1
+
+    staged_files = result.stdout.strip().split('\n')
+    errors = []
+
+    for filepath in staged_files:
+        if not filepath or not filepath.endswith(('.md', '.json', '.yaml')):
+            continue
+
+        # Check if file needs doc_id
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                content = f.read()
+
+            if 'doc_id:' not in content and '"doc_id"' not in content:
+                errors.append(f"Missing doc_id: {filepath}")
+        except:
+            pass
+
+    if errors:
+        print("✗ Doc_ID validation FAILED:")
+        for error in errors:
+            print(f"  - {error}")
+        print("\n💡 Tip: Run auto_assign_doc_ids.py to fix")
+        return 1
+
+    print("✓ Doc_ID validation PASSED")
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())

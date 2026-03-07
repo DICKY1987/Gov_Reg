@@ -1,0 +1,31 @@
+name: Docs Guard
+on:
+  pull_request:
+    paths:
+      - "**/*.md"
+      - "CHANGELOG.md"
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python -m pip install pyyaml
+      - name: Verify front-matter
+        run: |
+          python - << 'PY'
+          import sys, pathlib, yaml
+          ok=True
+          for p in pathlib.Path('.').rglob('*.md'):
+              t=p.read_text(encoding='utf-8')
+              if t.lstrip().startswith('---'):
+                  fm=t.split('---',2)[1]
+                  try:
+                      y=yaml.safe_load(fm) or {}
+                      for k in ['doc_key','semver','status','owner']:
+                          if k not in y: ok=False; print(f"{p}: missing {k}")
+                  except Exception as e:
+                      ok=False; print(f"{p}: invalid front matter: {e}")
+              else:
+                  ok=False; print(f"{p}: missing front matter")
+          sys.exit(0 if ok else 1)
+          PY

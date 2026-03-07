@@ -1,0 +1,197 @@
+{
+  "version": "1.0",
+  "generated_at": "2025-12-06T19:28:30.265253+00:00",
+  "workstreams": [
+    {
+      "workstream_id": "WS_DOCUMENTATION_0001",
+      "name": "documentation",
+      "description": "Workstream for documentation addressing 1 gaps",
+      "gap_ids": [
+        "GAP_DOCS_0001"
+      ],
+      "priority_score": 2.0,
+      "dependencies": [],
+      "estimated_effort": "low",
+      "file_scope": [
+        "phase_plan_compiler.py",
+        "execution_planner.py",
+        "gap_registry.py"
+      ],
+      "categories": [
+        "documentation"
+      ],
+      "metadata": {}
+    },
+    {
+      "workstream_id": "WS_TESTING_0002",
+      "name": "testing",
+      "description": "Workstream for testing addressing 1 gaps",
+      "gap_ids": [
+        "GAP_TEST_0001"
+      ],
+      "priority_score": 5.0,
+      "dependencies": [],
+      "estimated_effort": "low",
+      "file_scope": [
+        "phase_plan_compiler.py",
+        "acms_controller.py",
+        "execution_planner.py",
+        "gap_registry.py"
+      ],
+      "categories": [
+        "testing"
+      ],
+      "metadata": {}
+    },
+    {
+      "workstream_id": "WS_INTEGRATION_0003",
+      "name": "integration",
+      "description": "Workstream for integration addressing 3 gaps",
+      "gap_ids": [
+        "GAP_INT_0001",
+        "GAP_INT_0002",
+        "GAP_PATCH_0001"
+      ],
+      "priority_score": 7.333333333333333,
+      "dependencies": [],
+      "estimated_effort": "low",
+      "file_scope": [
+        "acms_controller.py"
+      ],
+      "categories": [
+        "integration"
+      ],
+      "metadata": {}
+    },
+    {
+      "workstream_id": "WS_RELIABILITY_0004",
+      "name": "reliability",
+      "description": "Workstream for reliability addressing 1 gaps",
+      "gap_ids": [
+        "GAP_ERROR_0001"
+      ],
+      "priority_score": 5.0,
+      "dependencies": [],
+      "estimated_effort": "low",
+      "file_scope": [
+        "acms_controller.py"
+      ],
+      "categories": [
+        "reliability"
+      ],
+      "metadata": {}
+    },
+    {
+      "workstream_id": "WS_CONFIGURATION_0005",
+      "name": "configuration",
+      "description": "Workstream for configuration addressing 1 gaps",
+      "gap_ids": [
+        "GAP_CONFIG_0001"
+      ],
+      "priority_score": 2.0,
+      "dependencies": [],
+      "estimated_effort": "low",
+      "file_scope": [
+        "acms_controller.py",
+        "execution_planner.py"
+      ],
+      "categories": [
+        "configuration"
+      ],
+      "metadata": {}
+    },
+    {
+      "workstream_id": "WS_VALIDATION_0006",
+      "name": "validation",
+      "description": "Workstream for validation addressing 1 gaps",
+      "gap_ids": [
+        "GAP_VAL_0001"
+      ],
+      "priority_score": 2.0,
+      "dependencies": [],
+      "estimated_effort": "low",
+      "file_scope": [
+        "gap_registry.py"
+      ],
+      "categories": [
+        "validation"
+      ],
+      "metadata": {}
+    },
+    {
+      "workstream_id": "WS_PERFORMANCE_0007",
+      "name": "performance",
+      "description": "Workstream for performance addressing 1 gaps",
+      "gap_ids": [
+        "GAP_PERF_0001"
+      ],
+      "priority_score": 1.0,
+      "dependencies": [],
+      "estimated_effort": "low",
+      "file_scope": [
+        "execution_planner.py"
+      ],
+      "categories": [
+        "performance"
+      ],
+      "metadata": {}
+    },
+    {
+      "workstream_id": "WS_OBSERVABILITY_0008",
+      "name": "observability",
+      "description": "Workstream for observability addressing 1 gaps",
+      "gap_ids": [
+        "GAP_LOG_0001"
+      ],
+      "priority_score": 2.0,
+      "dependencies": [],
+      "estimated_effort": "low",
+      "file_scope": [
+        "phase_plan_compiler.py",
+        "acms_controller.py",
+        "execution_planner.py",
+        "gap_registry.py"
+      ],
+      "categories": [
+        "observability"
+      ],
+      "metadata": {}
+    },
+    {
+      "workstream_id": "WS_USABILITY_0009",
+      "name": "usability",
+      "description": "Workstream for usability addressing 1 gaps",
+      "gap_ids": [
+        "GAP_CLI_0001"
+      ],
+      "priority_score": 1.0,
+      "dependencies": [],
+      "estimated_effort": "low",
+      "file_scope": [
+        "acms_controller.py"
+      ],
+      "categories": [
+        "usability"
+      ],
+      "metadata": {}
+    },
+    {
+      "workstream_id": "WS_SAFETY_0010",
+      "name": "safety",
+      "description": "Workstream for safety addressing 1 gaps",
+      "gap_ids": [
+        "GAP_GIT_0001"
+      ],
+      "priority_score": 5.0,
+      "dependencies": [],
+      "estimated_effort": "low",
+      "file_scope": [
+        "acms_controller.py"
+      ],
+      "categories": [
+        "safety"
+      ],
+      "metadata": {}
+    }
+  ]
+}

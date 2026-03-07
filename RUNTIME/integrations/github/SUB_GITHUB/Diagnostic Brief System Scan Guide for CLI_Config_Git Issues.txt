@@ -1,0 +1,189 @@
+# Diagnostic Brief — System Scan Guide for CLI/Config/Git Issues (Windows)
+
+## Purpose
+
+Equip an AI auditor to **scan your Windows environment** and pinpoint the root causes of:
+
+* CLI tools running the **wrong executable** (shadowing / PATH confusion)
+* **Duplicate or conflicting configuration/state** folders (Claude, Aider, Ollama, etc.)
+* Breakage from attempts to **“flatten” config directories**
+* **Git layout mistakes** (.git, .gitignore, .gitattributes, submodules)
+
+This brief defines **what to look for, where to look, and how to decide** if something is misconfigured—without making any changes during the scan.
+
+---
+
+## Environment Context (assumptions)
+
+* OS: Windows 10/11 (user: `C:\Users\richg`)
+* Primary CLI tools: Claude Code, Aider, Gemini CLI, Ollama, Git/GitHub CLI, Python toolchain (pipx), Node (npm)
+* Preferred unified bin folder: `C:\Users\richg\.local\bin`
+* Standard pipx locations: `PIPX_HOME = C:\Users\richg\.local\pipx`, `PIPX_BIN_DIR = C:\Users\richg\.local\bin`
+
+---
+
+## High-Level Symptoms to Diagnose
+
+1. Running a CLI name yields **unexpected version or behavior**.
+2. Tools read **inconsistent config**, depending on where they’re launched.
+3. **Config/state files duplicated** across multiple places.
+4. Flattening attempts made tools **unable to find their expected paths**.
+5. Git operations behave oddly due to **nested repos** or **misplaced .gitignore** rules.
+
+---
+
+## Scope — Where to Scan
+
+### A) Paths & Binaries (possible launch points)
+
+* User bin: `C:\Users\richg\.local\bin`
+* pipx venv shims and homes under `C:\Users\richg\.local\pipx`
+* Node global bin: `%APPDATA%\npm`
+* Git/GitHub CLI: under `C:\Program Files\Git`, `C:\Program Files\GitHub CLI`
+* System-wide: `C:\Program Files\*\bin`, anything else present on PATH
+
+### B) Config / State Directories (risk of duplicates)
+
+* `C:\Users\richg\.claude` and any `*.claude*.json*` at user root
+* `C:\Users\richg\.aider`, `*.aider.*` at user root
+* `C:\Users\richg\.ollama`
+* `C:\Users\richg\.jules`, `C:\Users\richg\.codex`, `C:\Users\richg\.local`
+* `C:\Users\richg\AI_APPS_TOOLS` (check for shadow configs inside)
+* Additional app folders created by installers or older setups
+
+### C) Flattening Candidates (from your list)
+
+* All of the above plus: `C:\Users\richg\pipx`, `C:\Users\richg\package.json`, `C:\Users\richg\package-lock.json`
+
+### D) Git Repositories (public GitHub user: `DICKY1987`)
+
+* Any local clones used for development
+* Within each repo’s working directory, recurse to find problematic `.git*` files
+
+---
+
+## What to Detect (Decision Rules)
+
+### 1) PATH & Executable Shadowing
+
+* **Goal:** Every frequently used CLI name resolves first to **one authoritative launcher** in `C:\Users\richg\.local\bin`.
+* **Red flags:**
+
+  * Same command name appears in multiple places on PATH.
+  * `C:\Users\richg\.local\bin` is **missing** from PATH or listed **after** other global bins.
+  * pipx shims are not being used because global npm or old Python installs come first.
+* **Record:** For each command (e.g., `claude`, `aider`, `gemini`, `ollama`, `gh`, `git`, `ruff`, `black`, `pre-commit`, `uv`, `python`, `pipx`, `node`, `npm`, `npx`), list **every** resolved executable path in priority order.
+
+### 2) pipx vs pip (duplicate installs)
+
+* **Goal:** CLI apps installed **only via pipx**; no global/user `pip` duplicates.
+* **Red flags:**
+
+  * Same tool installed both with pipx and `pip --user` or system pip.
+  * Multiple versions of the same CLI exist across different environments.
+* **Record:** For each Python CLI, note **install source** (pipx venv name/path vs pip site-packages) and **version**.
+
+### 3) Node global binaries
+
+* **Goal:** npm globals available via `.local\bin` wrappers/symlinks (not overshadowing pipx).
+* **Red flags:**
+
+  * `%APPDATA%\npm` precedes `.local\bin` on PATH.
+  * Duplicate launchers exist for the same name (one npm, one pipx).
+* **Record:** For each Node-based CLI, note its **global prefix/bin** and whether a **wrapper exists** in `.local\bin`.
+
+### 4) Duplicate or Conflicting Config/State
+
+* **Goal:** **Single canonical** location per tool (global), optional **per-project override** only.
+* **Red flags:**
+
+  * Multiple Claude configs: a folder `.claude\...` **and** files like `.claude.json` or `.claude.json.backup` at user root; copies inside `AI_APPS_TOOLS`.
+  * Multiple Aider configs: `.aider`, `.aider.*` files in several places.
+  * Multiple Ollama state dirs or moved/flattened state.
+* **Record:** For each tool (Claude/Aider/Ollama/etc.), enumerate **all config/state files**, their **last modified time**, and mark one **canonical** location. Flag any **strays**.
+
+### 5) Flattening Risks & Damage
+
+* **Goal:** Flattening is used **only** as a one-time export/staging; **apps still point to their native directories**.
+* **Red flags:**
+
+  * A tool’s expected directory structure is missing because files were copied/moved elsewhere.
+  * “Duplicate content” files created during flattening now cause confusion (e.g., two config copies with different timestamps).
+  * Reparse points/symlinks that lead to loops or dead targets.
+* **Record:** For each flattened target folder, store a **manifest** conceptually: original full path, flattened location, size, hash, and whether the original still exists.
+
+### 6) Git Layout & Hygiene
+
+* **Goal:** Clean single-repo roots with correct top-level files.
+* **Red flags:**
+
+  * **Nested `.git` directories** inside a repo (indicates accidental nested repos instead of submodules).
+  * Only **subfolder `.gitignore`** files exist; no root `.gitignore` (rules don’t apply repo-wide).
+  * Missing or empty `.gitattributes` → CRLF/LF churn; wrong diff/merge behavior.
+  * `.gitmodules` present but submodules not initialized/updated; or `.gitmodules` not at root.
+  * A global ignore file (user-level) unexpectedly ignoring in-repo files.
+* **Record:** For each repo: presence/absence of **root** `.gitignore`, `.gitattributes`, `.gitmodules`; list of **non-root** `.gitignore`/`.gitattributes`; any **nested `.git`** dirs; whether line-ending policies (`text=auto`, `eol=lf/crlf`) are present.
+
+### 7) Windows-Specific File System Hazards
+
+* **Goal:** Enumeration won’t hang or miss critical files.
+* **Red flags:**
+
+  * Reparse points/junctions causing recursion loops or timeouts.
+  * Access-denied areas that mask meaningful files.
+* **Record:** Any path skipped due to **reparse** or **permissions**; note the reason.
+
+---
+
+## Evidence the AI Should Produce (Artifacts)
+
+* **Executable Resolution Map:** For each CLI name, the **ordered list** of all discovered executables with locations.
+* **Install Source Matrix:** For each CLI, the **install origin** (pipx/pip/npm/winget/etc.), version, and which one wins in PATH.
+* **Config/State Inventory:** Per tool, list every config/state file found, with **canonical vs stray** label and last modified timestamp.
+* **Flatten Manifest Summary:** For any flattened collections, a table: original path → flattened path, size, content hash, duplicate-of, last modified.
+* **Git Layout Report:** Per repo, presence/placement of control files; any nested `.git` dirs; submodule status; line-ending policy presence.
+* **PATH & Env Summary:** The full PATH (ordered), and key env vars (`PIPX_HOME`, `PIPX_BIN_DIR`, any CLI-specific variables like a Git Bash path override), plus which folders appear **before** `.local\bin`.
+* **Risk/Impact Notes:** For each flagged issue, a short description of the **likely runtime impact** (e.g., “Aider reads the wrong config; Claude launches a different binary than expected; mixed line endings cause churn”).
+
+---
+
+## Canonical Policies the AI Should Apply
+
+* **PATH Order:** `C:\Users\richg\.local\bin` should appear **before** other global bin folders.
+* **pipx Authority:** Python CLIs should be installed via **pipx** only; no global/user pip duplicates.
+* **Unified Config:** One **global** config directory per tool under user profile; optional per-repo override **only inside the repo**.
+* **No Live Flatten:** Flattened copies are for **staging/inspection**; apps should keep using their **native paths**.
+* **Git at Root:** `.git`, `.gitignore`, `.gitattributes`, and `.gitmodules` (if used) belong at the **repo root**; subfolder `.gitignore` is allowed for local rules but not as the only ignore.
+* **Line Endings:** `.gitattributes` should include `* text=auto` and explicit entries for `.ps1/.bat/.cmd` (CRLF) and `.sh/.md` (LF).
+
+---
+
+## Triage & Remediation Priorities (what to fix first)
+
+1. **PATH & pipx visibility** (prevents almost all “wrong tool ran” issues).
+2. **Duplicate installs** (remove pip global/user duplicates; keep pipx).
+3. **Config unification** (select one canonical location per tool; mark or archive strays).
+4. **Git root hygiene** (root `.gitignore` with merged rules; ensure `.gitattributes`; address nested repos → submodules or removal).
+5. **Flatten fallout** (treat flattened trees as read-only exports; do not rely on them for runtime).
+
+---
+
+## Success Criteria (post-fix validation)
+
+* Every audited CLI resolves first to **one** executable in `C:\Users\richg\.local\bin`.
+* For each tool, there is **exactly one** authoritative global config location; any duplicates are archived or removed.
+* pipx environment variables are set; no global/user pip-installed duplicates remain for CLI apps.
+* Git repos have a **root** `.gitignore` (with merged subfolder rules if needed) and a **sane** `.gitattributes`.
+* No accidental nested `.git` directories; submodules (if present) are properly declared and clean.
+
+---
+
+## Notes for the AI Auditor
+
+* **Read-only pass first.** Do not move/delete or write files during the scan.
+* Prefer deterministic, **absolute paths** in findings.
+* When reporting duplicates or conflicts, clearly mark which location would be the **canonical** one under the policies above, and why.
+
+---
+
+If you want, I can convert this brief into a printable checklist or a form-style questionnaire the auditor can fill as it scans your system.

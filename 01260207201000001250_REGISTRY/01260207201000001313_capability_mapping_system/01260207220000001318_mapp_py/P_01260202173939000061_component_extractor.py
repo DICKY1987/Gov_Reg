@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 Component Extractor - Phase A Core Script
-Produces: py_classes_count, py_functions_count, py_methods_count,
-          py_components_list, py_components_hash
+Produces: py_defs_classes_count, py_defs_functions_count, py_component_count,
+          py_components_list, py_defs_public_api_hash
 
 Extracts Python components (classes, functions, methods) from AST.
 """
@@ -169,11 +169,11 @@ def extract_components(file_path: Path) -> dict:
     Extract all components from a Python file.
 
     Returns dict with:
-    - py_classes_count: int
-    - py_functions_count: int
-    - py_methods_count: int
+    - py_defs_classes_count: int
+    - py_defs_functions_count: int
+    - py_component_count: int (total: classes + functions + methods)
     - py_components_list: List[Dict]
-    - py_components_hash: str
+    - py_defs_public_api_hash: str
     - success: bool
     - error: Optional[str]
     """
@@ -195,35 +195,37 @@ def extract_components(file_path: Path) -> dict:
             all_components, sort_keys=True, separators=(",", ":")
         )
         components_hash = hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
+        
+        component_count = len(visitor.classes) + len(visitor.functions) + len(visitor.methods)
 
         return {
-            "py_classes_count": len(visitor.classes),
-            "py_functions_count": len(visitor.functions),
-            "py_methods_count": len(visitor.methods),
+            "py_defs_classes_count": len(visitor.classes),
+            "py_defs_functions_count": len(visitor.functions),
+            "py_component_count": component_count,
             "py_components_list": all_components,
-            "py_components_hash": components_hash,
+            "py_defs_public_api_hash": components_hash,
             "success": True,
             "error": None,
         }
 
     except SyntaxError as e:
         return {
-            "py_classes_count": 0,
-            "py_functions_count": 0,
-            "py_methods_count": 0,
+            "py_defs_classes_count": 0,
+            "py_defs_functions_count": 0,
+            "py_component_count": 0,
             "py_components_list": [],
-            "py_components_hash": None,
+            "py_defs_public_api_hash": None,
             "success": False,
             "error": f"Syntax error: {e}",
         }
 
     except Exception as e:
         return {
-            "py_classes_count": 0,
-            "py_functions_count": 0,
-            "py_methods_count": 0,
+            "py_defs_classes_count": 0,
+            "py_defs_functions_count": 0,
+            "py_component_count": 0,
             "py_components_list": [],
-            "py_components_hash": None,
+            "py_defs_public_api_hash": None,
             "success": False,
             "error": f"Component extraction failed: {e}",
         }
@@ -243,11 +245,22 @@ def main():
 
     result = extract_components(file_path)
 
+    # Handle --json flag
+    if '--json' in sys.argv:
+        idx = sys.argv.index('--json')
+        out_path = sys.argv[idx + 1] if idx + 1 < len(sys.argv) else None
+        if out_path:
+            with open(out_path, 'w') as f:
+                json.dump(result, f, indent=2, sort_keys=True)
+        else:
+            print(json.dumps(result, indent=2, sort_keys=True))
+        sys.exit(0)
+
     if result["success"]:
-        print(f"Classes: {result['py_classes_count']}")
-        print(f"Functions: {result['py_functions_count']}")
-        print(f"Methods: {result['py_methods_count']}")
-        print(f"Components Hash: {result['py_components_hash']}")
+        print(f"Classes: {result['py_defs_classes_count']}")
+        print(f"Functions: {result['py_defs_functions_count']}")
+        print(f"Component Count: {result['py_component_count']}")
+        print(f"Components Hash: {result['py_defs_public_api_hash']}")
         print(f"\nComponents: {json.dumps(result['py_components_list'], indent=2)}")
     else:
         print(f"Error: {result['error']}", file=sys.stderr)

@@ -1,0 +1,64 @@
+name: ACMS Daily Gap Analysis
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2 AM UTC
+  workflow_dispatch:     # Manual trigger option
+  push:
+    branches: [main, develop]
+    paths:
+      - 'src/acms/**'
+      - 'config/**'
+      - 'schemas/**'
+
+jobs:
+  gap-analysis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov PyGithub pyyaml jsonschema
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      
+      - name: Run ACMS Pipeline
+        run: python acms_controller.py . --mode analyze_only
+        env:
+          AI_ADAPTER: ${{ secrets.AI_ADAPTER || 'mock' }}
+          PYTHONPATH: ${{ github.workspace }}/src
+      
+      - name: Upload ACMS run artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: acms-run-${{ github.run_id }}
+          path: |
+            .acms_runs/
+            logs/
+          retention-days: 30
+      
+      - name: Generate summary report
+        if: always()
+        run: |
+          if [ -d ".acms_runs" ]; then
+            echo "## ACMS Gap Analysis Summary" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            latest_run=$(ls -t .acms_runs | head -1)
+            if [ -n "$latest_run" ]; then
+              echo "**Run ID:** $latest_run" >> $GITHUB_STEP_SUMMARY
+              if [ -f ".acms_runs/$latest_run/summary.md" ]; then
+                cat ".acms_runs/$latest_run/summary.md" >> $GITHUB_STEP_SUMMARY
+              fi
+            fi
+          fi

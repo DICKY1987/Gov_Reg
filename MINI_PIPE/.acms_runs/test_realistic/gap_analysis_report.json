@@ -1,0 +1,264 @@
+{
+  "version": "1.0",
+  "doc_id": "EXAMPLE_GAP_REPORT_MINI_PIPE_001",
+  "generated_at": "2025-12-06T19:27:00Z",
+  "repository": {
+    "path": "C:\\Users\\richg\\ALL_AI\\MINI_PIPE",
+    "analysis_scope": "full_repository"
+  },
+  "analysis_metadata": {
+    "analyzer_version": "OVERLAP_AUTOMATION_AND_MASTER_GAP_ANALYSIS v1.0",
+    "frameworks_used": [
+      "COMPREHENSIVE_GAP_FINDING_FRAMEWORK",
+      "gap-finding_systematic"
+    ],
+    "execution_time_seconds": 120
+  },
+  "gaps": [
+    {
+      "gap_id": "GAP_DOCS_0001",
+      "title": "Missing docstrings in core modules",
+      "description": "Several core modules lack comprehensive module-level and function-level docstrings, reducing code maintainability and developer onboarding efficiency.",
+      "category": "documentation",
+      "severity": "medium",
+      "discovered_at": "2025-12-06T19:27:00Z",
+      "file_paths": [
+        "gap_registry.py",
+        "execution_planner.py",
+        "phase_plan_compiler.py"
+      ],
+      "dependencies": [],
+      "metadata": {
+        "impact": "Medium - affects maintainability",
+        "effort_estimate": "2-4 hours",
+        "suggested_action": "Add comprehensive docstrings following Google style guide"
+      }
+    },
+    {
+      "gap_id": "GAP_TEST_0001",
+      "title": "No unit tests for new ACMS modules",
+      "description": "The four new ACMS modules (gap_registry, execution_planner, phase_plan_compiler, acms_controller) have no unit test coverage, creating risk for regressions.",
+      "category": "testing",
+      "severity": "high",
+      "discovered_at": "2025-12-06T19:27:00Z",
+      "file_paths": [
+        "gap_registry.py",
+        "execution_planner.py",
+        "phase_plan_compiler.py",
+        "acms_controller.py"
+      ],
+      "dependencies": [],
+      "metadata": {
+        "impact": "High - no safety net for changes",
+        "effort_estimate": "8-16 hours",
+        "suggested_action": "Create pytest test suite with >80% coverage"
+      }
+    },
+    {
+      "gap_id": "GAP_INT_0001",
+      "title": "AI integration placeholders not implemented",
+      "description": "Phase 1 gap analysis and Phase 3 plan generation use placeholder logic instead of actual AI integration, limiting real-world utility.",
+      "category": "integration",
+      "severity": "critical",
+      "discovered_at": "2025-12-06T19:27:00Z",
+      "file_paths": [
+        "acms_controller.py"
+      ],
+      "dependencies": [],
+      "metadata": {
+        "impact": "Critical - core functionality incomplete",
+        "effort_estimate": "16-24 hours",
+        "suggested_action": "Implement AI service clients for gap analysis and plan generation",
+        "blocked_by": "AI service endpoint configuration"
+      }
+    },
+    {
+      "gap_id": "GAP_INT_0002",
+      "title": "MINI_PIPE orchestrator integration incomplete",
+      "description": "Phase 4 execution has placeholder logic instead of actual MINI_PIPE orchestrator invocation, preventing automated code changes.",
+      "category": "integration",
+      "severity": "critical",
+      "discovered_at": "2025-12-06T19:27:00Z",
+      "file_paths": [
+        "acms_controller.py"
+      ],
+      "dependencies": ["GAP_INT_0001"],
+      "metadata": {
+        "impact": "Critical - no execution capability",
+        "effort_estimate": "8-12 hours",
+        "suggested_action": "Wire MINI_PIPE_orchestrator_cli.py to Phase 4",
+        "depends_on": "GAP_INT_0001 for end-to-end testing"
+      }
+    },
+    {
+      "gap_id": "GAP_ERROR_0001",
+      "title": "Limited error handling in pipeline",
+      "description": "ACMS controller has basic try/catch but lacks granular error handling for individual phase failures, retry logic, and graceful degradation.",
+      "category": "reliability",
+      "severity": "high",
+      "discovered_at": "2025-12-06T19:27:00Z",
+      "file_paths": [
+        "acms_controller.py"
+      ],
+      "dependencies": [],
+      "metadata": {
+        "impact": "High - pipeline brittle to failures",
+        "effort_estimate": "4-8 hours",
+        "suggested_action": "Add per-phase error handling, retry policies, and partial success tracking"
+      }
+    },
+    {
+      "gap_id": "GAP_CONFIG_0001",
+      "title": "No configuration file support",
+      "description": "ACMS controller uses hardcoded values for clustering parameters, file limits, and integration paths. No external configuration mechanism.",
+      "category": "configuration",
+      "severity": "medium",
+      "discovered_at": "2025-12-06T19:27:00Z",
+      "file_paths": [
+        "acms_controller.py",
+        "execution_planner.py"
+      ],
+      "dependencies": [],
+      "metadata": {
+        "impact": "Medium - limits flexibility",
+        "effort_estimate": "4-6 hours",
+        "suggested_action": "Add YAML/JSON config file support with sensible defaults"
+      }
+    },
+    {
+      "gap_id": "GAP_VAL_0001",
+      "title": "No input validation in gap registry",
+      "description": "Gap registry load_from_report assumes well-formed JSON and doesn't validate gap records against schema, risking runtime errors.",
+      "category": "validation",
+      "severity": "medium",
+      "discovered_at": "2025-12-06T19:27:00Z",
+      "file_paths": [
+        "gap_registry.py"
+      ],
+      "dependencies": [],
+      "metadata": {
+        "impact": "Medium - potential runtime failures",
+        "effort_estimate": "2-4 hours",
+        "suggested_action": "Add JSON schema validation for gap reports"
+      }
+    },
+    {
+      "gap_id": "GAP_PERF_0001",
+      "title": "Clustering algorithm not optimized for large repos",
+      "description": "Execution planner uses nested loops for file proximity clustering, with O(n²) complexity. May be slow for repos with 1000+ gaps.",
+      "category": "performance",
+      "severity": "low",
+      "discovered_at": "2025-12-06T19:27:00Z",
+      "file_paths": [
+        "execution_planner.py"
+      ],
+      "dependencies": [],
+      "metadata": {
+        "impact": "Low - only affects large repos",
+        "effort_estimate": "4-6 hours",
+        "suggested_action": "Optimize clustering with spatial indexing or graph algorithms"
+      }
+    },
+    {
+      "gap_id": "GAP_LOG_0001",
+      "title": "Insufficient logging for debugging",
+      "description": "ACMS modules use print() instead of proper logging framework, making debugging and production monitoring difficult.",
+      "category": "observability",
+      "severity": "medium",
+      "discovered_at": "2025-12-06T19:27:00Z",
+      "file_paths": [
+        "acms_controller.py",
+        "gap_registry.py",
+        "execution_planner.py",
+        "phase_plan_compiler.py"
+      ],
+      "dependencies": [],
+      "metadata": {
+        "impact": "Medium - harder to debug issues",
+        "effort_estimate": "2-4 hours",
+        "suggested_action": "Replace print() with proper logging (logging module or structlog)"
+      }
+    },
+    {
+      "gap_id": "GAP_CLI_0001",
+      "title": "Limited CLI features",
+      "description": "ACMS CLI lacks features like dry-run mode, verbose output control, resume capability, and listing existing runs.",
+      "category": "usability",
+      "severity": "low",
+      "discovered_at": "2025-12-06T19:27:00Z",
+      "file_paths": [
+        "acms_controller.py"
+      ],
+      "dependencies": [],
+      "metadata": {
+        "impact": "Low - doesn't block core functionality",
+        "effort_estimate": "4-6 hours",
+        "suggested_action": "Add --dry-run, --verbose, --resume, --list-runs flags"
+      }
+    },
+    {
+      "gap_id": "GAP_GIT_0001",
+      "title": "No Git integration for safe execution",
+      "description": "ACMS doesn't create Git branches or commits, violating the safety constraint from the spec that changes should not go directly to main branch.",
+      "category": "safety",
+      "severity": "high",
+      "discovered_at": "2025-12-06T19:27:00Z",
+      "file_paths": [
+        "acms_controller.py"
+      ],
+      "dependencies": [],
+      "metadata": {
+        "impact": "High - violates safety spec requirement",
+        "effort_estimate": "4-8 hours",
+        "suggested_action": "Add Git branch creation in Phase 0, commit patches in Phase 5"
+      }
+    },
+    {
+      "gap_id": "GAP_PATCH_0001",
+      "title": "Patch ledger integration not implemented",
+      "description": "Phase 5 has placeholder for patch ledger but doesn't integrate MINI_PIPE_patch_converter and MINI_PIPE_patch_ledger.",
+      "category": "integration",
+      "severity": "medium",
+      "discovered_at": "2025-12-06T19:27:00Z",
+      "file_paths": [
+        "acms_controller.py"
+      ],
+      "dependencies": ["GAP_INT_0002"],
+      "metadata": {
+        "impact": "Medium - missing audit trail feature",
+        "effort_estimate": "4-6 hours",
+        "suggested_action": "Wire patch converter and ledger modules in Phase 5"
+      }
+    }
+  ],
+  "summary": {
+    "total_gaps": 12,
+    "by_severity": {
+      "critical": 2,
+      "high": 3,
+      "medium": 5,
+      "low": 2,
+      "info": 0
+    },
+    "by_category": {
+      "integration": 3,
+      "testing": 1,
+      "documentation": 1,
+      "reliability": 1,
+      "configuration": 1,
+      "validation": 1,
+      "performance": 1,
+      "observability": 1,
+      "usability": 1,
+      "safety": 1
+    },
+    "estimated_total_effort_hours": "62-104 hours",
+    "priority_recommendations": [
+      "GAP_INT_0001 - AI integration (critical path blocker)",
+      "GAP_INT_0002 - MINI_PIPE integration (critical path blocker)",
+      "GAP_GIT_0001 - Git safety (spec compliance)",
+      "GAP_TEST_0001 - Unit tests (quality assurance)",
+      "GAP_ERROR_0001 - Error handling (reliability)"
+    ]
+  }
+}

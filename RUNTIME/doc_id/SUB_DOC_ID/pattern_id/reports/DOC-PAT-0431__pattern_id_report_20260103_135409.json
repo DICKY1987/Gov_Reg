@@ -1,0 +1,165 @@
+# DOC_ID: DOC-PAT-0431
+{
+  "timestamp": "2026-01-03T19:54:09.228029",
+  "pattern_id_status": {
+    "total_patterns": 12,
+    "complete_triads": 0,
+    "triad_percentage": 0.0,
+    "registry_path": "C:\\Users\\richg\\ALL_AI\\RUNTIME\\doc_id\\SUB_DOC_ID\\pattern_id\\5_REGISTRY_DATA\\PAT_ID_REGISTRY.yaml",
+    "inventory_files": 0
+  },
+  "patterns_by_status": {
+    "active": 12
+  },
+  "recent_patterns": [
+    {
+      "pattern_id": "PATTERN-EXEC-DOC-ID-SCHEDULED-REPORTS-005",
+      "category": "exec",
+      "name": "Doc ID Scheduled Reports",
+      "description": "Generate scheduled reports",
+      "status": "active",
+      "files": {
+        "executor": [
+          "SUB_DOC_ID/4_REPORTING_MONITORING/scheduled_report_generator.py"
+        ]
+      },
+      "first_seen": "2025-12-29T03:58:34Z",
+      "last_seen": "2025-12-29T03:58:34Z"
+    },
+    {
+      "pattern_id": "PATTERN-EXEC-DOC-ID-ALERT-MONITORING-006",
+      "category": "exec",
+      "name": "Doc ID Alert Monitoring",
+      "description": "Monitor health and alert",
+      "status": "active",
+      "files": {
+        "executor": [
+          "SUB_DOC_ID/4_REPORTING_MONITORING/alert_monitor.py"
+        ]
+      },
+      "first_seen": "2025-12-29T03:58:34Z",
+      "last_seen": "2025-12-29T03:58:34Z"
+    },
+    {
+      "pattern_id": "PATTERN-EXEC-DOC-ID-CLI-WRAPPER-007",
+      "category": "exec",
+      "name": "Doc ID CLI Wrapper",
+      "description": "Consolidated CLI entry point",
+      "status": "active",
+      "files": {
+        "executor": [
+          "SUB_DOC_ID/7_CLI_INTERFACE/cli_wrapper.py"
+        ]
+      },
+      "first_seen": "2025-12-29T03:58:34Z",
+      "last_seen": "2025-12-29T03:58:34Z"
+    },
+    {
+      "pattern_id": "PATTERN-EXEC-DOC-ID-REGISTRY-SYNC-003",
+      "category": "exec",
+      "name": "Doc ID Registry Sync",
+      "description": "Synchronize doc_id registries",
+      "status": "active",
+      "files": {
+        "executor": [
+          "SUB_DOC_ID/5_REGISTRY_DATA/sync_registries.py"
+        ]
+      },
+      "first_seen": "2025-12-29T03:58:33Z",
+      "last_seen": "2025-12-29T03:58:33Z"
+    },
+    {
+      "pattern_id": "PATTERN-EXEC-DOC-ID-PRE-COMMIT-HOOK-004",
+      "category": "exec",
+      "name": "Doc ID Pre-Commit Hook",
+      "description": "Pre-commit validation",
+      "status": "active",
+      "files": {
+        "executor": [
+          "SUB_DOC_ID/3_AUTOMATION_HOOKS/pre_commit_hook.py"
+        ]
+      },
+      "first_seen": "2025-12-29T03:58:33Z",
+      "last_seen": "2025-12-29T03:58:33Z"
+    },
+    {
+      "pattern_id": "PATTERN-VALID-DOC-ID-FIX-DUPLICATES-003",
+      "category": "validation",
+      "name": "Doc ID Fix Duplicates",
+      "description": "Fix duplicate doc_ids",
+      "status": "active",
+      "files": {
+        "executor": [
+          "SUB_DOC_ID/2_VALIDATION_FIXING/fix_duplicate_doc_ids.py"
+        ]
+      },
+      "first_seen": "2025-12-29T03:58:32Z",
+      "last_seen": "2025-12-29T03:58:32Z"
+    },
+    {
+      "pattern_id": "PATTERN-VALID-DOC-ID-FIX-INVALID-004",
+      "category": "validation",
+      "name": "Doc ID Fix Invalid",
+      "description": "Fix invalid doc_id formats",
+      "status": "active",
+      "files": {
+        "executor": [
+          "SUB_DOC_ID/2_VALIDATION_FIXING/fix_invalid_doc_ids.py"
+        ]
+      },
+      "first_seen": "2025-12-29T03:58:32Z",
+      "last_seen": "2025-12-29T03:58:32Z"
+    },
+    {
+      "pattern_id": "PATTERN-VALID-DOC-ID-CATEGORY-FIX-005",
+      "category": "validation",
+      "name": "Doc ID Category Fix",
+      "description": "Fix doc_id category mismatches",
+      "status": "active",
+      "files": {
+        "executor": [
+          "SUB_DOC_ID/2_VALIDATION_FIXING/fix_registry_categories.py"
+        ]
+      },
+      "first_seen": "2025-12-29T03:58:32Z",
+      "last_seen": "2025-12-29T03:58:33Z"
+    },
+    {
+      "pattern_id": "PATTERN-VALID-DOC-ID-CLEANUP-002",
+      "category": "validation",
+      "name": "Doc ID Cleanup",
+      "description": "Clean up invalid doc_ids",
+      "status": "active",
+      "files": {
+        "executor": [
+          "SUB_DOC_ID/2_VALIDATION_FIXING/cleanup_invalid_doc_ids.py"
+        ]
+      },
+      "first_seen": "2025-12-29T03:58:31Z",
+      "last_seen": "2025-12-29T03:58:32Z"
+    },
+    {
+      "pattern_id": "PATTERN-EXEC-DOC-ID-SCANNING-001",
+      "category": "exec",
+      "name": "Doc ID Scanning",
+      "description": "Scan repository files for doc_id presence and generate inventory",
+      "status": "active",
+      "files": {
+        "executor": [
+          {
+            "path": "SUB_DOC_ID/1_CORE_OPERATIONS/doc_id_scanner.py",
+            "doc_id": "DOC-SCRIPT-DOC-ID-SCANNER-046"
+          }
+        ],
+        "test": [
+          {
+            "path": "SUB_DOC_ID/6_TESTS/test_doc_id_system.py",
+            "doc_id": "DOC-TEST-DOC-ID-SYSTEM-001"
+          }
+        ]
+      },
+      "first_seen": "2025-12-29T03:54:21Z",
+      "last_seen": "2025-12-29T03:54:31Z"
+    }
+  ]
+}

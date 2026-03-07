@@ -1,0 +1,105 @@
+# DOC_LINK: DOC-CONFIG-DIR-CONTRACT-PATTERN-ID-001
+doc_id: DOC-CONFIG-DIR-CONTRACT-PATTERN-ID-001
+meta:
+  version: 1.0.0
+  created_utc: '2025-12-29T10:00:00Z'
+  updated_utc: '2025-12-29T10:30:00Z'
+
+directory:
+  name: pattern_id
+  path: SUB_DOC_ID/pattern_id
+
+constraints:
+  input:
+    - Must have access to SUB_DOC_ID directory for scanning
+    - Pattern definitions must follow PATTERN_ID header format
+    - Pattern references must use PATTERN: tag format
+  
+  output:
+    - Generates patterns_inventory.jsonl in JSONL format
+    - Generates pattern_references.json in JSON format
+    - Updates PAT_ID_REGISTRY.yaml atomically
+    - All pattern IDs follow PATTERN-{CATEGORY}-{SEQ} format
+  
+  invariants:
+    - Pattern IDs are immutable once assigned
+    - Registry next_id counters only increment, never decrement
+    - Patterns must have at least one executor file
+    - A pattern can link multiple files per role (spec/executor/test)
+    - Registry is the single source of truth for pattern identity
+
+operations:
+  scan:
+    input: SUB_DOC_ID directory path
+    output: patterns_inventory.jsonl + pattern_references.json
+    constraints:
+      - Must detect PATTERN_ID headers in Python files
+      - Must detect PATTERN: tags in code
+      - Must scan Python and Markdown files
+      - Must track pattern references by file
+  
+  create:
+    input: Pattern name + category + description
+    output: Pattern ID + updated registry
+    constraints:
+      - Must mint sequential IDs per category
+      - Must update registry atomically
+      - Must initialize empty files dict
+  
+  link:
+    input: Pattern ID + file path + role + optional doc_id
+    output: Updated registry
+    constraints:
+      - Role must be one of: spec, executor, test
+      - File path must be valid
+      - Can link multiple files per role
+      - Updates last_seen timestamp
+  
+  validate:
+    input: Registry
+    output: Completeness report
+    constraints:
+      - Must check for missing executors (error)
+      - Must check for missing tests (warning)
+      - Must check for missing specs (warning)
+
+quality_gates:
+  - name: Executor Required
+    condition: All patterns must have at least one executor
+    enforcement: Manager validation
+  
+  - name: Uniqueness Check
+    condition: All pattern_ids are unique
+    enforcement: Registry validator
+  
+  - name: Format Check
+    condition: All pattern_ids match PATTERN-{CATEGORY}-### pattern
+    enforcement: Registry validator
+  
+  - name: Completeness Check
+    condition: Patterns should have tests and specs
+    enforcement: Warning only
+
+error_handling:
+  - Unknown category → Error, abort create
+  - Pattern not found → Error, abort link
+  - Invalid role → Error, abort link
+  - File read error → Warning, skip file during scan
+  - Registry write error → Rollback, fail operation
+
+pattern_lifecycle:
+  states:
+    - active: Pattern is currently in use
+    - deprecated: Pattern is being phased out
+    - archived: Pattern is no longer used
+  
+  transitions:
+    - active → deprecated (mark old pattern)
+    - deprecated → archived (remove after migration)
+    - archived patterns kept in registry for audit
+
+versioning:
+  registry_schema: 1.0.0
+  inventory_schema: 1.0.0
+  backward_compatible: true
+  migration_path: None required (new subsystem)

@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registry V3 Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .card { background: white; padding: 20px; margin: 10px 0; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        .stat { display: inline-block; margin: 10px 20px; }
+        .stat-value { font-size: 36px; font-weight: bold; color: #007bff; }
+        .stat-label { color: #666; font-size: 14px; }
+        .progress-bar { width: 100%; height: 30px; background: #e0e0e0; border-radius: 15px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #28a745; text-align: center; line-height: 30px; color: white; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f0f0f0; }
+        .timestamp { color: #999; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Registry V3 Dashboard</h1>
+        <p class="timestamp">Generated: 2025-12-28T05:57:51.181686Z</p>
+        <p class="timestamp">Run ID: 882272fb-e04a-47cc-bba3-d18c15210bc8 | Trace ID: DASHBOARD-TEST</p>
+
+        <div class="card">
+            <h2>Overview</h2>
+            <div class="stat">
+                <div class="stat-value">1060</div>
+                <div class="stat-label">Total Files Tracked</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">0</div>
+                <div class="stat-label">Symbols Extracted</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">0</div>
+                <div class="stat-label">Dependency Edges</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">5</div>
+                <div class="stat-label">Languages</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Tier 2 Coverage</h2>
+            <p>Canonical Hash Coverage: <strong>0.00%</strong></p>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 0.0%">0.0%</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Top Languages</h2>
+            <table>
+                <tr>
+                    <th>Language</th>
+                    <th>File Count</th>
+                </tr>
+                <tr><td>json</td><td>589</td></tr><tr><td>yaml</td><td>158</td></tr><tr><td>powershell</td><td>146</td></tr><tr><td>python</td><td>144</td></tr><tr><td>shell</td><td>23</td></tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

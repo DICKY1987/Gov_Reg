@@ -1,0 +1,6 @@
+{"ts": "2025-12-07T00:14:13.777043+00:00", "run_id": "20251207001413_7F615D9D694F", "state": "init", "event": "enter_state", "previous_state": "init", "meta": {"message": "Run initialized"}}
+{"ts": "2025-12-07T00:14:13.777043+00:00", "run_id": "20251207001413_7F615D9D694F", "state": "gap_analysis", "event": "enter_state", "previous_state": "init", "meta": {"mode": "full"}}
+{"ts": "2025-12-07T00:14:13.777043+00:00", "run_id": "20251207001413_7F615D9D694F", "state": "gap_analysis", "event": "gap_discovery_complete", "meta": {"gap_count": 1}}
+{"ts": "2025-12-07T00:14:13.777043+00:00", "run_id": "20251207001413_7F615D9D694F", "state": "planning", "event": "enter_state", "previous_state": "gap_analysis", "meta": {"mode": "full"}}
+{"ts": "2025-12-07T00:14:13.777043+00:00", "run_id": "20251207001413_7F615D9D694F", "state": "failed", "event": "enter_state", "previous_state": "planning", "meta": {"error": "'ACMSController' object has no attribute '_phase_2_gap_clustering'"}}
+{"ts": "2025-12-07T00:14:13.792968+00:00", "run_id": "20251207001413_7F615D9D694F", "state": "failed", "event": "run_finalized", "meta": {"status": "failed"}}

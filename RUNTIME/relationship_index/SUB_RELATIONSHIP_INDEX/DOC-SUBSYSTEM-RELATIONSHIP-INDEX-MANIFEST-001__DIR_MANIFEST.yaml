@@ -1,0 +1,215 @@
+# DOC_LINK: DOC-SUBSYSTEM-RELATIONSHIP-INDEX-MANIFEST-001
+contracts:
+  invariants:
+    constraints:
+    - No unseeded random operations
+    - All file paths normalized (/ separator)
+    - Confidence values must be 0.0 or 1.0 (binary model)
+    post_conditions:
+    - Output JSON validates against schemas/relationship_index.schema.json
+    - All edge IDs are unique and stable
+    - Nodes sorted by doc_id, edges sorted by rel_id
+    pre_conditions:
+    - Doc ID registry exists at ../SUB_DOC_ID/5_REGISTRY_DATA/docs_inventory.jsonl
+    - All analyzers are initialized with confidence engine and registry
+  provides:
+  - artifact: RELATIONSHIP_INDEX.json
+    description: Complete relationship graph with nodes and edges
+    guarantees:
+    - "Deterministic output (same inputs \xE2\u2020\u2019 same output)"
+    - Schema-valid JSON (JSON Schema Draft 2020-12)
+    - Stable edge IDs (SHA256-based)
+    path: data/RELATIONSHIP_INDEX.json
+    schema: schemas/relationship_index.schema.json
+  requires:
+  - artifact: Doc ID Registry
+    constraints:
+    - Must exist before running build
+    - Must have 'status' field with value 'registered' for indexed files
+    - Must have 'path', 'doc_id', 'file_type', 'last_modified' fields
+    description: JSONL file with doc_id assignments
+    path: ../SUB_DOC_ID/5_REGISTRY_DATA/docs_inventory.jsonl
+  side_effects:
+    filesystem:
+      reads:
+      - description: Doc ID registry input
+        path: ../SUB_DOC_ID/5_REGISTRY_DATA/docs_inventory.jsonl
+      writes:
+      - description: Generated relationship index
+        deterministic: true
+        path: data/RELATIONSHIP_INDEX.json
+    no_modifications:
+    - Does NOT modify source files
+    - Does NOT update doc_id registry
+    - Read-only analysis system
+dependencies:
+  external:
+  - name: Python 3.8+
+    type: runtime
+  - install: pip install pyyaml
+    name: pyyaml
+    type: library
+  - install: pip install jsonschema
+    name: jsonschema
+    type: library
+  optional:
+  - description: 'Future integration: merge code + governance graphs'
+    name: SSOT_System
+    path: ../SSOT_System
+  required:
+  - contracts:
+    - Requires docs_inventory.jsonl with status='registered'
+    description: Provides doc_id registry (docs_inventory.jsonl)
+    name: SUB_DOC_ID
+    path: ../SUB_DOC_ID
+directory:
+  created: '2025-12-31'
+  description: Autonomous relationship graph builder that discovers code-level dependencies
+    across doc_id-tagged repository files
+  maturity: production
+  name: SUB_RELATIONSHIP_INDEX
+  purpose: 'Build and maintain a relationship index showing how files depend on each
+    other through:
+
+    - Python imports (AST-based extraction)
+
+    - JSON schema references ($ref fields)
+
+    - PowerShell dot-sourcing (. "./script.ps1")
+
+
+    Operates independently from SSOT governance graph, focusing on actual code relationships.
+
+    '
+  status: active
+doc_id: DOC-SUBSYSTEM-RELATIONSHIP-INDEX-MANIFEST-001
+files:
+  analyzers:
+  - description: Abstract base class for all analyzers
+    doc_id: DOC-CORE-BASE-ANALYZER-001
+    path: analyzers/base_analyzer.py
+    type: core
+  - description: Python AST-based import extraction
+    doc_id: DOC-ANALYZER-PYTHON-IMPORT-001
+    path: analyzers/python_import_analyzer.py
+    type: analyzer
+  - description: JSON $ref extraction
+    doc_id: DOC-ANALYZER-SCHEMA-REFERENCE-001
+    path: analyzers/schema_reference_analyzer.py
+    type: analyzer
+  - description: PowerShell dot-sourcing detection
+    doc_id: DOC-ANALYZER-POWERSHELL-IMPORT-001
+    path: analyzers/powershell_import_analyzer.py
+    type: analyzer
+  core:
+  - description: Main orchestrator for building relationship index
+    doc_id: DOC-CORE-INDEX-BUILDER-001
+    path: core/index_builder.py
+    type: core
+  - description: Stable edge ID generation via SHA256
+    doc_id: DOC-CORE-EDGE-ID-GENERATOR-001
+    path: core/edge_id_generator.py
+    type: core
+  - description: Rule-based confidence scoring
+    doc_id: DOC-CORE-CONFIDENCE-ENGINE-001
+    path: core/confidence_engine.py
+    type: core
+  documentation:
+  - description: User-facing documentation
+    doc_id: DOC-README-RELATIONSHIP-INDEX-001
+    path: README.md
+    type: doc
+  - description: AI assistant guidance
+    doc_id: DOC-CLAUDE-RELATIONSHIP-INDEX-001
+    path: CLAUDE.md
+    type: doc
+  - description: This file - directory manifest
+    doc_id: DOC-SUBSYSTEM-RELATIONSHIP-INDEX-MANIFEST-001
+    path: DIR_MANIFEST.yaml
+    type: manifest
+  schemas:
+  - description: JSON Schema for relationship index (Draft 2020-12)
+    doc_id: DOC-SCHEMA-RELATIONSHIP-INDEX-001
+    path: schemas/relationship_index.schema.json
+    type: schema
+  - description: Confidence tier definitions and rules
+    doc_id: DOC-CONFIG-CONFIDENCE-RULES-001
+    path: schemas/confidence_rules.yaml
+    type: config
+  tools:
+  - description: CLI tool to build relationship index
+    doc_id: DOC-TOOL-BUILD-RELATIONSHIP-INDEX-001
+    path: tools/build_relationship_index.py
+    type: cli
+  - description: CLI tool to validate index against schema
+    doc_id: DOC-TOOL-VALIDATE-RELATIONSHIP-INDEX-001
+    path: tools/validate_relationship_index.py
+    type: cli
+integration:
+  ci_workflow:
+    steps:
+    - command: python tools/build_relationship_index.py
+      name: Build index
+      required: true
+    - command: python tools/validate_relationship_index.py --index data/RELATIONSHIP_INDEX.json
+      exit_code: 0
+      name: Validate schema
+      required: true
+  commands:
+    build:
+      command: python tools/build_relationship_index.py --output data/RELATIONSHIP_INDEX.json
+      description: Build complete relationship index
+      timeout: 120s
+    validate:
+      command: python tools/validate_relationship_index.py --index data/RELATIONSHIP_INDEX.json
+      description: Validate index against JSON schema
+      timeout: 30s
+last_updated: '2025-12-31'
+metrics:
+  analyzer_coverage:
+    power_shell_import_analyzer: 22
+    python_import_analyzer: 11
+    schema_reference_analyzer: 3
+  current_coverage:
+    broken_edges: 21
+    high_confidence_edges: 15
+    total_edges: 36
+    total_nodes: 2723
+  performance:
+    build_time: 30-60s
+    memory_usage: 100-200 MB
+    processing_rate: 50-90 files/sec
+next_steps:
+- description: Add Phase 2 analyzers (Markdown links, YAML refs)
+  estimated_effort: 3-5 days
+  priority: medium
+- description: Implement incremental updates (cache-based)
+  estimated_effort: 5-7 days
+  priority: low
+- description: Add graph query API (transitive deps, cycles)
+  estimated_effort: 7-10 days
+  priority: high
+- description: Generate visualizations (Mermaid, D3.js)
+  estimated_effort: 3-5 days
+  priority: medium
+- description: Merge with SSOT governance graph
+  estimated_effort: 10-14 days
+  priority: high
+ownership:
+  contact: ai-systems@example.com
+  maintainers:
+  - Relationship Analysis Working Group
+  primary_owner: AI Systems Team
+version: 1.0.0
+versioning:
+  changelog:
+  - changes:
+    - Initial MVP release
+    - '3 analyzers: Python, JSON Schema, PowerShell'
+    - 2,723 nodes indexed, 36 edges discovered
+    - Schema validation passing
+    - Deterministic output verified
+    date: '2025-12-31'
+    version: 1.0.0
+  current_version: 1.0.0
+  schema_version: 1.0.0

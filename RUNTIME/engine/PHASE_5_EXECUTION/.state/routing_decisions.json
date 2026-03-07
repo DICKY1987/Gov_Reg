@@ -1,0 +1,23 @@
+{
+  "run_id": "test-run-001",
+  "decisions": [
+    {
+      "run_id": "test-run-001",
+      "task_id": "task-001",
+      "tool_id": "ruff",
+      "decision_rationale": "Best suited for Python linting"
+    },
+    {
+      "run_id": "test-run-001",
+      "task_id": "task-002",
+      "tool_id": "black",
+      "decision_rationale": "Standard Python formatter"
+    },
+    {
+      "run_id": "test-run-001",
+      "task_id": "task-003",
+      "tool_id": "pytest",
+      "decision_rationale": "Python testing framework"
+    }
+  ]
+}

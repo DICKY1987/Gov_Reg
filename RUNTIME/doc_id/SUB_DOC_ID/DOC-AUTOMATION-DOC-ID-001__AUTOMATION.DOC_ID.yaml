@@ -1,0 +1,348 @@
+# DOC_LINK: DOC-AUTOMATION-DOC-ID-001
+# Automation Specification for SUB_DOC_ID
+# Purpose: Define automation for document ID assignment and validation
+# Version: 1.0.0
+# Priority: MEDIUM - Infrastructure support subsystem
+
+doc_id: DOC-AUTOMATION-DOC-ID-001
+automation_spec_version: "1.0.0"
+subsystem_id: SUB_DOC_ID
+
+meta:
+  owner: SUB_DOC_ID
+  authority: contract
+  updated_utc: "2025-12-31T00:00:00Z"
+  depends_on:
+    - PHASE_0_BOOTSTRAP
+    - SSOT_System
+
+triggers:
+  - trigger_id: TRIG-DOC-001
+    name: "New file detected without doc_id"
+    type: fs_event
+    conditions:
+      file_patterns:
+        - "**/*.py"
+        - "**/*.md"
+        - "**/*.yaml"
+        - "**/*.json"
+      event_types: ["create"]
+      exclude_patterns:
+        - "**/node_modules/**"
+        - "**/.git/**"
+        - "**/__pycache__/**"
+    debounce:
+      enabled: true
+      window_seconds: 5
+    idempotency_key: "${file_path}_${file_hash}"
+    initiates_sequence: SEQ-DOC-SCAN-001
+    observability:
+      emit_events: true
+      trace_propagation: true
+
+  - trigger_id: TRIG-DOC-002
+    name: "Manual doc_id scan request"
+    type: manual
+    conditions:
+      command_pattern: "scan_doc_ids"
+    debounce:
+      enabled: false
+    idempotency_key: "${run_id}"
+    initiates_sequence: SEQ-DOC-SCAN-001
+    observability:
+      emit_events: true
+      trace_propagation: true
+
+  - trigger_id: TRIG-DOC-003
+    name: "Registry validation scheduled"
+    type: schedule
+    conditions:
+      cron: "0 2 * * *"  # Daily at 2 AM
+    debounce:
+      enabled: false
+    idempotency_key: "${date}"
+    initiates_sequence: SEQ-DOC-VALIDATE-001
+    observability:
+      emit_events: true
+      trace_propagation: true
+
+  - trigger_id: TRIG-DOC-004
+    name: "Pre-commit hook triggered"
+    type: git_hook
+    conditions:
+      hook_type: "pre-commit"
+    debounce:
+      enabled: false
+    idempotency_key: "${commit_sha}"
+    initiates_sequence: SEQ-DOC-VALIDATE-001
+    observability:
+      emit_events: true
+      trace_propagation: true
+
+sequences:
+  - sequence_id: SEQ-DOC-SCAN-001
+    name: "Document ID scanning"
+    purpose: "Scan files for missing doc_ids and assign new IDs"
+    steps:
+      - step_id: STEP-DOC-001
+        name: "Scan repository for eligible files"
+        operation_kind: OP-SCAN-FILES
+        inputs:
+          - name: scanner_config
+            source: "scanners/config.yaml"
+            required: true
+          - name: file_patterns
+            source: "${trigger.conditions.file_patterns}"
+            required: true
+        outputs:
+          - name: eligible_files
+            destination: "memory"
+          - name: scan_stats
+            destination: ".state/scan_stats.json"
+        on_error:
+          strategy: fail_fast
+
+      - step_id: STEP-DOC-002
+        name: "Identify missing doc_ids"
+        operation_kind: OP-IDENTIFY-MISSING
+        inputs:
+          - name: eligible_files
+            source: "memory"
+            required: true
+          - name: registry
+            source: "DOC_ID_REGISTRY.yaml"
+            required: true
+        outputs:
+          - name: missing_ids
+            destination: "memory"
+        on_error:
+          strategy: continue
+
+      - step_id: STEP-DOC-003
+        name: "Assign new doc_ids"
+        operation_kind: OP-ASSIGN-DOC-IDS
+        inputs:
+          - name: missing_ids
+            source: "memory"
+            required: true
+          - name: id_assigner
+            source: "scanners/assign_doc_ids.py"
+            required: true
+        outputs:
+          - name: assignment_result
+            destination: ".state/assignment_result.json"
+          - name: updated_registry
+            destination: "DOC_ID_REGISTRY.yaml"
+        on_error:
+          strategy: retry
+          retry_config:
+            max_attempts: 3
+            backoff_seconds: 1
+
+      - step_id: STEP-DOC-004
+        name: "Update file headers"
+        operation_kind: OP-UPDATE-FILE-HEADERS
+        inputs:
+          - name: assignment_result
+            source: ".state/assignment_result.json"
+            required: true
+        outputs:
+          - name: update_result
+            destination: ".state/update_result.json"
+        on_error:
+          strategy: continue
+
+  - sequence_id: SEQ-DOC-VALIDATE-001
+    name: "Registry validation"
+    purpose: "Validate doc_id registry integrity and coverage"
+    steps:
+      - step_id: STEP-DOC-005
+        name: "Load registry"
+        operation_kind: OP-LOAD-REGISTRY
+        inputs:
+          - name: registry_path
+            source: "DOC_ID_REGISTRY.yaml"
+            required: true
+          - name: schema_path
+            source: "schemas/doc_id_registry.schema.yaml"
+            required: true
+        outputs:
+          - name: validated_registry
+            destination: "memory"
+        on_error:
+          strategy: fail_fast
+
+      - step_id: STEP-DOC-006
+        name: "Check for duplicates"
+        operation_kind: OP-CHECK-DUPLICATES
+        inputs:
+          - name: registry
+            source: "memory"
+            required: true
+        outputs:
+          - name: duplicate_report
+            destination: ".state/duplicate_report.json"
+        on_error:
+          strategy: continue
+
+      - step_id: STEP-DOC-007
+        name: "Verify file existence"
+        operation_kind: OP-VERIFY-FILES
+        inputs:
+          - name: registry
+            source: "memory"
+            required: true
+        outputs:
+          - name: broken_links_report
+            destination: ".state/broken_links_report.json"
+        on_error:
+          strategy: continue
+
+      - step_id: STEP-DOC-008
+        name: "Generate coverage report"
+        operation_kind: OP-GENERATE-COVERAGE
+        inputs:
+          - name: registry
+            source: "memory"
+            required: true
+          - name: scan_stats
+            source: ".state/scan_stats.json"
+            required: false
+        outputs:
+          - name: coverage_report
+            destination: "reports/coverage_report.json"
+          - name: coverage_badge
+            destination: "reports/coverage_badge.svg"
+        on_error:
+          strategy: continue
+
+  - sequence_id: SEQ-DOC-MIGRATE-001
+    name: "Registry migration"
+    purpose: "Migrate registry format or restructure IDs"
+    steps:
+      - step_id: STEP-DOC-009
+        name: "Backup current registry"
+        operation_kind: OP-BACKUP-REGISTRY
+        inputs:
+          - name: registry_path
+            source: "DOC_ID_REGISTRY.yaml"
+            required: true
+        outputs:
+          - name: backup_path
+            destination: "memory"
+        on_error:
+          strategy: fail_fast
+
+      - step_id: STEP-DOC-010
+        name: "Apply migration"
+        operation_kind: OP-MIGRATE-REGISTRY
+        inputs:
+          - name: registry
+            source: "DOC_ID_REGISTRY.yaml"
+            required: true
+          - name: migration_script
+            source: "${migration_script_path}"
+            required: true
+        outputs:
+          - name: migrated_registry
+            destination: "DOC_ID_REGISTRY.yaml"
+          - name: migration_report
+            destination: ".state/migration_report.json"
+        on_error:
+          strategy: fail_fast
+
+      - step_id: STEP-DOC-011
+        name: "Validate migrated registry"
+        operation_kind: OP-VALIDATE-MIGRATION
+        inputs:
+          - name: migrated_registry
+            source: "DOC_ID_REGISTRY.yaml"
+            required: true
+          - name: schema
+            source: "schemas/doc_id_registry.schema.yaml"
+            required: true
+        outputs:
+          - name: validation_result
+            destination: ".state/validation_result.json"
+        on_error:
+          strategy: fail_fast
+
+handoffs:
+  # SUB_DOC_ID is primarily a support subsystem - minimal external handoffs
+  []
+
+governance:
+  orchestration_ownership:
+    primary_owner: SUB_DOC_ID
+    triggers:
+      - TRIG-DOC-001
+      - TRIG-DOC-002
+      - TRIG-DOC-003
+      - TRIG-DOC-004
+    conflict_status: resolved
+
+  conflict_register:
+    - conflict_id: CONFLICT-004-DOC-ID-BOOTSTRAP
+      description: "PHASE_0 and SUB_DOC_ID both scan for doc_ids during bootstrap"
+      participants:
+        - PHASE_0_BOOTSTRAP
+        - SUB_DOC_ID
+      resolution_strategy: sequential_handoff
+      resolved_by: "PHASE_0 runs initial scan, SUB_DOC_ID handles ongoing maintenance"
+      authority_decision: contract
+      status: resolved
+
+validation_gates:
+  - gate_id: GATE-001
+    name: "Registry schema validation"
+    type: blocking
+    on_fail: block_activation
+
+  - gate_id: GATE-002
+    name: "No duplicate doc_ids"
+    type: blocking
+    on_fail: block_activation
+
+  - gate_id: GATE-003
+    name: "Coverage threshold (≥98%)"
+    type: warning
+    on_fail: warn
+
+# Error taxonomy
+error_taxonomy:
+  E-DOC-001:
+    code: "REGISTRY_LOAD_FAILED"
+    category: "io_error"
+    retry_strategy: "fail_fast"
+    recovery_action: "alert_maintainer"
+
+  E-DOC-002:
+    code: "DUPLICATE_DOC_ID"
+    category: "integrity_violation"
+    retry_strategy: "fail_fast"
+    recovery_action: "manual_resolution_required"
+
+  E-DOC-003:
+    code: "ID_ASSIGNMENT_FAILED"
+    category: "runtime_error"
+    retry_strategy: "retry_3x"
+    recovery_action: "log_and_continue"
+
+  E-DOC-004:
+    code: "FILE_UPDATE_FAILED"
+    category: "io_error"
+    retry_strategy: "continue"
+    recovery_action: "log_failed_file"
+
+# Cross-references
+cross_references:
+  schemas:
+    - doc_id_registry.schema.yaml
+    - SYSTEM_DETERMINISM_CONTRACT.json
+  contracts:
+    - DIR_CONTRACT.yaml
+  patterns:
+    - PATTERN-DOC-ID-ASSIGNMENT-001
+  docs:
+    - DOC_ID_SYSTEM_COMPLETE_SPECIFICATION.md
+    - ID_SYSTEM_GOVERNANCE_REQUIREMENTS.md

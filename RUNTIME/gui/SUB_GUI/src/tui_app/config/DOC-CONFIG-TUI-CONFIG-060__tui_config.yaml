@@ -1,0 +1,21 @@
+# DOC_LINK: DOC-CONFIG-TUI-CONFIG-060
+doc_id: DOC-CONFIG-TUI-CONFIG-060
+theme:
+  surface: "#0b1221"
+  primary: "#1f6feb"
+  accent: "#2bc48a"
+  warning: "#f5a524"
+  danger: "#ff6b6b"
+  muted: "#94a3b8"
+  text: "#dfe7f5"
+
+panels:
+  dashboard_refresh_seconds: 2.0
+  pattern_refresh_seconds: 5.0
+  file_refresh_seconds: 3.0
+  tool_refresh_seconds: 4.0
+  log_refresh_seconds: 3.0
+
+logs:
+  path: "logs/combined.log"
+  max_lines: 60

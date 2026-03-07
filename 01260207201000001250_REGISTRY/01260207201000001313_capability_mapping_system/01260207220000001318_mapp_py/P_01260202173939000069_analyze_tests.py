@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Test Runner - Phase C Script (Optional)
-Produces: py_test_pass_count, py_test_fail_count, py_test_coverage_pct
+Produces: py_tests_executed, py_pytest_exit_code, py_test_pass_count, py_test_fail_count, py_coverage_percent
 
 Runs pytest on test files and collects metrics.
 """
@@ -121,9 +121,11 @@ def analyze_tests(file_path: Path, project_root: Optional[Path] = None) -> dict:
     Run tests and collect metrics.
 
     Returns dict with:
+    - py_tests_executed: bool
+    - py_pytest_exit_code: int
     - py_test_pass_count: int
     - py_test_fail_count: int
-    - py_test_coverage_pct: Optional[float]
+    - py_coverage_percent: Optional[float]
     - success: bool
     - error: Optional[str]
     """
@@ -145,10 +147,12 @@ def analyze_tests(file_path: Path, project_root: Optional[Path] = None) -> dict:
         coverage = run_coverage(file_path, project_root)
 
         return {
+            "py_tests_executed": True,
+            "py_pytest_exit_code": result["returncode"],
             "py_test_pass_count": counts["passed"],
             "py_test_fail_count": counts["failed"],
             "py_test_total_count": counts["total"],
-            "py_test_coverage_pct": coverage,
+            "py_coverage_percent": coverage,
             "test_output": result["stdout"],
             "success": True,
             "error": None,
@@ -156,10 +160,12 @@ def analyze_tests(file_path: Path, project_root: Optional[Path] = None) -> dict:
 
     except Exception as e:
         return {
+            "py_tests_executed": False,
+            "py_pytest_exit_code": -1,
             "py_test_pass_count": 0,
             "py_test_fail_count": 0,
             "py_test_total_count": 0,
-            "py_test_coverage_pct": None,
+            "py_coverage_percent": None,
             "test_output": "",
             "success": False,
             "error": f"Test analysis failed: {e}",
@@ -181,12 +187,23 @@ def main():
 
     result = analyze_tests(file_path, project_root)
 
+    # Handle --json flag
+    if '--json' in sys.argv:
+        idx = sys.argv.index('--json')
+        out_path = sys.argv[idx + 1] if idx + 1 < len(sys.argv) else None
+        if out_path:
+            with open(out_path, 'w') as f:
+                json.dump(result, f, indent=2, sort_keys=True)
+        else:
+            print(json.dumps(result, indent=2, sort_keys=True))
+        sys.exit(0)
+
     if result["success"]:
         print(f"Passed: {result['py_test_pass_count']}")
         print(f"Failed: {result['py_test_fail_count']}")
         print(f"Total: {result['py_test_total_count']}")
-        if result["py_test_coverage_pct"] is not None:
-            print(f"Coverage: {result['py_test_coverage_pct']}%")
+        if result["py_coverage_percent"] is not None:
+            print(f"Coverage: {result['py_coverage_percent']}%")
     else:
         print(f"Error: {result['error']}", file=sys.stderr)
         sys.exit(1)

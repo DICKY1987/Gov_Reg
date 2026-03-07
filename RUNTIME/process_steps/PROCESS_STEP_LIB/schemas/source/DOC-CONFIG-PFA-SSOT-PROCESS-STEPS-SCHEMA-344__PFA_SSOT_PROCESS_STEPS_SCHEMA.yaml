@@ -1,0 +1,1509 @@
+# DOC_LINK: DOC-CONFIG-PFA-SSOT-PROCESS-STEPS-SCHEMA-344
+doc_id: DOC-CONFIG-PFA-SSOT-PROCESS-STEPS-SCHEMA-344
+meta:
+  process_id: MINI_PIPE_ACMS_PROCESS
+  source_file: PROCESS_STEP_LIB\PFA_SSOT_PROCESS_STEPS_SCHEMA.yaml
+  normalized_by: pfa_normalize_steps.py
+steps:
+- step_id: P0-STEP-001
+  phase: INIT
+  name: User invokes ACMS controller
+  description: User invokes ACMS controller
+  responsible_component: acms_controller
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 10
+  lens: process
+  automation_level: manual_only
+  _content_hash: d4303d321215d9f910aface8cf443838c8af5cde
+- step_id: P0-STEP-002
+  phase: INIT
+  name: acms_controller parses CLI arguments
+  description: acms_controller parses CLI arguments
+  responsible_component: acms_controller
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 20
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 432ef0e78c611891be3f8ce1f04f296a015e3c79
+- step_id: P0-STEP-003
+  phase: INIT
+  name: acms_controller generates run_id (ULID format)
+  description: acms_controller generates run_id (ULID format)
+  responsible_component: acms_controller
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 30
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: d01c1818af9abacbda93fbc398b4f334e35f2977
+- step_id: P0-STEP-004
+  phase: INIT
+  name: acms_controller creates run directory structure
+  description: acms_controller creates run directory structure
+  responsible_component: acms_controller
+  operation_kind: initialization
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 40
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 87827ebef93ff4c04fe73f2a2eee72bba54b4266
+- step_id: P0-STEP-005
+  phase: INIT
+  name: acms_controller initializes run ledger (JSONL append-only log)
+  description: acms_controller initializes run ledger (JSONL append-only log)
+  responsible_component: acms_controller
+  operation_kind: initialization
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 50
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 57c99a2da92ba5f0c5e27574e30a7b17adfc9f9d
+- step_id: P0-STEP-006
+  phase: INIT
+  name: acms_controller creates top-level run record
+  description: acms_controller creates top-level run record
+  responsible_component: acms_controller
+  operation_kind: initialization
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 60
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: a341e0267092ab48b7c84b049182318dbc02fd7b
+- step_id: P0-STEP-007
+  phase: INIT
+  name: acms_controller initializes core components
+  description: acms_controller initializes core components
+  responsible_component: acms_controller
+  operation_kind: initialization
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 70
+  lens: architecture
+  automation_level: fully_automatic
+  _content_hash: e52e61bf3a283050ff2229f94f5eeb13ff2f0066
+- step_id: P0-STEP-008
+  phase: INIT
+  name: GUARDRAILS INITIALIZATION (if enabled)
+  description: GUARDRAILS INITIALIZATION (if enabled)
+  responsible_component: guardrails
+  operation_kind: guardrail_check
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 80
+  lens: automation
+  automation_level: fully_automatic
+  _content_hash: f510155b1a72a75419d003e37a71f746bd058c59
+- step_id: P0-STEP-009
+  phase: INIT
+  name: acms_controller logs state transition to GAP_ANALYSIS
+  description: acms_controller logs state transition to GAP_ANALYSIS
+  responsible_component: acms_controller
+  operation_kind: state_transition
+  inputs:
+  - Gap data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 90
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 8163e7cf94a0e47d9a52af19a28969e0d79e9fd2
+- step_id: P0-STEP-010
+  phase: INIT
+  name: CHECKPOINT - INIT phase complete
+  description: CHECKPOINT - INIT phase complete
+  responsible_component: acms_controller
+  operation_kind: state_transition
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 100
+  lens: logical
+  automation_level: fully_automatic
+  _content_hash: 8d3a495f7e3b56c346c8cf7f2e6b47e252f2e976
+- step_id: P1-STEP-011
+  phase: GAP_ANALYSIS
+  name: acms_controller loads gap analysis configuration
+  description: acms_controller loads gap analysis configuration
+  responsible_component: acms_controller
+  operation_kind: gap_discovery
+  inputs:
+  - Gap data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 110
+  lens: persistence
+  automation_level: fully_automatic
+  _content_hash: 30a4624bc736a4e722bfd05ea7ada3dd262bb33a
+- step_id: P1-STEP-012
+  phase: GAP_ANALYSIS
+  name: acms_controller assembles gap analysis request payload
+  description: acms_controller assembles gap analysis request payload
+  responsible_component: acms_controller
+  operation_kind: gap_discovery
+  inputs:
+  - Gap data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 120
+  lens: persistence
+  automation_level: fully_automatic
+  _content_hash: 6c935f5dab14cb43865b1a9ffb084fb5d0199d23
+- step_id: P1-STEP-013
+  phase: GAP_ANALYSIS
+  name: acms_controller calls AI adapter to perform gap discovery
+  description: acms_controller calls AI adapter to perform gap discovery
+  responsible_component: acms_controller
+  operation_kind: gap_discovery
+  inputs:
+  - Gap data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 130
+  lens: architecture
+  automation_level: fully_automatic
+  _content_hash: 7ce078a7c9dabd2845f3a83ffc25ee81e091291f
+- step_id: P1-STEP-014
+  phase: GAP_ANALYSIS
+  name: AI adapter executes gap analysis prompts
+  description: AI adapter executes gap analysis prompts
+  responsible_component: acms_ai_adapter
+  operation_kind: gap_discovery
+  inputs:
+  - Gap data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 140
+  lens: architecture
+  automation_level: fully_automatic
+  _content_hash: ab574f9321615f723a9ecf19a3583e8d9bf0487f
+- step_id: P1-STEP-015
+  phase: GAP_ANALYSIS
+  name: AI adapter returns structured JSON results
+  description: AI adapter returns structured JSON results
+  responsible_component: acms_ai_adapter
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Processed data
+  requires_human_confirmation: false
+  order: 150
+  lens: architecture
+  automation_level: fully_automatic
+  _content_hash: 84d972e5365055e57d9cbc02441c20e02650cdfa
+- step_id: P1-STEP-016
+  phase: GAP_ANALYSIS
+  name: acms_controller validates gap analysis JSON
+  description: acms_controller validates gap analysis JSON
+  responsible_component: acms_controller
+  operation_kind: gap_discovery
+  inputs:
+  - Gap data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 160
+  lens: logical
+  automation_level: fully_automatic
+  _content_hash: 8ec3da1eb3dbd3e292fd7b153d848a22cb4ea9b8
+- step_id: P1-STEP-017
+  phase: GAP_ANALYSIS
+  name: acms_controller writes raw gap analysis report to disk
+  description: acms_controller writes raw gap analysis report to disk
+  responsible_component: acms_controller
+  operation_kind: gap_discovery
+  inputs:
+  - Gap data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 170
+  lens: persistence
+  automation_level: fully_automatic
+  _content_hash: 360bf4daca8634483dc2402fb7c2661824043a80
+- step_id: P1-STEP-018
+  phase: GAP_ANALYSIS
+  name: acms_controller passes validated gap report to gap_registry
+  description: acms_controller passes validated gap report to gap_registry
+  responsible_component: acms_controller
+  operation_kind: summary_generation
+  inputs:
+  - Gap data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 180
+  lens: logical
+  automation_level: fully_automatic
+  _content_hash: db61cde16b59cc780265ac6dc8e8986ae3814ecc
+- step_id: P1-STEP-019
+  phase: GAP_ANALYSIS
+  name: gap_registry normalizes raw findings into canonical GapRecord objects
+  description: gap_registry normalizes raw findings into canonical GapRecord objects
+  responsible_component: gap_registry
+  operation_kind: gap_discovery
+  inputs:
+  - Gap data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 190
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 24943fcee0ae08aa9c674d12eb148ce225a34a32
+- step_id: P1-STEP-020
+  phase: GAP_ANALYSIS
+  name: gap_registry persists normalized gaps
+  description: gap_registry persists normalized gaps
+  responsible_component: gap_registry
+  operation_kind: gap_normalization
+  inputs:
+  - Gap data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 200
+  lens: persistence
+  automation_level: fully_automatic
+  _content_hash: b51a314ca7b8535331d9831bf553e1fb89480567
+- step_id: P1-STEP-021
+  phase: GAP_ANALYSIS
+  name: gap_registry returns in-memory view of gaps
+  description: gap_registry returns in-memory view of gaps
+  responsible_component: gap_registry
+  operation_kind: task_execution
+  inputs:
+  - Gap data
+  expected_outputs:
+  - Processed data
+  requires_human_confirmation: false
+  order: 210
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 52477f89daecdbaf81bd525b690fa8ec3ff228be
+- step_id: P1-STEP-022
+  phase: GAP_ANALYSIS
+  name: acms_controller logs gap discovery completion
+  description: acms_controller logs gap discovery completion
+  responsible_component: acms_controller
+  operation_kind: gap_discovery
+  inputs:
+  - Gap data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 220
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: ed646001c515b592985bf9a424a522ce340f2155
+- step_id: P1-STEP-023
+  phase: GAP_ANALYSIS
+  name: CHECKPOINT - GAP_ANALYSIS phase complete
+  description: CHECKPOINT - GAP_ANALYSIS phase complete
+  responsible_component: acms_controller
+  operation_kind: state_transition
+  inputs:
+  - Gap data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 230
+  lens: logical
+  automation_level: fully_automatic
+  _content_hash: 69e90305081569ca7fc3910ec48df61a4574c433
+- step_id: P1-STEP-024
+  phase: GAP_ANALYSIS
+  name: If mode == "analyze_only", skip to DONE state
+  description: If mode == "analyze_only", skip to DONE state
+  responsible_component: acms_controller
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 240
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 0a995e3b3629699fe7c1dbffe6ec6b68c81c4423
+- step_id: P2-STEP-025
+  phase: PLANNING
+  name: acms_controller logs state transition to PLANNING
+  description: acms_controller logs state transition to PLANNING
+  responsible_component: acms_controller
+  operation_kind: state_transition
+  inputs:
+  - Execution plan
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 250
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: be177eed0905da2597246e9441c1a6a96fc9565e
+- step_id: P2-STEP-026
+  phase: PLANNING
+  name: acms_controller calls execution_planner with normalized gaps
+  description: acms_controller calls execution_planner with normalized gaps
+  responsible_component: acms_controller
+  operation_kind: gap_normalization
+  inputs:
+  - Gap data
+  - Execution plan
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 260
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 7997802c50000d461c02ec00e99a56d826db2719
+- step_id: P2-STEP-027
+  phase: PLANNING
+  name: execution_planner clusters gaps into workstreams
+  description: execution_planner clusters gaps into workstreams
+  responsible_component: execution_planner
+  operation_kind: planning
+  inputs:
+  - Gap data
+  - Execution plan
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 270
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: b9f34ec326579a3dcc9d22884e6ec3fa5e548c9f
+- step_id: P2-STEP-028
+  phase: PLANNING
+  name: execution_planner assigns priority scores to workstreams
+  description: execution_planner assigns priority scores to workstreams
+  responsible_component: execution_planner
+  operation_kind: planning
+  inputs:
+  - Execution plan
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 280
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: a24d06e7cb78344487f6769188bd91ae64d02216
+- step_id: P2-STEP-029
+  phase: PLANNING
+  name: execution_planner orders workstreams by priority
+  description: execution_planner orders workstreams by priority
+  responsible_component: execution_planner
+  operation_kind: planning
+  inputs:
+  - Execution plan
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 290
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 70cd94c04d02383768531294711efc08ed339c84
+- step_id: P2-STEP-030
+  phase: PLANNING
+  name: execution_planner generates workstream metadata
+  description: execution_planner generates workstream metadata
+  responsible_component: execution_planner
+  operation_kind: planning
+  inputs:
+  - Execution plan
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 300
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: a5286ee57a44e240aa333131d871dc2e36ac3d4a
+- step_id: P2-STEP-031
+  phase: PLANNING
+  name: execution_planner validates workstreams
+  description: execution_planner validates workstreams
+  responsible_component: execution_planner
+  operation_kind: planning
+  inputs:
+  - Execution plan
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 310
+  lens: logical
+  automation_level: fully_automatic
+  _content_hash: e76a2ab6f9601776db417394a2373925224aa77f
+- step_id: P2-STEP-032
+  phase: PLANNING
+  name: execution_planner returns structured workstream definitions
+  description: execution_planner returns structured workstream definitions
+  responsible_component: execution_planner
+  operation_kind: planning
+  inputs:
+  - Execution plan
+  expected_outputs:
+  - Processed data
+  requires_human_confirmation: false
+  order: 320
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: f1e10758f09eb24e3318558dca5fc296b76c479d
+- step_id: P2-STEP-033
+  phase: PLANNING
+  name: acms_controller saves workstreams to disk
+  description: acms_controller saves workstreams to disk
+  responsible_component: acms_controller
+  operation_kind: planning
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 330
+  lens: persistence
+  automation_level: fully_automatic
+  _content_hash: 6102452871fddb5bf3f83a0dc460c924e65fd66b
+- step_id: P2-STEP-034
+  phase: PLANNING
+  name: 'GUARDRAILS: Increment planning_attempts counter'
+  description: 'GUARDRAILS: Increment planning_attempts counter'
+  responsible_component: guardrails
+  operation_kind: guardrail_check
+  inputs:
+  - Execution plan
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 340
+  lens: automation
+  automation_level: fully_automatic
+  _content_hash: 00d571e640ade442da0575f1588bf03634b79cac
+- step_id: P2-STEP-035
+  phase: PLANNING
+  name: acms_controller logs planning completion
+  description: acms_controller logs planning completion
+  responsible_component: acms_controller
+  operation_kind: event_emission
+  inputs:
+  - Execution plan
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 350
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: eabeaeed483a4595a0aff5cc8f3b6ca9f1756dc3
+- step_id: P2-STEP-036
+  phase: PLANNING
+  name: acms_controller calls phase_plan_compiler with workstreams
+  description: acms_controller calls phase_plan_compiler with workstreams
+  responsible_component: acms_controller
+  operation_kind: planning
+  inputs:
+  - Execution plan
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 360
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 946cb0d8f01221f08956fd90fbbbff9aed876ab3
+- step_id: P2-STEP-037
+  phase: PLANNING
+  name: phase_plan_compiler transforms workstreams into MINI_PIPE tasks
+  description: phase_plan_compiler transforms workstreams into MINI_PIPE tasks
+  responsible_component: phase_plan_compiler
+  operation_kind: planning
+  inputs:
+  - Execution plan
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 370
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 3f5598ce137dc12815eeee4ed2c65712b2f68f91
+- step_id: P2-STEP-038
+  phase: PLANNING
+  name: 'GUARDRAILS: Validate pattern_ids in task metadata'
+  description: 'GUARDRAILS: Validate pattern_ids in task metadata'
+  responsible_component: guardrails
+  operation_kind: guardrail_check
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 380
+  lens: automation
+  automation_level: fully_automatic
+  _content_hash: da87312e543efab7d45a00b964e86508f9d1d57a
+- step_id: P2-STEP-039
+  phase: PLANNING
+  name: phase_plan_compiler builds task dependency graph
+  description: phase_plan_compiler builds task dependency graph
+  responsible_component: phase_plan_compiler
+  operation_kind: plan_compilation
+  inputs:
+  - Execution plan
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 390
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 94ba6e94de8da48853d1e88c1009ce00f47c2915
+- step_id: P2-STEP-040
+  phase: PLANNING
+  name: phase_plan_compiler creates MINI_PIPE execution plan
+  description: phase_plan_compiler creates MINI_PIPE execution plan
+  responsible_component: phase_plan_compiler
+  operation_kind: plan_compilation
+  inputs:
+  - Execution plan
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 400
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 11515aa5895c457cd90afd3ad17c10743ee8c524
+- step_id: P2-STEP-041
+  phase: PLANNING
+  name: phase_plan_compiler validates execution plan
+  description: phase_plan_compiler validates execution plan
+  responsible_component: phase_plan_compiler
+  operation_kind: plan_compilation
+  inputs:
+  - Execution plan
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 410
+  lens: logical
+  automation_level: fully_automatic
+  _content_hash: aa5a92683f20d104c43399b249cf4dc10ada0719
+- step_id: P2-STEP-042
+  phase: PLANNING
+  name: phase_plan_compiler writes MINI_PIPE execution plan to disk
+  description: phase_plan_compiler writes MINI_PIPE execution plan to disk
+  responsible_component: phase_plan_compiler
+  operation_kind: plan_compilation
+  inputs:
+  - Execution plan
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 420
+  lens: persistence
+  automation_level: fully_automatic
+  _content_hash: 2453076e7a495d697f68b11f92f2267647a5658c
+- step_id: P2-STEP-043
+  phase: PLANNING
+  name: 'GUARDRAILS: Check for AP_PLANNING_LOOP anti-pattern'
+  description: 'GUARDRAILS: Check for AP_PLANNING_LOOP anti-pattern'
+  responsible_component: guardrails
+  operation_kind: guardrail_check
+  inputs:
+  - Execution plan
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 430
+  lens: automation
+  automation_level: fully_automatic
+  _content_hash: 2ef6251094564bd6073531742668167c2f1d7c48
+- step_id: P2-STEP-044
+  phase: PLANNING
+  name: acms_controller logs plan generation completion
+  description: acms_controller logs plan generation completion
+  responsible_component: acms_controller
+  operation_kind: event_emission
+  inputs:
+  - Execution plan
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 440
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 1a2a13536419559d823a2c546a97859d1c284bc9
+- step_id: P2-STEP-045
+  phase: PLANNING
+  name: CHECKPOINT - PLANNING phase complete
+  description: CHECKPOINT - PLANNING phase complete
+  responsible_component: acms_controller
+  operation_kind: state_transition
+  inputs:
+  - Execution plan
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 450
+  lens: logical
+  automation_level: fully_automatic
+  _content_hash: 9b637a057dc1c65b5e0a18c5d6d1da60b7bf20dc
+- step_id: P2-STEP-046
+  phase: PLANNING
+  name: If mode == "plan_only", skip to DONE state
+  description: If mode == "plan_only", skip to DONE state
+  responsible_component: acms_controller
+  operation_kind: task_execution
+  inputs:
+  - Execution plan
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 460
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 57894e577b7dbf6e5e51e89831619a061b1c381f
+- step_id: P4-STEP-047
+  phase: EXECUTION
+  name: acms_controller logs state transition to EXECUTION
+  description: acms_controller logs state transition to EXECUTION
+  responsible_component: acms_controller
+  operation_kind: state_transition
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 470
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: c7b1d6adb3a15f91e5a2fd983324559a20b76545
+- step_id: P4-STEP-048
+  phase: EXECUTION
+  name: acms_controller constructs AcmsMiniPipeAdapter
+  description: acms_controller constructs AcmsMiniPipeAdapter
+  responsible_component: acms_controller
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 480
+  lens: architecture
+  automation_level: fully_automatic
+  _content_hash: 7a8ca2a90b8e3678b9597818130b3cf66e886d19
+- step_id: P4-STEP-049
+  phase: EXECUTION
+  name: acms_minipipe_adapter resolves integration strategy
+  description: acms_minipipe_adapter resolves integration strategy
+  responsible_component: acms_controller
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 490
+  lens: architecture
+  automation_level: fully_automatic
+  _content_hash: 4206fff1287101537b9f4a212369b3869d2c7ce5
+- step_id: P4-STEP-050
+  phase: EXECUTION
+  name: acms_minipipe_adapter invokes MINI_PIPE_orchestrator
+  description: acms_minipipe_adapter invokes MINI_PIPE_orchestrator
+  responsible_component: mini_pipe_orchestrator
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 500
+  lens: architecture
+  automation_level: fully_automatic
+  _content_hash: 4224f254603995d0428b3017f43ae174994ffb39
+- step_id: P5-STEP-051
+  phase: EXECUTION
+  name: MINI_PIPE_orchestrator stores execution plan
+  description: MINI_PIPE_orchestrator stores execution plan
+  responsible_component: mini_pipe_orchestrator
+  operation_kind: persistence
+  inputs:
+  - Execution plan
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 510
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 7bc52dcd7be808aa1fb1d075eace5aa9bc9b3317
+- step_id: P5-STEP-052
+  phase: EXECUTION
+  name: MINI_PIPE_orchestrator initializes internal state
+  description: MINI_PIPE_orchestrator initializes internal state
+  responsible_component: mini_pipe_orchestrator
+  operation_kind: initialization
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 520
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 1744b69cc436ff790c9374bae07afac019ee9566
+- step_id: P5-STEP-053
+  phase: EXECUTION
+  name: MINI_PIPE_orchestrator transitions run to "running" state
+  description: MINI_PIPE_orchestrator transitions run to "running" state
+  responsible_component: mini_pipe_orchestrator
+  operation_kind: state_transition
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 530
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: b8ff5cb7502eb3c5ebe3e7b04e1bd94dd2ace5de
+- step_id: P5-STEP-054
+  phase: EXECUTION
+  name: MINI_PIPE_orchestrator initializes event bus
+  description: MINI_PIPE_orchestrator initializes event bus
+  responsible_component: mini_pipe_orchestrator
+  operation_kind: initialization
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 540
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 9b16876b1e65c00dcadcb151945e47b0af4cad7b
+- step_id: P5-STEP-055
+  phase: EXECUTION
+  name: MINI_PIPE_orchestrator hands plan to MINI_PIPE_scheduler
+  description: MINI_PIPE_orchestrator hands plan to MINI_PIPE_scheduler
+  responsible_component: mini_pipe_orchestrator
+  operation_kind: dag_build
+  inputs:
+  - Execution plan
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 550
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 597a9a8784b45c5c252d53ab4dfc55f3e68cb885
+- step_id: P5-STEP-056
+  phase: EXECUTION
+  name: MINI_PIPE_scheduler builds task DAG (Directed Acyclic Graph)
+  description: MINI_PIPE_scheduler builds task DAG (Directed Acyclic Graph)
+  responsible_component: mini_pipe_scheduler
+  operation_kind: dag_build
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 560
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: f387d6220d74dd8986c0837a719f7324317c9ee0
+- step_id: P5-STEP-057
+  phase: EXECUTION
+  name: MINI_PIPE_scheduler computes ready/blocked tasks
+  description: MINI_PIPE_scheduler computes ready/blocked tasks
+  responsible_component: mini_pipe_scheduler
+  operation_kind: dag_build
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 570
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: d8f83625d88e68a68e0bc92b64583cd61ec9d223
+- step_id: P5-STEP-058
+  phase: EXECUTION
+  name: MINI_PIPE_scheduler respects max_concurrency limit
+  description: MINI_PIPE_scheduler respects max_concurrency limit
+  responsible_component: mini_pipe_scheduler
+  operation_kind: dag_build
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 580
+  lens: performance
+  automation_level: fully_automatic
+  _content_hash: 67defefe44b676648b3832e322bb2ccfce6b52a5
+- step_id: P5-STEP-059
+  phase: EXECUTION
+  name: MINI_PIPE_orchestrator calls MINI_PIPE_executor with ready batch
+  description: MINI_PIPE_orchestrator calls MINI_PIPE_executor with ready batch
+  responsible_component: mini_pipe_orchestrator
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 590
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 83c898e6ddc6a327653f0bef688141429c0b0a46
+- step_id: P5-STEP-060
+  phase: EXECUTION
+  name: MINI_PIPE_executor iterates over current batch
+  description: MINI_PIPE_executor iterates over current batch
+  responsible_component: mini_pipe_executor
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 600
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: fb89edf770016c379d527383d3bc262201f4ebdf
+- step_id: P5-STEP-061
+  phase: EXECUTION
+  name: For each task, MINI_PIPE_executor consults MINI_PIPE_router
+  description: For each task, MINI_PIPE_executor consults MINI_PIPE_router
+  responsible_component: mini_pipe_executor
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 610
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 8a6c1267eaf8620954a8ce703da9b1accde444d4
+- step_id: P5-STEP-062
+  phase: EXECUTION
+  name: MINI_PIPE_router selects tool/adapter for task
+  description: MINI_PIPE_router selects tool/adapter for task
+  responsible_component: mini_pipe_router
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 620
+  lens: architecture
+  automation_level: fully_automatic
+  _content_hash: 3162ce5acd73bf9d5f26f3c35c90b3c8f15d7f78
+- step_id: P5-STEP-063
+  phase: EXECUTION
+  name: MINI_PIPE_executor calls MINI_PIPE_tools to run selected tool
+  description: MINI_PIPE_executor calls MINI_PIPE_tools to run selected tool
+  responsible_component: mini_pipe_executor
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 630
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 3e46e4f026e6d4dd45578adb45637d93f5db42ef
+- step_id: P5-STEP-064
+  phase: EXECUTION
+  name: MINI_PIPE_tools renders command template or API call
+  description: MINI_PIPE_tools renders command template or API call
+  responsible_component: mini_pipe_tools
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 640
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 12f7c531f39d661b40e6bbde4a0b75b8b0c279c8
+- step_id: P5-STEP-065
+  phase: EXECUTION
+  name: MINI_PIPE_tools executes command with proper context
+  description: MINI_PIPE_tools executes command with proper context
+  responsible_component: mini_pipe_tools
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 650
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: c5969b6e1cb5426b64e42dfbe499e2b4cc7d395b
+- step_id: P5-STEP-066
+  phase: EXECUTION
+  name: MINI_PIPE_tools captures stdout, stderr, exit code
+  description: MINI_PIPE_tools captures stdout, stderr, exit code
+  responsible_component: mini_pipe_tools
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 660
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: fed3c7e66516f3ba854d9bdab876eeed75b766ad
+- step_id: P5-STEP-067
+  phase: EXECUTION
+  name: MINI_PIPE_tools extracts structured payload (if applicable)
+  description: MINI_PIPE_tools extracts structured payload (if applicable)
+  responsible_component: mini_pipe_tools
+  operation_kind: initialization
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 670
+  lens: persistence
+  automation_level: fully_automatic
+  _content_hash: af275bed4238cf30975aef8d6237ea52631b194c
+- step_id: P5-STEP-068
+  phase: EXECUTION
+  name: MINI_PIPE_tools returns normalized ToolResult to executor
+  description: MINI_PIPE_tools returns normalized ToolResult to executor
+  responsible_component: mini_pipe_executor
+  operation_kind: gap_normalization
+  inputs:
+  - Input data
+  expected_outputs:
+  - Processed data
+  requires_human_confirmation: false
+  order: 680
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 2663b996433652d07da9de77381ac983f44d28c5
+- step_id: P5-STEP-069
+  phase: EXECUTION
+  name: 'GUARDRAILS: Pre-execution checks (if pattern_id in task metadata)'
+  description: 'GUARDRAILS: Pre-execution checks (if pattern_id in task metadata)'
+  responsible_component: guardrails
+  operation_kind: guardrail_check
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 690
+  lens: automation
+  automation_level: fully_automatic
+  _content_hash: 6b8ae23263541877d506556b88346ea76b20ee05
+- step_id: P5-STEP-070
+  phase: EXECUTION
+  name: MINI_PIPE_executor records per-task results in run state
+  description: MINI_PIPE_executor records per-task results in run state
+  responsible_component: mini_pipe_executor
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 700
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 942b5b353910cc0fa64021ce2e8b2dd694117236
+- step_id: P5-STEP-071
+  phase: EXECUTION
+  name: 'GUARDRAILS: Post-execution checks (if pattern_id in task metadata)'
+  description: 'GUARDRAILS: Post-execution checks (if pattern_id in task metadata)'
+  responsible_component: guardrails
+  operation_kind: guardrail_check
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 710
+  lens: automation
+  automation_level: fully_automatic
+  _content_hash: 3d3de46f62664d98244e908faae9c9e23ccc8548
+- step_id: P5-STEP-072
+  phase: EXECUTION
+  name: MINI_PIPE_executor emits task completion event
+  description: MINI_PIPE_executor emits task completion event
+  responsible_component: mini_pipe_executor
+  operation_kind: event_emission
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 720
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: d5b36a274c86bbf1388877ba85e46e3e9ffd831c
+- step_id: P5-STEP-073
+  phase: EXECUTION
+  name: MINI_PIPE_orchestrator updates task statuses in DAG
+  description: MINI_PIPE_orchestrator updates task statuses in DAG
+  responsible_component: mini_pipe_orchestrator
+  operation_kind: dag_build
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 730
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 5b65c142ce72d15ec1f514bed8c8114c1258ed31
+- step_id: P5-STEP-074
+  phase: EXECUTION
+  name: MINI_PIPE_orchestrator asks scheduler for next ready batch
+  description: MINI_PIPE_orchestrator asks scheduler for next ready batch
+  responsible_component: mini_pipe_orchestrator
+  operation_kind: dag_build
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 740
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: d429efd1b40d10fe2e72bef00637b6d9ad886c39
+- step_id: P5-STEP-075
+  phase: EXECUTION
+  name: MINI_PIPE_orchestrator handles step failures
+  description: MINI_PIPE_orchestrator handles step failures
+  responsible_component: mini_pipe_orchestrator
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 750
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: f9b483c4ae2e9987306b478e85f46412621e502d
+- step_id: P5-STEP-076
+  phase: EXECUTION
+  name: Steps 59-75 repeat in execution loop
+  description: Steps 59-75 repeat in execution loop
+  responsible_component: acms_controller
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 760
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 3c2d7161dc4e76bbb5f744be24c1b364a40b8fcc
+- step_id: P5-STEP-077
+  phase: EXECUTION
+  name: 'OPTIONAL: MINI_PIPE_patch_converter converts AI outputs to patches'
+  description: 'OPTIONAL: MINI_PIPE_patch_converter converts AI outputs to patches'
+  responsible_component: acms_controller
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 770
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 662009bbbe143a01151dc096741e927cf341475f
+- step_id: P5-STEP-078
+  phase: EXECUTION
+  name: 'OPTIONAL: MINI_PIPE_patch_ledger manages patch lifecycle'
+  description: 'OPTIONAL: MINI_PIPE_patch_ledger manages patch lifecycle'
+  responsible_component: acms_controller
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 780
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 0b251c785f27fed2706af9a01e309cb7ba1be3ee
+- step_id: P5-STEP-079
+  phase: EXECUTION
+  name: MINI_PIPE_orchestrator computes final run status
+  description: MINI_PIPE_orchestrator computes final run status
+  responsible_component: mini_pipe_orchestrator
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 790
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: eb2f045826d4db4088ddb4d036d32df074edb893
+- step_id: P5-STEP-080
+  phase: EXECUTION
+  name: MINI_PIPE_orchestrator marks run complete
+  description: MINI_PIPE_orchestrator marks run complete
+  responsible_component: mini_pipe_orchestrator
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 800
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 367e00d5833878d353653b3d8fb7b47bf5cf15d1
+- step_id: P5-STEP-081
+  phase: EXECUTION
+  name: MINI_PIPE_orchestrator persists final state
+  description: MINI_PIPE_orchestrator persists final state
+  responsible_component: mini_pipe_orchestrator
+  operation_kind: persistence
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 810
+  lens: persistence
+  automation_level: fully_automatic
+  _content_hash: 6df42c19afce1ed6e1d84001d96c17b390d993eb
+- step_id: P6-STEP-082
+  phase: SUMMARY
+  name: acms_minipipe_adapter polls MINI_PIPE for completion
+  description: acms_minipipe_adapter polls MINI_PIPE for completion
+  responsible_component: acms_controller
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 820
+  lens: architecture
+  automation_level: fully_automatic
+  _content_hash: fd37ec0af6336a9055501eef92de22de013a9f63
+- step_id: P6-STEP-083
+  phase: SUMMARY
+  name: acms_minipipe_adapter collects aggregated execution results
+  description: acms_minipipe_adapter collects aggregated execution results
+  responsible_component: acms_controller
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 830
+  lens: architecture
+  automation_level: fully_automatic
+  _content_hash: 0c5de7851db1ed7e78196e6e3c7caf360a7e5ac8
+- step_id: P6-STEP-084
+  phase: SUMMARY
+  name: acms_minipipe_adapter returns execution summary to acms_controller
+  description: acms_minipipe_adapter returns execution summary to acms_controller
+  responsible_component: acms_controller
+  operation_kind: summary_generation
+  inputs:
+  - Input data
+  expected_outputs:
+  - Processed data
+  requires_human_confirmation: false
+  order: 840
+  lens: architecture
+  automation_level: fully_automatic
+  _content_hash: c1d59a2e4a139837e05370017a5e8fb7e17d0ccc
+- step_id: P6-STEP-085
+  phase: SUMMARY
+  name: 'GUARDRAILS: Update patches_applied counter'
+  description: 'GUARDRAILS: Update patches_applied counter'
+  responsible_component: guardrails
+  operation_kind: guardrail_check
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 850
+  lens: automation
+  automation_level: fully_automatic
+  _content_hash: 20a616322f0ccaa6342fe7db9a761f855e9bd260
+- step_id: P6-STEP-086
+  phase: SUMMARY
+  name: acms_controller correlates execution results with original gaps
+  description: acms_controller correlates execution results with original gaps
+  responsible_component: acms_controller
+  operation_kind: task_execution
+  inputs:
+  - Gap data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 860
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: a0a784b1320001f2a5d12fc1f445b3f3aaf05bc4
+- step_id: P6-STEP-087
+  phase: SUMMARY
+  name: acms_controller updates gap_registry with new statuses
+  description: acms_controller updates gap_registry with new statuses
+  responsible_component: acms_controller
+  operation_kind: task_execution
+  inputs:
+  - Gap data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 870
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 57f8483267ee93166490cd7d431a55585d6a3fa9
+- step_id: P6-STEP-088
+  phase: SUMMARY
+  name: gap_registry persists updated statuses
+  description: gap_registry persists updated statuses
+  responsible_component: gap_registry
+  operation_kind: persistence
+  inputs:
+  - Gap data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 880
+  lens: persistence
+  automation_level: fully_automatic
+  _content_hash: 8ae94e5cf57c1a9cc0c01d646dd225e698e88d69
+- step_id: P6-STEP-089
+  phase: SUMMARY
+  name: 'GUARDRAILS: Final anti-pattern detection'
+  description: 'GUARDRAILS: Final anti-pattern detection'
+  responsible_component: guardrails
+  operation_kind: guardrail_check
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 890
+  lens: automation
+  automation_level: fully_automatic
+  _content_hash: 93e6de8f0e26a09173db70ff2b540a42d7a837d6
+- step_id: P6-STEP-090
+  phase: SUMMARY
+  name: acms_controller synthesizes unified RunStatus object
+  description: acms_controller synthesizes unified RunStatus object
+  responsible_component: acms_controller
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 900
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 78d862c81d2223db6e906070c2554d144aac9e1b
+- step_id: P6-STEP-091
+  phase: SUMMARY
+  name: acms_controller writes RunStatus JSON to disk
+  description: acms_controller writes RunStatus JSON to disk
+  responsible_component: acms_controller
+  operation_kind: persistence
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 910
+  lens: persistence
+  automation_level: fully_automatic
+  _content_hash: 6a85095b981f2d3f4c55155a7514d45bec0d5b04
+- step_id: P6-STEP-092
+  phase: SUMMARY
+  name: acms_controller generates human-readable summary report
+  description: acms_controller generates human-readable summary report
+  responsible_component: acms_controller
+  operation_kind: summary_generation
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 920
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 25a2c10758380dab1bdd43775cd311e5a9efd81a
+- step_id: P6-STEP-093
+  phase: SUMMARY
+  name: acms_controller logs state transition to SUMMARY
+  description: acms_controller logs state transition to SUMMARY
+  responsible_component: acms_controller
+  operation_kind: state_transition
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 930
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 315816306f64e1ca57f9df1021e45a0f9b94121e
+- step_id: P6-STEP-094
+  phase: SUMMARY
+  name: acms_controller prints summary to console
+  description: acms_controller prints summary to console
+  responsible_component: acms_controller
+  operation_kind: summary_generation
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 940
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 9d695be40fa9acc27248fd25b49d609a6be63944
+- step_id: P6-STEP-095
+  phase: SUMMARY
+  name: acms_controller ensures code changes are safely stored
+  description: acms_controller ensures code changes are safely stored
+  responsible_component: acms_controller
+  operation_kind: persistence
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 950
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: c1a7ea2d129831218b80af68b4af4c215771a310
+- step_id: P6-STEP-096
+  phase: SUMMARY
+  name: acms_controller logs state transition to DONE
+  description: acms_controller logs state transition to DONE
+  responsible_component: acms_controller
+  operation_kind: state_transition
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 960
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: ed95af29cf833964aa2248b3d274bd7bca49f891
+- step_id: P6-STEP-097
+  phase: SUMMARY
+  name: acms_controller finalizes run ledger
+  description: acms_controller finalizes run ledger
+  responsible_component: acms_controller
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 970
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 4d5959c1c34b8b0730b65412cfc1bfd75b7fe87c
+- step_id: P6-STEP-098
+  phase: SUMMARY
+  name: acms_controller exits with appropriate exit code
+  description: acms_controller exits with appropriate exit code
+  responsible_component: acms_controller
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 980
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 34c70fba3fe0661178b478bc51d0194481dd5b1d
+- step_id: P6-STEP-099
+  phase: SUMMARY
+  name: CLI prints concise summary to stdout
+  description: CLI prints concise summary to stdout
+  responsible_component: acms_controller
+  operation_kind: summary_generation
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 990
+  lens: process
+  automation_level: fully_automatic
+  _content_hash: 25ff16e79827c0e32de9a48850f987d4f903245f
+- step_id: P6-STEP-100
+  phase: SUMMARY
+  name: Cleanup temporary files (if configured)
+  description: Cleanup temporary files (if configured)
+  responsible_component: acms_controller
+  operation_kind: task_execution
+  inputs:
+  - Input data
+  expected_outputs:
+  - Output data
+  requires_human_confirmation: false
+  order: 1000
+  lens: persistence
+  automation_level: fully_automatic
+  _content_hash: 344b337abbafb35f04fc1521eec089876b5e72a8

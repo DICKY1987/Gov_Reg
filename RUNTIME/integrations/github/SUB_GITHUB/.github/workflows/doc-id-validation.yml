@@ -1,0 +1,117 @@
+name: DOC_ID Validation
+
+on:
+  push:
+    branches: [ main, develop, feature/** ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  doc-id-validation:
+    name: Validate DOC_IDs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml
+
+      - name: Run DOC_ID scanner
+        id: scan
+        run: |
+          python doc_id/doc_id_scanner.py scan
+          python doc_id/doc_id_scanner.py stats
+        continue-on-error: true
+
+      - name: Check for invalid DOC_IDs
+        id: cleanup
+        run: |
+          python doc_id/cleanup_invalid_doc_ids.py scan --report doc_id/DOC_ID_reports/cleanup_report.json
+        continue-on-error: true
+
+      - name: Check registry synchronization
+        id: sync
+        run: |
+          python doc_id/sync_registries.py check
+        continue-on-error: true
+
+      - name: Check alert thresholds
+        id: alerts
+        run: |
+          python doc_id/alert_monitor.py
+        continue-on-error: true
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: doc-id-reports
+          path: |
+            doc_id/DOC_ID_reports/
+            docs_inventory.jsonl
+            .state/doc_id_alerts.*
+          retention-days: 30
+
+      - name: Create issue on failure
+        if: failure() && github.event_name == 'schedule'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = 'DOC_ID Validation Failed - Daily Check';
+            const body = `
+            ## DOC_ID Daily Validation Failed
+
+            **Date**: ${new Date().toISOString().split('T')[0]}
+            **Workflow**: ${context.workflow}
+            **Run**: ${context.runNumber}
+
+            ### Failed Checks
+
+            - Scanner: ${{ steps.scan.outcome }}
+            - Cleanup: ${{ steps.cleanup.outcome }}
+            - Sync: ${{ steps.sync.outcome }}
+            - Alerts: ${{ steps.alerts.outcome }}
+
+            ### Action Required
+
+            Review the [workflow run](${context.payload.repository.html_url}/actions/runs/${context.runId}) for details.
+
+            ### Reports
+
+            Download artifacts from the workflow run for detailed analysis.
+            `;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['doc-id', 'automated', 'validation']
+            });
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## DOC_ID Validation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Scanner | ${{ steps.scan.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Cleanup | ${{ steps.cleanup.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Sync | ${{ steps.sync.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Alerts | ${{ steps.alerts.outcome }} |" >> $GITHUB_STEP_SUMMARY

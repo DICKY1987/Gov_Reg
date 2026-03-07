@@ -1,0 +1,76 @@
+{
+  "PATTERN-DOC-ID-AUTOASSIGN-002": [
+    "SUB_DOC_ID\\1_CORE_OPERATIONS\\doc_id_assigner.py"
+  ],
+  "PATTERN-DOC-ID-SCAN-001": [
+    "SUB_DOC_ID\\1_CORE_OPERATIONS\\doc_id_scanner.py"
+  ],
+  "EXEC-004": [
+    "SUB_DOC_ID\\2_VALIDATION_FIXING\\cleanup_invalid_doc_ids.py",
+    "SUB_DOC_ID\\3_AUTOMATION_HOOKS\\install_pre_commit_hook.py"
+  ],
+  "PATTERN-DOC-ID-CLEANUP-001": [
+    "SUB_DOC_ID\\2_VALIDATION_FIXING\\cleanup_invalid_doc_ids.py"
+  ],
+  "PATTERN-ATOMIC-CREATE-TEMPLATE": [
+    "SUB_DOC_ID\\2_VALIDATION_FIXING\\fix_duplicate_doc_ids.py"
+  ],
+  "PATTERN-ATOMIC-CREATE-TEMPLATE-001": [
+    "SUB_DOC_ID\\2_VALIDATION_FIXING\\fix_duplicate_doc_ids.py"
+  ],
+  "PATTERN-DOC-ID-FIX-DUPLICATES-001": [
+    "SUB_DOC_ID\\2_VALIDATION_FIXING\\fix_duplicate_doc_ids.py"
+  ],
+  "PATTERN-DOC-ID-FIX-INVALID-001": [
+    "SUB_DOC_ID\\2_VALIDATION_FIXING\\fix_invalid_doc_ids.py"
+  ],
+  "PATTERN-DOC-ID-CATEGORY-FIX-001": [
+    "SUB_DOC_ID\\2_VALIDATION_FIXING\\fix_registry_categories.py"
+  ],
+  "T": [
+    "SUB_DOC_ID\\3_AUTOMATION_HOOKS\\file_watcher.py",
+    "SUB_DOC_ID\\3_AUTOMATION_HOOKS\\setup_scheduled_tasks.py"
+  ],
+  "EXEC-003": [
+    "SUB_DOC_ID\\3_AUTOMATION_HOOKS\\file_watcher.py",
+    "SUB_DOC_ID\\3_AUTOMATION_HOOKS\\setup_scheduled_tasks.py"
+  ],
+  "PATTERN-DOC-ID-PRE-COMMIT-003": [
+    "SUB_DOC_ID\\3_AUTOMATION_HOOKS\\pre_commit_hook.py"
+  ],
+  "EXEC-002": [
+    "SUB_DOC_ID\\4_REPORTING_MONITORING\\alert_monitor.py",
+    "SUB_DOC_ID\\5_REGISTRY_DATA\\sync_registries.py"
+  ],
+  "PATTERN-DOC-ID-SCHEDULED-REPORTS-002": [
+    "SUB_DOC_ID\\4_REPORTING_MONITORING\\scheduled_report_generator.py"
+  ],
+  "PATTERN-DOC-ID-SYNC-004": [
+    "SUB_DOC_ID\\5_REGISTRY_DATA\\sync_registries.py"
+  ],
+  "PATTERN-BATCH-MINT-337": [
+    "SUB_DOC_ID\\6_TESTS\\test_doc_id_system.py"
+  ],
+  "PATTERN-TEST-DOC-ID-COMPREHENSIVE-001": [
+    "SUB_DOC_ID\\6_TESTS\\test_doc_id_system.py"
+  ],
+  "EXEC-006": [
+    "SUB_DOC_ID\\7_CLI_INTERFACE\\cli_wrapper.py"
+  ],
+  "PATTERN-BATCH-DOC-ID-001": [
+    "SUB_DOC_ID\\common\\test_rules.py"
+  ],
+  "PATTERN-BATCH-DOC-ID-337": [
+    "SUB_DOC_ID\\common\\test_rules.py"
+  ],
+  "PATTERN-TRIGGER-ID-ASSIGN-002": [
+    "SUB_DOC_ID\\trigger_id\\1_CORE_OPERATIONS\\trigger_id_assigner.py"
+  ],
+  "PATTERN-TRIGGER-ID-SCAN-001": [
+    "SUB_DOC_ID\\trigger_id\\1_CORE_OPERATIONS\\trigger_id_scanner.py"
+  ],
+  "PATTERN-TRIGGER-ID-VALIDATE-001": [
+    "SUB_DOC_ID\\trigger_id\\2_VALIDATION_FIXING\\validate_trigger_coverage.py"
+  ],
+  "doc_id": "DOC-PATTERN-PATTERN-REFERENCES-422"
+}

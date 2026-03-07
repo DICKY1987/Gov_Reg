@@ -1,0 +1,815 @@
+# DOC_LINK: DOC-CONFIG-PFA-MASTER-SPLINTER-PROCESS-STEPS-337
+doc_id: DOC-CONFIG-PFA-MASTER-SPLINTER-PROCESS-STEPS-337
+meta:
+  process_id: MASTER_SPLINTER_PROCESS_STEPS_SCHEMA
+  source_file: PROCESS_STEP_LIB\PFA_MASTER_SPLINTER_PROCESS_STEPS_SCHEMA.yaml
+  normalized_by: pfa_normalize_steps.py
+  substep_expansion:
+    expanded_at: '2025-12-18T15:09:50.035579Z'
+    original_step_count: 26
+    expanded_step_count: 31
+    substeps_added: 5
+    steps_expanded:
+    - MS-EXEC-004
+steps:
+- step_id: MS-INIT-001
+  phase: INIT
+  name: Initialize Master Orchestrator
+  description: 'Create master orchestrator instance with run_id, start_time tracking.
+
+    Initialize error collection arrays and summary structure.
+
+    Enable NO STOP MODE to continue through all errors.'
+  responsible_component: run_master_splinter
+  operation_kind: initialization
+  inputs:
+  - System timestamp
+  - NO STOP MODE flag (enabled)
+  expected_outputs:
+  - 'MasterOrchestrator instance with run_id: master-run-{timestamp}'
+  - Summary dict initialized with phase counts and status fields
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs: []
+  guardrail_checkpoint: false
+  _content_hash: 89be077d125cc581bf391d55d5700032687af70e
+- step_id: MS-INIT-002
+  phase: INIT
+  name: Validate Prerequisites
+  description: 'Check required files exist before proceeding:
+
+    - config/tool_profiles.json
+
+    - config/circuit_breakers.yaml
+
+    - prompts/EXECUTION_PROMPT_TEMPLATE_V2_DAG_MULTI_WORKSTREAM.md
+
+    - patterns/registry.json
+
+
+    Log missing files as errors but continue (NO STOP MODE).'
+  responsible_component: run_master_splinter
+  operation_kind: initialization
+  inputs:
+  - CONFIG_DIR path
+  - REPO_ROOT path
+  expected_outputs:
+  - 'Validation status: all prerequisites exist or errors logged'
+  - 'Boolean result: true if all exist, false otherwise'
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - config/tool_profiles.json
+  - config/circuit_breakers.yaml
+  guardrail_checkpoint: true
+  _content_hash: 65d5db2740cc2b0e4198b6e94f84cbecc8edcaac
+- step_id: MS-INIT-003
+  phase: INIT
+  name: Ensure Directory Structure
+  description: 'Create required directories if they don''t exist:
+
+    - plans/phases/
+
+    - workstreams/
+
+    - reports/
+
+    - logs/
+
+    - .state/'
+  responsible_component: run_master_splinter
+  operation_kind: initialization
+  inputs:
+  - REPO_ROOT path
+  expected_outputs:
+  - All required directories created with parents=True, exist_ok=True
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - plans/phases/
+  - workstreams/
+  - reports/
+  guardrail_checkpoint: false
+  _content_hash: fc149f20c224d20c93bf97a943575d19ea3b93df
+- step_id: MS-DISC-001
+  phase: DISCOVERY
+  name: Discover Phase Plans
+  description: 'Scan plans/phases/ for *.yml and *.yaml files.
+
+    Exclude files with ''template'' in name (case-insensitive).
+
+    Count discovered phase plans and update summary.
+
+
+    If no phase plans found, transition to DONE state.'
+  responsible_component: run_master_splinter
+  operation_kind: phase_discovery
+  inputs:
+  - 'PLANS_DIR: plans/phases/'
+  - 'File patterns: *.yml, *.yaml'
+  expected_outputs:
+  - List of discovered phase plan Path objects
+  - summary['phase_plans_found'] = count
+  - 'State transition: DISCOVERY → CONVERSION or DONE'
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - plans/phases/*.yml
+  guardrail_checkpoint: false
+  _content_hash: 682be065c40ae590c05c62066de659c1438227e1
+- step_id: MS-CONV-001
+  phase: CONVERSION
+  name: Invoke Workstream Converter
+  description: 'Execute phase_plan_to_workstream.py as subprocess.
+
+    Capture stdout/stderr and log results.
+
+
+    NO STOP MODE: Log conversion errors but continue to next phase.'
+  responsible_component: run_master_splinter
+  operation_kind: workstream_conversion
+  inputs:
+  - 'Subprocess: python phase_plan_to_workstream.py'
+  - 'CWD: REPO_ROOT'
+  - 'Timeout: 60 seconds'
+  expected_outputs:
+  - Workstream JSON files in workstreams/*.json
+  - summary['workstreams_generated'] = count
+  - Conversion status logged (success/failure)
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - workstreams/*.json
+  guardrail_checkpoint: false
+  _content_hash: 072b41f9e642ecaaf476f646b3f47bc85132d842
+- step_id: MS-CONV-002
+  phase: CONVERSION
+  name: Parse Phase Plan YAML
+  description: 'Load phase plan YAML using yaml.safe_load().
+
+    Extract phase_identity, execution_plan, acceptance_tests, etc.'
+  responsible_component: phase_plan_to_workstream
+  operation_kind: workstream_conversion
+  inputs:
+  - Phase plan YAML file path
+  expected_outputs:
+  - Parsed phase_plan dict with all sections
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - plans/phases/*.yml
+  guardrail_checkpoint: false
+  _content_hash: 9eac87dccd95132597769c4182e0380d8f3c31fc
+- step_id: MS-CONV-003
+  phase: CONVERSION
+  name: Convert to Workstream JSON
+  description: 'Transform phase plan structure to workstream JSON format:
+
+    - Extract workstream_id from phase_identity
+
+    - Map execution_plan.steps to execution_steps array
+
+    - Inject tool_profiles_path and circuit_breakers_path
+
+    - Map acceptance_tests to acceptance_tests array
+
+    - Extract file_scope, pre_flight_checks, expected_artifacts'
+  responsible_component: phase_plan_to_workstream
+  operation_kind: workstream_conversion
+  inputs:
+  - Parsed phase_plan dict
+  expected_outputs:
+  - Workstream JSON dict with standardized structure
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - workstreams/*.json
+  guardrail_checkpoint: false
+  _content_hash: 24ebf7e248cbbbb56f4231f44087909d6575024a
+- step_id: MS-CONV-004
+  phase: CONVERSION
+  name: Write Workstream JSON File
+  description: Write workstream dict to workstreams/{workstream_id}.json with indent=2.
+  responsible_component: phase_plan_to_workstream
+  operation_kind: persistence
+  inputs:
+  - Workstream dict
+  - Workstream ID
+  expected_outputs:
+  - workstreams/{workstream_id}.json file created
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - workstreams/*.json
+  guardrail_checkpoint: false
+  _content_hash: e68a4b177d3908e4169937bf258b012a2f1a064c
+- step_id: MS-DAG-001
+  phase: DAG_RESOLUTION
+  name: Load Workstream JSON Files
+  description: 'Discover and load all workstream JSON files from workstreams/*.json.
+
+    Parse JSON and extract workstream metadata.'
+  responsible_component: multi_agent_workstream_coordinator
+  operation_kind: dag_resolution
+  inputs:
+  - 'WORKSTREAMS_DIR: workstreams/'
+  expected_outputs:
+  - List of workstream dicts with full metadata
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - workstreams/*.json
+  guardrail_checkpoint: false
+  _content_hash: c18cbf16c5f684ab8ba448a6170cf55895e3e2bd
+- step_id: MS-DAG-002
+  phase: DAG_RESOLUTION
+  name: Construct Dependency DAG
+  description: 'Build NetworkX DiGraph from workstream dependencies:
+
+    - Add node for each workstream (keyed by workstream_id)
+
+    - Add edges from depends_on references
+
+    - Validate no circular dependencies
+
+    - Identify parallel groups from may_run_parallel_with'
+  responsible_component: multi_agent_workstream_coordinator
+  operation_kind: dag_resolution
+  inputs:
+  - Workstream list with dag_and_dependencies sections
+  expected_outputs:
+  - NetworkX DiGraph with topological ordering
+  - Parallel execution groups identified
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs: []
+  guardrail_checkpoint: true
+  _content_hash: 5aed9a7d0d8a6268def3171c0cfc8bc871d1a776
+- step_id: MS-DAG-003
+  phase: DAG_RESOLUTION
+  name: Topological Sort and Execution Order
+  description: 'Perform topological sort on DAG to determine execution order.
+
+    Group workstreams that can execute in parallel.
+
+    Assign priority based on is_critical_path flag.'
+  responsible_component: multi_agent_workstream_coordinator
+  operation_kind: dag_resolution
+  inputs:
+  - NetworkX DiGraph
+  expected_outputs:
+  - 'Ordered execution plan with parallel groups: [{batch: [ws1, ws2]}, {batch: [ws3]}]'
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs: []
+  guardrail_checkpoint: false
+  _content_hash: 68be25a3c2ae65fc7cf5505bf3322021776dea40
+- step_id: MS-EXEC-001
+  phase: EXECUTION
+  name: Invoke Multi-Agent Coordinator
+  description: 'Execute multi_agent_workstream_coordinator.py as subprocess.
+
+    Capture stdout/stderr and log results.
+
+
+    NO STOP MODE: Continue to CONSOLIDATION even if execution has failures.'
+  responsible_component: run_master_splinter
+  operation_kind: multi_agent_execution
+  inputs:
+  - 'Subprocess: python multi_agent_workstream_coordinator.py'
+  - 'CWD: REPO_ROOT'
+  - 'Timeout: 3600 seconds (1 hour)'
+  expected_outputs:
+  - Multi-agent execution completion status
+  - summary['multi_agent_status'] = success|failed|error
+  - Consolidated results in .state/multi_agent_consolidated.db
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - .state/multi_agent_consolidated.db
+  guardrail_checkpoint: false
+  _content_hash: 7aa4e8c07e1b1a542111b6fe4806556a8f62e990
+- step_id: MS-EXEC-002
+  phase: EXECUTION
+  name: Assign Workstreams to Agents
+  description: 'For each workstream in execution order:
+
+    - Check dependencies are COMPLETED before starting
+
+    - Assign to agent specified in workstream.tool (codex|claude-code|aider)
+
+    - Execute workstream via agent with execution_steps
+
+    - Track status: PENDING → RUNNING → COMPLETED|FAILED|SKIPPED'
+  responsible_component: multi_agent_workstream_coordinator
+  operation_kind: multi_agent_execution
+  inputs:
+  - Ordered execution plan from DAG resolution
+  - Agent pool (codex, claude-code, aider)
+  expected_outputs:
+  - 'AgentResult per workstream: {agent_id, workstream_id, status, duration, files_modified,
+    commits, errors}'
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs: []
+  guardrail_checkpoint: false
+  _content_hash: fa91557629498edb459b9cb89b7aee25a7c8dbf7
+- step_id: MS-EXEC-003
+  phase: EXECUTION
+  name: Execute Workstream via Agent
+  description: 'Agent executes workstream.execution_steps sequentially:
+
+    - Run each step.command via tool_id (pytest, aider-edit, powershell-script, etc.)
+
+    - Capture step outputs and validate against expected_outputs
+
+    - Apply circuit_breakers on failures (oscillation detection, max_attempts)
+
+    - Invoke fix_loop if step fails and fix patterns available
+
+    - Track files_modified, commits_created, errors, warnings'
+  responsible_component: multi_agent_workstream_coordinator
+  operation_kind: multi_agent_execution
+  inputs:
+  - Workstream execution_steps array
+  - Tool profiles from config/tool_profiles.json
+  - Circuit breakers from config/circuit_breakers.yaml
+  expected_outputs:
+  - AgentResult with execution details
+  - 'Status: COMPLETED if all steps pass, FAILED if breaker trips'
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - config/tool_profiles.json
+  - config/circuit_breakers.yaml
+  guardrail_checkpoint: true
+  _content_hash: 1b0ebd85679f66f298122d1134885c8e7508a037
+- step_id: MS-EXEC-004
+  phase: EXECUTION
+  name: Apply Circuit Breakers
+  description: 'Monitor execution for circuit breaker conditions:
+
+    - Oscillation detection: Same error repeating within window
+
+    - Max attempts: Exceeded retry limit (default: 3)
+
+    - Timeout: Execution duration exceeds duration_minutes (default: 60)
+
+    - Scope violation: Attempted to modify forbidden_paths
+
+
+    On breaker trip: Execute action (abort|mark_phase_failed|mark_phase_blocked).
+
+    NO STOP MODE: Log breaker trip but continue to next workstream. — Parent step
+    with 5 substeps (see MS-EXEC-004A-MS-EXEC-004E)'
+  responsible_component: multi_agent_workstream_coordinator
+  operation_kind: circuit_breaker_check
+  inputs: &id001
+  - Circuit breaker config from circuit_breakers.yaml
+  - Execution attempt history
+  expected_outputs: &id002
+  - 'Breaker status: OK or TRIPPED with action taken'
+  - Error logged if tripped
+  requires_human_confirmation: false
+  pattern_ids: &id003 []
+  artifact_registry_refs: &id004
+  - config/circuit_breakers.yaml
+  guardrail_checkpoint: true
+  _content_hash: 740afe920d9d8e6f222bef172bae50cdf1dd5669
+- step_id: MS-EXEC-004A
+  phase: EXECUTION
+  name: Load and validate circuit breaker config
+  description: Load+validate circuit_breakers.yaml (defaults + per_step overrides);
+    fail fast if invalid/missing
+  responsible_component: multi_agent_workstream_coordinator
+  operation_kind: circuit_breaker_check
+  inputs: *id001
+  expected_outputs: *id002
+  requires_human_confirmation: false
+  order: null
+  lens: null
+  automation_level: fully_automatic
+  pattern_ids: *id003
+  artifact_registry_refs: *id004
+  guardrail_checkpoint: true
+  guardrail_checkpoint_id: null
+  implementation_files: []
+  artifacts_created: []
+  artifacts_updated: []
+  metrics_emitted: []
+  preconditions: []
+  postconditions: []
+  error_handling: null
+  state_transition: null
+  anti_pattern_ids: []
+  _parent_step_id: MS-EXEC-004
+- step_id: MS-EXEC-004B
+  phase: EXECUTION
+  name: Generate error signatures
+  description: Generate stable error signatures (error_code + normalized message)
+    and persist counters
+  responsible_component: multi_agent_workstream_coordinator
+  operation_kind: circuit_breaker_check
+  inputs: *id001
+  expected_outputs: *id002
+  requires_human_confirmation: false
+  order: null
+  lens: null
+  automation_level: fully_automatic
+  pattern_ids: *id003
+  artifact_registry_refs: *id004
+  guardrail_checkpoint: true
+  guardrail_checkpoint_id: null
+  implementation_files: []
+  artifacts_created: []
+  artifacts_updated: []
+  metrics_emitted: []
+  preconditions: []
+  postconditions: []
+  error_handling: null
+  state_transition: null
+  anti_pattern_ids: []
+  _parent_step_id: MS-EXEC-004
+- step_id: MS-EXEC-004C
+  phase: EXECUTION
+  name: Track attempt counts and diff hashes
+  description: Track attempt counts per (run_id, ws_id, step_name) and per signature;
+    compute diff_hash each attempt
+  responsible_component: multi_agent_workstream_coordinator
+  operation_kind: circuit_breaker_check
+  inputs: *id001
+  expected_outputs: *id002
+  requires_human_confirmation: false
+  order: null
+  lens: null
+  automation_level: fully_automatic
+  pattern_ids: *id003
+  artifact_registry_refs: *id004
+  guardrail_checkpoint: true
+  guardrail_checkpoint_id: null
+  implementation_files: []
+  artifacts_created: []
+  artifacts_updated: []
+  metrics_emitted: []
+  preconditions: []
+  postconditions: []
+  error_handling: null
+  state_transition: null
+  anti_pattern_ids: []
+  _parent_step_id: MS-EXEC-004
+- step_id: MS-EXEC-004D
+  phase: EXECUTION
+  name: Evaluate retry conditions
+  description: Evaluate should_retry; if limits exceeded or oscillation detected ->
+    breaker_tripped and halt loop
+  responsible_component: multi_agent_workstream_coordinator
+  operation_kind: circuit_breaker_check
+  inputs: *id001
+  expected_outputs: *id002
+  requires_human_confirmation: false
+  order: null
+  lens: null
+  automation_level: fully_automatic
+  pattern_ids: *id003
+  artifact_registry_refs: *id004
+  guardrail_checkpoint: true
+  guardrail_checkpoint_id: null
+  implementation_files: []
+  artifacts_created: []
+  artifacts_updated: []
+  metrics_emitted: []
+  preconditions: []
+  postconditions: []
+  error_handling: null
+  state_transition: null
+  anti_pattern_ids: []
+  _parent_step_id: MS-EXEC-004
+- step_id: MS-EXEC-004E
+  phase: EXECUTION
+  name: Emit circuit breaker tripped event
+  description: Emit circuit_breaker_tripped event; mark workstream failed; route to
+    quarantine/escalation handlers
+  responsible_component: multi_agent_workstream_coordinator
+  operation_kind: circuit_breaker_check
+  inputs: *id001
+  expected_outputs: *id002
+  requires_human_confirmation: false
+  order: null
+  lens: null
+  automation_level: fully_automatic
+  pattern_ids: *id003
+  artifact_registry_refs: *id004
+  guardrail_checkpoint: true
+  guardrail_checkpoint_id: null
+  implementation_files: []
+  artifacts_created: []
+  artifacts_updated: []
+  metrics_emitted: []
+  preconditions: []
+  postconditions: []
+  error_handling: null
+  state_transition: null
+  anti_pattern_ids: []
+  _parent_step_id: MS-EXEC-004
+- step_id: MS-EXEC-005
+  phase: EXECUTION
+  name: Invoke Fix Loop on Failure
+  description: 'When execution step fails and fix patterns available:
+
+    - Identify error type (linter, type-check, test failure)
+
+    - Load fix pattern from patterns/registry.json
+
+    - Apply fix via agent (aider-fix or codex)
+
+    - Re-run failed step
+
+    - Track fix attempt count against max_attempts circuit breaker
+
+
+    NO STOP MODE: Continue to next step even if fix fails.'
+  responsible_component: multi_agent_workstream_coordinator
+  operation_kind: fix_loop
+  inputs:
+  - Step failure error message
+  - Fix patterns from patterns/registry.json
+  - Fix loop config from fix_loop_and_circuit_breakers section
+  expected_outputs:
+  - Fix applied and step re-executed
+  - Fix attempt count incremented
+  - Success or additional failure logged
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - patterns/registry.json
+  guardrail_checkpoint: true
+  _content_hash: 140a56fe69982fbb28e39e1ddecb2643c602035e
+- step_id: MS-CONS-001
+  phase: CONSOLIDATION
+  name: Aggregate Agent Results
+  description: 'Collect AgentResult objects from all workstream executions.
+
+    Calculate aggregate metrics:
+
+    - total_workstreams
+
+    - completed_count, failed_count, skipped_count
+
+    - total_files_modified (sum of all files_modified arrays)
+
+    - total_commits (sum of all commits_created arrays)
+
+    - total_errors, total_warnings
+
+    - agents_used (unique agent_ids)'
+  responsible_component: multi_agent_workstream_coordinator
+  operation_kind: result_consolidation
+  inputs:
+  - AgentResult array from all workstream executions
+  expected_outputs:
+  - ConsolidatedResult dict with aggregate metrics
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs: []
+  guardrail_checkpoint: false
+  _content_hash: cc5456917c263e9b07becb5996a5f94501e33100
+- step_id: MS-CONS-002
+  phase: CONSOLIDATION
+  name: Save to Consolidated Database
+  description: 'Persist consolidated results to SQLite database:
+
+    - Insert into consolidated_runs table (run_id, timestamp, metrics)
+
+    - Insert into agent_results table (per-workstream results)
+
+    - Insert into consolidated_errors table (error details with stack traces)'
+  responsible_component: multi_agent_workstream_coordinator
+  operation_kind: persistence
+  inputs:
+  - ConsolidatedResult object
+  - 'Database path: .state/multi_agent_consolidated.db'
+  expected_outputs:
+  - Database records created in all 3 tables
+  - Queryable consolidated state for reporting
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - .state/multi_agent_consolidated.db
+  guardrail_checkpoint: false
+  _content_hash: 5141eb56cb1135ae293b432df699658812894c58
+- step_id: MS-CONS-003
+  phase: CONSOLIDATION
+  name: Generate Unified Execution Report
+  description: 'Generate JSON report with:
+
+    - Run summary (run_id, timestamp, duration, metrics)
+
+    - Per-workstream results (agent, status, files, commits, errors)
+
+    - Consolidated error list with context
+
+    - Recommendations for next steps
+
+
+    Save to reports/master_run_{run_id}.json.'
+  responsible_component: multi_agent_workstream_coordinator
+  operation_kind: result_consolidation
+  inputs:
+  - ConsolidatedResult object
+  expected_outputs:
+  - reports/master_run_{run_id}.json with full execution details
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - reports/master_run_*.json
+  guardrail_checkpoint: false
+  _content_hash: 4edeff602b639ff598a523257a2faef54dabfd50
+- step_id: MS-SYNC-001
+  phase: SYNC
+  name: Invoke GitHub Sync Engine
+  description: 'Execute sync_workstreams_to_github.py as subprocess.
+
+    Capture stdout/stderr and log results.
+
+
+    NO STOP MODE: Continue to DONE even if sync fails.
+
+    Sync is optional - phase can be skipped if disabled.'
+  responsible_component: run_master_splinter
+  operation_kind: github_sync
+  inputs:
+  - 'Subprocess: python sync_workstreams_to_github.py'
+  - 'CWD: REPO_ROOT'
+  - 'Timeout: 600 seconds (10 minutes)'
+  expected_outputs:
+  - summary['sync_status'] = success|failed|error
+  - Feature branch created and pushed (if successful)
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - reports/sync_summary_*.json
+  guardrail_checkpoint: false
+  _content_hash: dac8699c0da795f8b5cb56dd7709edf6483d748b
+- step_id: MS-SYNC-002
+  phase: SYNC
+  name: Create Feature Branch
+  description: 'Create feature branch for workstream sync:
+
+    - Branch name: feature/ws-sync-{timestamp}
+
+    - Checkout from current branch
+
+    - Handle existing branch by switching to it
+
+
+    NO STOP MODE: Log git errors but continue to commit step.'
+  responsible_component: sync_workstreams_to_github
+  operation_kind: github_sync
+  inputs:
+  - Feature branch name pattern
+  - Git checkout -b command
+  expected_outputs:
+  - Feature branch created and checked out
+  - Branch name logged in summary
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs: []
+  guardrail_checkpoint: false
+  _content_hash: 421cbb3184e02dae9eee0abfce12a88514afe3e9
+- step_id: MS-SYNC-003
+  phase: SYNC
+  name: Create Workstream Commits
+  description: 'For each workstream JSON file:
+
+    - Git add workstreams/{workstream_id}.json
+
+    - Git commit with message: "Add workstream: {title} ({workstream_id})"
+
+    - Track commit SHA
+
+
+    NO STOP MODE: Log commit failures but continue to next workstream.'
+  responsible_component: sync_workstreams_to_github
+  operation_kind: github_sync
+  inputs:
+  - Workstream JSON files from workstreams/*.json
+  expected_outputs:
+  - Individual commits per workstream
+  - summary['commits_created'] = count
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - workstreams/*.json
+  guardrail_checkpoint: false
+  _content_hash: 317d5ee403d65db45bcf00b479cf34e38b453e48
+- step_id: MS-SYNC-004
+  phase: SYNC
+  name: Push to Remote
+  description: 'Push feature branch to origin:
+
+    - Git push origin {feature_branch}
+
+    - Handle authentication errors gracefully
+
+
+    NO STOP MODE: Log push failures but continue to report generation.'
+  responsible_component: sync_workstreams_to_github
+  operation_kind: github_sync
+  inputs:
+  - Feature branch name
+  - Git push command
+  expected_outputs:
+  - Feature branch pushed to remote
+  - Push status logged
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs: []
+  guardrail_checkpoint: false
+  _content_hash: 0771a282e92ff6a7355d8a28a1b63654022dfe8d
+- step_id: MS-SYNC-005
+  phase: SYNC
+  name: Generate Sync Summary Report
+  description: 'Generate JSON report with:
+
+    - Sync timestamp and feature branch
+
+    - Workstreams processed count
+
+    - Commits created count
+
+    - Errors and successes arrays
+
+    - Git status and remote info
+
+
+    Save to reports/sync_summary_{timestamp}.json.'
+  responsible_component: sync_workstreams_to_github
+  operation_kind: result_consolidation
+  inputs:
+  - WorkstreamSyncEngine summary dict
+  expected_outputs:
+  - reports/sync_summary_{timestamp}.json with sync details
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - reports/sync_summary_*.json
+  guardrail_checkpoint: false
+  _content_hash: 60fd4123d2af0e1c4d6db2f9b782490feea480b6
+- step_id: MS-DONE-001
+  phase: DONE
+  name: Generate Master Summary Report
+  description: 'Generate final master summary with:
+
+    - Run ID and execution duration
+
+    - Phase plans found and workstreams generated
+
+    - Multi-agent execution status
+
+    - GitHub sync status
+
+    - All errors collected during execution (NO STOP MODE)
+
+    - Next steps and recommendations
+
+
+    Print to console and save to reports/master_run_{run_id}.json.'
+  responsible_component: run_master_splinter
+  operation_kind: result_consolidation
+  inputs:
+  - MasterOrchestrator summary dict
+  - All errors collected
+  expected_outputs:
+  - Console summary report
+  - reports/master_run_{run_id}.json
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs:
+  - reports/master_run_*.json
+  guardrail_checkpoint: false
+  _content_hash: 9840a69ec6e196f6b5d5e477bfadde78a2f09aab
+- step_id: MS-DONE-002
+  phase: DONE
+  name: Print Execution Summary
+  description: 'Print formatted execution summary to console:
+
+    - Header with MASTER_SPLINTER branding
+
+    - Run ID and timestamp
+
+    - Phase counts and statuses
+
+    - Error count (with NO STOP MODE indicator)
+
+    - Next steps based on execution results'
+  responsible_component: run_master_splinter
+  operation_kind: event_emission
+  inputs:
+  - MasterOrchestrator summary dict
+  expected_outputs:
+  - Formatted console output with execution summary
+  requires_human_confirmation: false
+  pattern_ids: []
+  artifact_registry_refs: []
+  guardrail_checkpoint: false
+  _content_hash: d6d2606a0b61a9b17bfb9726dc03ad7c7d30184f

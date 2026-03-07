@@ -1,0 +1,84 @@
+# DOC_LINK: DOC-CONFIG-DIR-CONTRACT-TRIGGER-ID-001
+doc_id: DOC-CONFIG-DIR-CONTRACT-TRIGGER-ID-001
+meta:
+  version: 1.0.0
+  created_utc: '2025-12-29T09:47:30Z'
+  updated_utc: '2025-12-29T10:00:00Z'
+
+directory:
+  name: trigger_id
+  path: SUB_DOC_ID/trigger_id
+
+constraints:
+  input:
+    - Must have access to SUB_DOC_ID/3_AUTOMATION_HOOKS directory
+    - Python files must contain automation trigger definitions
+    - Registry must exist at 5_REGISTRY_DATA/TRG_ID_REGISTRY.yaml
+
+  output:
+    - Generates triggers_inventory.jsonl in JSONL format
+    - Updates TRG_ID_REGISTRY.yaml atomically
+    - Injects TRIGGER_ID headers into automation files
+    - All trigger IDs follow TRIGGER-{CATEGORY}-{SEQ} format
+
+  invariants:
+    - Trigger IDs are immutable once assigned
+    - Registry next_id counters only increment, never decrement
+    - All automation files must have assigned trigger IDs
+    - Registry is the single source of truth for trigger identity
+
+operations:
+  scan:
+    input: Automation directory path
+    output: triggers_inventory.jsonl
+    constraints:
+      - Must detect Python, PowerShell, and Batch files
+      - Must extract trigger metadata
+      - Must identify trigger type (watcher/hook/scheduled/runner)
+
+  assign:
+    input: Trigger inventory + category
+    output: Trigger ID + updated registry
+    constraints:
+      - Must mint sequential IDs per category
+      - Must inject into file header
+      - Must update registry atomically
+      - Must support dry-run mode
+
+  validate:
+    input: Registry + inventory
+    output: Validation report
+    constraints:
+      - Must check 100% coverage
+      - Must validate uniqueness
+      - Must validate format (TRIGGER-{PREFIX}-###)
+      - Must verify registry/inventory sync
+
+quality_gates:
+  - name: Coverage Check
+    condition: All automation files have trigger_id
+    enforcement: CI/CD gate
+
+  - name: Uniqueness Check
+    condition: All trigger_ids are unique
+    enforcement: Registry validator
+
+  - name: Format Check
+    condition: All trigger_ids match TRIGGER-{CATEGORY}-### pattern
+    enforcement: Registry validator
+
+  - name: Sync Check
+    condition: Registry and inventory are synchronized
+    enforcement: Validator
+
+error_handling:
+  - Invalid trigger type → Skip with warning
+  - Duplicate trigger_id → Error, halt assignment
+  - File read error → Skip with warning, continue scan
+  - Registry write error → Rollback, fail operation
+
+versioning:
+  registry_schema: 1.0.0
+  inventory_schema: 1.0.0
+  backward_compatible: true
+  migration_path: None required (new subsystem)

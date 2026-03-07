@@ -1,0 +1,36 @@
+PowerShell 7.5.4
+PS C:\Users\richg> pip show invoke
+Name: invoke
+Version: 2.2.1
+Summary: Pythonic task execution
+Home-page: https://pyinvoke.org
+Author: Jeff Forcier
+Author-email: jeff@bitprophet.org
+License: BSD
+Location: C:\Users\richg\AppData\Roaming\Python\Python312\site-packages
+Requires:
+Required-by:
+PS C:\Users\richg> # or, depending on how Python is wired:
+PS C:\Users\richg> py -m pip show invoke
+Name: invoke
+Version: 2.2.1
+Summary: Pythonic task execution
+Home-page: https://pyinvoke.org
+Author: Jeff Forcier
+Author-email: jeff@bitprophet.org
+License: BSD
+Location: C:\Users\richg\AppData\Roaming\Python\Python312\site-packages
+Requires:
+Required-by:
+PS C:\Users\richg> python -m pip show invoke
+Name: invoke
+Version: 2.2.1
+Summary: Pythonic task execution
+Home-page: https://pyinvoke.org
+Author: Jeff Forcier
+Author-email: jeff@bitprophet.org
+License: BSD
+Location: C:\Users\richg\AppData\Roaming\Python\Python312\site-packages
+Requires:
+Required-by:
+PS C:\Users\richg>

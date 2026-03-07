@@ -1,0 +1,352 @@
+[
+  {
+    "step_number": 1,
+    "description": "User runs python acms_controller.py <REPO_ROOT> --mode full --ai-adapter <adapter_name>.",
+    "responsible_module": "acms_controller",
+    "observable_artifact": "CLI execution",
+    "success_condition": "Process starts without immediate error."
+  },
+  {
+    "step_number": 2,
+    "description": "acms_controller parses CLI args and resolves repo_root, mode, and selected ai_adapter.",
+    "responsible_module": "acms_controller",
+    "observable_artifact": "Internal state of acms_controller",
+    "success_condition": "Arguments are parsed correctly and stored."
+  },
+  {
+    "step_number": 3,
+    "description": "acms_controller generates or accepts a run_id (ULID/UUID) for this end-to-end execution.",
+    "responsible_module": "acms_controller",
+    "observable_artifact": "run_id value",
+    "success_condition": "A valid run_id is generated and available."
+  },
+  {
+    "step_number": 4,
+    "description": "acms_controller initializes logging and creates a run ledger directory (e.g., .acms/runs/<run_id>/).",
+    "responsible_module": "acms_controller",
+    "observable_artifact": "Directory '.acms/runs/<run_id>/'",
+    "success_condition": "The run directory is created on the filesystem."
+  },
+  {
+    "step_number": 5,
+    "description": "acms_controller creates a top-level run record in its own metadata store (JSON/DB).",
+    "responsible_module": "acms_controller",
+    "observable_artifact": "acms_state.json or database entry",
+    "success_condition": "A run record is created and persisted."
+  },
+  {
+    "step_number": 6,
+    "description": "acms_controller constructs the appropriate AI adapter instance via acms_ai_adapter (OpenAI/Anthropic/mock/etc.).",
+    "responsible_module": "acms_controller",
+    "observable_artifact": "AI adapter object in memory",
+    "success_condition": "The correct AI adapter is instantiated."
+  },
+  {
+    "step_number": 7,
+    "description": "acms_controller loads gap-analysis configuration and framework references (GAP_ANALYSIS_V1, OVERLAP_AUTOMATION…, COMPREHENSIVE_GAP_FINDING_FRAMEWORK, etc.).",
+    "responsible_module": "acms_controller",
+    "observable_artifact": "Loaded configuration in memory",
+    "success_condition": "Configuration files are loaded without errors."
+  },
+  {
+    "step_number": 8,
+    "description": "acms_controller assembles the gap-analysis request payload (repo path, scope, frameworks, prompts) for the AI adapter.",
+    "responsible_module": "acms_controller",
+    "observable_artifact": "Request payload object in memory",
+    "success_condition": "The request payload is correctly structured."
+  },
+  {
+    "step_number": 9,
+    "description": "acms_controller calls the AI adapter to perform primary gap discovery using OVERLAP_AUTOMATION_AND_MASTER_GAP_ANALYSIS.merged.json.",
+    "responsible_module": "acms_controller",
+    "observable_artifact": "Call to AI adapter",
+    "success_condition": "The AI adapter's gap discovery method is called with the correct payload."
+  },
+  {
+    "step_number": 10,
+    "description": "AI adapter executes the gap-analysis prompt(s) against the chosen backend and returns structured JSON results.",
+    "responsible_module": "acms_ai_adapter",
+    "observable_artifact": "JSON response from AI backend",
+    "success_condition": "The AI adapter returns a structured JSON response."
+  },
+  {
+    "step_number": 11,
+    "description": "acms_controller validates the gap-analysis JSON against the expected output contract / schema.",
+    "responsible_module": "acms_controller",
+    "observable_artifact": "Validation result",
+    "success_condition": "Validation passes without errors."
+  },
+  {
+    "step_number": 12,
+    "description": "acms_controller writes the raw gap-analysis report to disk under the run directory.",
+    "responsible_module": "acms_controller",
+    "observable_artifact": "gap_analysis_report.json file",
+    "success_condition": "The file is written to the correct location."
+  },
+  {
+    "step_number": 13,
+    "description": "acms_controller passes the validated gap-analysis report to gap_registry.",
+    "responsible_module": "acms_controller",
+    "observable_artifact": "Call to gap_registry",
+    "success_condition": "gap_registry's processing method is called with the report."
+  },
+  {
+    "step_number": 14,
+    "description": "gap_registry normalizes raw findings into canonical GapRecord objects and persists them (SQLite/JSON).",
+    "responsible_module": "gap_registry",
+    "observable_artifact": "gap_registry.json or database records",
+    "success_condition": "Normalized gap records are created and persisted."
+  },
+  {
+    "step_number": 15,
+    "description": "gap_registry returns an in-memory view or summary of gaps grouped by type, severity, module, etc.",
+    "responsible_module": "gap_registry",
+    "observable_artifact": "In-memory gap summary",
+    "success_condition": "A structured summary of gaps is returned."
+  },
+  {
+    "step_number": 16,
+    "description": "acms_controller calls execution_planner with the normalized gaps and planning configuration.",
+    "responsible_module": "acms_controller",
+    "observable_artifact": "Call to execution_planner",
+    "success_condition": "execution_planner's planning method is called with the correct data."
+  },
+  {
+    "step_number": 17,
+    "description": "execution_planner clusters gaps into one or more workstreams based on module boundaries, dependencies, and priority heuristics.",
+    "responsible_module": "execution_planner",
+    "observable_artifact": "Workstream definitions",
+    "success_condition": "Gaps are clustered into logical workstreams."
+  },
+  {
+    "step_number": 18,
+    "description": "execution_planner assigns priority scores to each gap / workstream and orders them for execution.",
+    "responsible_module": "execution_planner",
+    "observable_artifact": "Prioritized workstreams",
+    "success_condition": "Workstreams have priority scores and are ordered."
+  },
+  {
+    "step_number": 19,
+    "description": "execution_planner uses planning templates (MASTER_SPLINTER_PHASE_PLAN_TEMPLATE_GUIDE, agent profiles, etc.) to sketch high-level remediation plans per workstream.",
+    "responsible_module": "execution_planner",
+    "observable_artifact": "High-level remediation plans",
+    "success_condition": "Remediation plans are created for workstreams."
+  },
+  {
+    "step_number": 20,
+    "description": "execution_planner returns structured workstream/plan definitions to acms_controller.",
+    "responsible_module": "execution_planner",
+    "observable_artifact": "Workstream/plan definitions",
+    "success_condition": "Structured plan definitions are returned to the controller."
+  },
+  {
+    "step_number": 21,
+    "description": "acms_controller passes these workstream/plan definitions to phase_plan_compiler.",
+    "responsible_module": "acms_controller",
+    "observable_artifact": "Call to phase_plan_compiler",
+    "success_condition": "phase_plan_compiler's compilation method is called."
+  },
+  {
+    "step_number": 22,
+    "description": "phase_plan_compiler transforms high-level plans into a MINI_PIPE-compatible execution plan (tasks, dependencies, metadata).",
+    "responsible_module": "phase_plan_compiler",
+    "observable_artifact": "MINI_PIPE execution plan object",
+    "success_condition": "A MINI_PIPE-compatible execution plan is generated."
+  },
+  {
+    "step_number": 23,
+    "description": "phase_plan_compiler validates the compiled plan against a MINI_PIPE execution-plan schema.",
+    "responsible_module": "phase_plan_compiler",
+    "observable_artifact": "Validation result",
+    "success_condition": "The generated plan passes schema validation."
+  },
+  {
+    "step_number": 24,
+    "description": "phase_plan_compiler writes the finalized MINI_PIPE execution-plan JSON to disk.",
+    "responsible_module": "phase_plan_compiler",
+    "observable_artifact": "mini_pipe_execution_plan.json file",
+    "success_condition": "The execution plan is written to the correct file."
+  },
+  {
+    "step_number": 25,
+    "description": "acms_controller constructs an AcmsMiniPipeAdapter (from acms_minipipe_adapter) with the execution-plan path and run context.",
+    "responsible_module": "acms_controller",
+    "observable_artifact": "AcmsMiniPipeAdapter object",
+    "success_condition": "The adapter is instantiated with correct parameters."
+  },
+  {
+    "step_number": 26,
+    "description": "acms_minipipe_adapter resolves how to call MINI_PIPE (direct Python API vs MINI_PIPE_orchestrator_cli).",
+    "responsible_module": "acms_minipipe_adapter",
+    "observable_artifact": "Internal state/method call",
+    "success_condition": "The correct invocation method for MINI_PIPE is chosen."
+  },
+  {
+    "step_number": 27,
+    "description": "acms_minipipe_adapter invokes MINI_PIPE_orchestrator to register a new MINI_PIPE run linked to the ACMS run_id.",
+    "responsible_module": "acms_minipipe_adapter",
+    "observable_artifact": "Call to MINI_PIPE_orchestrator",
+    "success_condition": "The orchestrator is invoked to start a new run."
+  },
+  {
+    "step_number": 28,
+    "description": "MINI_PIPE_orchestrator stores the execution plan and initializes its internal state (run row, step records, event bus).",
+    "responsible_module": "MINI_PIPE_orchestrator",
+    "observable_artifact": "MINI_PIPE internal state (DB/JSON)",
+    "success_condition": "The orchestrator's state is initialized for the run."
+  },
+  {
+    "step_number": 29,
+    "description": "MINI_PIPE_orchestrator hands the plan to MINI_PIPE_scheduler to build a task DAG and compute ready/blocked tasks.",
+    "responsible_module": "MINI_PIPE_orchestrator",
+    "observable_artifact": "Call to MINI_PIPE_scheduler",
+    "success_condition": "The scheduler is called to process the execution plan."
+  },
+  {
+    "step_number": 30,
+    "description": "MINI_PIPE_scheduler computes initial batch(es) of tasks that can be run in parallel (no unsatisfied dependencies).",
+    "responsible_module": "MINI_PIPE_scheduler",
+    "observable_artifact": "List of ready tasks",
+    "success_condition": "The initial batch of runnable tasks is correctly identified."
+  },
+  {
+    "step_number": 31,
+    "description": "MINI_PIPE_orchestrator calls MINI_PIPE_executor with the ready batches and run context.",
+    "responsible_module": "MINI_PIPE_orchestrator",
+    "observable_artifact": "Call to MINI_PIPE_executor",
+    "success_condition": "The executor is called with a batch of tasks to run."
+  },
+  {
+    "step_number": 32,
+    "description": "MINI_PIPE_executor iterates over the current batch and, for each task, consults MINI_PIPE_router to select a tool.",
+    "responsible_module": "MINI_PIPE_executor",
+    "observable_artifact": "Call to MINI_PIPE_router",
+    "success_condition": "The router is consulted for each task in the batch."
+  },
+  {
+    "step_number": 33,
+    "description": "MINI_PIPE_router uses router_config and task metadata (task_kind, risk, file_scope, etc.) to determine a tool_id / adapter_id.",
+    "responsible_module": "MINI_PIPE_router",
+    "observable_artifact": "Selected tool_id",
+    "success_condition": "The correct tool is selected for the task."
+  },
+  {
+    "step_number": 34,
+    "description": "MINI_PIPE_executor calls MINI_PIPE_tools (and optionally MINI_PIPE_process_spawner / resilient executor) to run the selected tool for that task.",
+    "responsible_module": "MINI_PIPE_executor",
+    "observable_artifact": "Call to MINI_PIPE_tools",
+    "success_condition": "The appropriate tool runner is called for the task."
+  },
+  {
+    "step_number": 35,
+    "description": "MINI_PIPE_tools renders the configured command template or API call (AI CLI / linter / test runner, etc.) and executes it with proper working directory and timeouts.",
+    "responsible_module": "MINI_PIPE_tools",
+    "observable_artifact": "Tool execution (process/API call)",
+    "success_condition": "The tool is executed correctly."
+  },
+  {
+    "step_number": 36,
+    "description": "MINI_PIPE_tools captures stdout, stderr, exit code, and any structured payload, then returns a normalized ToolResult to MINI_PIPE_executor.",
+    "responsible_module": "MINI_PIPE_tools",
+    "observable_artifact": "ToolResult object",
+    "success_condition": "A normalized result object is returned."
+  },
+  {
+    "step_number": 37,
+    "description": "MINI_PIPE_executor records per-task results in the MINI_PIPE run state (success/failure, outputs, timings).",
+    "responsible_module": "MINI_PIPE_executor",
+    "observable_artifact": "Updated MINI_PIPE state (DB/JSON)",
+    "success_condition": "Task results are persisted to the run state."
+  },
+  {
+    "step_number": 38,
+    "description": "MINI_PIPE_orchestrator updates task statuses, emits events, and asks MINI_PIPE_scheduler for the next ready batch of tasks.",
+    "responsible_module": "MINI_PIPE_orchestrator",
+    "observable_artifact": "Call to MINI_PIPE_scheduler",
+    "success_condition": "The scheduler is called to determine the next batch of tasks."
+  },
+  {
+    "step_number": 39,
+    "description": "Steps 32–38 repeat until all tasks in the execution plan are either completed or definitively failed/aborted according to policy.",
+    "responsible_module": "MINI_PIPE_orchestrator",
+    "observable_artifact": "MINI_PIPE run status",
+    "success_condition": "The task execution loop completes."
+  },
+  {
+    "step_number": 40,
+    "description": "If enabled, MINI_PIPE_patch_converter converts AI/tool outputs into unified patch objects and passes them to MINI_PIPE_patch_ledger.",
+    "responsible_module": "MINI_PIPE_patch_converter",
+    "observable_artifact": "Call to MINI_PIPE_patch_ledger",
+    "success_condition": "Patch objects are created and passed to the patch ledger."
+  },
+  {
+    "step_number": 41,
+    "description": "If enabled, MINI_PIPE_patch_ledger manages patch lifecycle (validated, queued, applied, verified, committed/quarantined) and logs patch history.",
+    "responsible_module": "MINI_PIPE_patch_ledger",
+    "observable_artifact": "Patch ledger state (DB/JSON)",
+    "success_condition": "Patch lifecycle is managed and logged."
+  },
+  {
+    "step_number": 42,
+    "description": "MINI_PIPE_orchestrator marks the MINI_PIPE run as complete (success or failure) and persists final state (DB/JSON).",
+    "responsible_module": "MINI_PIPE_orchestrator",
+    "observable_artifact": "Final MINI_PIPE run state",
+    "success_condition": "The MINI_PIPE run is marked as complete and state is saved."
+  },
+  {
+    "step_number": 43,
+    "description": "acms_minipipe_adapter polls or queries MINI_PIPE to collect aggregated execution results and task summaries.",
+    "responsible_module": "acms_minipipe_adapter",
+    "observable_artifact": "Execution results query",
+    "success_condition": "Aggregated results are retrieved from MINI_PIPE."
+  },
+  {
+    "step_number": 44,
+    "description": "acms_minipipe_adapter returns execution summaries (task outcomes, files touched, errors, metrics) to acms_controller.",
+    "responsible_module": "acms_minipipe_adapter",
+    "observable_artifact": "Execution summary object",
+    "success_condition": "A summary of the execution is returned to the controller."
+  },
+  {
+    "step_number": 45,
+    "description": "acms_controller correlates MINI_PIPE execution results with original gaps (via gap_registry) to determine which gaps were addressed or remain open.",
+    "responsible_module": "acms_controller",
+    "observable_artifact": "Internal correlation logic",
+    "success_condition": "Execution results are correctly mapped to the original gaps."
+  },
+  {
+    "step_number": 46,
+    "description": "acms_controller updates gap_registry entries with new statuses (e.g., resolved, in_progress, failed, deferred) for this run_id.",
+    "responsible_module": "acms_controller",
+    "observable_artifact": "Updated gap_registry.json",
+    "success_condition": "Gap statuses are updated in the registry."
+  },
+  {
+    "step_number": 47,
+    "description": "acms_controller synthesizes a unified RunStatus object (phases, timings, gaps closed, tasks executed, patch stats if available).",
+    "responsible_module": "acms_controller",
+    "observable_artifact": "RunStatus object",
+    "success_condition": "A comprehensive RunStatus object is created."
+  },
+  {
+    "step_number": 48,
+    "description": "acms_controller writes RunStatus and a human-readable summary report (Markdown/JSON) into the run output directory.",
+    "responsible_module": "acms_controller",
+    "observable_artifact": "run_status.json and summary_report.md files",
+    "success_condition": "The status and summary files are written to the run directory."
+  },
+  {
+    "step_number": 49,
+    "description": "acms_controller ensures that any changes are committed to a safe branch or workspace according to configuration (or logs patch locations if ledger-managed).",
+    "responsible_module": "acms_controller",
+    "observable_artifact": "Git commit or patch ledger entries",
+    "success_condition": "Changes are committed or their status is recorded."
+  },
+  {
+    "step_number": 50,
+    "description": "acms_controller exits with an appropriate exit code, and the CLI prints a concise summary (run_id, key metrics, paths to logs/reports) for the user and downstream tooling.",
+    "responsible_module": "acms_controller",
+    "observable_artifact": "CLI output and process exit code",
+    "success_condition": "The process exits with the correct code and prints a summary."
+  }
+]

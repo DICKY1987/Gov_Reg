@@ -1,0 +1,425 @@
+{
+  "source_plan_path": "01260207201000001250_REGISTRY\\UNIFIED_SOLUTION_PLAN_V3_MERGED.md",
+  "document_purpose": "Remaining development steps extracted from the merged plan (entity-scoped solution).",
+  "status": "active",
+  "phases": [
+    {
+      "phase_id": "0",
+      "phase_name": "Phase 0 - Pre-Flight Stabilization",
+      "duration_days": 3,
+      "steps": [
+        {
+          "id": "0.1",
+          "title": "Enum canon and drift gate",
+          "type": "implementation",
+          "scripts": [
+            "P_01999000042260305000_enum_drift_gate.py"
+          ],
+          "actions": [
+            "Build canonical enum definitions with legacy aliases.",
+            "Validate drift across registry data and contracts.",
+            "Generate RFC-6902 normalization patches.",
+            "Apply normalization after backup."
+          ],
+          "validation": [
+            "python P_01999000042260305000_enum_drift_gate.py",
+            "Expected: No enum drift detected - GATE PASSED (after normalization)."
+          ],
+          "outputs": [
+            "REGISTRY_ENUMS_CANON.json",
+            "Normalization patch set (RFC-6902)."
+          ]
+        },
+        {
+          "id": "0.2",
+          "title": "Finish 7 stubbed analyzers",
+          "type": "implementation",
+          "scripts": [
+            "P_01260202173939000061_component_extractor.py",
+            "P_01260202173939000062_generate_component_signature.py",
+            "P_01260202173939000063_dependency_analyzer.py",
+            "P_01260202173939000064_i_o_surface_visitor.py",
+            "P_01260202173939000066_structural_feature_extractor.py",
+            "P_01260202173939000067_extract_semantic_features.py",
+            "P_01260202173939000068_file_comparator.py"
+          ],
+          "actions": [
+            "Complete implementations for all stubbed analyzers used by Phase A and Phase C."
+          ],
+          "validation": [
+            "python P_01260202173939000084_registry_integration_pipeline.py --file 01260207201000001250_REGISTRY\\01260207201000001313_capability_mapping_system\\01260207220000001318_mapp_py\\P_01260202173939000060_text_normalizer.py --registry 01260207201000001250_REGISTRY\\01999000042260124503_REGISTRY_file.json --phase A --dry-run --output test_phase_a.json",
+            "Expected: Phase A complete: 21 columns populated per file.",
+            "Note: consolidated_runner.py is a separate whole-repo inventory tool."
+          ]
+        },
+        {
+          "id": "0.3",
+          "title": "Fix column-name mismatches in 4 scripts",
+          "type": "implementation",
+          "scripts": [
+            "P_01260202173939000060_text_normalizer.py",
+            "P_01260202173939000061_component_extractor.py",
+            "P_01260202173939000071_complexity_visitor.py",
+            "P_01260202173939000069_analyze_tests.py"
+          ],
+          "actions": [
+            "text_normalizer: rename py_text_normalized_hash to py_canonical_text_hash.",
+            "component_extractor: rename py_classes_count to py_defs_classes_count, py_functions_count to py_defs_functions_count, py_methods_count to py_component_count, py_components_hash to py_defs_public_api_hash; update error return too.",
+            "complexity_visitor: rename py_cyclomatic_complexity to py_complexity_cyclomatic.",
+            "analyze_tests: add py_tests_executed (True) and py_pytest_exit_code; rename py_test_coverage_pct to py_coverage_percent."
+          ]
+        },
+        {
+          "id": "0.4",
+          "title": "Add --json support to 11 scripts (10 standard plus component_id_generator)",
+          "type": "implementation",
+          "scripts": [
+            "P_01260202173939000060_text_normalizer.py",
+            "P_01260202173939000061_component_extractor.py",
+            "P_01260202173939000062_generate_component_signature.py",
+            "P_01260202173939000063_dependency_analyzer.py",
+            "P_01260202173939000064_i_o_surface_visitor.py",
+            "P_01260202173939000065_deliverable_analyzer.py",
+            "P_01260202173939000076_capability_detector.py",
+            "P_01260202173939000079_analyze_file.py",
+            "P_01260202173939000069_analyze_tests.py",
+            "P_01260202173939000070_run_pylint_on_file.py",
+            "P_01260202173939000071_complexity_visitor.py"
+          ],
+          "actions": [
+            "Add --json <output_file> support to each script (write result JSON to file or stdout).",
+            "Special case component_id_generator: keep positional args <file_id> <components_json> and add --json after those args."
+          ]
+        },
+        {
+          "id": "0.5",
+          "title": "Fix capability_detector hash and quality_scorer breakdown",
+          "type": "implementation",
+          "scripts": [
+            "P_01260202173939000076_capability_detector.py",
+            "P_01260202173939000085_quality_scorer.py"
+          ],
+          "actions": [
+            "capability_detector: compute py_capability_facts_hash as SHA-256 of sorted capability tags.",
+            "quality_scorer: complete generate_breakdown() for docstrings, lint, and complexity."
+          ]
+        }
+      ]
+    },
+    {
+      "phase_id": "1",
+      "phase_name": "Week 1 - Tactical Wins",
+      "duration_days": 5,
+      "steps": [
+        {
+          "id": "1.1-1.2",
+          "title": "Execute capability mapping step 3",
+          "type": "implementation",
+          "scripts": [
+            "P_01260207220000001315_capability_mapper.py"
+          ],
+          "actions": [
+            "Generate FILE_PURPOSE_REGISTRY.json from repo analysis."
+          ],
+          "validation": [
+            "Output exists: .state/purpose_mapping/FILE_PURPOSE_REGISTRY.json",
+            "At least 500 files mapped."
+          ]
+        },
+        {
+          "id": "1.3",
+          "title": "Build file ID reconciliation layer",
+          "type": "implementation",
+          "scripts": [
+            "P_01999000042260305001_file_id_reconciler.py"
+          ],
+          "actions": [
+            "Build sha256 to file_id and file_id to sha256 mappings.",
+            "Capture normalized enum values per file_id.",
+            "Validate file_id is 20-digit numeric and sha256 is 64-hex.",
+            "Ensure component IDs use file_id (not doc_id)."
+          ]
+        },
+        {
+          "id": "1.4",
+          "title": "Build transformation layer for Phase A columns",
+          "type": "implementation",
+          "scripts": [
+            "P_01999000042260305002_py_column_transformer.py"
+          ],
+          "actions": [
+            "Transform FILE_INVENTORY.jsonl facts into registry py_* columns.",
+            "Handle direct, rename, and partial mappings for 21 Phase A columns."
+          ]
+        },
+        {
+          "id": "1.5",
+          "title": "Add run metadata collection",
+          "type": "implementation",
+          "scripts": [
+            "registry_promoter.py"
+          ],
+          "actions": [
+            "Add py_analysis_run_id, py_analyzed_at_utc, py_analysis_success, py_toolchain_id, py_tool_versions, py_component_artifact_path via _collect_run_metadata()."
+          ]
+        },
+        {
+          "id": "1.6-1.7",
+          "title": "Generate and apply comprehensive patches",
+          "type": "implementation",
+          "scripts": [
+            "registry_promoter.py"
+          ],
+          "actions": [
+            "Load capability mapping, transformed py_* columns, and reconciliation map.",
+            "Generate RFC-6902 patch set, back up registry, dry-run, then apply."
+          ]
+        }
+      ]
+    },
+    {
+      "phase_id": "2",
+      "phase_name": "Week 2 - Foundation and Entity Canonicalization",
+      "duration_days": 5,
+      "steps": [
+        {
+          "id": "2.A.1-2",
+          "title": "Column runtime schema loader",
+          "type": "implementation",
+          "scripts": [
+            "P_01999000042260305010_column_runtime_loader.py"
+          ],
+          "actions": [
+            "Load and merge governance sources.",
+            "Validate policies and export unified metadata."
+          ]
+        },
+        {
+          "id": "2.A.3",
+          "title": "Dependency scheduler and trigger dispatcher",
+          "type": "implementation",
+          "scripts": [
+            "P_01999000042260305011_dependency_scheduler.py",
+            "P_01999000042260305012_trigger_dispatcher.py"
+          ],
+          "actions": [
+            "Generate topological order of column dependencies.",
+            "Route derivations based on triggers."
+          ]
+        },
+        {
+          "id": "2.A.4-5",
+          "title": "Derivation executor and core components",
+          "type": "implementation",
+          "scripts": [
+            "P_01999000042260305013_derivation_executor.py",
+            "P_01999000042260305014_lookup_resolver.py",
+            "P_01999000042260305015_patch_generator.py",
+            "P_01999000042260305016_evidence_writer.py"
+          ],
+          "actions": [
+            "Execute derivations and generate patches.",
+            "Resolve cross-registry lookups.",
+            "Write evidence with SHA-256 trail."
+          ]
+        },
+        {
+          "id": "2.B.1",
+          "title": "Canonical entity set",
+          "type": "implementation",
+          "scripts": [
+            "P_01999000042260305025_canonicalize_entity_set.py"
+          ],
+          "actions": [
+            "Declare files[] authoritative.",
+            "Move entities[] and entries[] to LEGACY_OVERLAYS.json.",
+            "Create REGISTRY_ENTITIES.json with v4 schema metadata."
+          ]
+        },
+        {
+          "id": "2.B.2",
+          "title": "Entity schema v4",
+          "type": "implementation",
+          "artifacts": [
+            "schema.entities.v4.json"
+          ],
+          "actions": [
+            "Expand enums (repo_root_id includes GOV_REG_WORKSPACE, canonicality includes all 4 values).",
+            "Keep entity-only schema (no edge or generator fields)."
+          ]
+        },
+        {
+          "id": "2.C.3-5",
+          "title": "Resolve 51 inconsistencies",
+          "type": "implementation",
+          "scripts": [
+            "P_01999000042260305014_lookup_resolver.py"
+          ],
+          "actions": [
+            "Type A: reclassify 18 editorial columns as manual_patch_only.",
+            "Type B: add defaults and expand enums (status, entity_kind, canonicality).",
+            "Type C: document on-create immutable fields.",
+            "Type D: implement lookup formulas (asset_id, asset_family, asset_version, external_ref, external_system, etc.)."
+          ],
+          "validation": [
+            "python P_01999000042260305010_column_runtime_loader.py --validate-only",
+            "Expected: 0 inconsistencies found."
+          ]
+        }
+      ]
+    },
+    {
+      "phase_id": "3",
+      "phase_name": "Week 3 - Integration and Pipeline Completion",
+      "duration_days": 5,
+      "steps": [
+        {
+          "id": "3.1",
+          "title": "Fix file_id resolver in pipeline",
+          "type": "implementation",
+          "scripts": [
+            "P_01260202173939000084_registry_integration_pipeline.py"
+          ],
+          "actions": [
+            "Add _build_file_id_lookup() to build relative and absolute path to file_id mappings from registry JSON.",
+            "Use exact path match, then normalized match in analyze_file().",
+            "Add analyze_file.py to the Phase A script list."
+          ]
+        },
+        {
+          "id": "3.2",
+          "title": "Implement Phase B in pipeline",
+          "type": "implementation",
+          "scripts": [
+            "P_01260202173939000084_registry_integration_pipeline.py"
+          ],
+          "actions": [
+            "Replace Phase B no-op with script execution (60 second timeout).",
+            "Run quality_scorer last.",
+            "Add _build_script_args() for script-specific CLI patterns.",
+            "Build metrics JSON for quality_scorer and invoke with --metrics-json and --output."
+          ]
+        },
+        {
+          "id": "3.3",
+          "title": "Implement Phase C in pipeline",
+          "type": "implementation",
+          "scripts": [
+            "P_01260202173939000084_registry_integration_pipeline.py",
+            "P_01260202173939000086_similarity_clusterer.py",
+            "P_01260202173939000087_canonical_ranker.py",
+            "P_01260202173939000066_structural_feature_extractor.py",
+            "P_01260202173939000067_extract_semantic_features.py",
+            "P_01260202173939000068_file_comparator.py"
+          ],
+          "actions": [
+            "Stage 1: merge results into {\"files\": [...]}, write tmp/batch_registry.json, run similarity_clusterer and canonical_ranker.",
+            "Stage 2: read clusters, limit pairwise comparisons to multi-file groups.",
+            "Run structural_feature_extractor and extract_semantic_features per target vs peers; capture stdout, parse the JSON scores object from the All scores block, write tmp/<file_id>_structural.json and tmp/<file_id>_semantic.json.",
+            "Run file_comparator with score files and map py_overlap_best_match_file_path to py_overlap_best_match_file_id using file_id lookup.",
+            "Merge batch and pairwise results back into per-file dicts."
+          ]
+        },
+        {
+          "id": "3.4",
+          "title": "File intake orchestrator (entity-only)",
+          "type": "implementation",
+          "scripts": [
+            "P_01999000042260305020_file_intake_orchestrator.py"
+          ],
+          "actions": [
+            "Use runtime engine to process file events and write to REGISTRY_ENTITIES.json only.",
+            "Load capability registry from Week 1 outputs."
+          ]
+        },
+        {
+          "id": "3.5",
+          "title": "Capability mapping migration and timestamp clustering",
+          "type": "implementation",
+          "actions": [
+            "Migrate Week 1 promotion to use runtime engine (no bundle-commit wrapper).",
+            "Generate .state/purpose_mapping/TIMESTAMP_CLUSTERS.json and link provenance where available."
+          ]
+        },
+        {
+          "id": "3.6",
+          "title": "Simplified convergent report (5 entity signals)",
+          "type": "implementation",
+          "actions": [
+            "Implement 5-signal convergence scoring (fs_primitives, artifact_kind_inferred, py_analysis_complete, capability_tagged, temporal_clustered).",
+            "Apply bands: HIGH if score >= 5, MEDIUM if 3-4, LOW otherwise."
+          ]
+        },
+        {
+          "id": "3.7",
+          "title": "End-to-end validation and documentation",
+          "type": "validation_and_docs",
+          "validation": [
+            "python P_01999000042260305020_file_intake_orchestrator.py --file new_test_file.py",
+            "python P_01999000042260305010_column_runtime_loader.py --validate-only",
+            "python -c \"import json; r = json.load(open('01260207201000001250_REGISTRY/canonical_v4/REGISTRY_ENTITIES.json')); sample = r['files'][0]; py_cols = [k for k in sample.keys() if k.startswith('py_')]; print(f'py_* columns found: {len(py_cols)} of 37')\"",
+            "python P_01260202173939000084_registry_integration_pipeline.py --file 01260207201000001250_REGISTRY\\01260207201000001313_capability_mapping_system\\01260207220000001318_mapp_py\\P_01260202173939000060_text_normalizer.py --registry 01260207201000001250_REGISTRY\\01999000042260124503_REGISTRY_file.json --phase B --dry-run",
+            "python P_01260202173939000084_registry_integration_pipeline.py --batch --registry 01260207201000001250_REGISTRY\\01999000042260124503_REGISTRY_file.json --phase C --dry-run"
+          ],
+          "actions": [
+            "Verify file_id resolution (20-digit numeric) for analyzed files.",
+            "Verify hash determinism by running the same file twice.",
+            "Update documentation after validation passes."
+          ]
+        }
+      ]
+    }
+  ],
+  "future_work": {
+    "prerequisite": "Entity canonicalization complete (this plan).",
+    "sequence": [
+      "Entities (this plan)",
+      "Edges",
+      "Generators",
+      "Bundle",
+      "Convergent Scoring"
+    ],
+    "items": [
+      {
+        "title": "REGISTRY_EDGES.json",
+        "prerequisites": "Entity registry stable.",
+        "recommended_order": 1
+      },
+      {
+        "title": "Edge Discovery Pipeline",
+        "prerequisites": "Entity registry plus edge schema.",
+        "recommended_order": 2
+      },
+      {
+        "title": "REGISTRY_GENERATORS.json",
+        "prerequisites": "Entity registry stable.",
+        "recommended_order": 3
+      },
+      {
+        "title": "Inverted Path Index",
+        "prerequisites": "Edge pipeline operational.",
+        "recommended_order": 4
+      },
+      {
+        "title": "Convergent Evidence Scorer (edge-weighted)",
+        "prerequisites": "Edge registry populated.",
+        "recommended_order": 5
+      },
+      {
+        "title": "Bundle Manifest",
+        "prerequisites": "All three registries operational.",
+        "recommended_order": 6
+      },
+      {
+        "title": "Bundle-Commit Protocol",
+        "prerequisites": "Bundle manifest and all registries.",
+        "recommended_order": 7
+      },
+      {
+        "title": "Anti-Duplication Rules",
+        "prerequisites": "Edge pipeline.",
+        "recommended_order": "with edges"
+      }
+    ]
+  }
+}

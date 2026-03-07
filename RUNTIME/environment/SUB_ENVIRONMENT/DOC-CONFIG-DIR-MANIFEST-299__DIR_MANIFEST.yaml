@@ -1,0 +1,36 @@
+# DOC_LINK: DOC-CONFIG-DIR-MANIFEST-299
+contents:
+- name: adapters/
+  purpose: Environment adapter implementations
+  type: directory
+- name: adapters/git_adapter.py
+  purpose: Git operations with audit logging
+  stable_id: A-GIT-ADAPTER-001
+  type: code
+- name: adapters/fs_adapter.py
+  purpose: Filesystem operations with write containment
+  stable_id: A-FS-ADAPTER-001
+  type: code
+- name: adapters/db_adapter.py
+  purpose: Database adapter stub for future use
+  stable_id: A-DB-ADAPTER-001
+  type: code
+created_date: '2025-12-22'
+dependencies:
+- directory: modules/path_abstraction
+  reason: Adapters use PathRegistry for path resolution
+  relationship: depends_on
+- directory: SUB_PATH_REGISTRY
+  reason: Reads path_index.yaml via PathRegistry
+  relationship: consumes
+directory_id: D-ENVIRONMENT-001
+doc_id: DOC-CONFIG-DIR-MANIFEST-299
+name: SUB_ENVIRONMENT
+owner_team: platform
+purpose: Environment adapters for deterministic filesystem and git operations
+status: active
+tags:
+- infrastructure
+- adapters
+- determinism
+- audit

@@ -1,0 +1,101 @@
+name: Registry Integrity Check
+
+on:
+  pull_request:
+    paths:
+      - 'doc_id/specs/DOC_ID_REGISTRY.yaml'
+      - 'doc_id/specs/module_taxonomy.yaml'
+  push:
+    branches: [main]
+    paths:
+      - 'doc_id/specs/DOC_ID_REGISTRY.yaml'
+      - 'doc_id/specs/module_taxonomy.yaml'
+
+jobs:
+  validate-registry:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install PyYAML
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+
+      - name: Validate registry integrity
+        id: validate
+        run: |
+          python scripts/validate_registry.py --report validation_report.json
+        continue-on-error: true
+
+      - name: Upload validation report
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: registry-validation-report
+          path: validation_report.json
+          retention-days: 30
+
+      - name: Comment PR with validation results
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('validation_report.json', 'utf8'));
+
+            const passed = report.passed;
+            const errorCount = report.errors.length;
+            const warningCount = report.warnings.length;
+
+            const status = passed ? '✅ PASS' : '❌ FAIL';
+            const emoji = passed ? '✓' : '✗';
+
+            let comment = `## ${emoji} Registry Integrity Check\n\n`;
+            comment += `**Status**: ${status}\n\n`;
+            comment += `| Metric | Count |\n`;
+            comment += `|--------|-------|\n`;
+            comment += `| Errors | ${errorCount} |\n`;
+            comment += `| Warnings | ${warningCount} |\n\n`;
+
+            if (errorCount > 0) {
+              comment += `### Errors:\n\n`;
+              for (const error of report.errors.slice(0, 10)) {
+                comment += `- ❌ ${error}\n`;
+              }
+              if (errorCount > 10) {
+                comment += `\n_... and ${errorCount - 10} more_\n`;
+              }
+            }
+
+            if (warningCount > 0) {
+              comment += `\n### Warnings:\n\n`;
+              for (const warning of report.warnings.slice(0, 10)) {
+                comment += `- ⚠️ ${warning}\n`;
+              }
+              if (warningCount > 10) {
+                comment += `\n_... and ${warningCount - 10} more_\n`;
+              }
+            }
+
+            if (passed && errorCount === 0 && warningCount === 0) {
+              comment += `\n✨ Registry validation passed with no errors or warnings!\n`;
+            }
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Fail if validation failed
+        if: steps.validate.outcome == 'failure'
+        run: exit 1

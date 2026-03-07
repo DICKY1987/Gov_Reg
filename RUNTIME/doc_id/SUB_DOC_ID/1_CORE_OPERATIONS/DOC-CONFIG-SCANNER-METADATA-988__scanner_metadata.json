@@ -1,0 +1,469 @@
+{
+  "file_type": "python_module",
+  "language": "python",
+  "lines_of_code": 430,
+  "functions": [
+    {
+      "name": "__init__",
+      "line_start": 41,
+      "line_end": 43,
+      "params": [
+        "self"
+      ],
+      "return_type": null,
+      "decorators": [],
+      "docstring": null,
+      "is_async": false,
+      "complexity": 1
+    },
+    {
+      "name": "is_excluded",
+      "line_start": 45,
+      "line_end": 53,
+      "params": [
+        "self"
+      ],
+      "return_type": null,
+      "decorators": [],
+      "docstring": null,
+      "is_async": false,
+      "complexity": 3
+    },
+    {
+      "name": "extract_doc_id_python",
+      "line_start": 55,
+      "line_end": 71,
+      "params": [
+        "self"
+      ],
+      "return_type": null,
+      "decorators": [],
+      "docstring": null,
+      "is_async": false,
+      "complexity": 4
+    },
+    {
+      "name": "extract_doc_id_markdown",
+      "line_start": 73,
+      "line_end": 99,
+      "params": [
+        "self"
+      ],
+      "return_type": null,
+      "decorators": [],
+      "docstring": null,
+      "is_async": false,
+      "complexity": 7
+    },
+    {
+      "name": "extract_doc_id_yaml",
+      "line_start": 101,
+      "line_end": 111,
+      "params": [
+        "self"
+      ],
+      "return_type": null,
+      "decorators": [],
+      "docstring": null,
+      "is_async": false,
+      "complexity": 3
+    },
+    {
+      "name": "extract_doc_id_json",
+      "line_start": 113,
+      "line_end": 128,
+      "params": [
+        "self"
+      ],
+      "return_type": null,
+      "decorators": [],
+      "docstring": null,
+      "is_async": false,
+      "complexity": 6
+    },
+    {
+      "name": "extract_doc_id_script",
+      "line_start": 130,
+      "line_end": 140,
+      "params": [
+        "self"
+      ],
+      "return_type": null,
+      "decorators": [],
+      "docstring": null,
+      "is_async": false,
+      "complexity": 3
+    },
+    {
+      "name": "extract_doc_id",
+      "line_start": 142,
+      "line_end": 169,
+      "params": [
+        "self"
+      ],
+      "return_type": null,
+      "decorators": [],
+      "docstring": null,
+      "is_async": false,
+      "complexity": 4
+    },
+    {
+      "name": "validate_doc_id",
+      "line_start": 171,
+      "line_end": 175,
+      "params": [
+        "self"
+      ],
+      "return_type": null,
+      "decorators": [],
+      "docstring": null,
+      "is_async": false,
+      "complexity": 2
+    },
+    {
+      "name": "scan_file",
+      "line_start": 177,
+      "line_end": 199,
+      "params": [
+        "self"
+      ],
+      "return_type": null,
+      "decorators": [],
+      "docstring": null,
+      "is_async": false,
+      "complexity": 2
+    },
+    {
+      "name": "scan_repository",
+      "line_start": 201,
+      "line_end": 226,
+      "params": [
+        "self"
+      ],
+      "return_type": null,
+      "decorators": [],
+      "docstring": null,
+      "is_async": false,
+      "complexity": 7
+    },
+    {
+      "name": "save_inventory",
+      "line_start": 228,
+      "line_end": 231,
+      "params": [
+        "self"
+      ],
+      "return_type": null,
+      "decorators": [],
+      "docstring": null,
+      "is_async": false,
+      "complexity": 1
+    },
+    {
+      "name": "load_inventory",
+      "line_start": 233,
+      "line_end": 241,
+      "params": [
+        "self"
+      ],
+      "return_type": null,
+      "decorators": [],
+      "docstring": null,
+      "is_async": false,
+      "complexity": 2
+    },
+    {
+      "name": "get_stats",
+      "line_start": 243,
+      "line_end": 280,
+      "params": [
+        "self"
+      ],
+      "return_type": null,
+      "decorators": [],
+      "docstring": null,
+      "is_async": false,
+      "complexity": 5
+    },
+    {
+      "name": "print_stats",
+      "line_start": 282,
+      "line_end": 302,
+      "params": [
+        "self"
+      ],
+      "return_type": null,
+      "decorators": [],
+      "docstring": null,
+      "is_async": false,
+      "complexity": 2
+    },
+    {
+      "name": "generate_markdown_report",
+      "line_start": 304,
+      "line_end": 378,
+      "params": [
+        "self"
+      ],
+      "return_type": null,
+      "decorators": [],
+      "docstring": null,
+      "is_async": false,
+      "complexity": 11
+    },
+    {
+      "name": "in()",
+      "line_start": 381,
+      "line_end": 426,
+      "params": [],
+      "return_type": null,
+      "decorators": [],
+      "docstring": null,
+      "is_async": false,
+      "complexity": 3
+    }
+  ],
+  "classes": [
+    {
+      "name": "DocIDScanner",
+      "line_start": 38,
+      "line_end": 378,
+      "base_classes": [],
+      "methods": [
+        "__init__",
+        "is_excluded",
+        "extract_doc_id_python",
+        "extract_doc_id_markdown",
+        "extract_doc_id_yaml",
+        "extract_doc_id_json",
+        "extract_doc_id_script",
+        "extract_doc_id",
+        "validate_doc_id",
+        "scan_file",
+        "scan_repository",
+        "save_inventory",
+        "load_inventory",
+        "get_stats",
+        "print_stats",
+        "generate_markdown_report"
+      ],
+      "decorators": [],
+      "docstring": null
+    }
+  ],
+  "imports": [
+    {
+      "module": "argparse",
+      "items": [],
+      "is_from": false,
+      "alias": null
+    },
+    {
+      "module": "json",
+      "items": [],
+      "is_from": false,
+      "alias": null
+    },
+    {
+      "module": "re",
+      "items": [],
+      "is_from": false,
+      "alias": null
+    },
+    {
+      "module": "sys",
+      "items": [],
+      "is_from": false,
+      "alias": null
+    },
+    {
+      "module": "datetime",
+      "items": [],
+      "is_from": true,
+      "alias": null
+    },
+    {
+      "module": "pathlib",
+      "items": [],
+      "is_from": true,
+      "alias": null
+    },
+    {
+      "module": "typing",
+      "items": [],
+      "is_from": true,
+      "alias": null
+    },
+    {
+      "module": "common",
+      "items": [],
+      "is_from": true,
+      "alias": null
+    },
+    {
+      "module": "common.utils",
+      "items": [],
+      "is_from": true,
+      "alias": null
+    }
+  ],
+  "exports": [
+    {
+      "name": "is_excluded",
+      "type": "function",
+      "signature": "(self)",
+      "decorators": [],
+      "docstring": null,
+      "line": 45
+    },
+    {
+      "name": "extract_doc_id_python",
+      "type": "function",
+      "signature": "(self)",
+      "decorators": [],
+      "docstring": null,
+      "line": 55
+    },
+    {
+      "name": "extract_doc_id_markdown",
+      "type": "function",
+      "signature": "(self)",
+      "decorators": [],
+      "docstring": null,
+      "line": 73
+    },
+    {
+      "name": "extract_doc_id_yaml",
+      "type": "function",
+      "signature": "(self)",
+      "decorators": [],
+      "docstring": null,
+      "line": 101
+    },
+    {
+      "name": "extract_doc_id_json",
+      "type": "function",
+      "signature": "(self)",
+      "decorators": [],
+      "docstring": null,
+      "line": 113
+    },
+    {
+      "name": "extract_doc_id_script",
+      "type": "function",
+      "signature": "(self)",
+      "decorators": [],
+      "docstring": null,
+      "line": 130
+    },
+    {
+      "name": "extract_doc_id",
+      "type": "function",
+      "signature": "(self)",
+      "decorators": [],
+      "docstring": null,
+      "line": 142
+    },
+    {
+      "name": "validate_doc_id",
+      "type": "function",
+      "signature": "(self)",
+      "decorators": [],
+      "docstring": null,
+      "line": 171
+    },
+    {
+      "name": "scan_file",
+      "type": "function",
+      "signature": "(self)",
+      "decorators": [],
+      "docstring": null,
+      "line": 177
+    },
+    {
+      "name": "scan_repository",
+      "type": "function",
+      "signature": "(self)",
+      "decorators": [],
+      "docstring": null,
+      "line": 201
+    },
+    {
+      "name": "save_inventory",
+      "type": "function",
+      "signature": "(self)",
+      "decorators": [],
+      "docstring": null,
+      "line": 228
+    },
+    {
+      "name": "load_inventory",
+      "type": "function",
+      "signature": "(self)",
+      "decorators": [],
+      "docstring": null,
+      "line": 233
+    },
+    {
+      "name": "get_stats",
+      "type": "function",
+      "signature": "(self)",
+      "decorators": [],
+      "docstring": null,
+      "line": 243
+    },
+    {
+      "name": "print_stats",
+      "type": "function",
+      "signature": "(self)",
+      "decorators": [],
+      "docstring": null,
+      "line": 282
+    },
+    {
+      "name": "generate_markdown_report",
+      "type": "function",
+      "signature": "(self)",
+      "decorators": [],
+      "docstring": null,
+      "line": 304
+    },
+    {
+      "name": "in()",
+      "type": "function",
+      "signature": "()",
+      "decorators": [],
+      "docstring": null,
+      "line": 381
+    },
+    {
+      "name": "DocIDScanner",
+      "type": "class",
+      "methods": [
+        "is_excluded",
+        "extract_doc_id_python",
+        "extract_doc_id_markdown",
+        "extract_doc_id_yaml",
+        "extract_doc_id_json",
+        "extract_doc_id_script",
+        "extract_doc_id",
+        "validate_doc_id",
+        "scan_file",
+        "scan_repository",
+        "save_inventory",
+        "load_inventory",
+        "get_stats",
+        "print_stats",
+        "generate_markdown_report"
+      ],
+      "base_classes": [],
+      "docstring": null,
+      "line": 38
+    }
+  ],
+  "entry_points": [],
+  "module_docstring": null,
+  "max_nesting_depth": 3,
+  "total_complexity": 66,
+  "doc_id": "DOC-CONFIG-SCANNER-METADATA-988"
+}

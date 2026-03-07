@@ -1,0 +1,345 @@
+name: Quality Gates
+
+permissions:
+  contents: read
+  security-events: write
+
+on:
+  push:
+    branches: [ main, develop, feature/** ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  pre-commit:
+    name: Pre-commit Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Cache pre-commit hooks
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: ${{ runner.os }}-precommit-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-precommit-
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install pre-commit
+        run: pip install pre-commit
+
+      - name: Run pre-commit hooks
+        run: pre-commit run --all-files --show-diff-on-failure
+
+  glossary-ssot-policy:
+    name: Glossary SSOT Policy Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Validate SSOT Policy
+        run: python scripts/glossary_ssot_policy.py --verbose
+
+  lint:
+    name: Lint Python Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Black format check
+        run: |
+          black --check core/ scripts/ tests/ \
+            --exclude '(core/autonomous/error_analyzer\.py|core/autonomous/fix_generator\.py|core/autonomous/reflexion\.py|core/memory/pattern_learner\.py|core/memory/episodic_memory\.py|core/search/hyde\.py|core/terminal/context_manager\.py|core/terminal/state_capture\.py|scripts/dev/generate_path_index\.py|scripts/exec017_quick_cleanup\.py|tests/engine/test_plan_execution\.py)'
+
+      - name: isort import check
+        run: |
+          isort --check --profile black core/ scripts/ tests/ \
+            --skip core/autonomous/error_analyzer.py \
+            --skip core/autonomous/fix_generator.py \
+            --skip core/autonomous/reflexion.py \
+            --skip core/memory/pattern_learner.py \
+            --skip core/memory/episodic_memory.py \
+            --skip core/search/hyde.py \
+            --skip core/terminal/context_manager.py \
+            --skip core/terminal/state_capture.py \
+            --skip scripts/dev/generate_path_index.py \
+            --skip scripts/exec017_quick_cleanup.py \
+            --skip tests/engine/test_plan_execution.py
+
+      - name: Ruff lint
+        run: ruff check core/ scripts/ tests/ || true
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          pip install -e .
+          pip install pytest pytest-cov pytest-xdist pytest-json-report
+
+      - name: Create state directory
+        run: mkdir -p .state
+
+      - name: Run tests with coverage and JSON report
+        continue-on-error: true
+        run: |
+          pytest -n auto -v --tb=short \
+            --cov=core \
+            --cov=phase6_error_recovery/modules/error_engine/src \
+            --cov=phase6_error_recovery/modules/plugins \
+            --cov-report=term \
+            --cov-report=html \
+            --json-report \
+            --json-report-file=.state/test_results.json \
+            --json-report-indent=2
+
+      - name: Analyze test results
+        if: always()
+        run: python scripts/analyze_test_results.py .state/test_results.json .state/test_triage.json
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-py${{ matrix.python-version }}-${{ github.sha }}
+          path: |
+            .state/test_results.json
+            .state/test_triage.json
+            htmlcov/
+          retention-days: 30
+            --cov-report=xml \
+            --cov-report=term
+
+      - name: Coverage gate (all core modules)
+        if: matrix.python-version == '3.12'
+        run: |
+          pytest -v --tb=short \
+            --cov=core \
+            --cov=phase6_error_recovery/modules/error_engine/src \
+            --cov=phase6_error_recovery/modules/plugins \
+            --cov-branch \
+            --cov-fail-under=70 \
+            --no-cov-on-fail
+
+      - name: Upload coverage
+        if: matrix.python-version == '3.11'
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+
+  validate-structure:
+    name: Validate Repository Structure
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Validate deprecated paths
+        run: |
+          if [ -f "scripts/paths_index_cli.py" ]; then
+            python scripts/paths_index_cli.py gate --db refactor_paths.db || true
+          fi
+
+      - name: Validate workstreams
+        run: |
+          if [ -f "scripts/validate_workstreams.py" ]; then
+            python scripts/validate_workstreams.py || true
+          fi
+
+      - name: Validate dependency graph
+        run: |
+          python scripts/validate_dependency_graph.py \
+            --report .state/dependency_graph_report.json
+
+      - name: Upload dependency report
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: dependency-graph-report
+          path: .state/dependency_graph_report.json
+          retention-days: 7
+
+  incomplete-implementation-gate:
+    name: Block Incomplete Implementations
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Run incomplete implementation scanner
+        run: |
+          python scripts/scan_incomplete_implementation.py \
+            --root . \
+            --output .state/incomplete_scan_summary.json \
+            --findings-output .state/final_findings.jsonl \
+            --ci-check \
+            --max-critical 0 \
+            --max-major 10
+
+      - name: Upload scan results
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: incomplete-scan-results
+          path: |
+            .state/incomplete_scan_summary.json
+            .state/final_findings.jsonl
+          retention-days: 30
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install pip-audit
+        run: pip install pip-audit
+
+      - name: Run pip-audit security scan
+        run: |
+          pip-audit --requirement requirements.txt --format json --output pip-audit-results.json || true
+          pip-audit --requirement requirements.txt
+
+      - name: Upload pip-audit results
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: pip-audit-results
+          path: pip-audit-results.json
+          retention-days: 30
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: 'trivy-results.sarif'

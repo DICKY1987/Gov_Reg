@@ -1,0 +1,2 @@
+# DOC_LINK: DOC-SCRIPT-SCRIPTS-VALIDATE-MERGE-STEP-962
+# Validation script placeholder

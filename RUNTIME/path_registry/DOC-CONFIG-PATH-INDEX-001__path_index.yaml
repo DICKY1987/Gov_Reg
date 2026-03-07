@@ -1,0 +1,79 @@
+# DOC_LINK: DOC-CONFIG-PATH-INDEX-001
+doc_id: DOC-CONFIG-PATH-INDEX-001
+metadata:
+  created: '2026-01-01T10:39:58.812585'
+  last_updated: '2026-01-10T08:17:17.580Z'
+  description: PathRegistry semantic keys for AI-optimized structure
+  version: 1.1.0
+paths:
+  BUILD_LOGS: BUILD/logs
+  CONTEXT_ARCHITECTURE: CONTEXT/ARCHITECTURE.md
+  CONTEXT_GLOSSARY: CONTEXT/GLOSSARY.md
+  CONTEXT_README: CONTEXT/README.md
+  CONTEXT_ROOT: CONTEXT
+  CONTRACTS_API: CONTRACTS/api
+  CONTRACTS_INTERNAL: CONTRACTS/internal
+  CONTRACTS_WORKFLOWS: CONTRACTS/workflows
+  DOCID_ID_TYPE_REGISTRY: RUNTIME/doc_id/SUB_DOC_ID/ID_TYPE_REGISTRY.yaml
+  DOCID_REGISTRY: RUNTIME/doc_id/SUB_DOC_ID/5_REGISTRY_DATA/DOC_ID_REGISTRY.yaml
+  DOCID_SYSTEM_ROOT: RUNTIME/doc_id/SUB_DOC_ID
+  GOVERNANCE_SSOT: GOVERNANCE/ssot
+  GOVERNANCE_TOOLS: GOVERNANCE/tools
+  GOVERNANCE_VALIDATORS: GOVERNANCE/validators
+  MIGRATIONS_DOCID_CONFIG: MIGRATIONS/DOCID_FILENAME_MIGRATION/migration_config.json
+  MIGRATIONS_DOCID_DOCID_RESOLUTION: MIGRATIONS/DOCID_FILENAME_MIGRATION/docid_resolution.jsonl
+  MIGRATIONS_DOCID_INVENTORY_POST: MIGRATIONS/DOCID_FILENAME_MIGRATION/inventory_post.jsonl
+  MIGRATIONS_DOCID_INVENTORY_PRE: MIGRATIONS/DOCID_FILENAME_MIGRATION/inventory_pre.jsonl
+  MIGRATIONS_DOCID_REFERENCES_FIX_LOG: MIGRATIONS/DOCID_FILENAME_MIGRATION/references_fix_apply.log.jsonl
+  MIGRATIONS_DOCID_REFERENCES_FIX_PLAN: MIGRATIONS/DOCID_FILENAME_MIGRATION/references_fix_plan.jsonl
+  MIGRATIONS_DOCID_REFERENCES_SNAPSHOT: MIGRATIONS/DOCID_FILENAME_MIGRATION/references_snapshot.jsonl
+  MIGRATIONS_DOCID_RENAME_LOG: MIGRATIONS/DOCID_FILENAME_MIGRATION/rename_apply.log.jsonl
+  MIGRATIONS_DOCID_RENAME_PLAN: MIGRATIONS/DOCID_FILENAME_MIGRATION/rename_plan.jsonl
+  MIGRATIONS_DOCID_REPORT: MIGRATIONS/DOCID_FILENAME_MIGRATION/migration_report.json
+  MIGRATIONS_DOCID_ROLLBACK_PLAN: MIGRATIONS/DOCID_FILENAME_MIGRATION/rollback_plan.jsonl
+  MIGRATIONS_DOCID_ROOT: MIGRATIONS/DOCID_FILENAME_MIGRATION
+  MIGRATIONS_DOCID_VALIDATION: MIGRATIONS/DOCID_FILENAME_MIGRATION/rename_plan_validation.json
+  MIGRATIONS_ROOT: MIGRATIONS
+  REFERENCE_PATTERNS: REFERENCE/patterns
+  REFERENCE_TEMPLATES: REFERENCE/templates
+  RUNTIME_DOC_ID: RUNTIME/doc_id
+  RUNTIME_ENGINE: RUNTIME/engine
+  RUNTIME_ENGINE_EXECUTION_V2: RUNTIME/engine/execution_engine_v2.py
+  RUNTIME_INTEGRATIONS_GITHUB: RUNTIME/integrations/github
+  RUNTIME_PATH_REGISTRY: RUNTIME/path_registry
+  RUNTIME_REGISTRIES: RUNTIME/registries
+  RUNTIME_REGISTRIES_ID_REGISTRY: RUNTIME/registries/id_registry.json
+  TESTS_E2E: TESTS/e2e
+  TESTS_FIXTURES: TESTS/fixtures
+  TESTS_INTEGRATION: TESTS/integration
+  TESTS_UNIT: TESTS/unit
+  TOOLS_ANALYSIS: TOOLS/analysis
+  TOOLS_MIGRATION: TOOLS/migration
+  WORKFLOW_BOOTSTRAP: WORKFLOWS/bootstrap
+  WORKFLOW_EXECUTION: WORKFLOWS/execution
+  WORKFLOW_MONITORING: WORKFLOWS/monitoring
+  WORKFLOW_PLANNING: WORKFLOWS/planning
+  WORKFLOW_PLANNING_ORCHESTRATOR: WORKFLOWS/planning/orchestrator
+  WORKFLOW_RECOVERY: WORKFLOWS/recovery
+  WORKFLOW_SCHEDULING: WORKFLOWS/scheduling
+
+  # Phase 2.1: Semantic keys for basename collision disambiguation
+  # Added 2026-01-10 as part of DIR_ID_PATH_DISAMBIGUATION migration
+
+  # Automation directory disambiguation (11 instances)
+  automation:root: automation
+  runtime:doc_id:automation_hooks:main: RUNTIME/doc_id/SUB_DOC_ID/3_AUTOMATION_HOOKS
+  runtime:doc_id:pattern_id:automation_hooks: RUNTIME/doc_id/SUB_DOC_ID/pattern_id/3_AUTOMATION_HOOKS
+  runtime:doc_id:trigger_id:automation_hooks: RUNTIME/doc_id/SUB_DOC_ID/trigger_id/3_AUTOMATION_HOOKS
+  runtime:integrations:github:automation_fixes: RUNTIME/integrations/github/SUB_GITHUB/automation_fixes
+  runtime:recovery:error:automation: RUNTIME/recovery/PHASE_6_ERROR_RECOVERY/error/automation
+  ssot:automation:root: GOVERNANCE/ssot/SSOT_System/automation
+  ssot:tests:automation: GOVERNANCE/ssot/SSOT_System/SSOT_SYS_tests/automation
+  reference:patterns:automation: REFERENCE/patterns/SUB_PATTERNS/automation
+
+  # High-collision directory types
+  tests:root: tests
+  modules:root: modules
+  scripts:root: scripts
+  docs:root: docs
+  core:root: core

@@ -1,0 +1,273 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "document_id": "GATE-DEPENDENCY-GRAPH-001",
+  "version": "1.0.0",
+  "created_at": "2026-03-05T10:54:00Z",
+  "purpose": "Define validation gate execution order and dependencies for newPhasePlanProcess v3.0.0",
+  "execution_model": "topologically_sorted_dag",
+  "gates": [
+    {
+      "id": "GATE-000",
+      "name": "No Obfuscation Check",
+      "script": "validate_plan_structure.py",
+      "phase": "pre-validation",
+      "depends_on": [],
+      "required": true,
+      "timeout_sec": 60
+    },
+    {
+      "id": "GATE-001",
+      "name": "Schema Validation",
+      "script": "P_01260207233100000263_validate_structure.py",
+      "phase": "core-validation",
+      "depends_on": ["GATE-000"],
+      "required": true,
+      "timeout_sec": 60
+    },
+    {
+      "id": "GATE-002",
+      "name": "Gate Definitions Valid",
+      "script": "P_01260207233100000253_validate_gates.py",
+      "phase": "core-validation",
+      "depends_on": ["GATE-001"],
+      "required": true,
+      "timeout_sec": 60
+    },
+    {
+      "id": "GATE-003",
+      "name": "Step Contracts Complete",
+      "script": "P_01260207233100000262_validate_step_contracts.py",
+      "phase": "core-validation",
+      "depends_on": ["GATE-001", "GATE-002"],
+      "required": true,
+      "timeout_sec": 300,
+      "critical_rule": "All 13 contract fields mandatory for every step",
+      "failure_impact": "Step cannot be mechanically verified or safely executed"
+    },
+    {
+      "id": "GATE-004",
+      "name": "Assumptions Documented",
+      "script": "P_01260207233100000248_validate_assumptions.py",
+      "phase": "core-validation",
+      "depends_on": ["GATE-001"],
+      "required": true,
+      "timeout_sec": 120
+    },
+    {
+      "id": "GATE-005",
+      "name": "Unit Tests Pass",
+      "script": "pytest",
+      "phase": "testing",
+      "depends_on": ["GATE-003"],
+      "required": true,
+      "timeout_sec": 300,
+      "command": "pytest -q --junit-xml=.state/evidence/GATE-005/junit.xml"
+    },
+    {
+      "id": "GATE-006",
+      "name": "Coverage Threshold",
+      "script": "pytest --cov",
+      "phase": "testing",
+      "depends_on": ["GATE-005"],
+      "required": true,
+      "timeout_sec": 300,
+      "command": "pytest -q --cov=src --cov-report=json:.state/evidence/GATE-006/coverage.json",
+      "checks": ["coverage >= 80%"]
+    },
+    {
+      "id": "GATE-007",
+      "name": "Automation Spec",
+      "script": "validate_automation_spec.py",
+      "phase": "automation",
+      "depends_on": ["GATE-001"],
+      "required": false,
+      "timeout_sec": 120
+    },
+    {
+      "id": "GATE-008",
+      "name": "Automation Index",
+      "script": "build_automation_index.py",
+      "phase": "automation",
+      "depends_on": ["GATE-007"],
+      "required": false,
+      "timeout_sec": 180
+    },
+    {
+      "id": "GATE-009",
+      "name": "Automation Diagrams",
+      "script": "generate_automation_diagrams.py",
+      "phase": "automation",
+      "depends_on": ["GATE-008"],
+      "required": false,
+      "timeout_sec": 120
+    },
+    {
+      "id": "GATE-010",
+      "name": "Wiring Proof",
+      "script": "validate_wiring_proof.py",
+      "phase": "wiring",
+      "depends_on": ["GATE-003"],
+      "required": false,
+      "timeout_sec": 180
+    },
+    {
+      "id": "GATE-011",
+      "name": "Artifact Registry",
+      "script": "validate_artifact_registry.py",
+      "phase": "wiring",
+      "depends_on": ["GATE-010"],
+      "required": false,
+      "timeout_sec": 120
+    },
+    {
+      "id": "GATE-012",
+      "name": "Failure Modes Audit",
+      "script": "audit_failure_modes.py",
+      "phase": "wiring",
+      "depends_on": ["GATE-003"],
+      "required": false,
+      "timeout_sec": 120
+    },
+    {
+      "id": "GATE-013",
+      "name": "E2E Wiring Validation",
+      "script": "validate_e2e_proof_linkage.py",
+      "phase": "wiring",
+      "depends_on": ["GATE-010", "GATE-011"],
+      "required": false,
+      "timeout_sec": 180
+    },
+    {
+      "id": "GATE-014",
+      "name": "Artifact Closure",
+      "script": "validate_artifact_closure.py",
+      "phase": "validation",
+      "depends_on": ["GATE-003"],
+      "required": false,
+      "timeout_sec": 180
+    },
+    {
+      "id": "GATE-015",
+      "name": "Rollback Completeness",
+      "script": "validate_rollback_completeness.py",
+      "phase": "validation",
+      "depends_on": ["GATE-003"],
+      "required": false,
+      "timeout_sec": 180
+    },
+    {
+      "id": "GATE-016",
+      "name": "Verification Completeness",
+      "script": "validate_verification_completeness.py",
+      "phase": "validation",
+      "depends_on": ["GATE-003"],
+      "required": false,
+      "timeout_sec": 180
+    },
+    {
+      "id": "GATE-017",
+      "name": "Single Source of Truth",
+      "script": "validate_single_source_of_truth.py",
+      "phase": "validation",
+      "depends_on": ["GATE-001"],
+      "required": false,
+      "timeout_sec": 120
+    },
+    {
+      "id": "GATE-FILE-MUTATIONS",
+      "name": "File Mutations Valid",
+      "script": "P_01260207233100000290_validate_file_mutations.py",
+      "phase": "validation",
+      "depends_on": ["GATE-003"],
+      "required": true,
+      "timeout_sec": 60,
+      "command": "python scripts/P_01260207233100000290_validate_file_mutations.py .state/planning/{plan_id}/file_mutations.json"
+    },
+    {
+      "id": "GATE-998",
+      "name": "Automation Audit",
+      "script": "validate_automation_audit.py",
+      "phase": "meta-validation",
+      "depends_on": ["GATE-007", "GATE-008", "GATE-009"],
+      "required": false,
+      "timeout_sec": 120
+    },
+    {
+      "id": "GATE-999",
+      "name": "Goal Reconciliation",
+      "script": "validate_goal_reconciliation.py",
+      "phase": "meta-validation",
+      "depends_on": ["GATE-003", "GATE-004", "GATE-005", "GATE-006"],
+      "required": false,
+      "timeout_sec": 180
+    }
+  ],
+  "execution_phases": [
+    {
+      "phase": "pre-validation",
+      "gates": ["GATE-000"],
+      "description": "Ensure plan is parseable and has no placeholders"
+    },
+    {
+      "phase": "core-validation",
+      "gates": ["GATE-001", "GATE-002", "GATE-003", "GATE-004"],
+      "description": "Validate plan structure, gates, contracts, and assumptions"
+    },
+    {
+      "phase": "testing",
+      "gates": ["GATE-005", "GATE-006"],
+      "description": "Run unit tests and verify coverage"
+    },
+    {
+      "phase": "automation",
+      "gates": ["GATE-007", "GATE-008", "GATE-009"],
+      "description": "Validate automation configuration and generate diagrams"
+    },
+    {
+      "phase": "wiring",
+      "gates": ["GATE-010", "GATE-011", "GATE-012", "GATE-013"],
+      "description": "Validate artifact flow and wiring integrity"
+    },
+    {
+      "phase": "validation",
+      "gates": ["GATE-014", "GATE-015", "GATE-016", "GATE-017", "GATE-FILE-MUTATIONS"],
+      "description": "Final validation checks for completeness and consistency"
+    },
+    {
+      "phase": "meta-validation",
+      "gates": ["GATE-998", "GATE-999"],
+      "description": "Meta-validation of automation and goal achievement"
+    }
+  ],
+  "execution_order": [
+    "GATE-000",
+    "GATE-001",
+    "GATE-002",
+    "GATE-003",
+    "GATE-004",
+    "GATE-005",
+    "GATE-006",
+    "GATE-007",
+    "GATE-008",
+    "GATE-009",
+    "GATE-010",
+    "GATE-011",
+    "GATE-012",
+    "GATE-013",
+    "GATE-014",
+    "GATE-015",
+    "GATE-016",
+    "GATE-017",
+    "GATE-FILE-MUTATIONS",
+    "GATE-998",
+    "GATE-999"
+  ],
+  "notes": [
+    "Gates execute in topological order respecting dependencies",
+    "Required gates must pass for plan to be valid",
+    "Optional gates provide additional validation but do not block execution",
+    "GATE-003 is a dependency for most downstream gates (step contracts required)",
+    "GATE-005/006 added in v3.0.0 for test validation",
+    "GATE-FILE-MUTATIONS validates deterministic file mutation methods"
+  ]
+}

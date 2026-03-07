@@ -1,0 +1,90 @@
+# DOC_LINK: DOC-MIGRATION-PATTERN-ID-MAP-001
+---
+doc_id: DOC-MIGRATION-PATTERN-ID-MAP-001
+version: 1.0.0
+created: 2026-01-03
+purpose: Migration mapping from old pattern_id format to new framework format
+migration_type: format_update
+id_count: 12
+
+format_change:
+  old: "PATTERN-{CATEGORY}-{SEQ}"
+  new: "PATTERN-{CATEGORY}-{NAME}-{SEQ}"
+
+mappings:
+  - old_id: PATTERN-EXEC-DOC-ID-SCANNING-001
+    new_id: PATTERN-EXEC-DOC-ID-SCANNING-001
+    category: exec
+    name: Doc ID Scanning
+    description: Scan repository files for doc_id presence and generate inventory
+
+  - old_id: PATTERN-EXEC-DOC-ID-AUTO-ASSIGNMENT-002
+    new_id: PATTERN-EXEC-DOC-ID-AUTO-ASSIGNMENT-002
+    category: exec
+    name: Doc ID Auto-Assignment
+    description: Automatically assign doc_ids to files without them
+
+  - old_id: PATTERN-VALID-DOC-ID-VALIDATION-001
+    new_id: PATTERN-VALID-DOC-ID-VALIDATION-001
+    category: validation
+    name: Doc ID Validation
+    description: Validate doc_id format, uniqueness, and registry sync
+
+  - old_id: PATTERN-VALID-DOC-ID-CLEANUP-002
+    new_id: PATTERN-VALID-DOC-ID-CLEANUP-002
+    category: validation
+    name: Doc ID Cleanup
+    description: Clean up invalid doc_ids
+
+  - old_id: PATTERN-VALID-DOC-ID-FIX-DUPLICATES-003
+    new_id: PATTERN-VALID-DOC-ID-FIX-DUPLICATES-003
+    category: validation
+    name: Doc ID Fix Duplicates
+    description: Fix duplicate doc_ids
+
+  - old_id: PATTERN-VALID-DOC-ID-FIX-INVALID-004
+    new_id: PATTERN-VALID-DOC-ID-FIX-INVALID-004
+    category: validation
+    name: Doc ID Fix Invalid
+    description: Fix invalid doc_id formats
+
+  - old_id: PATTERN-VALID-DOC-ID-CATEGORY-FIX-005
+    new_id: PATTERN-VALID-DOC-ID-CATEGORY-FIX-005
+    category: validation
+    name: Doc ID Category Fix
+    description: Fix doc_id category mismatches
+
+  - old_id: PATTERN-EXEC-DOC-ID-REGISTRY-SYNC-003
+    new_id: PATTERN-EXEC-DOC-ID-REGISTRY-SYNC-003
+    category: exec
+    name: Doc ID Registry Sync
+    description: Synchronize doc_id registries
+
+  - old_id: PATTERN-EXEC-DOC-ID-PRE-COMMIT-HOOK-004
+    new_id: PATTERN-EXEC-DOC-ID-PRE-COMMIT-HOOK-004
+    category: exec
+    name: Doc ID Pre-Commit Hook
+    description: Pre-commit validation
+
+  - old_id: PATTERN-EXEC-DOC-ID-SCHEDULED-REPORTS-005
+    new_id: PATTERN-EXEC-DOC-ID-SCHEDULED-REPORTS-005
+    category: exec
+    name: Doc ID Scheduled Reports
+    description: Generate scheduled reports
+
+  - old_id: PATTERN-EXEC-DOC-ID-ALERT-MONITORING-006
+    new_id: PATTERN-EXEC-DOC-ID-ALERT-MONITORING-006
+    category: exec
+    name: Doc ID Alert Monitoring
+    description: Monitor health and alert
+
+  - old_id: PATTERN-EXEC-DOC-ID-CLI-WRAPPER-007
+    new_id: PATTERN-EXEC-DOC-ID-CLI-WRAPPER-007
+    category: exec
+    name: Doc ID CLI Wrapper
+    description: Consolidated CLI entry point
+
+validation:
+  all_ids_mapped: true
+  no_duplicates: true
+  names_extracted_from_registry: true

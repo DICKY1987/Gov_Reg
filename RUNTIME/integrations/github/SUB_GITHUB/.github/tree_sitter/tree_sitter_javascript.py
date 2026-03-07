@@ -1,0 +1,9 @@
+# DOC_LINK: DOC-PAT-TREE-SITTER-JAVASCRIPT-346
+# DOC_LINK: DOC-PAT-TREE-SITTER-JAVASCRIPT-302
+# DOC_LINK: DOC-PAT-TREE-SITTER-JAVASCRIPT-287
+# DOC_LINK: DOC-PAT-TREE-SITTER-JAVASCRIPT-272
+from tree_sitter import Language
+
+
+def language() -> Language:
+    return Language("javascript")

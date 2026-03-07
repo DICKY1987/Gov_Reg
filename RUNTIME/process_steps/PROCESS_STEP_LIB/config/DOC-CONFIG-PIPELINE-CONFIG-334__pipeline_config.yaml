@@ -1,0 +1,226 @@
+# DOC_LINK: DOC-CONFIG-PIPELINE-CONFIG-334
+doc_id: DOC-CONFIG-PIPELINE-CONFIG-334
+# Pipeline Configuration
+# Central configuration for E2E pipeline automation
+
+version: "1.0.0"
+
+# Source schemas to merge
+source_schemas:
+  - path: schemas/source/PFA_MASTER_SPLINTER_PROCESS_STEPS_SCHEMA.yaml
+    enabled: true
+    weight: 1.0
+    description: "Master orchestrator and multi-agent coordination"
+
+  - path: schemas/source/PFA_PATTERNS_PROCESS_STEPS_SCHEMA.yaml
+    enabled: true
+    weight: 1.0
+    description: "Pattern automation and zero-touch workflows"
+
+  - path: schemas/source/PFA_GLOSSARY_PROCESS_STEPS_SCHEMA.yaml
+    enabled: true
+    weight: 1.0
+    description: "Terminology management and governance"
+
+  - path: schemas/source/PFA_SSOT_PROCESS_STEPS_SCHEMA.yaml
+    enabled: true
+    weight: 1.0
+    description: "Single source of truth processes"
+
+  - path: schemas/source/PFA_PROCESS_STEPS_SCHEMA.yaml
+    enabled: true
+    weight: 1.0
+    description: "General process definitions"
+
+  - path: schemas/source/PFA_DIRECTORY_INTEGRATION_PROCESS_STEPS_SCHEMA.yaml
+    enabled: true
+    weight: 1.0
+    description: "Directory integration E2E coverage steps"
+
+# Output files configuration
+outputs:
+  unified_schema:
+    path: schemas/unified/PFA_E2E_UNIFIED_PROCESS_STEPS_SCHEMA.yaml
+    format: yaml
+    include_metadata: true
+    description: "Main unified schema with all steps"
+
+  canonical_schema:
+    path: schemas/unified/PFA_E2E_CANONICAL_PROCESS_STEPS_SCHEMA.yaml
+    format: yaml
+    enabled: false  # Generated separately by pfa_convert_to_canonical.py
+    description: "Canonical format schema"
+
+  master_index:
+    path: indices/master_index.json
+    format: json
+    pretty_print: true
+    include_metadata: true
+    description: "Fast queryable index with 7 dimensions"
+
+  merge_report:
+    path: indices/merge_report.json
+    format: json
+    description: "Merge statistics and conflict resolutions"
+
+  validation_report:
+    path: indices/validation_report.json
+    format: json
+    description: "Comprehensive validation results"
+
+  step_lists:
+    technical:
+      path: guides/ALL_274_STEPS.md
+      format: markdown
+      description: "Technical step list for developers"
+
+    explained:
+      path: guides/ALL_274_STEPS_EXPLAINED.md
+      format: markdown
+      description: "Plain English explanations for all steps"
+
+# Validation configuration
+validation:
+  strict_mode: true
+  fail_on_errors: true
+  fail_on_warnings: false
+
+  required_tests:
+    - schema_integrity
+    - index_consistency
+    - documentation_completeness
+    - cross_reference_validation
+
+  optional_tests:
+    - performance_benchmarks
+    - code_coverage
+
+# Pipeline behavior
+pipeline:
+  auto_backup: false  # Don't auto-backup on every run
+  parallel_processing: false  # Not implemented yet
+  incremental_updates: true  # Check timestamps before rebuild
+
+  performance:
+    debounce_seconds: 2  # Wait time after file change (watch mode)
+    max_workers: 4  # For parallel processing (future)
+
+  logging:
+    level: INFO  # DEBUG, INFO, WARNING, ERROR
+    verbose: false
+
+# Configuration files used by tools
+config_files:
+  phase_mappings: config/phase_mappings.yaml
+  operation_taxonomy: config/operation_taxonomy.yaml
+
+# Universal phases (9 phases)
+universal_phases:
+  - id: "1"
+    name: "BOOTSTRAP"
+    full_name: "Environment Setup and Initialization"
+    description: "Initial setup, configuration, and environment preparation"
+
+  - id: "2"
+    name: "DISCOVERY"
+    full_name: "Pattern and Requirement Discovery"
+    description: "Discover patterns, requirements, and gaps"
+
+  - id: "3"
+    name: "DESIGN"
+    full_name: "Solution Design and Planning"
+    description: "Design solutions and create execution plans"
+
+  - id: "4"
+    name: "APPROVAL"
+    full_name: "Review and Approval"
+    description: "Review designs and obtain approvals"
+
+  - id: "5"
+    name: "REGISTRATION"
+    full_name: "Component Registration"
+    description: "Register components and resources"
+
+  - id: "6"
+    name: "EXECUTION"
+    full_name: "Task Execution"
+    description: "Execute tasks and generate outputs"
+
+  - id: "7"
+    name: "CONSOLIDATION"
+    full_name: "Results Aggregation"
+    description: "Aggregate and consolidate results"
+
+  - id: "8"
+    name: "MAINTENANCE"
+    full_name: "Cleanup and Maintenance"
+    description: "Clean up resources and perform maintenance"
+
+  - id: "9"
+    name: "SYNC_FINALIZE"
+    full_name: "Final Sync and Completion"
+    description: "Sync with external systems and finalize"
+
+# I/O Contracts (placeholders for future implementation)
+io_contracts:
+  bootstrap:
+    contract_file: "config/contracts/IO_CONTRACT_BOOTSTRAP.yaml"
+    inputs: ["configuration_files", "environment_variables"]
+    outputs: ["initialized_environment", "component_registry"]
+
+  discovery:
+    contract_file: "config/contracts/IO_CONTRACT_DISCOVERY.yaml"
+    inputs: ["requirements", "existing_patterns"]
+    outputs: ["discovered_gaps", "pattern_list"]
+
+  design:
+    contract_file: "config/contracts/IO_CONTRACT_DESIGN.yaml"
+    inputs: ["requirements", "constraints"]
+    outputs: ["design_document", "execution_plan"]
+
+  approval:
+    contract_file: "config/contracts/IO_CONTRACT_APPROVAL.yaml"
+    inputs: ["design_document", "review_criteria"]
+    outputs: ["approval_status", "feedback"]
+
+  registration:
+    contract_file: "config/contracts/IO_CONTRACT_REGISTRATION.yaml"
+    inputs: ["components", "metadata"]
+    outputs: ["registration_ids", "registry_updated"]
+
+  execution:
+    contract_file: "config/contracts/IO_CONTRACT_EXECUTION.yaml"
+    inputs: ["execution_plan", "resources"]
+    outputs: ["execution_results", "artifacts"]
+
+  consolidation:
+    contract_file: "config/contracts/IO_CONTRACT_CONSOLIDATION.yaml"
+    inputs: ["execution_results", "partial_results"]
+    outputs: ["consolidated_report", "metrics"]
+
+  maintenance:
+    contract_file: "config/contracts/IO_CONTRACT_MAINTENANCE.yaml"
+    inputs: ["system_state", "cleanup_rules"]
+    outputs: ["cleanup_report", "updated_state"]
+
+  sync_finalize:
+    contract_file: "config/contracts/IO_CONTRACT_SYNC_FINALIZE.yaml"
+    inputs: ["final_results", "sync_targets"]
+    outputs: ["sync_status", "completion_report"]
+
+# Future features (not implemented yet)
+future:
+  ci_cd:
+    enabled: false
+    trigger_on: ["source_schema_change", "config_change"]
+    notify: ["email", "slack"]
+
+  web_dashboard:
+    enabled: false
+    port: 8080
+    refresh_interval: 30
+
+  metrics:
+    enabled: false
+    track: ["build_time", "validation_results", "step_count"]
+    export_to: ["prometheus", "json"]

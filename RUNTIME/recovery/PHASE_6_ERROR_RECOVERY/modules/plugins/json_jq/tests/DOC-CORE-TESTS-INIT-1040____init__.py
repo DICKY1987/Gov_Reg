@@ -1,0 +1,3 @@
+# DOC_LINK: DOC-CORE-TESTS-INIT-1040
+"""Tests for json_jq plugin."""
+DOC_ID: DOC-CORE-TESTS-INIT-1040

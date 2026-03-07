@@ -1,0 +1,66 @@
+# .ai-module-manifest
+# AI-readable module specification for infra
+
+module: "infra"
+purpose: "Infrastructure: CI/CD, GitHub workflows, deployment configs"
+layer: "infra"  # Infrastructure - deployment and automation
+
+# Entry points
+entry_points:
+  - file: ".github/workflows/path_standards.yml"
+    description: "CI workflow - validate import paths"
+
+  - file: ".github/workflows/validate.yml"
+    description: "CI workflow - validate workstreams"
+
+  - file: ".github/workflows/tests.yml"
+    description: "CI workflow - run test suite"
+
+# Key patterns
+key_patterns:
+  - "GitHub Actions for CI/CD"
+  - "Workflow triggers: push, pull_request"
+  - "Path-based job skipping"
+  - "Matrix builds for multi-environment testing"
+  - "Secrets managed via GitHub Secrets"
+
+# Workflows
+workflows:
+  path_standards:
+    trigger: "push, pull_request"
+    purpose: "Block deprecated import paths"
+    command: "python scripts/paths_index_cli.py gate"
+
+  validate:
+    trigger: "push, pull_request"
+    purpose: "Validate workstream JSON"
+    command: "python scripts/validate_workstreams.py"
+
+  tests:
+    trigger: "push, pull_request"
+    purpose: "Run test suite"
+    command: "pytest tests/"
+
+# Gotchas
+gotchas:
+  - "Workflows run in isolated containers"
+  - "Secrets not available in forks"
+  - "Path filters can skip unnecessary runs"
+  - "Matrix builds multiply job runs"
+
+# Dependencies
+dependencies:
+  external:
+    - GitHub Actions
+  internal:
+    - scripts/ for validation commands
+
+# Status
+status:
+  maturity: "stable"
+  production_ready: true
+
+# AI quick reference
+ai_quick_reference:
+  check_ci: "git push && check GitHub Actions tab"
+  local_ci: "Run commands from .github/workflows/ locally"

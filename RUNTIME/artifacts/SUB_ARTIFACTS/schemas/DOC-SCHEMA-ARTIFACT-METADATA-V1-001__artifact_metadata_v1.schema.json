@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project.local/schemas/artifact_metadata_v1.schema.json",
+  "doc_id": "DOC-SCHEMA-ARTIFACT-METADATA-V1-001",
+  "title": "Artifact Metadata Schema V1",
+  "description": "Schema for artifact metadata to enable freshness validation and compatibility checking",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact_path",
+    "artifact_type",
+    "produced_by",
+    "generated_at_utc",
+    "run_id",
+    "inputs"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^v1\\.\\d+\\.\\d+$",
+      "description": "Metadata schema version (e.g., v1.0.0)"
+    },
+    "artifact_path": {
+      "type": "string",
+      "description": "Relative path to the artifact from repository root"
+    },
+    "artifact_type": {
+      "type": "string",
+      "enum": [
+        "json",
+        "yaml",
+        "markdown",
+        "python",
+        "report",
+        "index",
+        "registry",
+        "schema",
+        "config"
+      ],
+      "description": "Type of artifact"
+    },
+    "produced_by": {
+      "type": "object",
+      "required": ["tool", "version"],
+      "properties": {
+        "tool": {
+          "type": "string",
+          "description": "Tool that produced this artifact (script name or tool ID)"
+        },
+        "version": {
+          "type": "string",
+          "description": "Version of the producing tool"
+        },
+        "command": {
+          "type": "string",
+          "description": "Optional: Command line used to produce this artifact"
+        }
+      }
+    },
+    "generated_at_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when artifact was generated (UTC)"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^RUN-[0-9]{14}$",
+      "description": "Unique run identifier (format: RUN-YYYYMMDDHHMMSS)"
+    },
+    "inputs": {
+      "type": "object",
+      "description": "Input files and their SHA256 hashes",
+      "patternProperties": {
+        "^.+$": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA256 hash of input file"
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "description": "List of artifact paths this artifact depends on",
+      "items": {
+        "type": "string"
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "description": "Compatibility requirements for consumers",
+      "properties": {
+        "min_schema_version": {
+          "type": "string",
+          "pattern": "^v1\\.\\d+\\.\\d+$",
+          "description": "Minimum schema version required to consume this artifact"
+        },
+        "max_age_hours": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Maximum age in hours before artifact is considered stale"
+        },
+        "required_inputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Required input artifacts that must be fresh"
+        }
+      }
+    },
+    "custom_metadata": {
+      "type": "object",
+      "description": "Tool-specific metadata (optional)",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

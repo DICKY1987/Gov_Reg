@@ -1,0 +1,89 @@
+# .ai-module-manifest
+# AI-readable module specification for gui
+
+module: "gui"
+purpose: "Graphical user interface: web dashboard for workstream monitoring"
+layer: "ui"  # UI layer - user interface
+
+# Status
+status:
+  maturity: "planned"  # Not yet implemented
+  test_coverage: "0%"
+  production_ready: false
+  note: "Planned for Phase H - GUI Development"
+
+# Planned features
+planned_features:
+  dashboard:
+    - "Workstream execution monitoring"
+    - "Real-time task status"
+    - "Error visualization"
+    - "Buffer consumption charts (CCPM)"
+
+  controls:
+    - "Start/stop workstreams"
+    - "Manual task approval"
+    - "Error resolution interface"
+
+  visualization:
+    - "DAG visualization"
+    - "Gantt charts"
+    - "Dependency graphs"
+
+# Technology stack (planned)
+tech_stack:
+  frontend:
+    - "React or Vue.js"
+    - "D3.js for visualizations"
+
+  backend:
+    - "FastAPI for REST API"
+    - "WebSocket for real-time updates"
+
+  data:
+    - "Reads from .worktrees/<run_id>/pipeline.db"
+    - "Subscribes to execution events"
+
+# Planned entry points
+planned_entry_points:
+  - command: "python -m gui.main"
+    description: "Start GUI server"
+
+  - api: "http://localhost:8000/api/workstreams"
+    description: "REST API for workstream data"
+
+# Gotchas (anticipated)
+gotchas:
+  - "GUI is read-mostly (not for editing workstreams)"
+  - "Real-time updates require WebSocket connection"
+  - "Multiple runs may be active simultaneously"
+  - "Historical data from old runs must be queryable"
+
+# Dependencies (planned)
+dependencies:
+  external:
+    - fastapi
+    - uvicorn
+    - websockets
+    - "react or vue.js"
+
+  internal:
+    - core.state.crud  # Read execution state
+    - core.orchestrator  # Control workstream execution
+
+# Development tracking
+development_tracking:
+  phase: "Phase H - GUI Development"
+  priority: "Medium"
+  blocking_dependencies: "Core orchestrator must be stable"
+
+# AI quick reference
+ai_quick_reference:
+  note: "Not yet implemented - see devdocs/phases/phase-h/ for planning"
+  future_command: "python -m gui.main (planned)"
+
+# For AI tools
+for_ai_tools:
+  status: "This module does not exist yet"
+  do_not: "Import from gui or suggest gui commands"
+  instead: "Point users to CLI tools (python -m core.orchestrator) or manual database queries"

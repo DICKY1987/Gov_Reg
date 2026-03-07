@@ -1,0 +1,7 @@
+{"ts": "2025-12-07T00:25:10.803552+00:00", "run_id": "20251207002510_9ADAC8EB5325", "state": "init", "event": "enter_state", "previous_state": "init", "meta": {"message": "Run initialized"}}
+{"ts": "2025-12-07T00:25:10.803552+00:00", "run_id": "20251207002510_9ADAC8EB5325", "state": "gap_analysis", "event": "enter_state", "previous_state": "init", "meta": {"mode": "plan_only"}}
+{"ts": "2025-12-07T00:25:10.803552+00:00", "run_id": "20251207002510_9ADAC8EB5325", "state": "gap_analysis", "event": "gap_discovery_complete", "meta": {"gap_count": 1}}
+{"ts": "2025-12-07T00:25:10.803552+00:00", "run_id": "20251207002510_9ADAC8EB5325", "state": "planning", "event": "enter_state", "previous_state": "gap_analysis", "meta": {"mode": "plan_only"}}
+{"ts": "2025-12-07T00:25:10.819247+00:00", "run_id": "20251207002510_9ADAC8EB5325", "state": "planning", "event": "planning_complete", "meta": {"workstream_count": 1, "task_count": 3}}
+{"ts": "2025-12-07T00:25:10.819247+00:00", "run_id": "20251207002510_9ADAC8EB5325", "state": "done", "event": "enter_state", "previous_state": "planning", "meta": {"completed_mode": "plan_only"}}
+{"ts": "2025-12-07T00:25:10.819247+00:00", "run_id": "20251207002510_9ADAC8EB5325", "state": "done", "event": "run_finalized", "meta": {"status": "success"}}

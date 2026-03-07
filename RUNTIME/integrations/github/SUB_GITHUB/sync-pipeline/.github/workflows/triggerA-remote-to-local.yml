@@ -1,0 +1,27 @@
+name: TriggerA Remote->Local (self-hosted)
+
+on:
+  push:
+    branches: [ main ]
+
+concurrency:
+  group: remote-to-local
+  cancel-in-progress: false
+
+jobs:
+  remote_to_local:
+    if: "github.event_name == 'push' && !startsWith(github.event.head_commit.message, 'sync:')"
+    runs-on: [self-hosted, windows]
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run RemoteToLocal sync
+        shell: pwsh
+        run: |
+          ./Invoke-BidirectionalSync.ps1 -Mode RemoteToLocal
+

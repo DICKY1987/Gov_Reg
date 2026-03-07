@@ -1,0 +1,36 @@
+name: Scheduled Orchestrator
+on:
+  schedule:
+    - cron: '0 2 * * *'  # 2 AM daily
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  run-orchestrator:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt || pip install pyyaml networkx requests
+
+      - name: Run master orchestrator
+        run: python run_master_splinter.py || echo "Orchestrator completed with warnings"
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: orchestrator-reports
+          path: reports/
+
+      - name: Ping healthcheck
+        if: success()
+        run: |
+          if [ -n "${{ secrets.HEALTHCHECK_URL }}" ]; then
+            curl "${{ secrets.HEALTHCHECK_URL }}"
+          fi

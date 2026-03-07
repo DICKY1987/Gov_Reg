@@ -1,0 +1,45 @@
+# DOC_LINK: DOC-CONFIG-DIR-MANIFEST-PATTERN-ID-001
+contracts:
+  provides:
+  - pattern_id scanning service
+  - pattern_id creation service
+  - pattern linkage management
+  - pattern completeness validation
+  - pattern usage tracking
+  requires:
+  - read access to SUB_DOC_ID directory
+  - read/write to registry files
+dependencies:
+  required_artifacts:
+  - DOC_ID_REGISTRY.yaml
+  required_directories:
+  - common
+  - SUB_DOC_ID
+directory:
+  name: pattern_id
+  path: SUB_DOC_ID/pattern_id
+  purpose: Stable identity system for execution patterns (multi-file logical entities)
+  status: active
+doc_id: DOC-CONFIG-DIR-MANIFEST-PATTERN-ID-001
+meta:
+  created_utc: '2025-12-29T10:00:00Z'
+  dir_id: DIR-SUB-PATTERN-ID-001
+  schema_version: 1.0.0
+  updated_utc: '2025-12-29T10:30:00Z'
+  version: 1.0.0
+ownership:
+  owned_artifacts:
+  - PATTERN-SCRIPT-PATTERN-SCANNER-001
+  - PATTERN-SCRIPT-PATTERN-MANAGER-002
+  - DOC-REGISTRY-PATTERN-001
+  - PATTERN-EXEC-DOC-ID-SCANNING-001
+  - PATTERN-EXEC-DOC-ID-AUTO-ASSIGNMENT-002
+  - PATTERN-VALID-DOC-ID-VALIDATION-001
+  owned_files:
+  - 1_CORE_OPERATIONS/pattern_id_scanner.py
+  - 1_CORE_OPERATIONS/pattern_id_manager.py
+  - 5_REGISTRY_DATA/PAT_ID_REGISTRY.yaml
+  - 5_REGISTRY_DATA/patterns_inventory.jsonl
+  - 5_REGISTRY_DATA/pattern_references.json
+  - README.md
+  - IMPLEMENTATION_COMPLETE.md

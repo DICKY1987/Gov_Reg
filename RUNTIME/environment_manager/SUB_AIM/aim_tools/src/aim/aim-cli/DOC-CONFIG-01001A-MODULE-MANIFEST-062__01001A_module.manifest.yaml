@@ -1,0 +1,54 @@
+doc_id: DOC-CONFIG-01001A-MODULE-MANIFEST-062
+# Module Manifest Template
+# Use with template_renderer.py
+
+module_id: "aim-cli"
+ulid_prefix: "01001A"
+purpose: "AIM Cli"
+layer: "api"
+version: "1.0.0"
+
+state:
+  enabled: false
+  state_file: ".state/current.json"
+  snapshots_enabled: false
+
+artifacts:
+  code:
+    - path: "01001A_main.py"
+      ulid: "01001A00000000000000000000"
+      entry_point: true
+
+  tests: []
+  schemas: []
+  docs:
+    - path: "01001A_README.md"
+      ulid: "01001A0000000000000000000Z"
+      doc_type: "README"
+
+dependencies:
+  modules: []
+  external: []
+
+import_patterns:
+  - pattern: "from aim.cli.main import"
+    description: "Import from main"
+    deprecated: false
+
+contracts:
+  inputs: []
+  outputs: []
+  invariants: []
+
+ai_metadata:
+  priority: "MEDIUM"
+  edit_policy: "safe"
+  context_tokens_estimate: 0
+  key_patterns: []
+  common_tasks: []
+
+metadata:
+  created: "2025-11-26T08:44:26.266085Z"
+  last_updated: "2025-11-26T08:44:26.266085Z"
+  authors: ["AI Pipeline Team"]
+  status: "active"

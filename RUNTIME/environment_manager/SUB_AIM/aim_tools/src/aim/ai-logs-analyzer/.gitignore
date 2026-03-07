@@ -1,0 +1,37 @@
+# Ignore all log data and analysis outputs
+aggregated/
+analysis/
+exports/
+temp/
+
+# Ignore sensitive data
+*.log
+*.jsonl
+*.db
+*.sqlite
+
+# But keep the directory structure
+!aggregated/.gitkeep
+!analysis/.gitkeep
+!exports/.gitkeep
+
+# Keep scripts and configs
+!scripts/
+!config/
+!*.ps1
+!*.json
+!*.md
+
+# Ignore compressed archives
+*.zip
+*.gz
+*.tar.gz
+
+# Ignore temporary files
+*.tmp
+*.bak
+*~
+
+# Ignore sensitive exports
+*-secrets-*
+*-redacted-*

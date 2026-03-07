@@ -1,0 +1,25 @@
+{
+  "round_robin": {
+    "rule_id": 0
+  },
+  "metrics": {
+    "ruff": {
+      "success_count": 10,
+      "failure_count": 0,
+      "total_latency_ms": 1500.0,
+      "call_count": 10
+    },
+    "black": {
+      "success_count": 8,
+      "failure_count": 2,
+      "total_latency_ms": 2000.0,
+      "call_count": 10
+    },
+    "pytest": {
+      "success_count": 15,
+      "failure_count": 5,
+      "total_latency_ms": 45000.0,
+      "call_count": 20
+    }
+  }
+}

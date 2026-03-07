@@ -1,0 +1,732 @@
+{
+  "meta": {
+    "id": "GAP_ANALYSIS_V1",
+    "schema_version": "1.0.0",
+    "description": "Unified multi-lens codebase and pipeline gap analysis framework (logical, performance, architecture, process, automation).",
+    "created_by": "chatgpt",
+    "created_at_utc": "2025-12-06T00:00:00Z"
+  },
+  "index": {
+    "lenses": [
+      {
+        "id": "LENS_LOGICAL_TEST",
+        "order": 1,
+        "title": "Logical & Test Lens",
+        "category": "logical"
+      },
+      {
+        "id": "LENS_PERFORMANCE",
+        "order": 2,
+        "title": "Performance & Efficiency Lens",
+        "category": "performance"
+      },
+      {
+        "id": "LENS_ARCHITECTURE",
+        "order": 3,
+        "title": "Architecture & Structural Lens",
+        "category": "architecture"
+      },
+      {
+        "id": "LENS_PROCESS",
+        "order": 4,
+        "title": "Process & Workflow Lens",
+        "category": "process"
+      },
+      {
+        "id": "LENS_AUTOMATION_OPS",
+        "order": 5,
+        "title": "Automation & Operations Lens",
+        "category": "automation"
+      }
+    ],
+    "schemas": [
+      {
+        "id": "FINDING_SCHEMA",
+        "title": "Unified Finding Record Schema",
+        "order": 100
+      }
+    ]
+  },
+  "lenses": {
+    "LENS_LOGICAL_TEST": {
+      "id": "LENS_LOGICAL_TEST",
+      "title": "Logical & Test Lens",
+      "goal": "Find correctness gaps, missing invariants, untested behaviors, and weak error handling in code and tests.",
+      "primary_questions": [
+        "Where can this code behave incorrectly or unexpectedly?",
+        "Which business rules and invariants are not enforced everywhere they should be?",
+        "Which branches, conditions, and edge cases lack test coverage?",
+        "How does the system behave when dependencies fail or return unexpected data?"
+      ],
+      "inputs": [
+        "Source code (all layers)",
+        "Unit/integration/end-to-end tests",
+        "Coverage reports (line, branch, condition)",
+        "Mutation testing reports",
+        "Domain documentation and invariants",
+        "Error logs and incident reports"
+      ],
+      "methods": [
+        "Coverage analysis (line, branch, condition)",
+        "Mutation testing to detect weak assertions",
+        "Domain invariant mapping (where enforced vs missing)",
+        "Failure mode walkthroughs for external calls and state transitions"
+      ],
+      "checks": [
+        {
+          "check_id": "LOGICAL_COVERAGE_GAPS",
+          "name": "Coverage gaps in critical flows",
+          "description": "Identify untested or under-tested code paths in core business flows and hot paths.",
+          "evidence_sources": [
+            "coverage_report",
+            "test_suite",
+            "profiler_report"
+          ],
+          "signals": [
+            "Functions in hot paths with low coverage",
+            "Branches and conditions never executed in tests",
+            "Exception handlers never exercised by tests"
+          ],
+          "impact_tags": [
+            "correctness",
+            "reliability",
+            "maintainability"
+          ]
+        },
+        {
+          "check_id": "DOMAIN_INVARIANT_GAPS",
+          "name": "Missing domain invariant enforcement",
+          "description": "Map each domain invariant to its enforcement points and find places where it is missing.",
+          "evidence_sources": [
+            "domain_docs",
+            "source_code",
+            "database_constraints"
+          ],
+          "signals": [
+            "Business rules present in docs but not enforced in code or DB",
+            "Enforcement in UI only, not in backend or DB",
+            "Duplicate partial implementations of the same rule"
+          ],
+          "impact_tags": [
+            "correctness",
+            "data_integrity"
+          ]
+        },
+        {
+          "check_id": "ERROR_HANDLING_WEAKNESS",
+          "name": "Weak or missing error handling",
+          "description": "Review external calls and critical state transitions for robust error handling and logging.",
+          "evidence_sources": [
+            "source_code",
+            "logs",
+            "incident_reports"
+          ],
+          "signals": [
+            "Catch-all exception handlers that swallow errors",
+            "External calls without timeouts or retries",
+            "No logging or metrics on failure paths"
+          ],
+          "impact_tags": [
+            "reliability",
+            "observability"
+          ]
+        },
+        {
+          "check_id": "NEGATIVE_SCENARIO_GAPS",
+          "name": "Missing negative/edge-case tests",
+          "description": "Identify important negative scenarios and edge cases without explicit tests.",
+          "evidence_sources": [
+            "test_suite",
+            "domain_docs"
+          ],
+          "signals": [
+            "No tests for invalid input ranges",
+            "No tests for boundary values and extreme sizes",
+            "No tests for dependency failures or timeouts"
+          ],
+          "impact_tags": [
+            "correctness",
+            "resilience"
+          ]
+        }
+      ]
+    },
+    "LENS_PERFORMANCE": {
+      "id": "LENS_PERFORMANCE",
+      "title": "Performance & Efficiency Lens",
+      "goal": "Locate runtime and scalability bottlenecks in CPU, memory, I/O, and concurrency.",
+      "primary_questions": [
+        "Where does the system spend most of its time and resources?",
+        "Which algorithms or data structures are inappropriate for the data size?",
+        "Where do I/O patterns (DB, network, file) cause latency or contention?",
+        "Where does concurrency or locking limit throughput?"
+      ],
+      "inputs": [
+        "Profiler reports (CPU, wall time, allocations)",
+        "Runtime metrics (latency, throughput, error rates)",
+        "Database query logs and plans",
+        "Source code (performance-critical paths)",
+        "Infrastructure and deployment configuration"
+      ],
+      "methods": [
+        "Hot-path analysis from profiler data",
+        "Algorithm and complexity review",
+        "I/O pattern analysis (DB, HTTP, file, queue)",
+        "Locking and contention analysis"
+      ],
+      "checks": [
+        {
+          "check_id": "HOTSPOT_FUNCTIONS",
+          "name": "Hotspot functions and endpoints",
+          "description": "Identify the top functions, endpoints, or jobs by resource usage and latency.",
+          "evidence_sources": [
+            "profiler_report",
+            "performance_metrics"
+          ],
+          "signals": [
+            "Functions consistently at top of CPU time",
+            "Endpoints with high p95/p99 latency",
+            "Jobs that exceed expected runtime SLAs"
+          ],
+          "impact_tags": [
+            "latency",
+            "throughput",
+            "cost"
+          ]
+        },
+        {
+          "check_id": "ALGORITHM_COMPLEXITY_ISSUES",
+          "name": "Algorithm and data structure inefficiencies",
+          "description": "Find nested loops, repeated scans, and inefficient data structures in hot paths.",
+          "evidence_sources": [
+            "source_code",
+            "profiler_report"
+          ],
+          "signals": [
+            "Nested loops over large collections",
+            "Repeated sorting or scanning of the same data",
+            "Use of linear scans where hash/index lookups are possible"
+          ],
+          "impact_tags": [
+            "latency",
+            "scalability"
+          ]
+        },
+        {
+          "check_id": "IO_PATTERN_PROBLEMS",
+          "name": "I/O and N+1 pattern issues",
+          "description": "Detect inefficient DB, network, or file access patterns.",
+          "evidence_sources": [
+            "db_query_logs",
+            "http_logs",
+            "source_code"
+          ],
+          "signals": [
+            "N+1 query patterns in loops",
+            "Many small network calls instead of batching",
+            "Frequent open/close of connections or files in tight loops"
+          ],
+          "impact_tags": [
+            "latency",
+            "resource_usage"
+          ]
+        },
+        {
+          "check_id": "CONCURRENCY_LOCKING_BOTTLENECKS",
+          "name": "Concurrency and locking bottlenecks",
+          "description": "Assess use of shared state, locks, and thread affinity in high-load code.",
+          "evidence_sources": [
+            "source_code",
+            "runtime_metrics",
+            "thread_dumps"
+          ],
+          "signals": [
+            "Coarse-grained locks around large code blocks",
+            "Global singletons accessed by all requests",
+            "Long-running work on main/UI threads"
+          ],
+          "impact_tags": [
+            "throughput",
+            "latency",
+            "reliability"
+          ]
+        }
+      ]
+    },
+    "LENS_ARCHITECTURE": {
+      "id": "LENS_ARCHITECTURE",
+      "title": "Architecture & Structural Lens",
+      "goal": "Evaluate whether the architecture supports current and future quality attributes and identify structural weaknesses.",
+      "primary_questions": [
+        "Are responsibilities and boundaries between modules/services clear and enforceable?",
+        "Does the architecture support the required performance, modifiability, and security scenarios?",
+        "Are there structural code smells (god classes, cycles, excessive coupling)?",
+        "Are architectural rules and fitness functions enforced automatically?"
+      ],
+      "inputs": [
+        "Architecture diagrams (C4 model or equivalent)",
+        "Architecture documentation (arc42 or similar)",
+        "Static analysis reports (SonarQube, NDepend, etc.)",
+        "Source code dependency graphs",
+        "Quality attribute scenarios (performance, reliability, security, etc.)"
+      ],
+      "methods": [
+        "Scenario-based evaluation (ATAM-style)",
+        "Fitness function checks against architectural rules",
+        "Code quality and maintainability model evaluation",
+        "Dependency and coupling analysis"
+      ],
+      "checks": [
+        {
+          "check_id": "QUALITY_SCENARIO_GAPS",
+          "name": "Quality attribute scenario gaps",
+          "description": "Evaluate architecture against key scenarios for performance, modifiability, security, etc.",
+          "evidence_sources": [
+            "architecture_docs",
+            "quality_scenarios",
+            "static_analysis"
+          ],
+          "signals": [
+            "Scenarios with no clear architectural support",
+            "Scenarios requiring cross-cutting changes in many modules",
+            "Scenarios relying on manual coordination rather than clear contracts"
+          ],
+          "impact_tags": [
+            "modifiability",
+            "performance",
+            "security"
+          ]
+        },
+        {
+          "check_id": "LAYOUT_AND_BOUNDARY_VIOLATIONS",
+          "name": "Layering and boundary violations",
+          "description": "Find violations of layering rules and bounded context boundaries.",
+          "evidence_sources": [
+            "source_code",
+            "dependency_graph",
+            "fitness_function_checks"
+          ],
+          "signals": [
+            "UI directly accessing persistence or infra layers",
+            "Services querying other services' databases directly",
+            "Cyclic dependencies between core modules"
+          ],
+          "impact_tags": [
+            "modifiability",
+            "testability",
+            "reliability"
+          ]
+        },
+        {
+          "check_id": "STRUCTURAL_CODE_SMELLS",
+          "name": "Structural code smells and hotspots",
+          "description": "Identify god classes, long methods, and high-complexity regions in the codebase.",
+          "evidence_sources": [
+            "static_analysis",
+            "source_code"
+          ],
+          "signals": [
+            "Classes with many responsibilities and dependencies",
+            "Methods with high cyclomatic complexity",
+            "Files with mixed concerns (logic, I/O, orchestration combined)"
+          ],
+          "impact_tags": [
+            "maintainability",
+            "testability"
+          ]
+        },
+        {
+          "check_id": "FITNESS_FUNCTION_COVERAGE",
+          "name": "Fitness function coverage gaps",
+          "description": "Check whether architectural rules are automated as tests or static checks.",
+          "evidence_sources": [
+            "architecture_rules",
+            "test_suite",
+            "static_analysis"
+          ],
+          "signals": [
+            "Rules documented in docs only, not enforced",
+            "Partial enforcement across only some services",
+            "No automated check in CI for key architectural constraints"
+          ],
+          "impact_tags": [
+            "governance",
+            "reliability",
+            "modifiability"
+          ]
+        }
+      ]
+    },
+    "LENS_PROCESS": {
+      "id": "LENS_PROCESS",
+      "title": "Process & Workflow Lens",
+      "goal": "Discover bottlenecks, manual steps, and rework in the end-to-end flow from idea to production.",
+      "primary_questions": [
+        "What is the actual flow from idea to production and back to learning?",
+        "Where are humans performing repetitive or error-prone steps?",
+        "Where are there wait states or unclear ownership?",
+        "How does the process compare to reference maturity models?"
+      ],
+      "inputs": [
+        "Value stream maps or equivalent process docs",
+        "Issue tracker history and PR workflow",
+        "Release and change management documentation",
+        "Incident and postmortem reports",
+        "Interviews or notes on how work is actually done"
+      ],
+      "methods": [
+        "Value Stream Mapping (VSM)",
+        "Process capability/maturity assessments",
+        "Lead time and cycle time analysis",
+        "Bottleneck and wait-state identification"
+      ],
+      "checks": [
+        {
+          "check_id": "MANUAL_PROCESS_STEPS",
+          "name": "Manual, repetitive process steps",
+          "description": "Identify manual tasks that are repetitive, error-prone, or clearly automatable.",
+          "evidence_sources": [
+            "process_docs",
+            "issue_tracker",
+            "runbooks"
+          ],
+          "signals": [
+            "Human-triggered scripts for routine operations",
+            "Manual release checklists for every deployment",
+            "Repeated manual data transformations or migrations"
+          ],
+          "impact_tags": [
+            "lead_time",
+            "error_risk",
+            "toil"
+          ]
+        },
+        {
+          "check_id": "WAIT_STATES_AND_HANDOFFS",
+          "name": "Wait states and handoff friction",
+          "description": "Highlight points where work waits for approvals, context, or manual action.",
+          "evidence_sources": [
+            "value_stream_map",
+            "issue_tracker",
+            "release_notes"
+          ],
+          "signals": [
+            "Long PR review times",
+            "Manual sign-off steps without clear SLAs",
+            "Handoffs between teams with high cycle time"
+          ],
+          "impact_tags": [
+            "lead_time",
+            "flow_efficiency"
+          ]
+        },
+        {
+          "check_id": "PROCESS_MATURITY_GAPS",
+          "name": "Process capability and maturity gaps",
+          "description": "Compare current practices to reference models (e.g., DevOps/Accelerate capabilities).",
+          "evidence_sources": [
+            "self_assessment",
+            "process_docs"
+          ],
+          "signals": [
+            "Ad hoc or undocumented processes",
+            "Inconsistent practices across teams",
+            "Missing capabilities such as trunk-based development or continuous integration"
+          ],
+          "impact_tags": [
+            "predictability",
+            "quality",
+            "scalability_of_practice"
+          ]
+        }
+      ]
+    },
+    "LENS_AUTOMATION_OPS": {
+      "id": "LENS_AUTOMATION_OPS",
+      "title": "Automation & Operations Lens",
+      "goal": "Identify missing or fragile automation in CI/CD, infrastructure, and operations, and locate operational toil.",
+      "primary_questions": [
+        "Which parts of the build, test, deploy, and rollback process are still manual?",
+        "Where are scripts present but not wired into CI/CD or scheduled jobs?",
+        "Where is there operational toil that should be automated?",
+        "How do current practices align with DORA/Accelerate and SRE guidance?"
+      ],
+      "inputs": [
+        "CI/CD pipeline configurations",
+        "Infrastructure-as-code repositories",
+        "Operational runbooks and procedures",
+        "Monitoring and alerting configuration",
+        "On-call and incident management documentation",
+        "DORA metric data (if available)"
+      ],
+      "methods": [
+        "Continuous Delivery maturity assessment",
+        "DORA capability assessment",
+        "SRE toil inventory",
+        "Mapping of scripts and tools to automated usage"
+      ],
+      "checks": [
+        {
+          "check_id": "MISSING_CI_OR_TEST_AUTOMATION",
+          "name": "Missing CI and test automation",
+          "description": "Ensure builds and tests run automatically and reliably on every change.",
+          "evidence_sources": [
+            "ci_cd_configs",
+            "test_suite",
+            "version_control_history"
+          ],
+          "signals": [
+            "No CI pipeline for key repos",
+            "Tests only run locally and manually",
+            "Flaky or frequently disabled CI jobs"
+          ],
+          "impact_tags": [
+            "quality",
+            "change_risk"
+          ]
+        },
+        {
+          "check_id": "MANUAL_DEPLOYMENTS_AND_ROLLBACKS",
+          "name": "Manual deployment and rollback risk",
+          "description": "Assess how deployments and rollbacks are performed and whether they are safe and automated.",
+          "evidence_sources": [
+            "deployment_scripts",
+            "infra_code",
+            "runbooks"
+          ],
+          "signals": [
+            "Deployments executed by humans via ad-hoc commands",
+            "No automated rollback or blue/green/canary strategy",
+            "No repeatable deployment pipeline across environments"
+          ],
+          "impact_tags": [
+            "reliability",
+            "change_risk",
+            "toil"
+          ]
+        },
+        {
+          "check_id": "SCRIPT_NOT_WIRED_INTO_PIPELINE",
+          "name": "Automation scripts not integrated into pipelines",
+          "description": "Find scripts that are used manually instead of via scheduled jobs or pipelines.",
+          "evidence_sources": [
+            "scripts_directory",
+            "ci_cd_configs",
+            "runbooks"
+          ],
+          "signals": [
+            "Scripts referenced only in documentation or chat logs",
+            "Critical maintenance scripts not triggered automatically",
+            "One-off scripts repeated for recurring tasks"
+          ],
+          "impact_tags": [
+            "toil",
+            "lead_time",
+            "error_risk"
+          ]
+        },
+        {
+          "check_id": "MONITORING_AND_ALERTING_GAPS",
+          "name": "Monitoring, alerting, and observability gaps",
+          "description": "Verify that key services, dependencies, and pipelines are monitored with actionable alerts.",
+          "evidence_sources": [
+            "monitoring_configs",
+            "alerting_rules",
+            "incident_reports"
+          ],
+          "signals": [
+            "Incidents discovered by users before alerts",
+            "No alerts on critical SLIs (latency, error rate, saturation)",
+            "Logs without structured fields or correlation IDs"
+          ],
+          "impact_tags": [
+            "reliability",
+            "mttr",
+            "observability"
+          ]
+        },
+        {
+          "check_id": "TOIL_INVENTORY_GAPS",
+          "name": "Operational toil inventory gaps",
+          "description": "Identify recurring, manual, service-linked tasks that can be automated.",
+          "evidence_sources": [
+            "oncall_notes",
+            "runbooks",
+            "incident_reports"
+          ],
+          "signals": [
+            "Frequent manual interventions to keep services healthy",
+            "Manual configuration updates for recurring changes",
+            "Repeated manual triage steps for known issues"
+          ],
+          "impact_tags": [
+            "toil",
+            "reliability",
+            "engineer_burnout_risk"
+          ]
+        }
+      ]
+    }
+  },
+  "finding_schema": {
+    "id": "FINDING_SCHEMA",
+    "title": "Unified Finding Record Schema",
+    "description": "Standard structure for all gap and optimization findings produced by any lens.",
+    "fields": [
+      {
+        "name": "finding_id",
+        "type": "string",
+        "required": true,
+        "description": "Stable identifier for the finding (e.g., ULID or UUID)."
+      },
+      {
+        "name": "lens_id",
+        "type": "string",
+        "required": true,
+        "description": "Lens that produced the finding (e.g., LENS_LOGICAL_TEST)."
+      },
+      {
+        "name": "check_id",
+        "type": "string",
+        "required": true,
+        "description": "ID of the specific check within the lens (e.g., LOGICAL_COVERAGE_GAPS)."
+      },
+      {
+        "name": "category",
+        "type": "string",
+        "required": true,
+        "description": "High-level category of the finding (logical, performance, architecture, process, automation)."
+      },
+      {
+        "name": "location",
+        "type": "object",
+        "required": false,
+        "description": "Where in the system the finding applies.",
+        "fields": [
+          {
+            "name": "repo",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "path",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "function",
+            "type": "string",
+            "required": false"
+          },
+          {
+            "name": "service_or_module",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "pipeline_step",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "summary",
+        "type": "string",
+        "required": true,
+        "description": "Short human-readable summary of the finding."
+      },
+      {
+        "name": "details",
+        "type": "string",
+        "required": false,
+        "description": "Longer explanation and context."
+      },
+      {
+        "name": "impact",
+        "type": "array",
+        "items_type": "string",
+        "required": true,
+        "description": "List of impact dimensions (e.g., correctness, latency, reliability, maintainability, cost, toil)."
+      },
+      {
+        "name": "severity",
+        "type": "string",
+        "required": true,
+        "description": "Relative severity (info, low, medium, high, critical)."
+      },
+      {
+        "name": "evidence",
+        "type": "array",
+        "items_type": "object",
+        "required": false,
+        "description": "Structured references to evidence (metrics, logs, code locations, screenshots).",
+        "fields": [
+          {
+            "name": "type",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "reference",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "notes",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "suggested_action",
+        "type": "string",
+        "required": false,
+        "description": "Recommended next step or remediation."
+      },
+      {
+        "name": "automation_candidate",
+        "type": "string",
+        "required": false,
+        "description": "Automation potential classification (NotAutomatable, Scriptable, PipelineCandidate, FullAutonomyPotential)."
+      },
+      {
+        "name": "linked_findings",
+        "type": "array",
+        "items_type": "string",
+        "required": false,
+        "description": "IDs of related findings across lenses (for correlation)."
+      },
+      {
+        "name": "tags",
+        "type": "array",
+        "items_type": "string",
+        "required": false,
+        "description": "Free-form tags for grouping and filtering."
+      }
+    ],
+    "record_template": {
+      "finding_id": "",
+      "lens_id": "",
+      "check_id": "",
+      "category": "",
+      "location": {
+        "repo": "",
+        "path": "",
+        "function": "",
+        "service_or_module": "",
+        "pipeline_step": ""
+      },
+      "summary": "",
+      "details": "",
+      "impact": [],
+      "severity": "",
+      "evidence": [],
+      "suggested_action": "",
+      "automation_candidate": "",
+      "linked_findings": [],
+      "tags": []
+    }
+  }
+}

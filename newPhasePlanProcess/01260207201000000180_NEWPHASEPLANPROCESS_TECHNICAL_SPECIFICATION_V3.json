@@ -209,24 +209,43 @@
               },
               {
                 "id": "GATE-005",
-                "name": "Planning Artifacts",
-                "script": "validate_planning_artifacts.py",
-                "purpose": "Ensure planning metadata is complete"
+                "name": "Unit Tests Pass",
+                "script": "pytest",
+                "purpose": "Verify all unit tests pass",
+                "critical_rule": "All unit tests must pass before phase completion",
+                "failure_impact": "Code quality cannot be verified"
               },
               {
                 "id": "GATE-006",
+                "name": "Coverage Threshold",
+                "script": "pytest --cov",
+                "purpose": "Verify test coverage meets minimum threshold",
+                "checks": [
+                  "Coverage >= 80%"
+                ],
+                "critical_rule": "Test coverage must meet project standards",
+                "failure_impact": "Insufficient test coverage creates reliability risk"
+              },
+              {
+                "id": "GATE-007",
                 "name": "Automation Spec",
                 "script": "validate_automation_spec.py",
                 "purpose": "Validate automation configuration"
               },
               {
-                "id": "GATE-007",
+                "id": "GATE-008",
+                "name": "Automation Spec",
+                "script": "validate_automation_spec.py",
+                "purpose": "Validate automation configuration"
+              },
+              {
+                "id": "GATE-008",
                 "name": "Automation Index",
                 "script": "build_automation_index.py",
                 "purpose": "Build searchable index of automation elements"
               },
               {
-                "id": "GATE-008",
+                "id": "GATE-009",
                 "name": "Automation Diagrams",
                 "script": "generate_automation_diagrams.py",
                 "purpose": "Generate DAG visualization of phase dependencies"

@@ -1,0 +1,137 @@
+# DOC_LINK: DOC-REGISTRY-TRIGGER-001
+doc_id: DOC-REGISTRY-TRIGGER-001
+meta:
+  version: 1.0.0
+  created_utc: '2025-12-29T09:47:30Z'
+  updated_utc: '2026-01-03T15:15:04Z'
+  schema_version: 1.0.0
+  total_triggers: 13
+  description: Central registry for all automation trigger identities (watchers, hooks,
+    scheduled tasks)
+categories:
+  watcher:
+    prefix: WATCHER
+    description: File system watchers
+    next_id: 3
+  hook:
+    prefix: HOOK
+    description: Git hooks and pre-commit triggers
+    next_id: 5
+  scheduled:
+    prefix: SCHED
+    description: Scheduled/cron tasks
+    next_id: 3
+  runner:
+    prefix: RUNNER
+    description: Pipeline runners and orchestrators
+    next_id: 6
+triggers:
+- trigger_id: TRIGGER-HOOK-DETECT-CHANGES-001
+  category: hook
+  name: detect_changes
+  file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\detect_changes.py
+  enabled: true
+  first_seen: '2025-12-29T03:49:55Z'
+  last_seen: '2025-12-29T03:49:55Z'
+  status: active
+  file_doc_id: DOC-CORE-3-AUTOMATION-HOOKS-DETECT-CHANGES-1166
+- trigger_id: TRIGGER-WATCHER-FILE-WATCHER-001
+  category: watcher
+  name: file_watcher
+  file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\file_watcher.py
+  enabled: true
+  first_seen: '2025-12-29T03:49:55Z'
+  last_seen: '2025-12-29T03:49:55Z'
+  status: active
+  file_doc_id: DOC-SCRIPT-DOC-ID-FILE-WATCHER-009
+- trigger_id: TRIGGER-HOOK-INSTALL-PRE-COMMIT-HOOK-002
+  category: hook
+  name: install_pre_commit_hook
+  file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\install_pre_commit_hook.py
+  enabled: true
+  first_seen: '2025-12-29T03:49:55Z'
+  last_seen: '2025-12-29T03:49:55Z'
+  status: active
+  file_doc_id: DOC-SCRIPT-INSTALL-PRE-COMMIT-HOOK-008
+- trigger_id: TRIGGER-SCHED-INSTALL-V3-SCHEDULED-TASKS-001
+  category: scheduled
+  name: install_v3_scheduled_tasks
+  file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\install_v3_scheduled_tasks.py
+  enabled: true
+  first_seen: '2025-12-29T03:49:55Z'
+  last_seen: '2025-12-29T03:49:55Z'
+  status: active
+- trigger_id: TRIGGER-HOOK-PRE-COMMIT-HOOK-003
+  category: hook
+  name: pre_commit_hook
+  file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\pre_commit_hook.py
+  enabled: true
+  first_seen: '2025-12-29T03:49:55Z'
+  last_seen: '2025-12-29T03:49:55Z'
+  status: active
+  file_doc_id: DOC-SCRIPT-DOC-ID-PRE-COMMIT-003
+- trigger_id: TRIGGER-SCHED-SETUP-SCHEDULED-TASKS-002
+  category: scheduled
+  name: setup_scheduled_tasks
+  file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\setup_scheduled_tasks.py
+  enabled: true
+  first_seen: '2025-12-29T03:49:55Z'
+  last_seen: '2025-12-29T03:49:55Z'
+  status: active
+  file_doc_id: DOC-SCRIPT-SETUP-SCHEDULED-TASKS-006
+- trigger_id: TRIGGER-RUNNER-V3-AUTOMATION-RUNNER-001
+  category: runner
+  name: v3_automation_runner
+  file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\v3_automation_runner.py
+  enabled: true
+  first_seen: '2025-12-29T03:49:55Z'
+  last_seen: '2025-12-29T03:49:55Z'
+  status: active
+- trigger_id: TRIGGER-WATCHER-V3-FILE-WATCHER-002
+  category: watcher
+  name: v3_file_watcher
+  file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\v3_file_watcher.py
+  enabled: true
+  first_seen: '2025-12-29T03:49:55Z'
+  last_seen: '2025-12-29T03:49:55Z'
+  status: active
+- trigger_id: TRIGGER-HOOK-V3-PRE-COMMIT-004
+  category: hook
+  name: v3_pre_commit
+  file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\v3_pre_commit.py
+  enabled: true
+  first_seen: '2025-12-29T03:49:55Z'
+  last_seen: '2025-12-29T03:49:55Z'
+  status: active
+- trigger_id: TRIGGER-RUNNER-AUTOMATION-RUNNER-002
+  category: runner
+  name: automation_runner
+  file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\automation_runner.ps1
+  enabled: true
+  first_seen: '2025-12-29T03:49:55Z'
+  last_seen: '2025-12-29T03:49:55Z'
+  status: active
+- trigger_id: TRIGGER-RUNNER-RUN-DASHBOARD-003
+  category: runner
+  name: run_dashboard
+  file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\run_dashboard.bat
+  enabled: true
+  first_seen: '2025-12-29T03:49:55Z'
+  last_seen: '2025-12-29T03:49:55Z'
+  status: active
+- trigger_id: TRIGGER-RUNNER-RUN-HEALTH-CHECK-004
+  category: runner
+  name: run_health_check
+  file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\run_health_check.bat
+  enabled: true
+  first_seen: '2025-12-29T03:49:55Z'
+  last_seen: '2025-12-29T03:49:55Z'
+  status: active
+- trigger_id: TRIGGER-RUNNER-RUN-NIGHTLY-SCAN-005
+  category: runner
+  name: run_nightly_scan
+  file_path: SUB_DOC_ID\3_AUTOMATION_HOOKS\run_nightly_scan.bat
+  enabled: true
+  first_seen: '2025-12-29T03:49:55Z'
+  last_seen: '2025-12-29T03:49:55Z'
+  status: active

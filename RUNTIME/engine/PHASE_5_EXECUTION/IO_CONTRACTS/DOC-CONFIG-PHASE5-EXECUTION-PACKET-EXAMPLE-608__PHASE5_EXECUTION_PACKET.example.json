@@ -1,0 +1,503 @@
+{
+  "meta": {
+    "contract_kind": "phase5_execution_packet",
+    "schema_version": "1.0.0",
+    "packet_id": "01JFHXM7KP2QA8VBWN3ZG6F5E4",
+    "created_at": "2025-12-20T08:27:00Z",
+    "created_by": "compile_phase5_packet/1.0.0",
+    "source_provenance": {
+      "phase_plan_doc_id": "DOC-PHASE-TEMPLATE-V3-XXX",
+      "phase_plan_template_version": 3,
+      "prompt_template_id": "EXECUTION_PROMPT_TEMPLATE_V2_DAG_MULTI_WORKSTREAM",
+      "prompt_template_version": "2.0.0",
+      "prompt_template_hash": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2",
+      "compiler_version": "compile_phase5_packet/1.0.0",
+      "git_commit": "abc123def456"
+    },
+    "engine_min_version": "5.0.0"
+  },
+  "identity": {
+    "phase_id": "PH-XX",
+    "workstream_id": "ws-xxx",
+    "objective": "Implement SQLite-backed state DB and state machine for pipeline orchestrator",
+    "repo_root": ".",
+    "target_branch": "main",
+    "worktree": "wt-ws-xxx-PH-XX",
+    "workspace_path": "C:\\Users\\richg\\ALL_AI"
+  },
+  "scope": {
+    "read_only_paths": [
+      "README.md",
+      "docs/**/*.md",
+      "config/**/*.yaml"
+    ],
+    "allowed_modify_paths": [
+      "src/pipeline/**/*.py",
+      "tests/pipeline/**/*.py"
+    ],
+    "allowed_create_paths": [
+      "schema/**/*.sql",
+      "docs/state/**/*.md",
+      "scripts/**/*.py"
+    ],
+    "forbidden_paths": [
+      ".git/**",
+      ".venv/**",
+      ".worktrees/**"
+    ],
+    "glob_policy": {
+      "engine": "python-pathlib",
+      "case_sensitive": false
+    },
+    "scope_hashes": {
+      "read_only_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "modify_hash": "d3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b866",
+      "create_hash": "c3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b877",
+      "forbidden_hash": "b3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b888"
+    }
+  },
+  "dag": {
+    "nodes": [
+      {
+        "node_id": "node-01",
+        "step_id": "step-01-analyze-context",
+        "operation_kind": "OP-ANALYZE-CONTEXT",
+        "inputs": [],
+        "outputs": [
+          "analysis-plan"
+        ]
+      },
+      {
+        "node_id": "node-02",
+        "step_id": "step-02-implement-changes",
+        "operation_kind": "OP-EDIT-IMPLEMENT",
+        "inputs": [
+          "analysis-plan"
+        ],
+        "outputs": [
+          "implementation-worktree"
+        ]
+      },
+      {
+        "node_id": "node-03",
+        "step_id": "step-03-static-checks",
+        "operation_kind": "OP-VALIDATE-STATIC",
+        "inputs": [
+          "implementation-worktree"
+        ],
+        "outputs": [
+          "static-check-results"
+        ]
+      },
+      {
+        "node_id": "node-04",
+        "step_id": "step-04-runtime-tests",
+        "operation_kind": "OP-VALIDATE-RUNTIME",
+        "inputs": [
+          "implementation-worktree",
+          "static-check-results"
+        ],
+        "outputs": [
+          "test-results"
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "from": "node-01",
+        "to": "node-02",
+        "dependency_type": "hard"
+      },
+      {
+        "from": "node-02",
+        "to": "node-03",
+        "dependency_type": "hard"
+      },
+      {
+        "from": "node-03",
+        "to": "node-04",
+        "dependency_type": "hard"
+      }
+    ],
+    "invariants": {
+      "must_be_acyclic": true,
+      "max_parallelism": 1,
+      "dependency_mode": "strict"
+    },
+    "io_contracts": [
+      {
+        "producer_node": "node-01",
+        "consumer_node": "node-02",
+        "artifact_id": "analysis-plan",
+        "artifact_type": "internal_state",
+        "required": true
+      },
+      {
+        "producer_node": "node-02",
+        "consumer_node": "node-03",
+        "artifact_id": "implementation-worktree",
+        "artifact_type": "filesystem",
+        "required": true
+      }
+    ]
+  },
+  "execution": {
+    "steps": [
+      {
+        "step_id": "step-01-analyze-context",
+        "name": "Analyze current repo and specs",
+        "operation_kind": "OP-ANALYZE-CONTEXT",
+        "pattern_ids": [
+          "PAT-ANALYZE-REPO-001"
+        ],
+        "tool_id": "codex",
+        "description": "Scan relevant modules, docs, and config to understand the current state.",
+        "inputs": {
+          "repo_paths": [
+            "src/pipeline/**",
+            "docs/spec/**",
+            "schema/**"
+          ],
+          "constraints": {
+            "respect_file_scope": true
+          }
+        },
+        "expected_outputs": [
+          {
+            "description": "Refined internal plan for changes (not persisted)",
+            "artifact_id": "analysis-plan"
+          }
+        ],
+        "requires_human_confirmation": false
+      },
+      {
+        "step_id": "step-02-implement-changes",
+        "name": "Apply scoped edits in isolated worktree",
+        "operation_kind": "OP-EDIT-IMPLEMENT",
+        "pattern_ids": [
+          "PAT-EDIT-WORKTREE-001",
+          "PAT-FILE-SCOPE-ENFORCE-001"
+        ],
+        "tool_id": "aider-edit",
+        "description": "Use Aider/Codex to implement changes within declared file_scope in a dedicated worktree.",
+        "inputs": {
+          "worktree_strategy_ref": "worktree_strategy",
+          "file_scope_ref": "scope_and_modules.file_scope.modify"
+        },
+        "expected_outputs": [
+          {
+            "description": "Worktree with candidate implementation",
+            "artifact_id": "implementation-worktree"
+          }
+        ],
+        "requires_human_confirmation": false
+      },
+      {
+        "step_id": "step-03-static-checks",
+        "name": "Run static validation tools",
+        "operation_kind": "OP-VALIDATE-STATIC",
+        "pattern_ids": [
+          "PAT-LINT-001",
+          "PAT-TYPECHECK-001"
+        ],
+        "tool_id": "pytest",
+        "description": "Run ruff, mypy, and other static tools via tool_profiles.",
+        "commands": [
+          "ruff src/pipeline tests/pipeline",
+          "mypy src/pipeline"
+        ],
+        "expected_outputs": [
+          {
+            "description": "All static tools pass or produce structured error output",
+            "artifact_id": "static-check-results"
+          }
+        ],
+        "requires_human_confirmation": false
+      },
+      {
+        "step_id": "step-04-runtime-tests",
+        "name": "Run runtime tests",
+        "operation_kind": "OP-VALIDATE-RUNTIME",
+        "pattern_ids": [
+          "PAT-PYTEST-CORE-001"
+        ],
+        "tool_id": "pytest",
+        "description": "Run pytest suite for modules touched by this phase.",
+        "commands": [
+          "pytest tests/pipeline -q"
+        ],
+        "expected_outputs": [
+          {
+            "description": "All relevant tests pass",
+            "artifact_id": "test-results"
+          }
+        ],
+        "requires_human_confirmation": false
+      }
+    ],
+    "runtime_profile": {
+      "run_mode": "execute",
+      "concurrency": 1,
+      "max_runtime_minutes": 60,
+      "retry_policy": {
+        "max_attempts": 1,
+        "backoff_strategy": "none"
+      },
+      "timeout_behavior": "abort",
+      "dry_run": false
+    }
+  },
+  "prompt": {
+    "prompt_template_ref": {
+      "id": "EXECUTION_PROMPT_TEMPLATE_V2_DAG_MULTI_WORKSTREAM",
+      "version": "2.0.0",
+      "sha256": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2"
+    },
+    "placeholder_bindings": {
+      "phase_id": "PH-XX",
+      "workstream_id": "ws-xxx",
+      "objective": "Implement SQLite-backed state DB and state machine for pipeline orchestrator",
+      "file_scope_modify": "src/pipeline/**/*.py, tests/pipeline/**/*.py",
+      "file_scope_create": "schema/**/*.sql, docs/state/**/*.md, scripts/**/*.py",
+      "file_scope_read_only": "README.md, docs/**/*.md, config/**/*.yaml",
+      "forbidden_paths": ".git/**, .venv/**, .worktrees/**",
+      "execution_steps_formatted": "[step-01-analyze-context] OP-ANALYZE-CONTEXT :: Analyze current repo and specs | patterns=PAT-ANALYZE-REPO-001 tool=codex human_confirm=false\n[step-02-implement-changes] OP-EDIT-IMPLEMENT :: Apply scoped edits in isolated worktree | patterns=PAT-EDIT-WORKTREE-001,PAT-FILE-SCOPE-ENFORCE-001 tool=aider-edit human_confirm=false\n[step-03-static-checks] OP-VALIDATE-STATIC :: Run static validation tools | patterns=PAT-LINT-001,PAT-TYPECHECK-001 tool=pytest human_confirm=false\n[step-04-runtime-tests] OP-VALIDATE-RUNTIME :: Run runtime tests | patterns=PAT-PYTEST-CORE-001 tool=pytest human_confirm=false",
+      "pre_flight_checks": "[pf-git-clean] Repo has no uncommitted changes in target paths. | cmd=powershell-script:git status --porcelain | success=^$ | on_fail=abort\n[pf-venv-present] Python virtual env exists. | cmd=powershell-script:Test-Path .venv | success=True | on_fail=attempt_repair_phase\n[pf-state-db-schema] State DB schema file exists where expected (if required for this phase). | cmd=powershell-script:Test-Path schema/pipeline_state.sql | success=True | on_fail=abort",
+      "acceptance_tests": "[acc-01-pipeline-smoke] must_pass=true | Pipeline CLI can run a no-op workstream successfully. | cmd=powershell-script:python scripts/run_workstream.py --ws-id ws-xxx --dry-run | success=STATUS: SUCCESS\n[acc-02-db-state-transitions] must_pass=true | State machine refuses invalid transitions. | cmd=pytest:pytest tests/pipeline/test_db_state.py -q | success=0 failed",
+      "expected_artifacts": "{\"patches\":[{\"path\":\".ledger/patches/PH-XX_ws-xxx.patch\",\"must_exist\":true}],\"logs\":[{\"path\":\".runs/ws-xxx/PH-XX/static_checks.log\",\"must_exist\":true},{\"path\":\".runs/ws-xxx/PH-XX/runtime_tests.log\",\"must_exist\":true}],\"docs\":[{\"path\":\"docs/state/state_machine.md\",\"must_exist\":true},{\"path\":\"docs/architecture/PHASE_PLAN.md\",\"must_exist\":true}]}",
+      "completion_gate_rules": "{\"rules\":{\"dependencies_done\":true,\"pre_flight_passed\":true,\"acceptance_tests_all_passed\":true,\"required_artifacts_present\":true,\"no_scope_violations_detected\":true,\"circuit_breakers_not_tripped\":true},\"manual_override\":{\"allowed\":false,\"justification_required\":true}}"
+    },
+    "rendered_prompt": "You are an AI operator executing Phase PH-XX of Workstream ws-xxx.\n\nMISSION: Implement SQLite-backed state DB and state machine for pipeline orchestrator\n\nCRITICAL CONSTRAINTS:\n\nFile Scope Enforcement:\n- You MAY ONLY modify files matching: src/pipeline/**/*.py, tests/pipeline/**/*.py\n- You MAY create files in: schema/**/*.sql, docs/state/**/*.md, scripts/**/*.py\n- You MAY read files in: README.md, docs/**/*.md, config/**/*.yaml\n- You MUST NEVER touch: .git/**, .venv/**, .worktrees/**\n\nGround Truth Over Vibes:\n- Trust git status, test output, and filesystem over conversational summaries\n- Verify success with actual commands, not assumptions\n\nNO STOP MODE:\n- If a step fails, log the error and continue\n- Execute ALL steps, collect ALL errors\n- Report comprehensive results at the end\n\nEXECUTION STEPS:\n[step-01-analyze-context] OP-ANALYZE-CONTEXT :: Analyze current repo and specs | patterns=PAT-ANALYZE-REPO-001 tool=codex human_confirm=false\n[step-02-implement-changes] OP-EDIT-IMPLEMENT :: Apply scoped edits in isolated worktree | patterns=PAT-EDIT-WORKTREE-001,PAT-FILE-SCOPE-ENFORCE-001 tool=aider-edit human_confirm=false\n[step-03-static-checks] OP-VALIDATE-STATIC :: Run static validation tools | patterns=PAT-LINT-001,PAT-TYPECHECK-001 tool=pytest human_confirm=false\n[step-04-runtime-tests] OP-VALIDATE-RUNTIME :: Run runtime tests | patterns=PAT-PYTEST-CORE-001 tool=pytest human_confirm=false\n\nPRE-FLIGHT CHECKS (verify before starting):\n[pf-git-clean] Repo has no uncommitted changes in target paths. | cmd=powershell-script:git status --porcelain | success=^$ | on_fail=abort\n[pf-venv-present] Python virtual env exists. | cmd=powershell-script:Test-Path .venv | success=True | on_fail=attempt_repair_phase\n[pf-state-db-schema] State DB schema file exists where expected (if required for this phase). | cmd=powershell-script:Test-Path schema/pipeline_state.sql | success=True | on_fail=abort\n\nACCEPTANCE TESTS (run after execution):\n[acc-01-pipeline-smoke] must_pass=true | Pipeline CLI can run a no-op workstream successfully. | cmd=powershell-script:python scripts/run_workstream.py --ws-id ws-xxx --dry-run | success=STATUS: SUCCESS\n[acc-02-db-state-transitions] must_pass=true | State machine refuses invalid transitions. | cmd=pytest:pytest tests/pipeline/test_db_state.py -q | success=0 failed\n\nEXPECTED ARTIFACTS:\n{\"patches\":[{\"path\":\".ledger/patches/PH-XX_ws-xxx.patch\",\"must_exist\":true}],\"logs\":[{\"path\":\".runs/ws-xxx/PH-XX/static_checks.log\",\"must_exist\":true},{\"path\":\".runs/ws-xxx/PH-XX/runtime_tests.log\",\"must_exist\":true}],\"docs\":[{\"path\":\"docs/state/state_machine.md\",\"must_exist\":true},{\"path\":\"docs/architecture/PHASE_PLAN.md\",\"must_exist\":true}]}\n\nERROR HANDLING:\n- Log error details to stderr\n- Add to error collection list\n- Continue with next step\n- Report all errors in final summary\n\nSUCCESS CRITERIA:\n{\"rules\":{\"dependencies_done\":true,\"pre_flight_passed\":true,\"acceptance_tests_all_passed\":true,\"required_artifacts_present\":true,\"no_scope_violations_detected\":true,\"circuit_breakers_not_tripped\":true},\"manual_override\":{\"allowed\":false,\"justification_required\":true}}\n\nOUTPUT FORMAT (provide structured JSON):\n{\n  \"phase_id\": \"PH-XX\",\n  \"status\": \"completed|failed|blocked\",\n  \"errors\": [],\n  \"warnings\": [],\n  \"files_modified\": [],\n  \"tests_passed\": true|false,\n  \"artifacts_created\": []\n}",
+    "output_contract": {
+      "type": "object",
+      "required": [
+        "phase_id",
+        "status",
+        "errors",
+        "warnings",
+        "files_modified",
+        "tests_passed",
+        "artifacts_created"
+      ],
+      "properties": {
+        "phase_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "failed",
+            "blocked"
+          ]
+        },
+        "errors": {
+          "type": "array"
+        },
+        "warnings": {
+          "type": "array"
+        },
+        "files_modified": {
+          "type": "array"
+        },
+        "tests_passed": {
+          "type": "boolean"
+        },
+        "artifacts_created": {
+          "type": "array"
+        }
+      }
+    }
+  },
+  "validation": {
+    "structural_validations": [
+      {
+        "id": "VAL-STRUCT-001",
+        "description": "Packet JSON Schema validation",
+        "check_type": "jsonschema"
+      },
+      {
+        "id": "VAL-STRUCT-002",
+        "description": "Required sections present; no additionalProperties at top-level",
+        "check_type": "jsonschema"
+      }
+    ],
+    "semantic_validations": [
+      {
+        "id": "VAL-SEM-001",
+        "description": "Prompt template id+hash match packet.prompt.prompt_template_ref",
+        "rule": "prompt_template_ref.sha256 must match computed hash of template"
+      },
+      {
+        "id": "VAL-SEM-002",
+        "description": "All required placeholders bound; no unresolved placeholders in rendered_prompt",
+        "rule": "rendered_prompt MUST NOT contain '${' substring"
+      },
+      {
+        "id": "VAL-SEM-003",
+        "description": "Scope lists non-empty; forbidden does not overlap allowlists",
+        "rule": "Intersection(allowed_modify_paths, forbidden_paths) == empty"
+      },
+      {
+        "id": "VAL-SEM-004",
+        "description": "Every execution step has >=1 pattern_id OR explicit waiver",
+        "rule": "For each execution.steps[i], if pattern_ids is empty => step.pattern_waiver exists and reason non-empty"
+      },
+      {
+        "id": "VAL-SEM-005",
+        "description": "No step references paths outside scope (best-effort static check)"
+      }
+    ],
+    "toolchain_validations": [
+      {
+        "id": "pf-git-clean",
+        "description": "Repo has no uncommitted changes in target paths",
+        "command": {
+          "tool_id": "powershell-script",
+          "args": [
+            "git status --porcelain"
+          ]
+        },
+        "success_pattern": "^$",
+        "on_fail": "abort"
+      },
+      {
+        "id": "pf-venv-present",
+        "description": "Python virtual env exists",
+        "command": {
+          "tool_id": "powershell-script",
+          "args": [
+            "Test-Path .venv"
+          ]
+        },
+        "success_pattern": "True",
+        "on_fail": "attempt_repair_phase"
+      }
+    ],
+    "policy_validations": [
+      {
+        "id": "POL-001",
+        "description": "File scope enforcement check",
+        "policy_type": "scope_enforcement"
+      },
+      {
+        "id": "POL-002",
+        "description": "Forbidden paths must not be accessed",
+        "policy_type": "forbidden_paths"
+      },
+      {
+        "id": "POL-003",
+        "description": "No secrets in patches or artifacts",
+        "policy_type": "secrets_check"
+      }
+    ],
+    "required_passes": [
+      "VAL-STRUCT-001",
+      "VAL-STRUCT-002",
+      "VAL-SEM-001",
+      "VAL-SEM-002",
+      "VAL-SEM-003",
+      "VAL-SEM-004",
+      "VAL-DAG-001",
+      "VAL-ACC-001"
+    ]
+  },
+  "acceptance": {
+    "tests": [
+      {
+        "id": "acc-01-pipeline-smoke",
+        "description": "Pipeline CLI can run a no-op workstream successfully",
+        "command": {
+          "tool_id": "powershell-script",
+          "args": [
+            "python scripts/run_workstream.py --ws-id ws-xxx --dry-run"
+          ]
+        },
+        "success_pattern": "STATUS: SUCCESS",
+        "must_pass": true
+      },
+      {
+        "id": "acc-02-db-state-transitions",
+        "description": "State machine refuses invalid transitions",
+        "command": {
+          "tool_id": "pytest",
+          "args": [
+            "pytest tests/pipeline/test_db_state.py -q"
+          ]
+        },
+        "success_pattern": "0 failed",
+        "must_pass": true
+      }
+    ],
+    "completion_gate": {
+      "rules": {
+        "dependencies_done": true,
+        "pre_flight_passed": true,
+        "acceptance_tests_all_passed": true,
+        "required_artifacts_present": true,
+        "no_scope_violations_detected": true,
+        "circuit_breakers_not_tripped": true
+      },
+      "manual_override": {
+        "allowed": false,
+        "justification_required": true
+      }
+    },
+    "required_artifacts": [
+      {
+        "artifact_id": "patch-main",
+        "path": ".ledger/patches/PH-XX_ws-xxx.patch",
+        "kind": "patch",
+        "must_exist": true
+      },
+      {
+        "artifact_id": "log-static-checks",
+        "path": ".runs/ws-xxx/PH-XX/static_checks.log",
+        "kind": "log",
+        "must_exist": true
+      },
+      {
+        "artifact_id": "log-runtime-tests",
+        "path": ".runs/ws-xxx/PH-XX/runtime_tests.log",
+        "kind": "log",
+        "must_exist": true
+      },
+      {
+        "artifact_id": "doc-state-machine",
+        "path": "docs/state/state_machine.md",
+        "kind": "doc",
+        "must_exist": true
+      },
+      {
+        "artifact_id": "doc-phase-plan",
+        "path": "docs/architecture/PHASE_PLAN.md",
+        "kind": "doc",
+        "must_exist": true
+      }
+    ]
+  },
+  "observability": {
+    "log_paths": {
+      "execution_log": ".runs/ws-xxx/PH-XX/execution.log",
+      "error_log": ".runs/ws-xxx/PH-XX/errors.log",
+      "metrics_log": ".runs/ws-xxx/PH-XX/metrics.jsonl"
+    },
+    "jsonl_event_stream_path": ".runs/ws-xxx/PH-XX/events.jsonl",
+    "metrics_required": [
+      "duration",
+      "files_touched",
+      "test_results",
+      "error_count"
+    ],
+    "event_tags": [
+      "phase:PH-XX",
+      "workstream:ws-xxx",
+      "phase_type:implementation"
+    ]
+  },
+  "signatures": {
+    "packet_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "sign_off": []
+  },
+  "doc_id": "DOC-CONFIG-PHASE5-EXECUTION-PACKET-EXAMPLE-608"
+}

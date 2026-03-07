@@ -819,6 +819,57 @@
     },
     {
       "gate_id": "GATE-003",
+      "phase": "PH-02",
+      "step_id": null,
+      "purpose": "Step Contracts Complete",
+      "command": "python scripts/P_01260207233100000262_validate_step_contracts.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-003",
+      "timeout_sec": 300,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "/GATE-003 PASSED/"
+      ],
+      "forbid_stdout_regex": [
+        "/GATE-003 FAILED/",
+        "/defects found/"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-003/step_contracts_validation.json",
+          "content_regex": [
+            "/\"passed\": true/"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-003"
+    },
+    {
+      "gate_id": "GATE-004",
+      "phase": "PH-02",
+      "step_id": null,
+      "purpose": "Assumptions Documented",
+      "command": "python scripts/P_01260207233100000248_validate_assumptions.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-004",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "/GATE-004 PASSED/"
+      ],
+      "forbid_stdout_regex": [
+        "/GATE-004 FAILED/"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-004/assumptions_validation.json",
+          "content_regex": [
+            "/\"passed\": true/"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-004"
+    },
+    {
+      "gate_id": "GATE-005",
       "phase": "PH-03A",
       "step_id": null,
       "purpose": "Unit tests pass",
@@ -843,7 +894,7 @@
       "evidence": ".state/evidence/PH-03A"
     },
     {
-      "gate_id": "GATE-004",
+      "gate_id": "GATE-006",
       "phase": "PH-03A",
       "step_id": null,
       "purpose": "Coverage meets minimum threshold",
@@ -872,7 +923,7 @@
       "phase": null,
       "step_id": null,
       "purpose": "File mutations have deterministic execution methods",
-      "command": "python scripts/P_01260207233100000290_validate_file_mutations.py .state/planning/file_mutations.json",
+      "command": "python scripts/P_01260207233100000290_validate_file_mutations.py .state/planning/{plan_id}/file_mutations.json",
       "timeout_sec": 60,
       "retries": 0,
       "expect_exit_code": 0,

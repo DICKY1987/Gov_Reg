@@ -1,0 +1,442 @@
+
+
+Below are **three drop-in files**:
+
+* `docs/GUI_PERMISSIONS_MATRIX.md`
+* `docs/PLUGINS_SCHEMA.json`
+* `docs/PLUGINS_INTERFACE.md`
+
+You can literally copy these into your repo.
+
+---
+
+### `docs/GUI_PERMISSIONS_MATRIX.md`
+
+```markdown
+# GUI Permissions Matrix
+
+This document defines **exactly what the GUI is allowed to do** with respect to
+the AI Development Pipeline engine, tools, and the local environment.
+
+The goal is to:
+
+- Keep non-programmer usage safe.
+- Give agentic AI a strict boundary (no guessing).
+- Maintain headless operation: everything the GUI can do must be possible via CLI/API.
+
+---
+
+## 1. Permission Levels
+
+We define three permission levels for GUI actions:
+
+- `none`   – GUI is **not** allowed to perform this action.
+- `read`   – GUI may **view** information but not change anything.
+- `write`  – GUI may **perform** the action (changes state).
+
+---
+
+## 2. Run & Workstream Permissions
+
+| Capability                                | Level  | API / Mechanism                    | Notes                                                                 |
+|-------------------------------------------|--------|------------------------------------|-----------------------------------------------------------------------|
+| List all runs                             | read   | `engine.list_runs()`               | Used by Runs panel & Dashboard.                                      |
+| Get details for a single run              | read   | `engine.get_run(run_id)`           | Includes status, timing, associated change_id.                       |
+| List workstreams for a run                | read   | `engine.list_workstreams(run_id)`  | Used by Workstreams panel.                                           |
+| Get details for a single workstream       | read   | `engine.get_workstream(ws_id)`     | Status, scope, assigned tool, retries.                               |
+| Start a new run                           | write  | `engine.start_run(change_id, opts)`| Initiated only by user from GUI form with confirmation.             |
+| Pause a running run                       | write  | `engine.pause_run(run_id)`         | Graceful pause when supported by engine.                             |
+| Resume a paused run                       | write  | `engine.resume_run(run_id)`        | Resumes previously paused run.                                       |
+| Cancel/abort a running run                | write  | `engine.cancel_run(run_id)`        | Requires explicit confirmation dialog.                               |
+| Retry a failed workstream                 | write  | `engine.retry_workstream(ws_id)`   | Only for `failed` or `blocked` workstreams.                          |
+| Delete a run from history                 | none   | N/A                                | **Not allowed** in v1; historical data is preserved.                 |
+
+Implementation constraints:
+
+- GUI must **always** show a confirmation dialog before:
+  - Starting a new run,
+  - Cancelling a run,
+  - Retrying a workstream.
+- GUI must **never** directly modify run/workstream records in SQLite; it must use engine API calls.
+
+---
+
+## 3. Tool & Plugin Permissions
+
+| Capability                                   | Level  | API / Mechanism                         | Notes                                                     |
+|----------------------------------------------|--------|-----------------------------------------|-----------------------------------------------------------|
+| List configured tools                        | read   | `tools_client.list_tools()`             | Uses tool profiles from engine/config.                   |
+| Get tool health/status                       | read   | `tools_client.get_status(tool_id)`      | Shows health, last check, errors.                        |
+| Start a tool process (if engine supports it) | write  | `tools_client.start_tool(tool_id)`      | Only for tools flagged as "managed" by engine.           |
+| Stop a tool process (if engine supports it)  | write  | `tools_client.stop_tool(tool_id)`       | Graceful stop when available.                            |
+| Run a tool smoke test                        | write  | `tools_client.run_smoke_test(tool_id)`  | Non-destructive, read-only verification (e.g. `--version`).|
+| Install/uninstall tools                      | none   | N/A                                     | GUI does **not** handle installation in v1.              |
+| Modify tool configuration                    | none   | N/A                                     | GUI is read-only; can open config in external editor.    |
+
+Implementation constraints:
+
+- GUI may **display** config paths and summaries.
+- GUI may provide a button: “Open config file in editor” (OS shell open).
+- All actual configuration edits are done outside the GUI.
+
+---
+
+## 4. Logs & Events Permissions
+
+| Capability                                | Level  | API / Mechanism             | Notes                                                |
+|-------------------------------------------|--------|-----------------------------|------------------------------------------------------|
+| List/query events for runs/workstreams    | read   | `logs_client.query_events()`| Filtered by run, ws, tool, severity, time.           |
+| Tail live event stream                    | read   | `logs_client.subscribe()`   | Dashboard & Logs panel live updates.                 |
+| Export logs for a run to file             | write  | `logs_client.export(run_id)`| Export to JSON/Markdown on local disk.               |
+| Delete logs/events                        | none   | N/A                         | Not allowed; retention policy handled outside GUI.   |
+
+Implementation constraints:
+
+- Export location must be user-chosen (standard save dialog).
+- GUI must **not** redact logs, but may hide “advanced details” behind a toggle.
+
+---
+
+## 5. Config & Environment Permissions
+
+| Capability                                    | Level  | API / Mechanism             | Notes                                                         |
+|-----------------------------------------------|--------|-----------------------------|---------------------------------------------------------------|
+| View GUI configuration                        | read   | `config_models.GuiConfig`   | Shows path & key settings from `gui_config.yaml`.             |
+| View env profiles (terminal presets)          | read   | `config_models.EnvProfiles` | Shows list of profiles/presets, not secrets.                  |
+| View engine configuration summary             | read   | `engine_client.get_config()`| Non-sensitive config only (e.g., db path, mode, version).     |
+| Edit GUI configuration                        | none   | N/A                         | GUI is read-only; config is edited manually by user.          |
+| Edit engine configuration                     | none   | N/A                         | Out of scope; prevents accidental engine misconfiguration.    |
+| View secrets (tokens, passwords, keys)        | none   | N/A                         | GUI must **never** display secret values.                     |
+
+Implementation constraints:
+
+- GUI may show **names/labels** of profiles (e.g. “Use-AIStack-Codex”) but not underlying secret values.
+- If a config value is marked as secret by the engine, GUI shows placeholder “••••••” or “(hidden)”.
+
+---
+
+## 6. Engine Lifecycle Permissions
+
+| Capability                                | Level  | API / Mechanism                   | Notes                                                 |
+|-------------------------------------------|--------|-----------------------------------|-------------------------------------------------------|
+| Check if engine is reachable              | read   | `engine_client.health_check()`    | Used by Engine Status panel.                         |
+| Get engine version & uptime               | read   | `engine_client.get_status()`      | For display only.                                    |
+| Start engine process                      | none   | N/A                               | In v1, engine is started externally (CLI/service).   |
+| Stop engine process                       | none   | N/A                               | GUI does not control engine lifecycle in v1.         |
+| Toggle maintenance mode (if supported)    | write? | **Optional / future**             | Can be added in later version if engine supports it. |
+
+In v1, the engine lifecycle is **external** to the GUI. The GUI acts only as a monitor and run orchestrator.
+
+---
+
+## 7. Terminal Panel Permissions
+
+| Capability                                | Level  | API / Mechanism                   | Notes                                                             |
+|-------------------------------------------|--------|-----------------------------------|-------------------------------------------------------------------|
+| Launch embedded terminal tab with preset  | write  | `terminal_manager.open(preset)`   | Uses env profile, working dir, and command from config.           |
+| Send keystrokes to terminal process       | write  | GUI terminal widget → subprocess  | Strings are forwarded, no extra interpretation.                   |
+| Close terminal tab (and process)          | write  | `terminal_manager.close(tab_id)`  | Process is terminated when tab closes.                            |
+| Attach to existing external process       | none   | N/A                               | Not supported in v1.                                              |
+| Persist history of terminal sessions      | none   | N/A                               | Terminal history is not persisted after GUI closes.               |
+
+Implementation constraints:
+
+- GUI must **label** terminal tabs clearly with preset name and working directory.
+- Any CLI operations that can modify code or repo state should be **explicitly initiated by the user** inside the terminal.
+
+---
+
+## 8. File System Permissions
+
+| Capability                                | Level  | API / Mechanism                   | Notes                                                 |
+|-------------------------------------------|--------|-----------------------------------|-------------------------------------------------------|
+| Open a folder in OS file explorer         | write  | `os.startfile(path)`              | E.g. open repo root, logs folder, config folder.      |
+| Open a file in default editor             | write  | `os.startfile(file_path)`         | E.g. open `gui_config.yaml`, logs, etc.               |
+| Directly create/edit/delete source files  | none   | N/A                               | All code changes go through the pipeline engine/CLI.  |
+| Directly edit configuration files         | none   | N/A                               | GUI delegates to external editor; no in-GUI editor.   |
+
+---
+
+## 9. Summary
+
+- GUI is **read-heavy, write-light**.
+- GUI **never** edits secrets, source code, or engine config directly.
+- All state-changing operations go through well-defined engine/tool APIs with confirmation dialogs.
+- This matrix is a **hard contract** for any agent implementing or modifying the GUI.
+```
+
+---
+
+### `docs/PLUGINS_SCHEMA.json`
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GUI Plugin Manifest",
+  "description": "Schema for GUI plugin manifests stored in config/plugins/*.plugin.json",
+  "type": "object",
+  "required": ["id", "type", "title", "entry_point"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_\\.\\-]+$",
+      "description": "Unique plugin identifier (e.g. 'dashboard', 'runs_panel')."
+    },
+    "type": {
+      "type": "string",
+      "enum": ["panel"],
+      "description": "Plugin type. v1 only supports 'panel' plugins."
+    },
+    "title": {
+      "type": "string",
+      "description": "Human-readable title shown in the GUI (tab label, menu item)."
+    },
+    "entry_point": {
+      "type": "string",
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_\\.]*:[A-Za-z_][A-Za-z0-9_]*$",
+      "description": "Python import path to the plugin class, in 'module.submodule:ClassName' form."
+    },
+    "description": {
+      "type": "string",
+      "description": "Short description of the plugin's purpose."
+    },
+    "category": {
+      "type": "string",
+      "description": "Optional category for grouping in the UI (e.g. 'Monitoring', 'Tools', 'Config')."
+    },
+    "icon": {
+      "type": "string",
+      "description": "Optional name or path of an icon to use for this panel."
+    },
+    "enabled_by_default": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the plugin is enabled when the GUI starts."
+    },
+    "order": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Optional sort order for tab/menu placement. Lower comes first."
+    },
+    "requires_services": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "engine_client",
+          "state_client",
+          "tools_client",
+          "logs_client",
+          "config_client",
+          "terminal_manager"
+        ]
+      },
+      "description": "List of named services that must be injected when constructing this panel."
+    },
+    "version": {
+      "type": "string",
+      "description": "Optional plugin version string (e.g. '1.0.0')."
+    },
+    "min_gui_version": {
+      "type": "string",
+      "description": "Minimum GUI version required for this plugin (e.g. '1.0.0')."
+    },
+    "config": {
+      "type": "object",
+      "description": "Optional plugin-specific configuration block.",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}
+```
+
+---
+
+### `docs/PLUGINS_INTERFACE.md`
+
+````markdown
+# GUI Plugin Interface (Python Side)
+
+This document defines the **Python interface** that a panel plugin class must
+implement for the GUI to load it safely.
+
+Plugin discovery is driven by `*.plugin.json` manifests validated against
+`PLUGINS_SCHEMA.json`.
+
+---
+
+## 1. Panel Plugin Basics
+
+- All panel plugins are **Python classes**.
+- The `entry_point` field in the manifest points to the class:
+  - Example: `"entry_point": "gui.panels.dashboard_panel:DashboardPanel"`
+  - The GUI will:
+    - Import `gui.panels.dashboard_panel`,
+    - Retrieve `DashboardPanel`,
+    - Instantiate it with injected services.
+
+---
+
+## 2. Required Class Interface
+
+Every panel plugin class **must** implement the following:
+
+```python
+from typing import Protocol, Any, Dict
+from PyQt6.QtWidgets import QWidget
+
+
+class ServiceLocator(Protocol):
+    """
+    Simple typed interface that provides access to named services.
+    Implemented by the GUI core.
+
+    Example:
+        engine = services.get("engine_client")
+        state = services.get("state_client")
+    """
+
+    def get(self, name: str) -> Any: ...
+    def has(self, name: str) -> bool: ...
+
+
+class PanelPlugin(Protocol):
+    """
+    Protocol that all panel plugin classes must satisfy.
+    The GUI's PluginManager will treat each plugin as a PanelPlugin.
+    """
+
+    @classmethod
+    def plugin_id(cls) -> str:
+        """Return the plugin's ID (must match manifest 'id')."""
+
+    @classmethod
+    def plugin_title(cls) -> str:
+        """Return the human-readable title (may override manifest 'title')."""
+
+    def __init__(self, services: ServiceLocator, config: Dict | None = None) -> None:
+        """
+        Construct the panel plugin.
+
+        - services: provides access to engine_client, state_client, etc.
+        - config: optional plugin-specific config from manifest['config'].
+        """
+
+    def create_widget(self, parent: QWidget | None = None) -> QWidget:
+        """
+        Create and return the main QWidget for this panel.
+
+        The GUI shell will:
+        - Call this once at panel initialization,
+        - Embed the returned widget inside its tab/area.
+        """
+
+    def on_activate(self) -> None:
+        """
+        Called when the panel becomes visible/active.
+        Use this to start timers, subscribe to events, etc.
+        """
+
+    def on_deactivate(self) -> None:
+        """
+        Called when the panel is hidden/inactive.
+        Use this to stop timers, unsubscribe from events, etc.
+        """
+````
+
+In practice, your plugin classes should **subclass** a concrete base class
+instead of implementing the protocol directly:
+
+```python
+# Example base class (to be provided by GUI core)
+from typing import Dict, Optional
+from PyQt6.QtWidgets import QWidget
+from gui.plugin_base import PanelPluginBase, ServiceLocator
+
+
+class DashboardPanel(PanelPluginBase):
+    @classmethod
+    def plugin_id(cls) -> str:
+        return "dashboard"
+
+    @classmethod
+    def plugin_title(cls) -> str:
+        return "Dashboard"
+
+    def __init__(self, services: ServiceLocator, config: Optional[Dict] = None) -> None:
+        super().__init__(services, config)
+        self._widget: QWidget | None = None
+
+    def create_widget(self, parent: QWidget | None = None) -> QWidget:
+        if self._widget is None:
+            # build QWidget tree here
+            self._widget = self._build_ui(parent)
+        return self._widget
+
+    def _build_ui(self, parent: QWidget | None) -> QWidget:
+        # Construct dashboard layout (tabs, tables, etc.)
+        # Return the root QWidget for this panel
+        ...
+
+    def on_activate(self) -> None:
+        # e.g., start refreshing run list every few seconds
+        ...
+
+    def on_deactivate(self) -> None:
+        # e.g., stop timers
+        ...
+```
+
+---
+
+## 3. Service Names
+
+The following service names are allowed in `requires_services` and provided via `ServiceLocator`:
+
+* `"engine_client"`   – for run/workstream control and high-level engine calls.
+* `"state_client"`    – for read-only queries against state DB.
+* `"tools_client"`    – for tool status and control.
+* `"logs_client"`     – for log/event queries and subscriptions.
+* `"config_client"`   – for read-only GUI/engine config access.
+* `"terminal_manager"`– for embedded terminal tab creation and management.
+
+Plugins must **not** assume any other services are available.
+
+---
+
+## 4. Lifecycle Rules
+
+* The GUI will:
+
+  1. Load & validate manifest against `PLUGINS_SCHEMA.json`.
+  2. Import the `entry_point` class.
+  3. Instantiate the class with `(services, manifest.get("config"))`.
+  4. Call `create_widget(parent)` once and insert returned widget into a tab.
+  5. Call `on_activate()` when the tab becomes visible.
+  6. Call `on_deactivate()` when the tab is hidden or GUI is shutting down.
+
+* Plugins should:
+
+  * Avoid heavy work in `__init__`; do that in `create_widget` or later.
+  * Clean up timers, subscriptions, and long-running tasks in `on_deactivate`.
+
+---
+
+## 5. Error Handling
+
+* If a plugin raises an exception during:
+
+  * import,
+  * instantiation,
+  * `create_widget`,
+    the GUI must:
+  * Log the error,
+  * Skip loading that plugin,
+  * Show a simple message in the UI (“Panel failed to load. See logs.”).
+
+This keeps the GUI usable even if a third-party plugin is broken.
+
+```
+
+---

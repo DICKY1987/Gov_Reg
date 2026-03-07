@@ -1,0 +1,24 @@
+{
+  "run_id": "20251206194014_A37C73848AD9",
+  "repo_root": "C:\\Users\\richg\\ALL_AI\\MINI_PIPE",
+  "started_at": "2025-12-06T19:40:14.650884+00:00",
+  "current_phase": "PHASE_5_SUMMARY_AND_SNAPSHOT",
+  "phases_completed": [
+    "PHASE_0_RUN_CONFIG",
+    "PHASE_1_GAP_DISCOVERY",
+    "PHASE_2_GAP_CONSOLIDATION_AND_CLUSTERING",
+    "PHASE_3_PLAN_GENERATION",
+    "PHASE_4_PHASE_EXECUTION_MINI_PIPE",
+    "PHASE_5_SUMMARY_AND_SNAPSHOT"
+  ],
+  "ai_adapter_type": "mock",
+  "minipipe_adapter_type": "auto",
+  "gap_count": 1,
+  "workstream_count": 1,
+  "task_count": 3,
+  "execution_plan_path": "C:\\Users\\richg\\ALL_AI\\MINI_PIPE\\.acms_runs\\20251206194014_A37C73848AD9\\mini_pipe_execution_plan.json",
+  "execution_error": "Traceback (most recent call last):\n  File \"C:\\Users\\richg\\ALL_AI\\MINI_PIPE\\MINI_PIPE_orchestrator_cli.py\", line 15, in <module>\n    from core.engine.orchestrator import Orchestrator\nModuleNotFoundError: No module named 'core'\n",
+  "summary_path": "C:\\Users\\richg\\ALL_AI\\MINI_PIPE\\.acms_runs\\20251206194014_A37C73848AD9\\summary_report.json",
+  "status": "completed",
+  "completed_at": "2025-12-06T19:40:14.802458+00:00"
+}

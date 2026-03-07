@@ -1,0 +1,40 @@
+DOC_ID SYSTEM FIX SUMMARY
+Date: 2025-12-27
+Repository: C:\Users\richg\ALL_AI
+
+Work Completed
+- Added missing import in fix_invalid_doc_ids.py.
+- Enhanced invalid doc_id fixer to normalize and update YAML/MD/JSON patterns.
+- Updated duplicate checker to ignore symlinked files.
+- Aligned coverage validator with scanner patterns and default baseline.
+- Cleaned registry (removed orphaned entries) and synced registry to inventory.
+- Fixed remaining invalid doc_ids and eliminated duplicates.
+- Ran Batch 1 auto-assign (500) successfully.
+- Started Batch 2 auto-assign; partial completion before cancel.
+
+Key Changes
+- C:\Users\richg\ALL_AI\SUB_DOC_ID\2_VALIDATION_FIXING\fix_invalid_doc_ids.py
+- C:\Users\richg\ALL_AI\SUB_DOC_ID\2_VALIDATION_FIXING\fix_duplicate_doc_ids.py
+- C:\Users\richg\ALL_AI\SUB_DOC_ID\2_VALIDATION_FIXING\validate_doc_id_coverage.py
+- C:\Users\richg\ALL_AI\SUB_DOC_ID\1_CORE_OPERATIONS\apply_doc_id_changes_to_files.py
+- C:\Users\richg\ALL_AI\SUB_DOC_ID\5_REGISTRY_DATA\DOC_ID_REGISTRY.yaml
+- Various files updated with corrected doc_ids.
+
+Inventory Status (latest scan)
+- Eligible files: 7,701
+- Files with doc_id: 2,407 (31.3%)
+- Files without doc_id: 5,294
+- Invalid doc_ids: 0
+- Duplicate doc_ids: 0
+
+Batch Progress
+- Batch 1: completed (500 assigned).
+- Batch 2: partial (~429 assigned based on coverage delta).
+- Remaining planned batches: adjust to .py-only per new direction.
+
+Backups
+- C:\Users\richg\ALL_AI\SUB_DOC_ID\5_REGISTRY_DATA\DOC_ID_REGISTRY.yaml.backup
+
+Notes
+- Eligible file count changed across scans (7,694 -> 7,701).
+- Coverage gate still below 0.55 baseline due to partial assignment.

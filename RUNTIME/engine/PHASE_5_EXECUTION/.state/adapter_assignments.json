@@ -1,0 +1,23 @@
+{
+  "run_id": "test-run-001",
+  "assignments": [
+    {
+      "run_id": "test-run-001",
+      "task_id": "task-001",
+      "task_kind": "lint",
+      "tool_id": "ruff"
+    },
+    {
+      "run_id": "test-run-001",
+      "task_id": "task-002",
+      "task_kind": "format",
+      "tool_id": "black"
+    },
+    {
+      "run_id": "test-run-001",
+      "task_id": "task-003",
+      "task_kind": "test",
+      "tool_id": "pytest"
+    }
+  ]
+}

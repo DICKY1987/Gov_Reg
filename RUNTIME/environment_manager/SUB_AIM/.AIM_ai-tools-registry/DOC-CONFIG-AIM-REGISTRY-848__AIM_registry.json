@@ -1,0 +1,65 @@
+{
+  "tools": {
+    "jules": {
+      "name": "Jules CLI",
+      "detectCommands": [
+        "jules",
+        "C:/Users/richg/AppData/Roaming/npm/jules.cmd"
+      ],
+      "versionCommand": [
+        "jules",
+        "--version"
+      ],
+      "configPaths": [
+        "%USERPROFILE%/.jules"
+      ],
+      "logPaths": [
+        "%USERPROFILE%/.jules/cache/cli.log"
+      ],
+      "capabilities": [
+        "code_generation"
+      ],
+      "adapterScript": "%USERPROFILE%/.AIM_ai-tools-registry/AIM_adapters/AIM_jules.ps1"
+    },
+    "aider": {
+      "name": "Aider CLI",
+      "detectCommands": [
+        "aider",
+        "C:/Users/richg/.local/bin/aider.exe"
+      ],
+      "versionCommand": [
+        "aider",
+        "--version"
+      ],
+      "configPaths": [
+        "%USERPROFILE%/.aider"
+      ],
+      "logPaths": [],
+      "capabilities": [
+        "code_generation"
+      ],
+      "adapterScript": "%USERPROFILE%/.AIM_ai-tools-registry/AIM_adapters/AIM_aider.ps1"
+    },
+    "claude-cli": {
+      "name": "Claude CLI",
+      "detectCommands": [
+        "claude",
+        "C:/Users/richg/.local/bin/claude.exe"
+      ],
+      "versionCommand": [
+        "claude",
+        "--version"
+      ],
+      "configPaths": [
+        "%USERPROFILE%/.claude"
+      ],
+      "logPaths": [],
+      "capabilities": [
+        "code_generation"
+      ],
+      "adapterScript": "%USERPROFILE%/.AIM_ai-tools-registry/AIM_adapters/AIM_claude-cli.ps1"
+    }
+  },
+  "crossToolRulesPath": "%USERPROFILE%/.AIM_ai-tools-registry/AIM_cross-tool/AIM_coordination-rules.json",
+  "doc_id": "DOC-CONFIG-AIM-REGISTRY-848"
+}

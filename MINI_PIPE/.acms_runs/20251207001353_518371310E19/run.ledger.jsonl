@@ -1,0 +1,5 @@
+{"ts": "2025-12-07T00:13:53.913940+00:00", "run_id": "20251207001353_518371310E19", "state": "init", "event": "enter_state", "previous_state": "init", "meta": {"message": "Run initialized"}}
+{"ts": "2025-12-07T00:13:53.913940+00:00", "run_id": "20251207001353_518371310E19", "state": "gap_analysis", "event": "enter_state", "previous_state": "init", "meta": {"mode": "analyze_only"}}
+{"ts": "2025-12-07T00:13:53.913940+00:00", "run_id": "20251207001353_518371310E19", "state": "gap_analysis", "event": "gap_discovery_complete", "meta": {"gap_count": 1}}
+{"ts": "2025-12-07T00:13:53.913940+00:00", "run_id": "20251207001353_518371310E19", "state": "done", "event": "enter_state", "previous_state": "gap_analysis", "meta": {"completed_mode": "analyze_only"}}
+{"ts": "2025-12-07T00:13:53.929784+00:00", "run_id": "20251207001353_518371310E19", "state": "done", "event": "run_finalized", "meta": {"status": "success"}}

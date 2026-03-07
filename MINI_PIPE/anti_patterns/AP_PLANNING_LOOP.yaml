@@ -1,0 +1,213 @@
+# anti_pattern_id: AP_PLANNING_LOOP
+# Anti-Pattern Runbook: Infinite Planning Loop
+
+meta:
+  id: "AP_PLANNING_LOOP"
+  title: "Stuck in Planning Phase Without Progress"
+  severity: "HIGH"
+  category: "execution_flow"
+  version: "1.0.0"
+  created: "2025-12-07"
+  related_invariants:
+    - "C-1"  # Gap-Task Consistency
+    - "RL-1"  # Bounded Execution
+    - "AP-1"  # Known Failures Detected
+
+description: |
+  The system gets stuck in the planning phase, re-planning repeatedly without 
+  making actual progress (applying patches, modifying code). Often caused by 
+  gaps that can't be resolved, circular dependencies, or AI inability to 
+  converge on an executable plan.
+
+symptoms:
+  log_patterns:
+    - "Planning phase started.*Planning phase started.*Planning phase started"
+    - "Re-planning attempt [3-9]"
+    - "Gap analysis.*Gap analysis.*Gap analysis.*no patches applied"
+  
+  metric_conditions:
+    - condition: "planning_attempts > 3 AND patches_applied == 0"
+      description: "Multiple planning attempts but no patches applied"
+    - condition: "phase == 'planning' AND elapsed_time > 30min"
+      description: "Stuck in planning phase too long"
+    - condition: "gap_count_increasing AND task_completion_rate == 0"
+      description: "Gaps increasing, no tasks completing"
+  
+  behavioral_indicators:
+    - "Plan keeps getting regenerated with minimal changes"
+    - "AI reports 'plan complete' but plan has circular dependencies"
+    - "Plan contains tasks that reference non-existent patterns"
+    - "Workstream breakdown changes significantly between iterations"
+
+detection_rules:
+  
+  rule_1:
+    name: "Excessive planning attempts"
+    check: |
+      run_stats.planning_attempts > 3 AND
+      run_stats.patches_applied == 0
+    priority: "HIGH"
+  
+  rule_2:
+    name: "Planning phase timeout"
+    check: |
+      current_phase == "planning" AND
+      phase_elapsed_time > timedelta(minutes=30)
+    priority: "CRITICAL"
+  
+  rule_3:
+    name: "Plan churn without convergence"
+    check: |
+      run_stats.planning_attempts > 2 AND
+      plan_similarity_to_previous > 0.8
+    priority: "MEDIUM"
+  
+  rule_4:
+    name: "Circular dependency in plan"
+    check: |
+      plan_has_circular_dependencies()
+    priority: "HIGH"
+
+root_causes:
+  - cause: "Gaps are too vague or underspecified"
+    explanation: "AI can't translate vague gap into concrete tasks"
+  
+  - cause: "Required patterns don't exist"
+    explanation: "Plan needs a pattern that isn't in PATTERN_INDEX"
+  
+  - cause: "Circular dependencies between gaps"
+    explanation: "Gap A requires Gap B resolved, but Gap B requires Gap A"
+  
+  - cause: "AI prompt doesn't enforce plan convergence"
+    explanation: "No explicit instruction to 'commit to a plan and execute'"
+  
+  - cause: "Validation keeps rejecting plan for unclear reasons"
+    explanation: "Schema or validation too strict, rejects all plans"
+
+prevention:
+  
+  prompt_engineering:
+    - rule: "Limit planning iterations in prompt"
+      implementation: "Prompt: 'You have 2 planning attempts. After that, execute best available plan.'"
+    
+    - rule: "Require plan to reference only existing patterns"
+      implementation: "Provide PATTERN_INDEX contents in planning prompt"
+    
+    - rule: "Enforce dependency ordering in plan template"
+      implementation: "Plan schema requires DAG structure validation"
+  
+  pattern_design:
+    - rule: "Planning pattern has max_attempts limit"
+      implementation: "plan_compile pattern spec has max_attempts: 3"
+    
+    - rule: "Circular dependency detector runs before plan execution"
+      implementation: "Plan compiler includes cycle detection"
+  
+  tooling:
+    - tool: "Plan similarity detector"
+      function: "Detects when subsequent plans are nearly identical (churn)"
+      location: "execution_planner.check_plan_similarity()"
+    
+    - tool: "Forced plan commitment"
+      function: "After N attempts, forces execution of best-effort plan"
+      location: "acms_controller.force_plan_commit()"
+
+automatic_response:
+  
+  detection_action:
+    - step: "Log anti-pattern detection"
+      code: |
+        log_antipattern(
+          antipattern_id="AP_PLANNING_LOOP",
+          planning_attempts=run_stats.planning_attempts,
+          patches_applied=run_stats.patches_applied,
+          elapsed_time=phase_elapsed_time
+        )
+    
+    - step: "Analyze why planning is failing"
+      code: |
+        diagnostics = {
+          "invalid_pattern_refs": check_invalid_patterns(plan),
+          "circular_deps": detect_circular_deps(plan),
+          "validation_errors": get_validation_errors(plan),
+          "gap_count": len(gap_registry.gaps)
+        }
+    
+    - step: "Trigger escape strategy"
+      code: |
+        if planning_attempts >= max_attempts:
+          trigger_pattern("force_plan_commit", plan=best_plan_so_far)
+  
+  recovery_strategy:
+    strategy_1:
+      name: "Simplify gap set"
+      when: "Planning attempts < 3"
+      steps:
+        - "Identify most critical gaps (highest severity)"
+        - "Create minimal plan addressing only top 5 gaps"
+        - "Defer remaining gaps to future run"
+        - "Retry planning with reduced scope"
+    
+    strategy_2:
+      name: "Force plan commitment"
+      when: "Planning attempts >= 3"
+      steps:
+        - "Take best plan from all attempts"
+        - "Remove tasks with circular deps or invalid patterns"
+        - "Validate reduced plan"
+        - "PROCEED to execution phase with degraded plan"
+        - "Log gaps that were deferred"
+    
+    strategy_3:
+      name: "Abort and report"
+      when: "Planning attempts >= 5 OR timeout"
+      steps:
+        - "HALT run"
+        - "Generate diagnostic report"
+        - "Save all plan attempts for analysis"
+        - "Mark run as FAILED"
+        - "Escalate to operator"
+
+verification:
+  
+  anti_pattern_resolved_checks:
+    - check: "Planning phase exits within 3 attempts"
+      description: "Verify escape logic works"
+    
+    - check: "Execution phase starts after planning"
+      description: "Verify progression to next phase"
+    
+    - check: "At least 1 patch applied in execution phase"
+      description: "Verify we're making real progress"
+  
+  test_cases:
+    - test: "Simulate plan with circular dependency"
+      expected: "Detector triggers, circular deps removed, plan proceeds"
+      file: "tests/test_antipattern_planning_loop.py"
+    
+    - test: "Simulate 4 planning attempts with no convergence"
+      expected: "Force commit triggered on attempt 4"
+      file: "tests/test_antipattern_planning_loop.py"
+
+related_anti_patterns:
+  - id: "AP_HALLUCINATED_SUCCESS"
+    relation: "Can cause planning loop if AI thinks tasks done but they aren't"
+  
+  - id: "AP_OVERENGINEERING"
+    relation: "Complex plans more likely to have circular deps"
+
+incident_history:
+  - date: "2025-11-18"
+    run_id: "20251118_GAP_ANALYSIS"
+    description: "7 planning attempts, plan kept referencing non-existent pattern 'auto_fix'"
+    resolution: "Added pattern existence check to plan validator"
+  
+  - date: "2025-11-25"
+    run_id: "20251125_REFACTOR"
+    description: "Circular dependency between 'rename_function' and 'update_imports'"
+    resolution: "Added cycle detection to plan compiler"
+
+runbook_changelog:
+  - version: "1.0.0"
+    date: "2025-12-07"
+    changes: "Initial runbook creation"

@@ -1,0 +1,113 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ACMS Process Steps",
+  "type": "object",
+  "required": [
+    "version",
+    "pipeline_id",
+    "steps"
+  ],
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "pipeline_id": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "step_id",
+          "phase",
+          "owner_module",
+          "description",
+          "artifacts_in",
+          "artifacts_out",
+          "postconditions",
+          "check_type"
+        ],
+        "properties": {
+          "step_id": {
+            "type": "string"
+          },
+          "phase": {
+            "type": "string"
+          },
+          "owner_module": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "artifacts_in": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "artifacts_out": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "postconditions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "path": {
+                  "type": "string"
+                },
+                "paths": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "key": {
+                  "type": "string"
+                },
+                "keys": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "min": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "field": {
+                  "type": "string"
+                },
+                "expected": {},
+                "optional": {
+                  "type": "boolean"
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "check_type": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,203 @@
+{
+  "version": "1.0",
+  "pipeline_id": "GAP_PHASE_EXECUTION_MINI_PIPE",
+  "description": "Single source of truth for ACMS + MINI_PIPE gap-phase pipeline steps",
+  "steps": [
+    {
+      "step_id": "PH0.1_RUN_CONFIG",
+      "phase": "PHASE_0_RUN_CONFIG",
+      "owner_module": "ACMSController",
+      "description": "Validate repo_root, initialize run directory, and create initial state/ledger entries.",
+      "artifacts_in": [],
+      "artifacts_out": [
+        ".acms_runs/<run_id>/acms_state.json",
+        ".acms_runs/<run_id>/run.ledger.jsonl"
+      ],
+      "postconditions": [
+        {
+          "type": "dir_exists",
+          "path": ".acms_runs/<run_id>"
+        },
+        {
+          "type": "file_exists",
+          "path": ".acms_runs/<run_id>/run.ledger.jsonl"
+        },
+        {
+          "type": "json_keys",
+          "path": ".acms_runs/<run_id>/acms_state.json",
+          "keys": [
+            "run_id",
+            "repo_root",
+            "current_state",
+            "phases_completed"
+          ]
+        }
+      ],
+      "check_type": "filesystem+json"
+    },
+    {
+      "step_id": "PH1.1_GAP_DISCOVERY",
+      "phase": "PHASE_1_GAP_DISCOVERY",
+      "owner_module": "ACMSController",
+      "description": "Run gap discovery and persist normalized registry.",
+      "artifacts_in": [
+        "docs/analysis_frameworks/OVERLAP_AUTOMATION_AND_MASTER_GAP_ANALYSIS.merged.json"
+      ],
+      "artifacts_out": [
+        ".acms_runs/<run_id>/gap_analysis_report.json",
+        ".acms_runs/<run_id>/gap_registry.json"
+      ],
+      "postconditions": [
+        {
+          "type": "file_exists",
+          "path": ".acms_runs/<run_id>/gap_analysis_report.json"
+        },
+        {
+          "type": "json_array_min_length",
+          "path": ".acms_runs/<run_id>/gap_analysis_report.json",
+          "key": "gaps",
+          "min": 1
+        },
+        {
+          "type": "file_exists",
+          "path": ".acms_runs/<run_id>/gap_registry.json"
+        },
+        {
+          "type": "json_array_min_length",
+          "path": ".acms_runs/<run_id>/gap_registry.json",
+          "key": "gaps",
+          "min": 1
+        }
+      ],
+      "check_type": "filesystem+json"
+    },
+    {
+      "step_id": "PH2.1_GAP_CONSOLIDATION",
+      "phase": "PHASE_2_GAP_CONSOLIDATION_AND_CLUSTERING",
+      "owner_module": "ExecutionPlanner",
+      "description": "Cluster gaps into workstreams and persist them for downstream planning.",
+      "artifacts_in": [
+        ".acms_runs/<run_id>/gap_registry.json"
+      ],
+      "artifacts_out": [
+        ".acms_runs/<run_id>/workstreams.json",
+        ".acms_runs/<run_id>/workstreams/"
+      ],
+      "postconditions": [
+        {
+          "type": "any_path_exists",
+          "paths": [
+            ".acms_runs/<run_id>/workstreams.json",
+            ".acms_runs/<run_id>/workstreams"
+          ]
+        },
+        {
+          "type": "json_keys",
+          "path": ".acms_runs/<run_id>/workstreams.json",
+          "keys": [
+            "workstreams"
+          ],
+          "optional": true
+        }
+      ],
+      "check_type": "filesystem+json"
+    },
+    {
+      "step_id": "PH3.1_PLAN_GENERATION",
+      "phase": "PHASE_3_PLAN_GENERATION",
+      "owner_module": "PhasePlanCompiler",
+      "description": "Compile workstreams into a MINI_PIPE execution plan.",
+      "artifacts_in": [
+        ".acms_runs/<run_id>/workstreams.json"
+      ],
+      "artifacts_out": [
+        ".acms_runs/<run_id>/mini_pipe_execution_plan.json"
+      ],
+      "postconditions": [
+        {
+          "type": "file_exists",
+          "path": ".acms_runs/<run_id>/mini_pipe_execution_plan.json"
+        },
+        {
+          "type": "json_array_min_length",
+          "path": ".acms_runs/<run_id>/mini_pipe_execution_plan.json",
+          "key": "tasks",
+          "min": 1
+        }
+      ],
+      "check_type": "filesystem+json"
+    },
+    {
+      "step_id": "PH4.1_PHASE_EXECUTION_MINI_PIPE",
+      "phase": "PHASE_4_PHASE_EXECUTION_MINI_PIPE",
+      "owner_module": "MiniPipeAdapter",
+      "description": "Execute the compiled plan via MINI_PIPE (or mock).",
+      "artifacts_in": [
+        ".acms_runs/<run_id>/mini_pipe_execution_plan.json"
+      ],
+      "artifacts_out": [
+        ".acms_runs/<run_id>/execution_results.json",
+        ".acms_runs/<run_id>/run_status.json"
+      ],
+      "postconditions": [
+        {
+          "type": "file_exists",
+          "path": ".acms_runs/<run_id>/run_status.json"
+        },
+        {
+          "type": "json_keys",
+          "path": ".acms_runs/<run_id>/run_status.json",
+          "keys": [
+            "metrics",
+            "final_status"
+          ]
+        },
+        {
+          "type": "json_keys",
+          "path": ".acms_runs/<run_id>/execution_results.json",
+          "keys": [
+            "success",
+            "tasks_completed",
+            "tasks_failed"
+          ],
+          "optional": true
+        }
+      ],
+      "check_type": "filesystem+json"
+    },
+    {
+      "step_id": "PH5.1_SUMMARY_AND_STATE",
+      "phase": "PHASE_5_SUMMARY_AND_SNAPSHOT",
+      "owner_module": "ACMSController",
+      "description": "Emit summary report and final state for the run.",
+      "artifacts_in": [
+        ".acms_runs/<run_id>/run_status.json"
+      ],
+      "artifacts_out": [
+        ".acms_runs/<run_id>/summary_report.json",
+        ".acms_runs/<run_id>/acms_state.json"
+      ],
+      "postconditions": [
+        {
+          "type": "file_exists",
+          "path": ".acms_runs/<run_id>/summary_report.json"
+        },
+        {
+          "type": "json_keys",
+          "path": ".acms_runs/<run_id>/summary_report.json",
+          "keys": [
+            "run_id",
+            "phases_completed",
+            "gap_stats"
+          ]
+        },
+        {
+          "type": "state_field_equals",
+          "field": "final_status",
+          "expected": "success"
+        }
+      ],
+      "check_type": "filesystem+json"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Run Status",
+  "type": "object",
+  "required": ["run_id", "final_status", "metrics"],
+  "properties": {
+    "run_id": {"type": "string"},
+    "final_status": {"type": "string", "enum": ["success", "failed", "partial"]},
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "gaps_discovered": {"type": "integer", "minimum": 0},
+        "tasks_executed": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

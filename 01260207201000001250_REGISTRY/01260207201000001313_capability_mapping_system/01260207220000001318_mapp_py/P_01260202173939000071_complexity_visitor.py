@@ -158,7 +158,7 @@ def analyze_complexity(file_path: Path) -> dict:
 
         if radon_result:
             return {
-                "py_cyclomatic_complexity": radon_result["average_complexity"],
+                "py_complexity_cyclomatic": radon_result["average_complexity"],
                 "py_max_complexity": radon_result["max_complexity"],
                 "py_total_complexity": radon_result["total_complexity"],
                 "method": "radon",
@@ -173,7 +173,7 @@ def analyze_complexity(file_path: Path) -> dict:
             raise Exception(manual_result["error"])
 
         return {
-            "py_cyclomatic_complexity": manual_result["average_complexity"],
+            "py_complexity_cyclomatic": manual_result["average_complexity"],
             "py_max_complexity": manual_result["max_complexity"],
             "py_total_complexity": manual_result["total_complexity"],
             "function_complexities": manual_result["function_complexities"],
@@ -184,7 +184,7 @@ def analyze_complexity(file_path: Path) -> dict:
 
     except Exception as e:
         return {
-            "py_cyclomatic_complexity": 0.0,
+            "py_complexity_cyclomatic": 0.0,
             "py_max_complexity": 0,
             "py_total_complexity": 0,
             "function_complexities": {},
@@ -207,8 +207,19 @@ def main():
 
     result = analyze_complexity(file_path)
 
+    # Handle --json flag
+    if '--json' in sys.argv:
+        idx = sys.argv.index('--json')
+        out_path = sys.argv[idx + 1] if idx + 1 < len(sys.argv) else None
+        if out_path:
+            with open(out_path, 'w') as f:
+                json.dump(result, f, indent=2, sort_keys=True)
+        else:
+            print(json.dumps(result, indent=2, sort_keys=True))
+        sys.exit(0)
+
     if result["success"]:
-        print(f"Average complexity: {result['py_cyclomatic_complexity']}")
+        print(f"Average complexity: {result['py_complexity_cyclomatic']}")
         print(f"Max complexity: {result['py_max_complexity']}")
         print(f"Total complexity: {result['py_total_complexity']}")
         print(f"Method: {result.get('method', 'unknown')}")

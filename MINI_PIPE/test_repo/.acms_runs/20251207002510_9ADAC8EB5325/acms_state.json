@@ -1,0 +1,29 @@
+{
+  "run_id": "20251207002510_9ADAC8EB5325",
+  "repo_root": "C:\\Users\\richg\\ALL_AI\\MINI_PIPE\\test_repo",
+  "started_at": "2025-12-07T00:25:10.803552+00:00",
+  "current_state": "done",
+  "phases_completed": [
+    "PHASE_0_RUN_CONFIG",
+    "PHASE_1_GAP_DISCOVERY",
+    "PHASE_2_GAP_CONSOLIDATION_AND_CLUSTERING",
+    "PHASE_3_PLAN_GENERATION"
+  ],
+  "ai_adapter_type": "mock",
+  "minipipe_adapter_type": "mock",
+  "config": {
+    "triggers_enabled": false,
+    "enable_resilience": false,
+    "enable_patch_ledger": false,
+    "max_concurrent_tasks": 2,
+    "timeout_seconds": 300
+  },
+  "last_transition": "2025-12-07T00:25:10.819247+00:00",
+  "current_phase": "PHASE_3_PLAN_GENERATION",
+  "gap_count": 1,
+  "workstream_count": 1,
+  "task_count": 3,
+  "execution_plan_path": "C:\\Users\\richg\\ALL_AI\\MINI_PIPE\\test_repo\\.acms_runs\\20251207002510_9ADAC8EB5325\\mini_pipe_execution_plan.json",
+  "completed_at": "2025-12-07T00:25:10.819247+00:00",
+  "final_status": "success"
+}

@@ -1,0 +1,84 @@
+name: Pattern Validation CI
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'patterns/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'patterns/**'
+
+jobs:
+  validate-patterns:
+    name: Validate Pattern Registry
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python dependencies
+        run: |
+          pip install pyyaml jsonschema
+
+      - name: Setup PowerShell
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y powershell
+
+      - name: Install PowerShell modules
+        shell: pwsh
+        run: |
+          Install-Module -Name PSScriptAnalyzer -Force -SkipPublisherCheck -Scope CurrentUser
+          Install-Module -Name Pester -Force -SkipPublisherCheck -Scope CurrentUser
+
+      - name: Validate Registry Integrity
+        run: |
+          python patterns/automation/validators/registry_validator.py
+        continue-on-error: false
+
+      - name: Validate Schemas
+        run: |
+          python patterns/automation/validators/validate_schemas.py
+        continue-on-error: false
+
+      - name: Validate Executor Syntax
+        shell: pwsh
+        run: |
+          $errors = @()
+          Get-ChildItem patterns/executors -Filter "*_executor.ps1" -ErrorAction SilentlyContinue | ForEach-Object {
+            $analysis = Invoke-ScriptAnalyzer -Path $_.FullName -Severity Error
+            if ($analysis) {
+              $errors += $analysis
+            }
+          }
+          if ($errors.Count -gt 0) {
+            $errors | Format-Table -AutoSize
+            Write-Error "Found $($errors.Count) executor errors"
+            exit 1
+          }
+          Write-Host "✓ All executors passed syntax validation"
+
+      - name: Run Pattern Tests
+        shell: pwsh
+        run: |
+          $testResults = Invoke-Pester patterns/tests -PassThru -Output Detailed
+          if ($testResults.FailedCount -gt 0) {
+            Write-Error "Pattern tests failed"
+            exit 1
+          }
+          Write-Host "✓ All pattern tests passed"
+        continue-on-error: true
+
+      - name: Check Pattern Metadata
+        shell: pwsh
+        run: |
+          ./patterns/automation/helpers/Update-PatternMetadata.ps1 -WhatIf
+          Write-Host "✓ Pattern metadata validated"

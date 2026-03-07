@@ -1,0 +1,36 @@
+# DOC_LINK: DOC-CONFIG-PFA-CANONICAL-PROCESS-STEPS-SCHEMA-335
+doc_id: DOC-CONFIG-PFA-CANONICAL-PROCESS-STEPS-SCHEMA-335
+meta:
+  process_id: PFA-<SYSTEM-NAME>
+  source_file: PROCESS_STEP_LIB\PFA_CANONICAL_PROCESS_STEPS_SCHEMA.yaml
+  normalized_by: pfa_normalize_steps.py
+steps:
+- step_id: P0-STEP-001
+  phase: INIT
+  name: Example step name
+  description: Example description
+  responsible_component: acms_controller
+  operation_kind: task_execution
+  inputs:
+  - Input A
+  - Input B
+  expected_outputs:
+  - Output A
+  requires_human_confirmation: false
+  order: 10
+  lens: process
+  automation_level: manual_only
+  pattern_ids: []
+  artifact_registry_refs: []
+  guardrail_checkpoint: false
+  guardrail_checkpoint_id: null
+  implementation_files: []
+  artifacts_created: []
+  artifacts_updated: []
+  metrics_emitted: []
+  preconditions: []
+  postconditions: []
+  error_handling: null
+  state_transition: null
+  anti_pattern_ids: []
+  _content_hash: 377e3314457ae9b76b20e7fe6d3627e426766c5c

@@ -123,12 +123,13 @@ id_types:
     scanner: true
     assigner: true
   coverage:
-    total_ids: 37
+    total_ids: 522
     percentage: 100.0
     target: 100.0
-  description: Minted 20-digit identifier for directories (used as directory-name prefix)
+    coverage_as_of: '2026-02-27'
+  description: Minted 20-digit identifier for directories, stored in .dir_id JSON files
   first_seen: '2025-12-20T00:00:00Z'
-  notes: Minted by allocator; do not derive from path
+  notes: Minted by allocator; do not derive from path. Stored in per-directory .dir_id files.
 
 - type_id: template_id
   name: Template Identifier

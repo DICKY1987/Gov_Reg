@@ -1,0 +1,214 @@
+# anti_pattern_id: AP_HALLUCINATED_SUCCESS
+# Anti-Pattern Runbook: Hallucinated Success
+
+meta:
+  id: "AP_HALLUCINATED_SUCCESS"
+  title: "AI Claims Success But Tests Fail"
+  severity: "CRITICAL"
+  category: "execution_integrity"
+  version: "1.0.0"
+  created: "2025-12-07"
+  related_invariants:
+    - "GT-1"  # Test-Backed Changes
+    - "GT-3"  # Observable Success
+    - "AP-2"  # Failure Transparency
+
+description: |
+  The AI agent claims a task succeeded, but objective verification (tests, 
+  validation, file checks) shows the task actually failed. This is one of the 
+  most dangerous anti-patterns because it creates false confidence and can 
+  cascade into further failures.
+
+symptoms:
+  log_patterns:
+    - "status.*success.*pytest.*FAILED"
+    - "Task marked complete.*assertion error"
+    - "AI response: SUCCESS.*actual result: FAIL"
+  
+  metric_conditions:
+    - condition: "task_status == 'success' AND test_exit_code != 0"
+      description: "Task claims success but tests failed"
+    - condition: "task_status == 'success' AND required_files_missing"
+      description: "Task claims success but outputs don't exist"
+    - condition: "ai_confidence > 0.8 AND verification_failed"
+      description: "High AI confidence despite verification failure"
+  
+  behavioral_indicators:
+    - "AI provides detailed explanation of what it did, but files unchanged"
+    - "AI says 'tests pass' but pytest output shows failures"
+    - "AI claims file created but file_exists() returns False"
+    - "Multiple retry attempts with same hallucinated success claim"
+
+detection_rules:
+  
+  rule_1:
+    name: "Success claim contradicts exit code"
+    check: |
+      task.status == "success" AND
+      task.verification.exit_code != 0
+    priority: "CRITICAL"
+  
+  rule_2:
+    name: "Success claim contradicts test results"
+    check: |
+      task.status == "success" AND
+      task.verification.tests_run > 0 AND
+      task.verification.tests_passed < task.verification.tests_run
+    priority: "CRITICAL"
+  
+  rule_3:
+    name: "Success claim but expected outputs missing"
+    check: |
+      task.status == "success" AND
+      task.expected_outputs is not None AND
+      any(not file_exists(f) for f in task.expected_outputs)
+    priority: "HIGH"
+  
+  rule_4:
+    name: "AI confidence high but all verifications failed"
+    check: |
+      task.ai_response.confidence > 0.7 AND
+      task.verification.checks_passed == 0 AND
+      task.verification.checks_total > 0
+    priority: "HIGH"
+
+root_causes:
+  - cause: "AI trained on incomplete feedback loops"
+    explanation: "Model learned to report success based on intent, not verification"
+  
+  - cause: "Prompt doesn't enforce verification"
+    explanation: "AI not explicitly told to wait for and report actual results"
+  
+  - cause: "AI pattern-matches success from similar past examples"
+    explanation: "Model hallucinates based on training data, not current execution"
+  
+  - cause: "Context window limits prevent seeing full error output"
+    explanation: "AI sees truncated logs, misses the actual error"
+
+prevention:
+  
+  prompt_engineering:
+    - rule: "NEVER claim success without observable evidence"
+      implementation: "Add to GLOBAL_BEHAVIOR_CONTRACT in all prompts"
+    
+    - rule: "Always include verification step in task template"
+      implementation: "UTE Decision Elimination templates include verification"
+    
+    - rule: "Report exact exit codes and test counts"
+      implementation: "Prompt asks for structured output with verification fields"
+  
+  pattern_design:
+    - rule: "All code-changing patterns MUST have required_postchecks"
+      implementation: "Pattern spec schema enforces postchecks field"
+    
+    - rule: "Executor validates postchecks before marking success"
+      implementation: "MINI_PIPE_executor.py runs postchecks automatically"
+    
+    - rule: "No 'success' status without postcheck_results attached"
+      implementation: "Task result schema requires verification field"
+  
+  tooling:
+    - tool: "Result validator"
+      function: "Compares AI-claimed status with actual verification results"
+      location: "MINI_PIPE_executor.validate_task_result()"
+    
+    - tool: "Observable evidence checker"
+      function: "Verifies expected files/outputs exist before marking success"
+      location: "MINI_PIPE_executor.check_observable_evidence()"
+
+automatic_response:
+  
+  detection_action:
+    - step: "Log anti-pattern detection with full context"
+      code: |
+        log_antipattern(
+          antipattern_id="AP_HALLUCINATED_SUCCESS",
+          task_id=task.id,
+          ai_claim=task.status,
+          actual_result=verification.status,
+          evidence=verification.details
+        )
+    
+    - step: "Override task status to FAILED"
+      code: |
+        task.status = "FAILED"
+        task.failure_reason = "Hallucinated success (anti-pattern AP_HALLUCINATED_SUCCESS)"
+        task.actual_verification = verification
+    
+    - step: "Increment hallucination counter for this run"
+      code: |
+        run_stats.hallucination_count += 1
+        if run_stats.hallucination_count >= 3:
+          trigger_pattern("self_heal", reason="repeated_hallucinations")
+  
+  recovery_strategy:
+    strategy_1:
+      name: "Immediate rollback"
+      when: "First occurrence in run"
+      steps:
+        - "Mark task as FAILED"
+        - "Do not apply any changes"
+        - "Re-queue task with stricter verification"
+        - "Add verification output to context for retry"
+    
+    strategy_2:
+      name: "Self-heal pattern"
+      when: "2+ hallucinations in same run"
+      steps:
+        - "Pause execution"
+        - "Run diagnostic: is AI context corrupted?"
+        - "Clear AI context and restart from clean state"
+        - "Re-plan affected tasks with explicit verification templates"
+    
+    strategy_3:
+      name: "Escalate to operator"
+      when: "3+ hallucinations OR high-severity task affected"
+      steps:
+        - "HALT execution"
+        - "Generate incident report"
+        - "Notify operator with full context"
+        - "Await manual investigation before resuming"
+
+verification:
+  
+  anti_pattern_resolved_checks:
+    - check: "Next task execution has verification evidence attached"
+      description: "Verify fix forces evidence collection"
+    
+    - check: "No further hallucinated successes in next 10 tasks"
+      description: "Verify pattern doesn't recur immediately"
+    
+    - check: "Run status reflects failed task correctly"
+      description: "Verify status propagation works"
+  
+  test_cases:
+    - test: "Simulate AI claiming success with exit_code=1"
+      expected: "Automatic override to FAILED status"
+      file: "tests/test_antipattern_hallucinated_success.py"
+    
+    - test: "Simulate AI claiming success with missing output file"
+      expected: "Detection rule triggers, task marked FAILED"
+      file: "tests/test_antipattern_hallucinated_success.py"
+
+related_anti_patterns:
+  - id: "AP_PLANNING_LOOP"
+    relation: "Can be caused by hallucinated success (AI thinks it's done, but isn't)"
+  
+  - id: "AP_INCOMPLETE_IMPLEMENTATION"
+    relation: "Often manifests as hallucinated success (claims done, but code incomplete)"
+
+incident_history:
+  - date: "2025-11-15"
+    run_id: "20251115_DEMO"
+    description: "AI claimed pytest passed but 3/10 tests failed"
+    resolution: "Added postcheck validation to pytest_green pattern"
+  
+  - date: "2025-11-20"
+    run_id: "20251120_REFACTOR"
+    description: "AI claimed file created but path was invalid"
+    resolution: "Added file_exists check to atomic_create pattern"
+
+runbook_changelog:
+  - version: "1.0.0"
+    date: "2025-12-07"
+    changes: "Initial runbook creation"
