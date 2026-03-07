@@ -18,6 +18,8 @@ from pathlib import Path
 from typing import Dict, Any, List
 from collections import defaultdict
 
+_FILE_WATCHER_PREFIX = "01260207201000001245_FILE WATCHER"
+
 class DocIdResolver:
     def __init__(self, registry_path: Path):
         self.registry_path = registry_path
@@ -33,6 +35,8 @@ class DocIdResolver:
     def analyze_doc_ids(self, registry: Dict[str, Any]) -> None:
         """Analyze doc_id usage across files."""
         files = registry.get("files", [])
+        files = [f for f in files
+                 if not f.get("relative_path", "").startswith(_FILE_WATCHER_PREFIX)]
         
         for file_record in files:
             doc_id = file_record.get("doc_id")

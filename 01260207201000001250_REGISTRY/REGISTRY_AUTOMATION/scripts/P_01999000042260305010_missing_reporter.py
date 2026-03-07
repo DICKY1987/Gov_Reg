@@ -50,7 +50,7 @@ def main():
     parser.add_argument('--output', required=True)
     args = parser.parse_args()
     
-    with open(args.registry) as f:
+    with open(args.registry, encoding='utf-8') as f:
         registry = json.load(f)
     
     files = registry.get("files", [])

@@ -18,6 +18,8 @@ from pathlib import Path
 from typing import Dict, Any, List
 from collections import defaultdict
 
+_FILE_WATCHER_PREFIX = "01260207201000001245_FILE WATCHER"
+
 class ModuleDeduplicator:
     def __init__(self, registry_path: Path):
         self.registry_path = registry_path
@@ -47,6 +49,8 @@ class ModuleDeduplicator:
     def analyze_modules(self, registry: Dict[str, Any]) -> None:
         """Analyze module names across files."""
         files = registry.get("files", [])
+        files = [f for f in files
+                 if not f.get("relative_path", "").startswith(_FILE_WATCHER_PREFIX)]
         
         for file_record in files:
             rel_path = file_record.get("relative_path", "")

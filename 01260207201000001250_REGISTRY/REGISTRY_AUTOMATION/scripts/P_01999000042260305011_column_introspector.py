@@ -10,7 +10,7 @@ class ColumnIntrospector:
     
     def introspect_registry(self) -> Dict[str, Any]:
         """Analyze column usage in registry."""
-        with open(self.registry_path) as f:
+        with open(self.registry_path, encoding='utf-8') as f:
             registry = json.load(f)
         
         files = registry.get("files", [])

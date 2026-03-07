@@ -40,12 +40,16 @@ REGISTRY_ENUMS_CANON = {
     },
     "canonicality": {
         "canonical": ["CANONICAL", "LEGACY", "ALTERNATE", "EXPERIMENTAL"],
+        # NOTE: "SUPERSEDED" is intentionally NOT aliased to "LEGACY" here because:
+        # - entries[] records use canonicality="SUPERSEDED" legitimately (244 records exist)
+        # - This gate only processes files[], where SUPERSEDED is not a valid value
+        # - If scope is ever extended to entries[], remove the SUPERSEDED alias below first
         "aliases": {
             "PRIMARY": "CANONICAL",
             "DEPRECATED": "LEGACY",
             "ALT": "ALTERNATE",
             "EXPERIMENTAL_DRAFT": "EXPERIMENTAL",
-            "SUPERSEDED": "LEGACY"  # Superseded files are legacy
+            "SUPERSEDED": "LEGACY"   # files[] only — see note above
         },
         "description": "File canonicality status in multi-version scenarios"
     }

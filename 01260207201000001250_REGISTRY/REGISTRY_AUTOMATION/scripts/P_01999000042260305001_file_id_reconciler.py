@@ -136,8 +136,25 @@ class FileIDReconciler:
             print("Building mappings...")
             self.build_mappings(registry)
             
+            # Add coverage metadata
+            total_files = len(registry.get("files", []))
+            mapped = len(self.sha256_to_file_id)
+            
             print("Writing output...")
             self.write_output(output_path)
+            
+            # Augment output with coverage
+            with open(output_path, 'r', encoding='utf-8') as f:
+                output_data = json.load(f)
+            output_data["coverage"] = {
+                "mapped_pairs": mapped,
+                "total_registry_files": total_files,
+                "coverage_percent": round(100 * mapped / total_files, 1) if total_files else 0,
+                "note": "Only files with both a valid file_id and sha256 are mappable. "
+                        "sha256 must be backfilled for remaining records."
+            }
+            with open(output_path, 'w', encoding='utf-8') as f:
+                json.dump(output_data, f, indent=2, ensure_ascii=False)
             
             print()
             self.report()

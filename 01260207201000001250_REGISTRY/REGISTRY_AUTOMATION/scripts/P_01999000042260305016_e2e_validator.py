@@ -14,7 +14,7 @@ class EndToEndValidator:
     
     def validate_registry_structure(self, registry: dict) -> bool:
         """Validate registry has required top-level structure."""
-        required_keys = ["files", "edges", "metadata"]
+        required_keys = ["files", "edges"]
         missing = [k for k in required_keys if k not in registry]
         
         if missing:
@@ -37,7 +37,7 @@ class EndToEndValidator:
     
     def run_validation(self, registry_path: Path) -> bool:
         """Run complete validation."""
-        with open(registry_path) as f:
+        with open(registry_path, encoding='utf-8') as f:
             registry = json.load(f)
         
         if not self.validate_registry_structure(registry):

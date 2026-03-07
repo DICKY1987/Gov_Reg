@@ -37,7 +37,7 @@ def main():
     parser.add_argument('--record-json', required=True)
     args = parser.parse_args()
     
-    with open(args.record_json) as f:
+    with open(args.record_json, encoding='utf-8') as f:
         record = json.load(f)
     
     validator = ColumnValidator()

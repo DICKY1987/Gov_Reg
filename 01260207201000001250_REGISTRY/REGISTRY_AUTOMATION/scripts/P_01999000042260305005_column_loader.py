@@ -34,9 +34,9 @@ class ColumnLoader:
                            If None, uses default location
         """
         if dictionary_path is None:
-            # Default: relative to this script
-            script_dir = Path(__file__).parent
-            self.dictionary_path = (script_dir / "../../01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json").resolve()
+            # Default: Two levels up from scripts/ to get to REGISTRY root, then into COLUMN_HEADERS
+            script_dir = Path(__file__).parent.parent.parent
+            self.dictionary_path = script_dir / "COLUMN_HEADERS/01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json"
         else:
             self.dictionary_path = dictionary_path
         
@@ -62,15 +62,35 @@ class ColumnLoader:
         with open(self.dictionary_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
         
-        # Extract columns array
-        columns_array = data.get("columns", [])
+        # Read from actual dictionary structure (data["headers"] is a dict keyed by column name)
+        headers_dict = data.get("headers", {})
         
-        # Convert to dict keyed by column_name
+        TYPE_MAP = {
+            "string": "TEXT", "integer": "INTEGER", "number": "REAL",
+            "boolean": "BOOLEAN", "array": "JSON", "object": "JSON",
+        }
+        
         self._columns = {}
-        for col_def in columns_array:
-            name = col_def.get("column_name")
-            if name:
-                self._columns[name] = col_def
+        for col_name, header_def in headers_dict.items():
+            value_schema = header_def.get("value_schema", {})
+            type_list = value_schema.get("type", [])
+            if isinstance(type_list, str):
+                type_list = [type_list]
+            non_null_types = [t for t in type_list if t != "null"]
+            primary_type = non_null_types[0] if non_null_types else "string"
+            data_type = TYPE_MAP.get(primary_type, "TEXT")
+            presence = header_def.get("presence", {})
+            nullable = ("null" in type_list) or (presence.get("policy", "OPTIONAL") == "OPTIONAL")
+            # Phase: py_* = PHASE_A (python analysis columns), all others = BASE
+            phase = "PHASE_A" if col_name.startswith("py_") else "BASE"
+            self._columns[col_name] = {
+                "column_name": col_name,
+                "data_type": data_type,
+                "nullable": nullable,
+                "default_value": None,  # Not stored in dictionary; no defaults to inject
+                "phase": phase,
+                "_raw": header_def,
+            }
         
         # Build phase index
         self._columns_by_phase = {}

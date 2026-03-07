@@ -5,6 +5,8 @@ from datetime import datetime
 from typing import List, Dict, Any
 from collections import defaultdict
 
+_FILE_WATCHER_PREFIX = "01260207201000001245_FILE WATCHER"
+
 class TimestampClusterer:
     def cluster_by_timestamp(self, files: List[Dict[str, Any]], 
                             time_window_seconds: int = 300) -> List[List[Dict[str, Any]]]:
@@ -39,11 +41,15 @@ def main():
     parser.add_argument('--window', type=int, default=300)
     args = parser.parse_args()
     
-    with open(args.registry) as f:
+    with open(args.registry, encoding='utf-8') as f:
         registry = json.load(f)
     
+    files = registry.get("files", [])
+    files = [f for f in files
+             if not f.get("relative_path", "").startswith(_FILE_WATCHER_PREFIX)]
+    
     clusterer = TimestampClusterer()
-    clusters = clusterer.cluster_by_timestamp(registry.get("files", []), args.window)
+    clusters = clusterer.cluster_by_timestamp(files, args.window)
     
     report = {
         "total_files": len(registry.get("files", [])),

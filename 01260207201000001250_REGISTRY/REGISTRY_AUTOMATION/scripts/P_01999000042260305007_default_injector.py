@@ -29,7 +29,7 @@ def main():
     parser.add_argument('--output', required=True)
     args = parser.parse_args()
     
-    with open(args.input) as f:
+    with open(args.input, encoding='utf-8') as f:
         record = json.load(f)
     
     injector = DefaultInjector()
