@@ -146,7 +146,33 @@ def generate_breakdown(metrics: dict, score: int) -> dict:
         'notes': f'{coverage}% coverage' if coverage else 'No coverage'
     }
     
-    # Continue for other components...
+    # Docstrings component
+    docstring_coverage = metrics.get('docstring_coverage', 0)
+    breakdown['docstrings'] = {
+        'weight': WEIGHTS.get('docstrings', 0.15),
+        'earned': WEIGHTS.get('docstrings', 0.15) * (docstring_coverage / 100.0),
+        'notes': f'{docstring_coverage}% docstring coverage'
+    }
+    
+    # Lint component
+    lint_issues = metrics.get('py_static_issues_count', 0)
+    # Score decreases with more issues: 100 issues = 0 score, 0 issues = full score
+    lint_earned = max(0, WEIGHTS.get('lint', 0.25) * (1 - lint_issues / 100.0))
+    breakdown['lint'] = {
+        'weight': WEIGHTS.get('lint', 0.25),
+        'earned': lint_earned,
+        'notes': f'{lint_issues} static issues'
+    }
+    
+    # Complexity component
+    complexity_avg = metrics.get('py_complexity_cyclomatic', 0)
+    # Score decreases with higher complexity: 10+ = 0, <2 = full score
+    complexity_factor = max(0, min(1, (10 - complexity_avg) / 8))
+    breakdown['complexity'] = {
+        'weight': WEIGHTS.get('complexity', 0.15),
+        'earned': WEIGHTS.get('complexity', 0.15) * complexity_factor,
+        'notes': f'Avg cyclomatic complexity: {complexity_avg:.1f}'
+    }
     
     return {
         'total_score': score,

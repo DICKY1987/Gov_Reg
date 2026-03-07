@@ -133,14 +133,23 @@ def tag_file_capabilities(file_path: Path) -> dict:
 
     Returns dict with:
     - py_capability_tags: List[str]
+    - py_capability_facts_hash: str
     - success: bool
     - error: Optional[str]
     """
     try:
         capabilities = detect_capabilities(file_path)
+        
+        # Compute facts hash
+        import hashlib
+        import json as json_module
+        facts = {"capability_tags": sorted(list(capabilities))}
+        facts_json = json_module.dumps(facts, sort_keys=True, separators=(',', ':'))
+        facts_hash = hashlib.sha256(facts_json.encode('utf-8')).hexdigest()
 
         return {
             "py_capability_tags": sorted(list(capabilities)),
+            "py_capability_facts_hash": facts_hash,
             "success": True,
             "error": None,
         }
@@ -148,6 +157,7 @@ def tag_file_capabilities(file_path: Path) -> dict:
     except Exception as e:
         return {
             "py_capability_tags": [],
+            "py_capability_facts_hash": None,
             "success": False,
             "error": f"Capability tagging failed: {e}",
         }

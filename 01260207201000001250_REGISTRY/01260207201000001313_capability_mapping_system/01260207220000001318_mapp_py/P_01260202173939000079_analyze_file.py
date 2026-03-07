@@ -100,6 +100,41 @@ def analyze_file(file_path: str, source_text: Optional[str] = None) -> dict:
 
 def main():
     """CLI entry point."""
+    import sys
+    import json
+    
+    if len(sys.argv) < 2:
+        print("Usage: analyze_file.py <file_path>", file=sys.stderr)
+        sys.exit(1)
+
+    file_path = sys.argv[1]
+    result = analyze_file(file_path)
+    
+    # Handle --json flag
+    if '--json' in sys.argv:
+        idx = sys.argv.index('--json')
+        out_path = sys.argv[idx + 1] if idx + 1 < len(sys.argv) else None
+        # Remove ast_tree before JSON serialization
+        result_copy = {k: v for k, v in result.items() if k != 'ast_tree'}
+        if out_path:
+            with open(out_path, 'w') as f:
+                json.dump(result_copy, f, indent=2, sort_keys=True)
+        else:
+            print(json.dumps(result_copy, indent=2, sort_keys=True))
+        sys.exit(0)
+    
+    if result.get("error"):
+        print(f"Error: {result['error']}", file=sys.stderr)
+        sys.exit(1)
+    
+    print(f"AST Hash: {result['py_ast_dump_hash']}")
+    print(f"Parse OK: {result['py_ast_parse_ok']}")
+
+
+if __name__ == "__main__":
+    main()
+def main():
+    """CLI entry point."""
     import argparse
 
     parser = argparse.ArgumentParser(
