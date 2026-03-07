@@ -1,0 +1,25 @@
+{
+  "parallel_workstreams": {
+    "workstreams": [
+      {
+        "workstream_id": "ws_auth_module",
+        "write_manifest": "write_manifests/ws_auth_module.json",
+        "dependencies": [],
+        "exclusive_resources": [],
+        "priority": 5
+      },
+      {
+        "workstream_id": "ws_database_schema",
+        "write_manifest": "write_manifests/ws_database_schema.json",
+        "dependencies": [],
+        "exclusive_resources": [],
+        "priority": 5
+      }
+    ],
+    "max_parallel_workstreams": 4,
+    "circuit_breakers": {
+      "max_failed_workstreams": 1,
+      "max_total_failures": 3
+    }
+  }
+}

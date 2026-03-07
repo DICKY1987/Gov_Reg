@@ -1,0 +1,16 @@
+{
+  "workstream_id": "ws_database_schema",
+  "declared_writes": [
+    "db/migrations/001_create_users_table.sql",
+    "db/migrations/002_create_sessions_table.sql",
+    "docs/database_schema.md"
+  ],
+  "declared_reads": [
+    "db/schema_template.sql"
+  ],
+  "exclusive_locks": [],
+  "intent": "Create database migration scripts for user authentication tables",
+  "estimated_duration_seconds": 90,
+  "created_at": "2026-03-07T00:00:00Z",
+  "schema_version": "1.0.0"
+}

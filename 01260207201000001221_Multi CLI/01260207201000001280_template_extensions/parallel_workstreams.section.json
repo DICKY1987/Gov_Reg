@@ -1,0 +1,72 @@
+{
+  "section_name": "parallel_workstreams",
+  "schema_version": "1.0.0",
+  "compatible_with": "newPhasePlanProcess v3.0.0",
+  "description": "Parallel workstreams configuration section for plan templates",
+  "json_schema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": ["workstreams", "max_parallel_workstreams", "circuit_breakers"],
+    "properties": {
+      "workstreams": {
+        "type": "array",
+        "description": "Independent workstreams for parallel execution",
+        "items": {
+          "type": "object",
+          "required": ["workstream_id", "write_manifest"],
+          "properties": {
+            "workstream_id": {
+              "type": "string",
+              "pattern": "^ws_[a-zA-Z0-9_-]+$"
+            },
+            "write_manifest": {
+              "type": "string",
+              "description": "Relative path to write manifest"
+            },
+            "dependencies": {
+              "type": "array",
+              "items": {"type": "string"},
+              "default": []
+            },
+            "priority": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10,
+              "default": 5
+            }
+          }
+        }
+      },
+      "max_parallel_workstreams": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 8,
+        "default": 4
+      },
+      "circuit_breakers": {
+        "type": "object",
+        "properties": {
+          "max_failed_workstreams": {"type": "integer", "default": 1},
+          "max_total_failures": {"type": "integer", "default": 3}
+        }
+      }
+    }
+  },
+  "usage_example": {
+    "parallel_workstreams": {
+      "workstreams": [
+        {
+          "workstream_id": "ws_feature_a",
+          "write_manifest": "manifests/ws_feature_a.json",
+          "dependencies": [],
+          "priority": 5
+        }
+      ],
+      "max_parallel_workstreams": 4,
+      "circuit_breakers": {
+        "max_failed_workstreams": 1,
+        "max_total_failures": 3
+      }
+    }
+  }
+}

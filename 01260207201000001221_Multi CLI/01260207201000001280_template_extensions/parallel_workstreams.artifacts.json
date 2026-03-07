@@ -1,0 +1,82 @@
+{
+  "artifact_catalog_version": "1.0.0",
+  "artifacts": [
+    {
+      "artifact_id": "conflict_graph",
+      "name": "Conflict Analysis Graph",
+      "schema": "conflict_graph.schema.json",
+      "description": "Graph of workstream conflicts and dependencies",
+      "output_path": "artifacts/conflict_graph/conflict_graph.json",
+      "produced_by": ["compute_conflict_graph.py"],
+      "consumed_by": ["provision_worktrees.py", "integrate_patches.py"],
+      "gates": ["GATE-PWE-003"]
+    },
+    {
+      "artifact_id": "parallel_groups",
+      "name": "Parallel Execution Groups",
+      "schema": null,
+      "description": "Topologically sorted groups of workstreams for parallel execution",
+      "output_path": "artifacts/conflict_graph/parallel_groups.json",
+      "produced_by": ["compute_conflict_graph.py"],
+      "consumed_by": ["provision_worktrees.py", "dispatch_workers.py", "integrate_patches.py"],
+      "gates": ["GATE-PWE-004"]
+    },
+    {
+      "artifact_id": "worktree_map",
+      "name": "Worktree Path Mapping",
+      "schema": null,
+      "description": "Map of workstream IDs to worktree paths",
+      "output_path": "artifacts/worktrees/worktree_map.json",
+      "produced_by": ["provision_worktrees.py"],
+      "consumed_by": ["dispatch_workers.py"],
+      "gates": ["GATE-PWE-005"]
+    },
+    {
+      "artifact_id": "worktree_execution_report",
+      "name": "Workstream Execution Report",
+      "schema": "worktree_execution_report.schema.json",
+      "description": "Report of workstream execution in isolated worktree",
+      "output_path": "artifacts/worktrees/{workstream_id}_report.json",
+      "produced_by": ["dispatch_workers.py"],
+      "consumed_by": ["collect_workstream_evidence.py"],
+      "gates": ["GATE-PWE-006"]
+    },
+    {
+      "artifact_id": "evidence_bundle",
+      "name": "Workstream Evidence Bundle",
+      "schema": "evidence_bundle.schema.json",
+      "description": "Complete evidence package with cryptographic hashes",
+      "output_path": "evidence/workstreams/{workstream_id}/evidence_bundle.json",
+      "produced_by": ["collect_workstream_evidence.py"],
+      "consumed_by": ["rebuild_registries.py"],
+      "gates": ["GATE-PWE-008"]
+    },
+    {
+      "artifact_id": "integration_report",
+      "name": "Patch Integration Report",
+      "schema": "integration_report.schema.json",
+      "description": "Report of patch integration with topological ordering",
+      "output_path": "artifacts/integration/integration_report.json",
+      "produced_by": ["integrate_patches.py"],
+      "consumed_by": ["rebuild_registries.py"],
+      "gates": ["GATE-PWE-009", "GATE-PWE-010"]
+    },
+    {
+      "artifact_id": "determinism_report",
+      "name": "Determinism Validation Report",
+      "schema": null,
+      "description": "Report verifying deterministic computation",
+      "output_path": "evidence/determinism/determinism_report.json",
+      "produced_by": ["validate_determinism.py"],
+      "consumed_by": ["rebuild_registries.py"],
+      "gates": ["GATE-PWE-011"]
+    }
+  ],
+  "schema_bindings": {
+    "conflict_graph": "01260207201000001275_schemas/conflict_graph.schema.json",
+    "write_manifest": "01260207201000001275_schemas/write_manifest.schema.json",
+    "worktree_execution_report": "01260207201000001275_schemas/worktree_execution_report.schema.json",
+    "integration_report": "01260207201000001275_schemas/integration_report.schema.json",
+    "evidence_bundle": "01260207201000001275_schemas/evidence_bundle.schema.json"
+  }
+}

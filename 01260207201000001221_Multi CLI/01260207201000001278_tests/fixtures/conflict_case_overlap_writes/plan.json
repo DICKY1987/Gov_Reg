@@ -1,0 +1,23 @@
+{
+  "parallel_workstreams": {
+    "workstreams": [
+      {
+        "workstream_id": "ws_frontend",
+        "write_manifest": "write_manifests/ws_frontend.json",
+        "dependencies": [],
+        "priority": 5
+      },
+      {
+        "workstream_id": "ws_backend",
+        "write_manifest": "write_manifests/ws_backend.json",
+        "dependencies": [],
+        "priority": 5
+      }
+    ],
+    "max_parallel_workstreams": 4,
+    "circuit_breakers": {
+      "max_failed_workstreams": 1,
+      "max_total_failures": 3
+    }
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://acms.gov/schemas/conflict_graph.schema.json",
+  "title": "Conflict Graph",
+  "description": "Schema for workstream conflict analysis graph",
+  "type": "object",
+  "required": ["nodes", "edges", "parallel_groups"],
+  "properties": {
+    "nodes": {
+      "type": "array",
+      "description": "Workstream nodes in the graph",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["workstream_id"],
+        "properties": {
+          "workstream_id": {
+            "type": "string",
+            "pattern": "^ws_[a-zA-Z0-9_-]+$"
+          },
+          "write_count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of declared writes"
+          },
+          "read_count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of declared reads"
+          }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "description": "Conflict and dependency edges between workstreams",
+      "items": {
+        "type": "object",
+        "required": ["source", "target", "conflict_type"],
+        "properties": {
+          "source": {
+            "type": "string",
+            "pattern": "^ws_[a-zA-Z0-9_-]+$",
+            "description": "Source workstream ID"
+          },
+          "target": {
+            "type": "string",
+            "pattern": "^ws_[a-zA-Z0-9_-]+$",
+            "description": "Target workstream ID"
+          },
+          "conflict_type": {
+            "type": "string",
+            "enum": ["write_write", "write_read", "dependency", "resource_lock"],
+            "description": "Type of conflict or relationship"
+          },
+          "conflicting_files": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Files causing the conflict"
+          }
+        }
+      }
+    },
+    "parallel_groups": {
+      "type": "array",
+      "description": "Groups of workstreams that can execute in parallel",
+      "items": {
+        "type": "array",
+        "description": "Single parallel execution group",
+        "items": {
+          "type": "string",
+          "pattern": "^ws_[a-zA-Z0-9_-]+$"
+        }
+      }
+    },
+    "analysis_metadata": {
+      "type": "object",
+      "properties": {
+        "total_workstreams": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total_conflicts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_parallelism": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Maximum workstreams in any single parallel group"
+        },
+        "analysis_timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

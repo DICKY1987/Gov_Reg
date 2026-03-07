@@ -1,0 +1,33 @@
+{
+  "nodes": [
+    {
+      "workstream_id": "ws_backend",
+      "write_count": 2,
+      "read_count": 0
+    },
+    {
+      "workstream_id": "ws_frontend",
+      "write_count": 2,
+      "read_count": 0
+    }
+  ],
+  "edges": [
+    {
+      "source": "ws_backend",
+      "target": "ws_frontend",
+      "conflict_type": "write_write",
+      "conflicting_files": [
+        "src/components/shared.js"
+      ]
+    }
+  ],
+  "parallel_groups": [
+    ["ws_backend"],
+    ["ws_frontend"]
+  ],
+  "analysis_metadata": {
+    "total_workstreams": 2,
+    "total_conflicts": 1,
+    "max_parallelism": 1
+  }
+}

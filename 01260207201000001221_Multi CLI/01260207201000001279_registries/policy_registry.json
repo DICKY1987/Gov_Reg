@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0.0",
+  "last_updated": "2026-03-07T00:00:00Z",
+  "policies": [
+    {
+      "policy_id": "isolation",
+      "name": "Worktree Isolation",
+      "description": "Each workstream must execute in an isolated git worktree",
+      "version": "1.0.0",
+      "effective_date": "2026-03-07",
+      "enforcement_level": "mandatory",
+      "implementation": {
+        "mechanism": "git worktree add --detach",
+        "validation_gate": "GATE-PWE-005"
+      }
+    },
+    {
+      "policy_id": "single_writer",
+      "name": "Single Writer per File",
+      "description": "No two parallel workstreams may write to the same file",
+      "version": "1.0.0",
+      "effective_date": "2026-03-07",
+      "enforcement_level": "mandatory",
+      "implementation": {
+        "mechanism": "Conflict graph analysis",
+        "validation_gate": "GATE-PWE-003"
+      }
+    },
+    {
+      "policy_id": "delta_only_workers",
+      "name": "Delta-Only Workers",
+      "description": "Workstreams produce only patches/diffs, not direct commits",
+      "version": "1.0.0",
+      "effective_date": "2026-03-07",
+      "enforcement_level": "mandatory",
+      "implementation": {
+        "mechanism": "PatchConverter with unified diff format",
+        "validation_gate": "GATE-PWE-008"
+      }
+    },
+    {
+      "policy_id": "explicit_scope",
+      "name": "Explicit Scope Declaration",
+      "description": "All file writes must be declared in write manifest",
+      "version": "1.0.0",
+      "effective_date": "2026-03-07",
+      "enforcement_level": "mandatory",
+      "implementation": {
+        "mechanism": "Write manifest validation",
+        "validation_gate": "GATE-PWE-002"
+      }
+    },
+    {
+      "policy_id": "declared_write_enforcement",
+      "name": "Declared Write Enforcement",
+      "description": "Actual writes must match declared writes exactly",
+      "version": "1.0.0",
+      "effective_date": "2026-03-07",
+      "enforcement_level": "mandatory",
+      "implementation": {
+        "mechanism": "Post-execution diff analysis",
+        "validation_gate": "GATE-PWE-007"
+      }
+    },
+    {
+      "policy_id": "completion_by_evidence",
+      "name": "Completion by Evidence",
+      "description": "Workstream completion proven by cryptographic evidence bundle",
+      "version": "1.0.0",
+      "effective_date": "2026-03-07",
+      "enforcement_level": "mandatory",
+      "implementation": {
+        "mechanism": "SHA-256 hashed evidence bundles",
+        "validation_gate": "GATE-PWE-008"
+      }
+    }
+  ],
+  "invariants": {
+    "max_parallel_workstreams": 4,
+    "max_total_worktrees": 8,
+    "max_failed_workstreams": 1,
+    "max_total_failures": 3
+  },
+  "auto_enable_conditions": {
+    "complexity_threshold": "moderate",
+    "touches_state": true,
+    "min_file_writes": 5
+  },
+  "disable_conditions": {
+    "complexity": "simple",
+    "max_file_writes": 4
+  }
+}

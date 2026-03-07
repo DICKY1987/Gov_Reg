@@ -1,0 +1,140 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://acms.gov/schemas/integration_report.schema.json",
+  "title": "Integration Report",
+  "description": "Schema for patch integration and merge report",
+  "type": "object",
+  "required": ["applied_patches", "failed_patches", "conflicts", "integration_order"],
+  "properties": {
+    "applied_patches": {
+      "type": "array",
+      "description": "Successfully applied patches in order",
+      "items": {
+        "type": "object",
+        "required": ["workstream_id", "file_path", "apply_timestamp"],
+        "properties": {
+          "workstream_id": {
+            "type": "string",
+            "pattern": "^ws_[a-zA-Z0-9_-]+$"
+          },
+          "file_path": {
+            "type": "string"
+          },
+          "apply_timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "patch_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
+    },
+    "failed_patches": {
+      "type": "array",
+      "description": "Patches that failed to apply",
+      "items": {
+        "type": "object",
+        "required": ["workstream_id", "file_path", "error"],
+        "properties": {
+          "workstream_id": {
+            "type": "string",
+            "pattern": "^ws_[a-zA-Z0-9_-]+$"
+          },
+          "file_path": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message from git apply"
+          },
+          "patch_content": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "description": "Merge conflicts detected during integration",
+      "items": {
+        "type": "object",
+        "required": ["file_path", "conflicting_workstreams"],
+        "properties": {
+          "file_path": {
+            "type": "string"
+          },
+          "conflicting_workstreams": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^ws_[a-zA-Z0-9_-]+$"
+            }
+          },
+          "conflict_markers": {
+            "type": "string",
+            "description": "Conflict marker content from file"
+          }
+        }
+      }
+    },
+    "rollback_log": {
+      "type": "array",
+      "description": "Log of rollback operations if integration failed",
+      "items": {
+        "type": "object",
+        "required": ["action", "timestamp", "success"],
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "Description of rollback action"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "integration_order": {
+      "type": "array",
+      "description": "Topological order of workstream integration",
+      "items": {
+        "type": "string",
+        "pattern": "^ws_[a-zA-Z0-9_-]+$"
+      }
+    },
+    "integration_metadata": {
+      "type": "object",
+      "properties": {
+        "start_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "total_patches_applied": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rollback_occurred": {
+          "type": "boolean",
+          "default": false
+        },
+        "final_commit_sha": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        }
+      }
+    }
+  }
+}

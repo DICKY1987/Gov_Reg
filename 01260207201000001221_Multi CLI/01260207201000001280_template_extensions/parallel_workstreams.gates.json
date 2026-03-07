@@ -1,0 +1,113 @@
+{
+  "gate_catalog_version": "1.0.0",
+  "gates": [
+    {
+      "gate_id": "GATE-PWE-001",
+      "name": "Parallel Workstreams Scope Validation",
+      "description": "Validate parallel workstreams configuration against schema",
+      "phase": "validation",
+      "mandatory": true,
+      "script": "validate_parallel_workstreams.py",
+      "success_criteria": "Configuration passes JSON schema validation and dependency checks"
+    },
+    {
+      "gate_id": "GATE-PWE-002",
+      "name": "Write Manifest Validation",
+      "description": "Validate all workstream write manifests",
+      "phase": "validation",
+      "mandatory": true,
+      "script": "validate_parallel_workstreams.py",
+      "success_criteria": "All manifests exist and pass schema validation"
+    },
+    {
+      "gate_id": "GATE-PWE-003",
+      "name": "Conflict Graph Build",
+      "description": "Build conflict graph from write manifests",
+      "phase": "analysis",
+      "mandatory": true,
+      "script": "compute_conflict_graph.py",
+      "success_criteria": "Conflict graph built successfully with all edges identified"
+    },
+    {
+      "gate_id": "GATE-PWE-004",
+      "name": "Parallel Group Authorization",
+      "description": "Authorize parallel execution groups against constraints",
+      "phase": "analysis",
+      "mandatory": true,
+      "script": "compute_conflict_graph.py",
+      "success_criteria": "Max parallelism within configured limits"
+    },
+    {
+      "gate_id": "GATE-PWE-005",
+      "name": "Worktree Provisioning",
+      "description": "Provision isolated git worktrees for each workstream",
+      "phase": "provisioning",
+      "mandatory": true,
+      "script": "provision_worktrees.py",
+      "success_criteria": "All worktrees created successfully and isolated"
+    },
+    {
+      "gate_id": "GATE-PWE-006",
+      "name": "Workstream Execution",
+      "description": "Execute workstream in isolated worktree",
+      "phase": "execution",
+      "mandatory": true,
+      "script": "dispatch_workers.py",
+      "success_criteria": "Workstream completes with exit code 0"
+    },
+    {
+      "gate_id": "GATE-PWE-007",
+      "name": "Declared Write Enforcement",
+      "description": "Verify actual writes match declared writes",
+      "phase": "validation",
+      "mandatory": true,
+      "script": "enforce_declared_writes.py",
+      "success_criteria": "No undeclared writes detected"
+    },
+    {
+      "gate_id": "GATE-PWE-008",
+      "name": "Evidence Bundle Validation",
+      "description": "Collect and validate workstream evidence bundle",
+      "phase": "validation",
+      "mandatory": true,
+      "script": "collect_workstream_evidence.py",
+      "success_criteria": "Evidence bundle passes schema validation with valid SHA-256 hashes"
+    },
+    {
+      "gate_id": "GATE-PWE-009",
+      "name": "Patch Integration",
+      "description": "Integrate patches in topological order",
+      "phase": "integration",
+      "mandatory": true,
+      "script": "integrate_patches.py",
+      "success_criteria": "All patches apply cleanly in order"
+    },
+    {
+      "gate_id": "GATE-PWE-010",
+      "name": "Integration Validation",
+      "description": "Validate integrated result",
+      "phase": "integration",
+      "mandatory": true,
+      "script": "integrate_patches.py",
+      "success_criteria": "No conflicts, all patches applied"
+    },
+    {
+      "gate_id": "GATE-PWE-011",
+      "name": "Determinism Validation",
+      "description": "Verify conflict graph computation is deterministic",
+      "phase": "validation",
+      "mandatory": true,
+      "script": "validate_determinism.py",
+      "success_criteria": "Multiple runs produce identical normalized hashes"
+    },
+    {
+      "gate_id": "GATE-PWE-012",
+      "name": "Registry Reconciliation",
+      "description": "Reconcile artifacts with registry state",
+      "phase": "finalization",
+      "mandatory": true,
+      "script": "rebuild_registries.py",
+      "success_criteria": "All artifacts cataloged in registry with provenance"
+    }
+  ]
+}

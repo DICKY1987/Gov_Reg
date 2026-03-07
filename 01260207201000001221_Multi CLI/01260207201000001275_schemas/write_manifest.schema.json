@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://acms.gov/schemas/write_manifest.schema.json",
+  "title": "Write Manifest",
+  "description": "Schema for workstream write manifest declarations",
+  "type": "object",
+  "required": ["workstream_id", "declared_writes"],
+  "properties": {
+    "workstream_id": {
+      "type": "string",
+      "pattern": "^ws_[a-zA-Z0-9_-]+$",
+      "description": "Unique identifier for the workstream"
+    },
+    "declared_writes": {
+      "type": "array",
+      "description": "Files this workstream declares it will modify",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "description": "File path relative to repository root"
+      }
+    },
+    "declared_reads": {
+      "type": "array",
+      "description": "Files this workstream declares it will read",
+      "items": {
+        "type": "string",
+        "description": "File path relative to repository root"
+      },
+      "default": []
+    },
+    "exclusive_locks": {
+      "type": "array",
+      "description": "Resources requiring exclusive locks",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "intent": {
+      "type": "string",
+      "description": "Human-readable description of workstream purpose"
+    },
+    "estimated_duration_seconds": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Estimated execution time in seconds"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when manifest was created"
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "default": "1.0.0",
+      "description": "Schema version for compatibility tracking"
+    }
+  }
+}

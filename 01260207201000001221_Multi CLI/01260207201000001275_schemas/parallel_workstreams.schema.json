@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://acms.gov/schemas/parallel_workstreams.schema.json",
+  "title": "Parallel Workstreams Configuration",
+  "description": "Schema for parallel workstream execution configuration",
+  "type": "object",
+  "required": ["workstreams", "max_parallel_workstreams", "circuit_breakers"],
+  "properties": {
+    "workstreams": {
+      "type": "array",
+      "description": "List of independent workstreams that can be executed in parallel",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["workstream_id", "write_manifest"],
+        "properties": {
+          "workstream_id": {
+            "type": "string",
+            "pattern": "^ws_[a-zA-Z0-9_-]+$",
+            "description": "Unique identifier for the workstream"
+          },
+          "write_manifest": {
+            "type": "string",
+            "description": "Path to write manifest file for this workstream"
+          },
+          "dependencies": {
+            "type": "array",
+            "description": "List of workstream_ids that must complete before this one",
+            "items": {
+              "type": "string",
+              "pattern": "^ws_[a-zA-Z0-9_-]+$"
+            },
+            "default": []
+          },
+          "exclusive_resources": {
+            "type": "array",
+            "description": "Resources that require exclusive access",
+            "items": {
+              "type": "string"
+            },
+            "default": []
+          },
+          "base_commit": {
+            "type": "string",
+            "description": "Git commit SHA to base this workstream on",
+            "pattern": "^[a-f0-9]{40}$"
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10,
+            "default": 5,
+            "description": "Execution priority (0=lowest, 10=highest)"
+          }
+        }
+      }
+    },
+    "max_parallel_workstreams": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 8,
+      "default": 4,
+      "description": "Maximum number of workstreams that can execute simultaneously"
+    },
+    "circuit_breakers": {
+      "type": "object",
+      "required": ["max_failed_workstreams", "max_total_failures"],
+      "properties": {
+        "max_failed_workstreams": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1,
+          "description": "Maximum number of failed workstreams before halting execution"
+        },
+        "max_total_failures": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 3,
+          "description": "Maximum total failure count across all workstreams"
+        }
+      }
+    },
+    "auto_enable": {
+      "type": "object",
+      "description": "Conditions for automatically enabling parallel execution",
+      "properties": {
+        "complexity_threshold": {
+          "type": "string",
+          "enum": ["simple", "moderate", "complex"],
+          "default": "moderate"
+        },
+        "touches_state": {
+          "type": "boolean",
+          "default": false
+        },
+        "min_file_writes": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 5
+        }
+      }
+    }
+  }
+}

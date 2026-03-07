@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0.0",
+  "last_updated": "2026-03-07T00:00:00Z",
+  "artifacts": [],
+  "metadata": {
+    "total_artifacts": 0,
+    "description": "Inventory of all parallel workstream artifacts with SHA-256 hashes and provenance"
+  },
+  "artifact_types": {
+    "conflict_graph": {
+      "schema": "conflict_graph.schema.json",
+      "description": "Conflict analysis graph for parallel workstreams"
+    },
+    "write_manifest": {
+      "schema": "write_manifest.schema.json",
+      "description": "Workstream write declarations"
+    },
+    "worktree_execution_report": {
+      "schema": "worktree_execution_report.schema.json",
+      "description": "Individual workstream execution report"
+    },
+    "integration_report": {
+      "schema": "integration_report.schema.json",
+      "description": "Patch integration and merge report"
+    },
+    "evidence_bundle": {
+      "schema": "evidence_bundle.schema.json",
+      "description": "Complete workstream execution evidence"
+    }
+  },
+  "provenance_tracking": {
+    "enabled": true,
+    "required_fields": ["run_id", "workstream_id", "gate_id", "sha256", "created_at"]
+  }
+}
