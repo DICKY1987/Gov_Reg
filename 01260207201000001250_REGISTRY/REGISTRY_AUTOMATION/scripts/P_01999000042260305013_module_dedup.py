@@ -155,6 +155,38 @@ class ModuleDeduplicator:
             traceback.print_exc()
             return 2
 
+
+    def generate_dedup_patches(self) -> List[Dict[str, Any]]:
+        ""Generate RFC-6902 patches for deduplicated modules.""
+        patches = []
+        
+        for module_name, canonical_file_id in self.canonical_resolutions.items():
+            patches.append({
+                "op": "replace",
+                "path": f"/module_resolution/{module_name}",
+                "value": canonical_file_id,
+                "reason": "Deduplicated module name"
+            })
+        
+        return patches
+    
+    def apply_deduplication(self, registry: Dict[str, Any], backup: bool = True) -> bool:
+        ""Apply deduplication patches to registry.""
+        if backup:
+            backup_path = self.registry_path.parent / f"{self.registry_path.name}.backup"
+            import shutil
+            shutil.copy(self.registry_path, backup_path)
+            print(f"Backup created: {backup_path}")
+        
+        # Apply deduplication
+        files = registry.get("files", [])
+        for file_rec in files:
+            module_name = file_rec.get("module_name")
+            if module_name in self.canonical_resolutions:
+                file_rec["canonical_module_file_id"] = self.canonical_resolutions[module_name]
+        
+        return True
+
 def main():
     import argparse
     

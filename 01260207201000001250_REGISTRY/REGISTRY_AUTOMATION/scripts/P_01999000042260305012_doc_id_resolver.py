@@ -143,6 +143,40 @@ class DocIdResolver:
             traceback.print_exc()
             return 2
 
+
+    def generate_resolution_patches(self) -> List[Dict[str, Any]]:
+        ""Generate RFC-6902 patches for resolved collisions.""
+        patches = []
+        
+        for doc_id, canonical_file_id in self.resolutions.items():
+            # Patch to update doc_id references
+            patches.append({
+                "op": "replace",
+                "path": f"/doc_id_resolution/{doc_id}",
+                "value": canonical_file_id,
+                "reason": "Resolved doc_id collision"
+            })
+        
+        return patches
+    
+    def apply_resolutions(self, registry: Dict[str, Any], backup: bool = True) -> bool:
+        ""Apply resolution patches to registry.""
+        if backup:
+            backup_path = self.registry_path.parent / f"{self.registry_path.name}.backup"
+            import shutil
+            shutil.copy(self.registry_path, backup_path)
+            print(f"Backup created: {backup_path}")
+        
+        # Apply resolutions
+        files = registry.get("files", [])
+        for file_rec in files:
+            doc_id = file_rec.get("doc_id")
+            if doc_id in self.resolutions:
+                # Update to canonical file_id reference
+                file_rec["resolved_doc_id"] = self.resolutions[doc_id]
+        
+        return True
+
 def main():
     import argparse
     

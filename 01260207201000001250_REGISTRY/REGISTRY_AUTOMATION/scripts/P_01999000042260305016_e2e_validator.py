@@ -35,6 +35,49 @@ class EndToEndValidator:
         
         return all_valid
     
+
+    def check_required_columns(self, files: list) -> bool:
+        ""Check that required columns are present.""
+        required = ["file_id", "relative_path"]
+        all_valid = True
+        
+        for idx, file_rec in enumerate(files):
+            for col in required:
+                if col not in file_rec or not file_rec[col]:
+                    self.errors.append(f"File {idx}: Missing required column '{col}'")
+                    all_valid = False
+        
+        return all_valid
+    
+    def check_duplicate_ids(self, files: list) -> bool:
+        ""Check for duplicate file_ids.""
+        seen_ids = set()
+        all_valid = True
+        
+        for idx, file_rec in enumerate(files):
+            file_id = file_rec.get("file_id")
+            if file_id:
+                if file_id in seen_ids:
+                    self.errors.append(f"File {idx}: Duplicate file_id '{file_id}'")
+                    all_valid = False
+                seen_ids.add(file_id)
+        
+        return all_valid
+    
+    def check_promotion_states(self, files: list) -> bool:
+        ""Check that promotion states are valid.""
+        valid_states = ["CANONICAL", "LEGACY", "UNKNOWN", None]
+        all_valid = True
+        
+        for idx, file_rec in enumerate(files):
+            canonicality = file_rec.get("canonicality")
+            if canonicality not in valid_states:
+                self.errors.append(
+                    f"File {idx}: Invalid canonicality '{canonicality}'"
+                )
+                all_valid = False
+        
+        return all_valid
     def run_validation(self, registry_path: Path) -> bool:
         """Run complete validation."""
         with open(registry_path, encoding='utf-8') as f:
