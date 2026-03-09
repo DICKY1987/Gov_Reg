@@ -76,7 +76,7 @@ class PipelineRunner:
                 transformed = result.get("transformed", {})
                 file_name = Path(file_path).name
                 file_id = self._file_id_index.get(file_name)
-                if file_id and transformed.get("data"):
+                if file_id and transformed:
                     staging_dir = self.output_dir / "staging"
                     staging_dir.mkdir(exist_ok=True)
                     staging_file = staging_dir / f"{file_name}.json"
