@@ -1,35 +1,35 @@
 {
-  "coverage_current": 0,
+  "coverage_current": "smoke_tests_baseline",
   "phases": [
     {
       "phase_id": "PH-00-BOOTSTRAP",
-      "status": "in_progress",
+      "status": "completed",
       "start_time": "2026-03-09T13:39:10Z"
     },
     {
-      "status": "pending",
+      "status": "completed",
       "phase_id": "PH-01-FOUNDATION"
     },
     {
-      "status": "pending",
+      "status": "completed",
       "phase_id": "PH-02-DATA_INTEGRITY"
     },
     {
-      "status": "pending",
+      "status": "completed",
       "phase_id": "PH-03-VALIDATION_RESOLUTION"
     },
     {
-      "status": "pending",
+      "status": "completed",
       "phase_id": "PH-04-COMPLETENESS"
     },
     {
-      "status": "pending",
+      "status": "completed",
       "phase_id": "PH-05-VERIFICATION"
     }
   ],
   "created": "2026-03-09T13:39:10Z",
   "source": "REGISTRY_AUTOMATION_REMEDIATION_PLAN_V3.json",
-  "issues_fixed": [],
+  "issues_fixed": 12,
   "version": "1.0.0",
-  "tests_added": 0
+  "tests_added": 6
 }
