@@ -170,6 +170,39 @@ class FileIDReconciler:
             return 2
 
 
+
+    def promote_sha256_to_file_id(self, sha256: str) -> Optional[str]:
+        ""
+        Promote a SHA256 hash to a file_id.
+        
+        Args:
+            sha256: SHA256 hash to resolve
+            
+        Returns:
+            file_id if found and unique, None otherwise
+            
+        Raises:
+            ValueError: If SHA256 maps to multiple file_ids (ambiguous)
+        ""
+        if not self.validate_sha256(sha256)[0]:
+            return None
+        
+        file_id = self.sha256_to_file_id.get(sha256)
+        
+        if file_id is None:
+            return None
+        
+        # Verify it's unambiguous (should never happen with proper mapping)
+        # but fail-closed if detected
+        reverse_check = self.file_id_to_sha256.get(file_id)
+        if reverse_check != sha256:
+            raise ValueError(
+                f"Ambiguous mapping: sha256 {sha256} maps to file_id {file_id}, "
+                f"but file_id maps back to {reverse_check}"
+            )
+        
+        return file_id
+
 def main():
     import argparse
     
