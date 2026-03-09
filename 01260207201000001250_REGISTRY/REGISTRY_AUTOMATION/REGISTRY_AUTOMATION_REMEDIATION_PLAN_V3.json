@@ -1,0 +1,1600 @@
+{
+  "template_metadata": {
+    "version": "3.0.0",
+    "last_updated": "2026-03-09T13:32:12Z",
+    "purpose": "Complete remediation plan for Registry Automation System - 16 critical fixes",
+    "format": "json",
+    "schema_version": "3.0.0",
+    "source_audit": "AUDIT_SUMMARY_AND_EXECUTION_PLAN.md",
+    "template_source": "01260207201000000510_NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3.json"
+  },
+  "critical_constraint": {
+    "name": "NO_IMPLIED_BEHAVIOR",
+    "rules": [
+      "Every fix must have: executable command, evidence artifact path, pass/fail condition",
+      "Items that cannot be automated MUST be marked NOT_AUTOMATABLE",
+      "EVERY STEP must have explicit inputs/outputs/invariants defined",
+      "All mutations MUST create backups before execution",
+      "All failures MUST fail-closed with explicit evidence"
+    ]
+  },
+  "task_analysis": {
+    "original_request": "Fix 16 critical issues in Registry Automation System identified in audit",
+    "specificity_transformation": {
+      "objective": {
+        "project_name": "REGISTRY_AUTOMATION_REMEDIATION",
+        "ground_truth_level": "L3",
+        "quantified_targets": [
+          "Fix 5 CRITICAL blockers (Items 3,6,8,15,16)",
+          "Fix 4 HIGH priority issues (Items 7,9,11,12,14)",
+          "Fix 3 MEDIUM priority issues (Items 10,13,timestamp)",
+          "Add 50+ test cases (0 → 50)",
+          "Achieve 80%+ code coverage",
+          "Reduce broken scripts from 5 to 0",
+          "Increase working scripts from 9 to 19"
+        ]
+      },
+      "methodology": {
+        "phases": [
+          "PH-00-BOOTSTRAP",
+          "PH-01-FOUNDATION",
+          "PH-02-DATA_INTEGRITY",
+          "PH-03-VALIDATION_RESOLUTION",
+          "PH-04-COMPLETENESS",
+          "PH-05-VERIFICATION"
+        ],
+        "parallel_groups": [
+          {
+            "group_id": "PG-01",
+            "phases": ["PH-01-FOUNDATION"],
+            "reason": "Sequential dependency on docs and bug fixes"
+          },
+          {
+            "group_id": "PG-02",
+            "phases": ["PH-02-DATA_INTEGRITY"],
+            "reason": "Depends on PH-01 completion"
+          },
+          {
+            "group_id": "PG-03",
+            "phases": ["PH-03-VALIDATION_RESOLUTION"],
+            "reason": "Depends on PH-02 completion"
+          }
+        ],
+        "steps_per_phase": {
+          "PH-00-BOOTSTRAP": 3,
+          "PH-01-FOUNDATION": 6,
+          "PH-02-DATA_INTEGRITY": 6,
+          "PH-03-VALIDATION_RESOLUTION": 5,
+          "PH-04-COMPLETENESS": 5,
+          "PH-05-VERIFICATION": 3
+        }
+      },
+      "success_criteria": {
+        "gates": [
+          "All 19 scripts have unit tests",
+          "Pipeline runner staging works correctly",
+          "Defaults system functional with COLUMN_DICTIONARY",
+          "SHA256 → file_id promotion complete",
+          "E2E validator catches all corruption types",
+          "Entity resolution mutates registry safely",
+          "Documentation matches reality",
+          "50+ tests passing",
+          "0 critical blockers remain"
+        ],
+        "steps": [
+          "Each step produces required evidence artifacts",
+          "Each step passes precondition/postcondition checks",
+          "Each step respects file scope boundaries",
+          "Each step produces verifiable git diffs"
+        ]
+      }
+    },
+    "classification": {
+      "complexity": "enterprise",
+      "domain": "data_pipeline_governance",
+      "quality": "production_grade",
+      "inferred_behavior": {
+        "verification_level": 3,
+        "test_coverage_min": 80,
+        "phases": 6,
+        "parallel_groups": 3,
+        "steps_per_phase": {
+          "avg": 5,
+          "min": 3,
+          "max": 6
+        }
+      },
+      "decision_log_entry": {
+        "decision_id": "CLASSIFY-001",
+        "category": "classification",
+        "context": {
+          "scripts": 19,
+          "test_coverage_current": 0,
+          "loc_impact": 1420,
+          "files_changed": 32,
+          "blockers_critical": 5,
+          "blockers_high": 4
+        },
+        "options": ["simple", "moderate", "complex", "enterprise"],
+        "selected_option": "enterprise",
+        "rationale": "32+ files, requires contracts, production governance, 80%+ test coverage, fail-closed validation",
+        "timestamp": "2026-03-09T13:32:12Z"
+      }
+    },
+    "classification_rules": {
+      "applied_rule": "enterprise",
+      "condition": "file_count > 30 OR requires_contracts",
+      "verification_level": 3,
+      "test_coverage_min": 80,
+      "phases": ["bootstrap", "architecture", "contracts", "implement_parallel", "integration", "hardening", "package"]
+    }
+  },
+  "assumptions_scope": {
+    "assumptions": [
+      "Python 3.8+ available",
+      "Git repository has .git directory",
+      "Write permissions on C:\\Users\\richg\\Gov_Reg\\01260207201000001250_REGISTRY",
+      "COLUMN_DICTIONARY can be located or regenerated",
+      "Phase A analyzers exist and work",
+      "Registry JSON is parseable",
+      "pytest, ruff, mypy can be installed"
+    ],
+    "in_scope": [
+      "Fix all 16 audit findings",
+      "Add comprehensive test coverage",
+      "Fix pipeline staging bug",
+      "Fix defaults system",
+      "Complete SHA256 promotion",
+      "Strengthen E2E validation",
+      "Convert entity resolution to mutation",
+      "Update documentation to match reality",
+      "Create .state/ infrastructure",
+      "Add preflight checks"
+    ],
+    "out_of_scope": [
+      "Rewrite scripts in different language",
+      "Change registry schema",
+      "Add new Phase B/C analyzers (Option B: downgrade claims instead)",
+      "Migrate to different pipeline framework",
+      "Change file_id format from 20-digit"
+    ],
+    "definition_of_done": [
+      "All 16 repair items addressed",
+      "Test coverage ≥80% (lines)",
+      "All critical blockers resolved",
+      "Documentation accurate and complete",
+      "Evidence trail complete for all steps",
+      "Preflight checks enforced",
+      "No data loss in pipeline",
+      "Entity collisions auto-resolved",
+      "50+ tests passing",
+      "0 broken scripts remain",
+      "README.md status matches reality"
+    ]
+  },
+  "file_manifest": {
+    "description": "All files touched during 4-week remediation",
+    "purpose": "Change tracking, conflict detection, review scoping",
+    "global_files": [
+      {
+        "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/README.md",
+        "access": "write",
+        "reason": "Update status from Production-Ready to Development",
+        "phases": ["PH-01-FOUNDATION"]
+      },
+      {
+        "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/SCRIPT_INDEX.md",
+        "access": "write",
+        "reason": "Add P_...305018_sha256_backfill.py to index",
+        "phases": ["PH-01-FOUNDATION"]
+      },
+      {
+        "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305017_pipeline_runner.py",
+        "access": "write",
+        "reason": "Fix staging bug line 79",
+        "phases": ["PH-01-FOUNDATION"]
+      }
+    ],
+    "by_phase": {
+      "PH-00-BOOTSTRAP": {
+        "files": [
+          {
+            "path": "01260207201000001250_REGISTRY/.state",
+            "type": "dir",
+            "access": "create",
+            "reason": "Infrastructure for preflight checks"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/.state/gates/gates_spec.json",
+            "type": "file",
+            "access": "create",
+            "reason": "Gate specifications"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/.state/remediation/remediation_plan.json",
+            "type": "file",
+            "access": "create",
+            "reason": "Remediation tracking"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/.state/issues/normalized_issues.json",
+            "type": "file",
+            "access": "create",
+            "reason": "Issue tracking"
+          }
+        ]
+      },
+      "PH-01-FOUNDATION": {
+        "files": [
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests",
+            "type": "dir",
+            "access": "create",
+            "reason": "Test infrastructure"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/conftest.py",
+            "type": "file",
+            "access": "create",
+            "reason": "Pytest configuration"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/fixtures/golden_registry.json",
+            "type": "file",
+            "access": "create",
+            "reason": "Golden path test data"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/fixtures/broken_registry.json",
+            "type": "file",
+            "access": "create",
+            "reason": "Negative test data"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305019_preflight_checker.py",
+            "type": "file",
+            "access": "create",
+            "reason": "Fail-closed preflight validation"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/unit/test_pipeline_runner_smoke.py",
+            "type": "file",
+            "access": "create",
+            "reason": "Smoke test for pipeline runner"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/unit/test_enum_drift_gate_smoke.py",
+            "type": "file",
+            "access": "create",
+            "reason": "Smoke test for enum drift"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/unit/test_phase_a_transformer_smoke.py",
+            "type": "file",
+            "access": "create",
+            "reason": "Smoke test for transformer"
+          }
+        ]
+      },
+      "PH-02-DATA_INTEGRITY": {
+        "files": [
+          {
+            "path": "01260207201000001250_REGISTRY/COLUMN_HEADERS/01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+            "type": "file",
+            "access": "create_or_locate",
+            "reason": "Missing column dictionary"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305005_column_loader.py",
+            "type": "file",
+            "access": "write",
+            "reason": "Add get_all_columns() and get_default_value() methods"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305007_default_injector.py",
+            "type": "file",
+            "access": "write",
+            "reason": "Fix method calls to ColumnLoader"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305008_null_coalescer.py",
+            "type": "file",
+            "access": "write",
+            "reason": "Fix method calls to ColumnLoader"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305001_file_id_reconciler.py",
+            "type": "file",
+            "access": "write",
+            "reason": "Add promote_sha256_to_file_id() method"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/unit/test_default_injector.py",
+            "type": "file",
+            "access": "create",
+            "reason": "Unit tests for defaults"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/unit/test_null_coalescer.py",
+            "type": "file",
+            "access": "create",
+            "reason": "Unit tests for null handling"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/integration/test_sha256_promotion.py",
+            "type": "file",
+            "access": "create",
+            "reason": "Integration test for backfill → promotion"
+          }
+        ]
+      },
+      "PH-03-VALIDATION_RESOLUTION": {
+        "files": [
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305016_e2e_validator.py",
+            "type": "file",
+            "access": "write",
+            "reason": "Add required columns, duplicate ID, promotion state checks"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305012_doc_id_resolver.py",
+            "type": "file",
+            "access": "write",
+            "reason": "Add patch generation and apply mode"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305013_module_dedup.py",
+            "type": "file",
+            "access": "write",
+            "reason": "Add patch generation and apply mode"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/unit/test_e2e_validator.py",
+            "type": "file",
+            "access": "create",
+            "reason": "Unit tests for enhanced validation"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/integration/test_entity_resolution.py",
+            "type": "file",
+            "access": "create",
+            "reason": "Integration test for resolution → patch → apply"
+          }
+        ]
+      },
+      "PH-04-COMPLETENESS": {
+        "files": [
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305015_timestamp_clusterer.py",
+            "type": "file",
+            "access": "write",
+            "reason": "Add --timestamp-field parameter"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305020_registry_path_cleaner.py",
+            "type": "file",
+            "access": "create",
+            "reason": "Clean FILE WATCHER pollution"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/docs/EVIDENCE_ARTIFACT_SCHEMA_V1.json",
+            "type": "file",
+            "access": "create",
+            "reason": "Standardized evidence schema"
+          },
+          {
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305014_intake_orchestrator.py",
+            "type": "file",
+            "access": "write",
+            "reason": "Option B: Downgrade claims OR wire Phase B/C"
+          }
+        ]
+      }
+    },
+    "by_step": {},
+    "conflict_analysis": {
+      "command": "git diff --name-only HEAD",
+      "expect_exit_code": 0,
+      "evidence": ".state/evidence/file_conflict_analysis.json"
+    },
+    "validation": {
+      "command": "python scripts/validate_file_manifest.py .state/file_manifest.json",
+      "expect_exit_code": 0,
+      "checks": [
+        "All paths are relative to repo root",
+        "No duplicate write permissions in same phase",
+        "All created files have parent directories created first",
+        "Write permissions don't overlap across parallel phases"
+      ]
+    }
+  },
+  "phase_plan": {
+    "phase_overview": [
+      {
+        "phase_id": "PH-00-BOOTSTRAP",
+        "purpose": "Create .state/ infrastructure for preflight checks",
+        "duration_days": 1,
+        "blocking": true,
+        "steps": 3,
+        "ground_truth_level": "L1"
+      },
+      {
+        "phase_id": "PH-01-FOUNDATION",
+        "purpose": "Fix docs, staging bug, add test infrastructure",
+        "duration_days": 5,
+        "blocking": true,
+        "steps": 6,
+        "ground_truth_level": "L2"
+      },
+      {
+        "phase_id": "PH-02-DATA_INTEGRITY",
+        "purpose": "Fix defaults system, SHA256 promotion",
+        "duration_days": 5,
+        "blocking": true,
+        "steps": 6,
+        "ground_truth_level": "L2"
+      },
+      {
+        "phase_id": "PH-03-VALIDATION_RESOLUTION",
+        "purpose": "Strengthen validation, convert entity resolution to mutation",
+        "duration_days": 5,
+        "blocking": true,
+        "steps": 5,
+        "ground_truth_level": "L3"
+      },
+      {
+        "phase_id": "PH-04-COMPLETENESS",
+        "purpose": "Timestamp fix, path cleanup, evidence schema, Phase B/C decision",
+        "duration_days": 5,
+        "blocking": false,
+        "steps": 5,
+        "ground_truth_level": "L2"
+      },
+      {
+        "phase_id": "PH-05-VERIFICATION",
+        "purpose": "End-to-end integration tests, final validation",
+        "duration_days": 3,
+        "blocking": true,
+        "steps": 3,
+        "ground_truth_level": "L4"
+      }
+    ],
+    "parallel_execution_groups": [
+      {
+        "group_id": "SEQ-01",
+        "phases": ["PH-00-BOOTSTRAP", "PH-01-FOUNDATION"],
+        "execution": "sequential",
+        "reason": "Foundation depends on bootstrap"
+      },
+      {
+        "group_id": "SEQ-02",
+        "phases": ["PH-02-DATA_INTEGRITY"],
+        "execution": "sequential",
+        "reason": "Data integrity depends on test infrastructure"
+      },
+      {
+        "group_id": "SEQ-03",
+        "phases": ["PH-03-VALIDATION_RESOLUTION"],
+        "execution": "sequential",
+        "reason": "Validation depends on data integrity fixes"
+      },
+      {
+        "group_id": "PAR-01",
+        "phases": ["PH-04-COMPLETENESS"],
+        "execution": "parallel_possible",
+        "reason": "Non-blocking improvements can run in parallel with PH-05"
+      }
+    ],
+    "execution_strategy": {
+      "parallel_execution": false,
+      "max_concurrent": 1,
+      "scheduling_policy": "strict_sequential",
+      "step_ordering": "dependency_graph",
+      "reason": "Complex dependencies, shared files, needs careful coordination"
+    },
+    "time_estimate": {
+      "sequential_total_days": 24,
+      "parallel_total_days": 24,
+      "speedup_percent": 0,
+      "formula": "1 - (parallel / sequential)",
+      "per_phase_estimates": {
+        "PH-00-BOOTSTRAP": 1,
+        "PH-01-FOUNDATION": 5,
+        "PH-02-DATA_INTEGRITY": 5,
+        "PH-03-VALIDATION_RESOLUTION": 5,
+        "PH-04-COMPLETENESS": 5,
+        "PH-05-VERIFICATION": 3
+      },
+      "risk_buffer": "20% (add 5 days)",
+      "total_with_buffer": 29
+    },
+    "dag_validation": {
+      "command": "echo 'DAG: PH-00 → PH-01 → PH-02 → PH-03 → PH-04 → PH-05'",
+      "expect": "exit_code == 0 AND no_cycles == true",
+      "evidence": ".state/evidence/PH-00/dag_validation.json"
+    }
+  },
+  "self_healing": {
+    "enabled": true,
+    "budgets": {
+      "per_phase_max_attempts": 2,
+      "per_gate_max_attempts": 1,
+      "per_step_max_attempts": 2,
+      "global_max_attempts": 10
+    },
+    "failure_types": [
+      {
+        "id": "COLUMN_DICT_MISSING",
+        "allowed_actions": [
+          "search backups for COLUMN_DICTIONARY.json",
+          "generate from registry schema"
+        ],
+        "max_attempts": 2,
+        "abort_if": [
+          "error_matches: /cannot generate schema|schema extraction failed/i"
+        ],
+        "step_context_required": true
+      },
+      {
+        "id": "TEST_FAIL",
+        "allowed_actions": [
+          "pytest -q --last-failed",
+          "pytest -q --maxfail=1"
+        ],
+        "max_attempts": 2,
+        "abort_if": [
+          "error_matches: /segmentation fault|core dumped/i"
+        ],
+        "step_context_required": true
+      },
+      {
+        "id": "PREFLIGHT_FAIL",
+        "allowed_actions": [
+          "create missing .state/ files",
+          "repair malformed JSON"
+        ],
+        "max_attempts": 1,
+        "abort_if": [
+          "error_matches: /permission denied|access denied/i"
+        ],
+        "step_context_required": true
+      }
+    ],
+    "attempt_evidence": {
+      "required_files": [
+        ".state/attempts/{phase}/{step_id}/attempt_{n}/stdout.log",
+        ".state/attempts/{phase}/{step_id}/attempt_{n}/stderr.log",
+        ".state/attempts/{phase}/{step_id}/attempt_{n}/result.json"
+      ]
+    },
+    "convergence_detection": {
+      "metric": "test_pass_count_delta",
+      "threshold": "> 0 improvement",
+      "window": 2,
+      "action_if_not_converging": "abort_and_escalate"
+    },
+    "escalation": {
+      "trigger": [
+        "per_phase_max_attempts exceeded",
+        "abort_if condition met"
+      ],
+      "action": [
+        "write .state/escalation/{phase}_escalation.json",
+        "emit structured error report",
+        "stop execution"
+      ]
+    }
+  },
+  "worktree_isolation": {
+    "enabled": false,
+    "reason": "Single developer, sequential execution, simpler git workflow preferred",
+    "alternative": "Feature branches with backup tags"
+  },
+  "ground_truth_levels": {
+    "enum": {
+      "L0": "No verification (documentation-only)",
+      "L1": "Static checks (lint/format/parse)",
+      "L2": "Unit tests (fast, isolated)",
+      "L3": "Integration tests (multi-component)",
+      "L4": "End-to-end workflow validation"
+    },
+    "required_by_phase": {
+      "PH-00-BOOTSTRAP": "L1",
+      "PH-01-FOUNDATION": "L2",
+      "PH-02-DATA_INTEGRITY": "L2",
+      "PH-03-VALIDATION_RESOLUTION": "L3",
+      "PH-04-COMPLETENESS": "L2",
+      "PH-05-VERIFICATION": "L4"
+    },
+    "enforcement": {
+      "rule": "Phase CANNOT complete unless minimum level passed for ALL steps",
+      "validator_command": "python scripts/validate_ground_truth.py {phase} {min_level}",
+      "expect_exit_code": 0
+    }
+  },
+  "phase_contracts": {
+    "PH-00-BOOTSTRAP": {
+      "purpose": "Create .state/ infrastructure for fail-closed preflight checks",
+      "inputs": [
+        {
+          "id": "REGISTRY_ROOT",
+          "type": "dir",
+          "required": true,
+          "must_exist": true,
+          "path": "01260207201000001250_REGISTRY"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "STATE_DIR",
+          "type": "dir",
+          "path": "01260207201000001250_REGISTRY/.state",
+          "required": true
+        },
+        {
+          "id": "GATES_SPEC",
+          "type": "file",
+          "path": "01260207201000001250_REGISTRY/.state/gates/gates_spec.json",
+          "required": true
+        },
+        {
+          "id": "REMEDIATION_PLAN",
+          "type": "file",
+          "path": "01260207201000001250_REGISTRY/.state/remediation/remediation_plan.json",
+          "required": true
+        },
+        {
+          "id": "ISSUES_SPEC",
+          "type": "file",
+          "path": "01260207201000001250_REGISTRY/.state/issues/normalized_issues.json",
+          "required": true
+        }
+      ],
+      "invariants": [
+        "No script files modified",
+        "Only .state/ directory created"
+      ],
+      "preconditions": [
+        "test -d 01260207201000001250_REGISTRY",
+        "test ! -d 01260207201000001250_REGISTRY/.state"
+      ],
+      "postconditions": [
+        "test -d 01260207201000001250_REGISTRY/.state",
+        "test -f 01260207201000001250_REGISTRY/.state/gates/gates_spec.json",
+        "python -c 'import json; json.load(open(\"01260207201000001250_REGISTRY/.state/gates/gates_spec.json\"))'"
+      ],
+      "failure_modes": [
+        {
+          "code": "PH-00-CREATE-FAIL",
+          "meaning": "Failed to create .state/ directory",
+          "remediation": "Check write permissions"
+        }
+      ],
+      "steps": [
+        "STEP-001-CREATE-STATE-DIR",
+        "STEP-002-CREATE-GATES-SPEC",
+        "STEP-003-CREATE-REMEDIATION-PLAN"
+      ]
+    },
+    "PH-01-FOUNDATION": {
+      "purpose": "Fix documentation, staging bug, add test infrastructure",
+      "inputs": [
+        {
+          "id": "README",
+          "type": "file",
+          "required": true,
+          "must_exist": true,
+          "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/README.md"
+        },
+        {
+          "id": "PIPELINE_RUNNER",
+          "type": "file",
+          "required": true,
+          "must_exist": true,
+          "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305017_pipeline_runner.py"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "README_UPDATED",
+          "type": "file",
+          "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/README.md",
+          "required": true,
+          "content_requirements": [
+            "Must NOT contain 'Production-Ready ✅'",
+            "Must contain '⚠️ Development - Undergoing Remediation'"
+          ]
+        },
+        {
+          "id": "PIPELINE_RUNNER_FIXED",
+          "type": "file",
+          "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305017_pipeline_runner.py",
+          "required": true,
+          "content_requirements": [
+            "Line 79 must NOT contain 'transformed.get(\"data\")'",
+            "Line 79 must contain 'if file_id and transformed:'"
+          ]
+        },
+        {
+          "id": "TEST_INFRASTRUCTURE",
+          "type": "dir",
+          "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests",
+          "required": true
+        },
+        {
+          "id": "PREFLIGHT_CHECKER",
+          "type": "file",
+          "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305019_preflight_checker.py",
+          "required": true
+        }
+      ],
+      "invariants": [
+        "No registry data modified",
+        "Only scripts and tests modified",
+        "All tests are additive (no deletion)"
+      ],
+      "preconditions": [
+        "grep -q 'Production-Ready' 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/README.md",
+        "grep -q 'transformed.get(\"data\")' 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305017_pipeline_runner.py"
+      ],
+      "postconditions": [
+        "! grep -q 'Production-Ready ✅' 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/README.md",
+        "grep -q '⚠️ Development' 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/README.md",
+        "! grep -q 'transformed.get(\"data\")' 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305017_pipeline_runner.py",
+        "test -d 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests",
+        "test -f 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305019_preflight_checker.py",
+        "pytest 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/unit/test_*_smoke.py"
+      ],
+      "failure_modes": [
+        {
+          "code": "PH-01-SMOKE-TEST-FAIL",
+          "meaning": "Smoke tests failed",
+          "remediation": "Check test fixtures and script imports"
+        }
+      ],
+      "steps": [
+        "STEP-001-UPDATE-README",
+        "STEP-002-FIX-PIPELINE-STAGING",
+        "STEP-003-CREATE-TEST-INFRASTRUCTURE",
+        "STEP-004-WRITE-SMOKE-TESTS",
+        "STEP-005-ADD-PREFLIGHT-CHECKER",
+        "STEP-006-RUN-SMOKE-TESTS"
+      ]
+    },
+    "PH-02-DATA_INTEGRITY": {
+      "purpose": "Fix defaults system, SHA256 promotion, restore data integrity",
+      "inputs": [
+        {
+          "id": "COLUMN_LOADER",
+          "type": "file",
+          "required": true,
+          "must_exist": true,
+          "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305005_column_loader.py"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "COLUMN_DICTIONARY",
+          "type": "file",
+          "path": "01260207201000001250_REGISTRY/COLUMN_HEADERS/01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+          "required": true
+        },
+        {
+          "id": "COLUMN_LOADER_FIXED",
+          "type": "file",
+          "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305005_column_loader.py",
+          "required": true,
+          "content_requirements": [
+            "Must have get_all_columns() method",
+            "Must have get_default_value() method"
+          ]
+        },
+        {
+          "id": "FILE_ID_RECONCILER_ENHANCED",
+          "type": "file",
+          "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305001_file_id_reconciler.py",
+          "required": true,
+          "content_requirements": [
+            "Must have promote_sha256_to_file_id() method"
+          ]
+        }
+      ],
+      "invariants": [
+        "Registry data not modified except via governed patches",
+        "All defaults sourced from COLUMN_DICTIONARY",
+        "All promotions fail-closed on ambiguity"
+      ],
+      "preconditions": [
+        "test -f 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305005_column_loader.py",
+        "pytest 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/unit/test_*_smoke.py"
+      ],
+      "postconditions": [
+        "test -f 01260207201000001250_REGISTRY/COLUMN_HEADERS/01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+        "python -c 'from scripts.P_01999000042260305005_column_loader import ColumnLoader; cl = ColumnLoader(); cl.load_columns(); assert hasattr(cl, \"get_all_columns\")'",
+        "pytest 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/unit/test_default_injector.py",
+        "pytest 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/integration/test_sha256_promotion.py"
+      ],
+      "failure_modes": [
+        {
+          "code": "PH-02-DICT-NOT-FOUND",
+          "meaning": "COLUMN_DICTIONARY cannot be located or generated",
+          "remediation": "Extract schema from registry, create minimal dictionary"
+        },
+        {
+          "code": "PH-02-PROMOTION-AMBIGUOUS",
+          "meaning": "SHA256 maps to multiple file_ids",
+          "remediation": "Escalate to manual resolution, block promotion"
+        }
+      ],
+      "steps": [
+        "STEP-001-LOCATE-COLUMN-DICTIONARY",
+        "STEP-002-FIX-COLUMN-LOADER",
+        "STEP-003-FIX-DEFAULT-INJECTOR",
+        "STEP-004-FIX-NULL-COALESCER",
+        "STEP-005-ADD-SHA256-PROMOTION",
+        "STEP-006-TEST-DATA-INTEGRITY"
+      ]
+    },
+    "PH-03-VALIDATION_RESOLUTION": {
+      "purpose": "Strengthen E2E validation, convert entity resolution to mutation",
+      "inputs": [
+        {
+          "id": "E2E_VALIDATOR",
+          "type": "file",
+          "required": true,
+          "must_exist": true,
+          "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305016_e2e_validator.py"
+        },
+        {
+          "id": "DOC_ID_RESOLVER",
+          "type": "file",
+          "required": true,
+          "must_exist": true,
+          "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305012_doc_id_resolver.py"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "E2E_VALIDATOR_ENHANCED",
+          "type": "file",
+          "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305016_e2e_validator.py",
+          "required": true,
+          "content_requirements": [
+            "Must check required columns",
+            "Must check duplicate IDs",
+            "Must check promotion states",
+            "Must check edge relationships"
+          ]
+        },
+        {
+          "id": "DOC_ID_RESOLVER_MUTATION",
+          "type": "file",
+          "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305012_doc_id_resolver.py",
+          "required": true,
+          "content_requirements": [
+            "Must generate resolution patches",
+            "Must have apply mode",
+            "Must create backup before mutation"
+          ]
+        },
+        {
+          "id": "MODULE_DEDUP_MUTATION",
+          "type": "file",
+          "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305013_module_dedup.py",
+          "required": true,
+          "content_requirements": [
+            "Must generate resolution patches",
+            "Must have apply mode",
+            "Must create backup before mutation"
+          ]
+        }
+      ],
+      "invariants": [
+        "All mutations create backups",
+        "All mutations produce audit evidence",
+        "All mutations fail-closed on unresolved collisions"
+      ],
+      "preconditions": [
+        "pytest 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/unit/test_default_injector.py",
+        "pytest 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/integration/test_sha256_promotion.py"
+      ],
+      "postconditions": [
+        "pytest 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/unit/test_e2e_validator.py",
+        "pytest 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/integration/test_entity_resolution.py"
+      ],
+      "failure_modes": [
+        {
+          "code": "PH-03-COLLISION-UNRESOLVED",
+          "meaning": "Entity collisions cannot be auto-resolved",
+          "remediation": "Escalate to manual resolution with evidence"
+        }
+      ],
+      "steps": [
+        "STEP-001-ENHANCE-E2E-VALIDATOR",
+        "STEP-002-TEST-E2E-VALIDATOR",
+        "STEP-003-ADD-DOC-ID-MUTATION",
+        "STEP-004-ADD-MODULE-DEDUP-MUTATION",
+        "STEP-005-TEST-ENTITY-RESOLUTION"
+      ]
+    },
+    "PH-04-COMPLETENESS": {
+      "purpose": "Timestamp fix, path cleanup, evidence schema, Phase B/C decision",
+      "inputs": [
+        {
+          "id": "TIMESTAMP_CLUSTERER",
+          "type": "file",
+          "required": true,
+          "must_exist": true,
+          "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305015_timestamp_clusterer.py"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "TIMESTAMP_CLUSTERER_FIXED",
+          "type": "file",
+          "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305015_timestamp_clusterer.py",
+          "required": true,
+          "content_requirements": [
+            "Must have --timestamp-field parameter"
+          ]
+        },
+        {
+          "id": "PATH_CLEANER",
+          "type": "file",
+          "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305020_registry_path_cleaner.py",
+          "required": true
+        },
+        {
+          "id": "EVIDENCE_SCHEMA",
+          "type": "file",
+          "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/docs/EVIDENCE_ARTIFACT_SCHEMA_V1.json",
+          "required": true
+        }
+      ],
+      "invariants": [
+        "Phase B/C decision documented",
+        "Evidence schema versioned",
+        "Path cleanup governed"
+      ],
+      "preconditions": [
+        "pytest 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/integration/test_entity_resolution.py"
+      ],
+      "postconditions": [
+        "python 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305015_timestamp_clusterer.py --help | grep -q 'timestamp-field'",
+        "test -f 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305020_registry_path_cleaner.py",
+        "test -f 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/docs/EVIDENCE_ARTIFACT_SCHEMA_V1.json"
+      ],
+      "failure_modes": [],
+      "steps": [
+        "STEP-001-FIX-TIMESTAMP-AUTHORITY",
+        "STEP-002-ADD-PATH-CLEANER",
+        "STEP-003-DEFINE-EVIDENCE-SCHEMA",
+        "STEP-004-PHASE-BC-DECISION",
+        "STEP-005-UPDATE-ALL-SCRIPTS-EVIDENCE"
+      ]
+    },
+    "PH-05-VERIFICATION": {
+      "purpose": "End-to-end integration tests, final validation",
+      "inputs": [
+        {
+          "id": "ALL_SCRIPTS",
+          "type": "glob",
+          "required": true,
+          "must_exist": true,
+          "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_*.py"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "E2E_TEST_RESULTS",
+          "type": "file",
+          "path": ".state/evidence/PH-05/e2e_test_results.json",
+          "required": true
+        },
+        {
+          "id": "COVERAGE_REPORT",
+          "type": "file",
+          "path": ".state/evidence/PH-05/coverage.json",
+          "required": true,
+          "content_requirements": [
+            "coverage >= 80%"
+          ]
+        }
+      ],
+      "invariants": [
+        "No regressions in existing tests",
+        "All 50+ tests passing",
+        "Coverage >= 80%"
+      ],
+      "preconditions": [
+        "pytest 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/ -q",
+        "test $(find 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests -name 'test_*.py' | wc -l) -ge 50"
+      ],
+      "postconditions": [
+        "pytest 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/ --cov=scripts --cov-report=json",
+        "python -c 'import json; c = json.load(open(\".coverage.json\")); assert c[\"totals\"][\"percent_covered\"] >= 80'"
+      ],
+      "failure_modes": [
+        {
+          "code": "PH-05-COVERAGE-LOW",
+          "meaning": "Test coverage below 80%",
+          "remediation": "Add tests for uncovered code paths"
+        },
+        {
+          "code": "PH-05-E2E-FAIL",
+          "meaning": "End-to-end pipeline fails",
+          "remediation": "Debug pipeline, check evidence chain"
+        }
+      ],
+      "steps": [
+        "STEP-001-RUN-FULL-TEST-SUITE",
+        "STEP-002-E2E-INTEGRATION-TEST",
+        "STEP-003-FINAL-VALIDATION"
+      ]
+    }
+  },
+  "step_contracts": {
+    "PH-01-FOUNDATION": {
+      "STEP-001-UPDATE-README": {
+        "step_id": "STEP-001-UPDATE-README",
+        "purpose": "Update README.md status from Production-Ready to Development",
+        "inputs": [
+          {
+            "id": "README",
+            "type": "file",
+            "required": true,
+            "must_exist": true,
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/README.md"
+          }
+        ],
+        "outputs": [
+          {
+            "id": "README_UPDATED",
+            "type": "file",
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/README.md",
+            "required": true
+          }
+        ],
+        "invariants": [
+          "Only README.md modified",
+          "Structure remains the same"
+        ],
+        "preconditions": [
+          "test -f 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/README.md",
+          "grep -q 'Production-Ready ✅' 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/README.md"
+        ],
+        "postconditions": [
+          "test -f 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/README.md",
+          "! grep -q 'Production-Ready ✅' 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/README.md",
+          "grep -q '⚠️ Development - Undergoing Remediation' 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/README.md"
+        ],
+        "file_scope": {
+          "allowed_paths": [
+            "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/README.md"
+          ],
+          "forbidden_paths": [
+            "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/**",
+            "01260207201000001250_REGISTRY/01999000042260124503_REGISTRY_file.json"
+          ],
+          "read_only_paths": []
+        },
+        "execution_policy": {
+          "file_editing": {
+            "default_method": "UNIFIED_DIFF_APPLY",
+            "method_constraints": {
+              "UNIFIED_DIFF_APPLY": {
+                "allow_fuzz": false,
+                "require_before_after_hash": true
+              }
+            }
+          }
+        },
+        "failure_modes": [
+          {
+            "code": "STEP-001-PATTERN-NOT-FOUND",
+            "meaning": "Could not find 'Production-Ready ✅' in README",
+            "remediation": "Verify README content, may already be updated"
+          }
+        ],
+        "evidence": {
+          "directory": ".state/evidence/PH-01/STEP-001",
+          "required_files": [
+            "precondition_checks.log",
+            "postcondition_checks.log",
+            "file_scope_validation.json",
+            "step_result.json",
+            "README.md.diff"
+          ]
+        },
+        "ground_truth_level": "L1",
+        "timeout_sec": 30,
+        "retries": 0
+      },
+      "STEP-002-FIX-PIPELINE-STAGING": {
+        "step_id": "STEP-002-FIX-PIPELINE-STAGING",
+        "purpose": "Fix pipeline_runner.py line 79 staging bug",
+        "inputs": [
+          {
+            "id": "PIPELINE_RUNNER",
+            "type": "file",
+            "required": true,
+            "must_exist": true,
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305017_pipeline_runner.py"
+          }
+        ],
+        "outputs": [
+          {
+            "id": "PIPELINE_RUNNER_FIXED",
+            "type": "file",
+            "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305017_pipeline_runner.py",
+            "required": true
+          }
+        ],
+        "invariants": [
+          "Only pipeline_runner.py modified",
+          "Line 79 is the ONLY line changed"
+        ],
+        "preconditions": [
+          "test -f 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305017_pipeline_runner.py",
+          "grep -q 'transformed.get(\"data\")' 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305017_pipeline_runner.py"
+        ],
+        "postconditions": [
+          "test -f 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305017_pipeline_runner.py",
+          "! grep -q 'transformed.get(\"data\")' 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305017_pipeline_runner.py",
+          "grep -q 'if file_id and transformed:' 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305017_pipeline_runner.py"
+        ],
+        "file_scope": {
+          "allowed_paths": [
+            "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305017_pipeline_runner.py"
+          ],
+          "forbidden_paths": [
+            "01260207201000001250_REGISTRY/01999000042260124503_REGISTRY_file.json"
+          ],
+          "read_only_paths": []
+        },
+        "execution_policy": {
+          "file_editing": {
+            "default_method": "UNIFIED_DIFF_APPLY",
+            "method_constraints": {
+              "UNIFIED_DIFF_APPLY": {
+                "allow_fuzz": false,
+                "require_before_after_hash": true
+              }
+            }
+          }
+        },
+        "failure_modes": [
+          {
+            "code": "STEP-002-PATTERN-NOT-FOUND",
+            "meaning": "Could not find 'transformed.get(\"data\")' at line 79",
+            "remediation": "Verify line number, may already be fixed"
+          }
+        ],
+        "evidence": {
+          "directory": ".state/evidence/PH-01/STEP-002",
+          "required_files": [
+            "precondition_checks.log",
+            "postcondition_checks.log",
+            "file_scope_validation.json",
+            "step_result.json",
+            "P_01999000042260305017_pipeline_runner.py.diff"
+          ]
+        },
+        "ground_truth_level": "L2",
+        "timeout_sec": 60,
+        "retries": 0
+      }
+    }
+  },
+  "validation_gates": [
+    {
+      "gate_id": "GATE-PH00-001",
+      "phase": "PH-00-BOOTSTRAP",
+      "step_id": null,
+      "purpose": ".state/ infrastructure created and parseable",
+      "command": "python -c 'import json; json.load(open(\"01260207201000001250_REGISTRY/.state/gates/gates_spec.json\"))'",
+      "timeout_sec": 30,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [],
+      "forbid_stdout_regex": ["/error|exception|traceback/i"],
+      "expect_files": [
+        {
+          "path": "01260207201000001250_REGISTRY/.state/gates/gates_spec.json",
+          "content_regex": ["/\"version\"/"]
+        }
+      ],
+      "evidence": ".state/evidence/PH-00/GATE-001",
+      "ground_truth_level": "L1"
+    },
+    {
+      "gate_id": "GATE-PH01-001",
+      "phase": "PH-01-FOUNDATION",
+      "step_id": null,
+      "purpose": "README updated, staging bug fixed, smoke tests pass",
+      "command": "pytest 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/unit/test_*_smoke.py -v",
+      "timeout_sec": 120,
+      "retries": 1,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": ["/3 passed/"],
+      "forbid_stdout_regex": ["/failed|error/i"],
+      "expect_files": [
+        {
+          "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/README.md",
+          "content_regex": ["/⚠️ Development/"]
+        },
+        {
+          "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305017_pipeline_runner.py",
+          "content_regex": ["/if file_id and transformed:/"]
+        }
+      ],
+      "evidence": ".state/evidence/PH-01/GATE-001",
+      "ground_truth_level": "L2"
+    },
+    {
+      "gate_id": "GATE-PH02-001",
+      "phase": "PH-02-DATA_INTEGRITY",
+      "step_id": null,
+      "purpose": "Defaults system works, SHA256 promotion works",
+      "command": "pytest 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/unit/test_default_injector.py 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/integration/test_sha256_promotion.py -v",
+      "timeout_sec": 300,
+      "retries": 1,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": ["/passed/"],
+      "forbid_stdout_regex": ["/failed|error/i"],
+      "expect_files": [
+        {
+          "path": "01260207201000001250_REGISTRY/COLUMN_HEADERS/01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+          "content_regex": ["/\"headers\"/"]
+        }
+      ],
+      "evidence": ".state/evidence/PH-02/GATE-001",
+      "ground_truth_level": "L2"
+    },
+    {
+      "gate_id": "GATE-PH03-001",
+      "phase": "PH-03-VALIDATION_RESOLUTION",
+      "step_id": null,
+      "purpose": "E2E validator enhanced, entity resolution mutates registry",
+      "command": "pytest 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/integration/test_entity_resolution.py -v",
+      "timeout_sec": 600,
+      "retries": 1,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": ["/passed/"],
+      "forbid_stdout_regex": ["/failed|error/i"],
+      "expect_files": [],
+      "evidence": ".state/evidence/PH-03/GATE-001",
+      "ground_truth_level": "L3"
+    },
+    {
+      "gate_id": "GATE-PH05-001",
+      "phase": "PH-05-VERIFICATION",
+      "step_id": null,
+      "purpose": "Full test suite passes, coverage >= 80%",
+      "command": "pytest 01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/ --cov=scripts --cov-report=json --cov-fail-under=80 -v",
+      "timeout_sec": 900,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": ["/passed/", "/TOTAL.*80%/"],
+      "forbid_stdout_regex": ["/failed|error/i"],
+      "expect_files": [
+        {
+          "path": ".coverage.json",
+          "content_regex": ["/\"percent_covered\":\\s*[89][0-9]|100/"]
+        }
+      ],
+      "evidence": ".state/evidence/PH-05/GATE-001",
+      "ground_truth_level": "L4"
+    }
+  ],
+  "decision_ledger": [
+    {
+      "decision_id": "DEC-001",
+      "category": "architecture",
+      "context": {
+        "question": "Use worktree isolation or feature branches?",
+        "constraints": ["Single developer", "Sequential execution", "Complex file dependencies"]
+      },
+      "options": [
+        {
+          "name": "worktree_isolation",
+          "pros": ["Parallel safety", "Clean separation"],
+          "cons": ["Overhead for single dev", "Complex git setup"]
+        },
+        {
+          "name": "feature_branches_with_tags",
+          "pros": ["Simpler workflow", "Adequate for sequential", "Easy rollback"],
+          "cons": ["Less parallel safety"]
+        }
+      ],
+      "selected_option": "feature_branches_with_tags",
+      "rationale": "Single developer, sequential phases, simpler git workflow sufficient",
+      "timestamp": "2026-03-09T13:32:12Z",
+      "authority": "remediation_plan_author"
+    },
+    {
+      "decision_id": "DEC-002",
+      "category": "scope",
+      "context": {
+        "question": "Wire Phase B/C or downgrade claims?",
+        "constraints": ["Phase B/C analyzers may not exist", "5 days allocated", "High risk"]
+      },
+      "options": [
+        {
+          "name": "wire_phase_bc",
+          "pros": ["True end-to-end capability", "Meets original claim"],
+          "cons": ["May not exist", "High risk", "Large scope"]
+        },
+        {
+          "name": "downgrade_claims",
+          "pros": ["Low risk", "Fast", "Honest", "Can add later"],
+          "cons": ["Reduces perceived capability"]
+        }
+      ],
+      "selected_option": "downgrade_claims",
+      "rationale": "Phase B/C not critical for data integrity fixes, can add in future phase, reduces risk",
+      "timestamp": "2026-03-09T13:32:12Z",
+      "authority": "remediation_plan_author"
+    },
+    {
+      "decision_id": "DEC-003",
+      "category": "testing",
+      "context": {
+        "question": "Target test coverage %?",
+        "constraints": ["Currently 0%", "Enterprise classification", "4 weeks timeline"]
+      },
+      "options": [
+        {
+          "name": "70_percent",
+          "pros": ["Achievable quickly"],
+          "cons": ["Below enterprise standard"]
+        },
+        {
+          "name": "80_percent",
+          "pros": ["Enterprise standard", "Good confidence"],
+          "cons": ["More test writing"]
+        },
+        {
+          "name": "90_percent",
+          "pros": ["Very high confidence"],
+          "cons": ["May be unrealistic in 4 weeks"]
+        }
+      ],
+      "selected_option": "80_percent",
+      "rationale": "Balances enterprise requirements with timeline, 50+ tests estimated achievable",
+      "timestamp": "2026-03-09T13:32:12Z",
+      "authority": "remediation_plan_author"
+    }
+  ],
+  "risk_register": [
+    {
+      "risk_id": "RISK-001",
+      "category": "technical",
+      "description": "COLUMN_DICTIONARY cannot be located or regenerated",
+      "probability": "MEDIUM",
+      "impact": "HIGH",
+      "mitigation": [
+        "Search backups and archives",
+        "Extract schema from existing registry",
+        "Generate minimal dictionary from registry + docs",
+        "Escalate if all attempts fail"
+      ],
+      "contingency": "Manual creation of minimal dictionary with 185 columns",
+      "owner": "PH-02 lead",
+      "status": "open"
+    },
+    {
+      "risk_id": "RISK-002",
+      "category": "schedule",
+      "description": "Test writing takes longer than estimated",
+      "probability": "HIGH",
+      "impact": "MEDIUM",
+      "mitigation": [
+        "Prioritize critical path tests first",
+        "Use test generators where possible",
+        "Accept 75% coverage if 80% unreachable"
+      ],
+      "contingency": "Extend PH-05 by 2 days, reduce scope of non-critical tests",
+      "owner": "PH-05 lead",
+      "status": "open"
+    },
+    {
+      "risk_id": "RISK-003",
+      "category": "technical",
+      "description": "SHA256 collisions cannot be auto-resolved",
+      "probability": "LOW",
+      "impact": "MEDIUM",
+      "mitigation": [
+        "Fail-closed design",
+        "Escalate to manual resolution",
+        "Document collision in evidence"
+      ],
+      "contingency": "Manual resolution with audit trail, block promotion",
+      "owner": "PH-02 lead",
+      "status": "open"
+    },
+    {
+      "risk_id": "RISK-004",
+      "category": "scope",
+      "description": "Unforeseen dependencies between broken scripts",
+      "probability": "MEDIUM",
+      "impact": "HIGH",
+      "mitigation": [
+        "Fix in dependency order",
+        "Add integration tests early",
+        "Use self-healing for common failures"
+      ],
+      "contingency": "Add 20% time buffer (already included)",
+      "owner": "project_lead",
+      "status": "open"
+    }
+  ],
+  "metrics_tracking": {
+    "key_metrics": [
+      {
+        "name": "test_coverage_percent",
+        "baseline": 0,
+        "target": 80,
+        "measurement": "pytest --cov=scripts --cov-report=json",
+        "frequency": "per_phase"
+      },
+      {
+        "name": "working_scripts_count",
+        "baseline": 9,
+        "target": 19,
+        "measurement": "manual audit",
+        "frequency": "per_phase"
+      },
+      {
+        "name": "broken_scripts_count",
+        "baseline": 5,
+        "target": 0,
+        "measurement": "manual audit",
+        "frequency": "per_phase"
+      },
+      {
+        "name": "tests_passing_count",
+        "baseline": 0,
+        "target": 50,
+        "measurement": "pytest --collect-only | grep 'test'",
+        "frequency": "per_step"
+      },
+      {
+        "name": "critical_blockers_count",
+        "baseline": 5,
+        "target": 0,
+        "measurement": "manual audit against repair list",
+        "frequency": "per_phase"
+      }
+    ],
+    "evidence_location": ".state/metrics/{phase}/metrics.json",
+    "dashboard_command": "python scripts/generate_metrics_dashboard.py .state/metrics/"
+  },
+  "artifact_manifest": {
+    "evidence_artifacts": [
+      ".state/evidence/{phase}/{step_id}/precondition_checks.log",
+      ".state/evidence/{phase}/{step_id}/postcondition_checks.log",
+      ".state/evidence/{phase}/{step_id}/file_scope_validation.json",
+      ".state/evidence/{phase}/{step_id}/step_result.json",
+      ".state/evidence/{phase}/GATE-{n}/gate_result.json"
+    ],
+    "deliverables": [
+      {
+        "name": "Fixed README.md",
+        "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/README.md",
+        "phase": "PH-01"
+      },
+      {
+        "name": "Fixed pipeline_runner.py",
+        "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305017_pipeline_runner.py",
+        "phase": "PH-01"
+      },
+      {
+        "name": "Test suite (50+ tests)",
+        "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/tests/",
+        "phase": "PH-01 through PH-05"
+      },
+      {
+        "name": "COLUMN_DICTIONARY.json",
+        "path": "01260207201000001250_REGISTRY/COLUMN_HEADERS/01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+        "phase": "PH-02"
+      },
+      {
+        "name": "Enhanced validation and entity resolution scripts",
+        "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_*",
+        "phase": "PH-03"
+      },
+      {
+        "name": "Evidence schema",
+        "path": "01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/docs/EVIDENCE_ARTIFACT_SCHEMA_V1.json",
+        "phase": "PH-04"
+      },
+      {
+        "name": "Final validation report",
+        "path": ".state/evidence/PH-05/FINAL_VALIDATION_REPORT.md",
+        "phase": "PH-05"
+      }
+    ],
+    "intermediate_artifacts": [
+      ".state/gates/gates_spec.json",
+      ".state/remediation/remediation_plan.json",
+      ".state/issues/normalized_issues.json",
+      ".state/metrics/{phase}/metrics.json",
+      ".coverage.json"
+    ]
+  },
+  "execution_instructions": {
+    "prerequisites": [
+      "Python 3.8+ installed",
+      "pytest, ruff, mypy available (or installable)",
+      "Git repository status clean (or create backup branch)",
+      "Write permissions on 01260207201000001250_REGISTRY/",
+      "AUDIT_SUMMARY_AND_EXECUTION_PLAN.md reviewed and approved"
+    ],
+    "startup_sequence": [
+      {
+        "order": 1,
+        "action": "Create backup branch",
+        "command": "cd C:\\Users\\richg\\Gov_Reg && git checkout -b backup/pre-remediation-$(date +%Y%m%d)"
+      },
+      {
+        "order": 2,
+        "action": "Create remediation branch",
+        "command": "git checkout -b feature/registry-automation-remediation"
+      },
+      {
+        "order": 3,
+        "action": "Begin PH-00",
+        "command": "echo 'Starting PH-00-BOOTSTRAP' && mkdir -p 01260207201000001250_REGISTRY/.state/gates"
+      }
+    ],
+    "phase_execution_pattern": [
+      "Execute all steps in phase sequentially",
+      "Collect evidence for each step",
+      "Run phase gate validation",
+      "If gate passes, commit changes and move to next phase",
+      "If gate fails, review evidence, attempt self-healing, or escalate"
+    ],
+    "completion_criteria": [
+      "All 6 phases completed",
+      "All gates passed",
+      "50+ tests passing",
+      "Coverage >= 80%",
+      "0 critical blockers",
+      "Documentation matches reality",
+      "Evidence chain complete"
+    ],
+    "final_actions": [
+      {
+        "order": 1,
+        "action": "Generate final report",
+        "command": "python scripts/generate_final_report.py .state/ > .state/evidence/FINAL_REPORT.md"
+      },
+      {
+        "order": 2,
+        "action": "Commit remediation",
+        "command": "git add . && git commit -m 'feat: Complete Registry Automation Remediation - 16 fixes, 50+ tests, 80% coverage'"
+      },
+      {
+        "order": 3,
+        "action": "Merge to main",
+        "command": "git checkout main && git merge --squash feature/registry-automation-remediation"
+      }
+    ]
+  },
+  "governance": {
+    "approval_required": true,
+    "approvers": ["project_owner"],
+    "review_checkpoints": [
+      "After PH-00-BOOTSTRAP",
+      "After PH-01-FOUNDATION (quick wins visible)",
+      "After PH-03-VALIDATION_RESOLUTION (major fixes complete)",
+      "After PH-05-VERIFICATION (before merge to main)"
+    ],
+    "audit_trail": {
+      "evidence_retention": "permanent",
+      "git_commit_policy": "One commit per phase with detailed message",
+      "backup_policy": "Tag before each phase: remediation/pre-PH-{n}"
+    }
+  }
+}

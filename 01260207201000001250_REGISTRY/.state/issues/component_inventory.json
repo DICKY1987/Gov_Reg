@@ -1,0 +1,176 @@
+{
+  "metadata": {
+    "generated_at": "2026-03-08T15:34:10Z",
+    "total_scripts": 19,
+    "categorization_basis": "Framework categories from Contract-Gap Matrix and ProgramSpec taxonomy"
+  },
+  "scripts": [
+    {
+      "script_name": "pipeline_runner.py",
+      "full_path": "scripts/P_01999000042260305017_pipeline_runner.py",
+      "current_role": "Orchestrates transformation phases and stages outputs for patch generation",
+      "framework_category": "Executor",
+      "primary_contracts": ["output_result_envelope_contract", "identity_contract"],
+      "issues": ["FCA-001", "FCA-005"]
+    },
+    {
+      "script_name": "default_injector.py",
+      "full_path": "scripts/P_01999000042260305012_default_injector.py",
+      "current_role": "Injects default values for missing fields based on column metadata",
+      "framework_category": "Phase",
+      "primary_contracts": ["input_contract", "pass_fail_criteria_contract"],
+      "issues": ["FCA-002"]
+    },
+    {
+      "script_name": "e2e_validator.py",
+      "full_path": "scripts/P_01999000042260305018_e2e_validator.py",
+      "current_role": "Validates registry structure and basic constraints",
+      "framework_category": "Gate",
+      "primary_contracts": ["evidence_contract", "pass_fail_criteria_contract", "fingerprint_idempotency_contract"],
+      "issues": ["FCA-003", "FCA-008"]
+    },
+    {
+      "script_name": "timestamp_clusterer.py",
+      "full_path": "scripts/P_01999000042260305015_timestamp_clusterer.py",
+      "current_role": "Groups records by timestamp for temporal analysis",
+      "framework_category": "Phase",
+      "primary_contracts": ["input_contract"],
+      "issues": ["FCA-004"]
+    },
+    {
+      "script_name": "file_id_reconciler.py",
+      "full_path": "scripts/P_01999000042260305013_file_id_reconciler.py",
+      "current_role": "Attempts to reconcile SHA256 with 20-digit file_id",
+      "framework_category": "Executor",
+      "primary_contracts": ["identity_contract"],
+      "issues": ["FCA-005"]
+    },
+    {
+      "script_name": "doc_id_resolver.py",
+      "full_path": "scripts/P_01999000042260305011_doc_id_resolver.py",
+      "current_role": "Detects doc_id collisions and emits analysis report",
+      "framework_category": "Gate + Mutation",
+      "primary_contracts": ["mutation_safety_contract"],
+      "issues": ["FCA-006"]
+    },
+    {
+      "script_name": "module_dedup.py",
+      "full_path": "scripts/P_01999000042260305014_module_dedup.py",
+      "current_role": "Identifies duplicate modules; FILE WATCHER path canonicalization",
+      "framework_category": "Gate + Mutation",
+      "primary_contracts": ["mutation_safety_contract"],
+      "issues": ["FCA-007"]
+    },
+    {
+      "script_name": "column_loader.py",
+      "full_path": "scripts/P_01999000042260305009_column_loader.py",
+      "current_role": "Loads column metadata from COLUMN_DICTIONARY",
+      "framework_category": "Phase",
+      "primary_contracts": ["input_contract"],
+      "issues": ["FCA-014"]
+    },
+    {
+      "script_name": "column_validator.py",
+      "full_path": "scripts/P_01999000042260305010_column_validator.py",
+      "current_role": "Validates registry columns against schema",
+      "framework_category": "Gate",
+      "primary_contracts": ["evidence_contract", "pass_fail_criteria_contract"],
+      "issues": ["FCA-014", "FCA-016"]
+    },
+    {
+      "script_name": "null_coalescer.py",
+      "full_path": "scripts/P_01999000042260305016_null_coalescer.py",
+      "current_role": "Coalesces null values after default injection",
+      "framework_category": "Phase",
+      "primary_contracts": ["pass_fail_criteria_contract"],
+      "issues": ["FCA-017"]
+    },
+    {
+      "script_name": "phase_a_transformer.py",
+      "full_path": "scripts/P_01999000042260305019_phase_a_transformer.py",
+      "current_role": "Transforms raw registry data in phase A",
+      "framework_category": "Phase",
+      "primary_contracts": ["output_result_envelope_contract"],
+      "issues": ["FCA-019"]
+    },
+    {
+      "script_name": "metadata_backfill.py",
+      "full_path": "scripts/metadata_backfill.py",
+      "current_role": "Backfills missing metadata (doc_id, file_size, canonicality)",
+      "framework_category": "Mutation",
+      "primary_contracts": ["identity_contract"],
+      "issues": ["FCA-010"],
+      "status": "planned"
+    },
+    {
+      "script_name": "repo_root_inferrer.py",
+      "full_path": "scripts/repo_root_inferrer.py",
+      "current_role": "Infers missing repo_root_id from path patterns",
+      "framework_category": "Mutation",
+      "primary_contracts": ["identity_contract"],
+      "issues": ["FCA-011"],
+      "status": "planned"
+    },
+    {
+      "script_name": "edges_builder.py",
+      "full_path": "scripts/edges_builder.py",
+      "current_role": "Generates relationship edges[] from file references",
+      "framework_category": "Mutation",
+      "primary_contracts": ["evidence_contract"],
+      "issues": ["FCA-012"],
+      "status": "planned"
+    },
+    {
+      "script_name": "entries_pruner.py",
+      "full_path": "scripts/entries_pruner.py",
+      "current_role": "Prunes orphaned entries[] records",
+      "framework_category": "Mutation",
+      "primary_contracts": ["identity_contract"],
+      "issues": ["FCA-013"],
+      "status": "planned"
+    },
+    {
+      "script_name": "sha256_deduplicator.py",
+      "full_path": "scripts/sha256_deduplicator.py",
+      "current_role": "Resolves duplicate SHA256 hashes",
+      "framework_category": "Mutation",
+      "primary_contracts": ["identity_contract"],
+      "issues": ["FCA-015"],
+      "status": "planned"
+    },
+    {
+      "script_name": "schema_versioner.py",
+      "full_path": "scripts/schema_versioner.py",
+      "current_role": "Enforces schema version consistency",
+      "framework_category": "Gate",
+      "primary_contracts": ["evidence_contract"],
+      "issues": ["FCA-016"],
+      "status": "planned"
+    },
+    {
+      "script_name": "doc_generator.py",
+      "full_path": "scripts/doc_generator.py",
+      "current_role": "Generates documentation from code/schema",
+      "framework_category": "Gate",
+      "primary_contracts": ["evidence_contract"],
+      "issues": ["FCA-018"],
+      "status": "planned"
+    },
+    {
+      "script_name": "phase_contract_validator.py",
+      "full_path": "scripts/phase_contract_validator.py",
+      "current_role": "Validates phase output contracts before handoff",
+      "framework_category": "Gate",
+      "primary_contracts": ["output_result_envelope_contract", "pass_fail_criteria_contract"],
+      "issues": ["FCA-019"],
+      "status": "planned"
+    }
+  ],
+  "category_distribution": {
+    "Executor": 2,
+    "Phase": 5,
+    "Gate": 6,
+    "Mutation": 6,
+    "Transport": 0
+  }
+}

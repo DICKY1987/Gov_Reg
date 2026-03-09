@@ -1,0 +1,36 @@
+{
+  "version": "1.0.0",
+  "created": "2026-03-09T13:39:10Z",
+  "gates": [
+    {
+      "gate_id": "GATE-PH00-001",
+      "phase": "PH-00-BOOTSTRAP",
+      "status": "pending",
+      "purpose": ".state/ infrastructure created and parseable"
+    },
+    {
+      "gate_id": "GATE-PH01-001",
+      "phase": "PH-01-FOUNDATION",
+      "status": "pending",
+      "purpose": "README updated, staging bug fixed, smoke tests pass"
+    },
+    {
+      "gate_id": "GATE-PH02-001",
+      "phase": "PH-02-DATA_INTEGRITY",
+      "status": "pending",
+      "purpose": "Defaults system works, SHA256 promotion works"
+    },
+    {
+      "gate_id": "GATE-PH03-001",
+      "phase": "PH-03-VALIDATION_RESOLUTION",
+      "status": "pending",
+      "purpose": "E2E validator enhanced, entity resolution mutates registry"
+    },
+    {
+      "gate_id": "GATE-PH05-001",
+      "phase": "PH-05-VERIFICATION",
+      "status": "pending",
+      "purpose": "Full test suite passes, coverage >= 80%"
+    }
+  ]
+}

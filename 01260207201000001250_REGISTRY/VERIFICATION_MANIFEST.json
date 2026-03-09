@@ -1,0 +1,787 @@
+{
+  "acceptance_criteria_met": "11/11 (100%)",
+  "status": "COMPLETE",
+  "verification_timestamp": "2026-03-08T19:00:36Z",
+  "artifacts": [
+    {
+      "size_bytes": 4177,
+      "size_kb": 4.1,
+      "path": ".idpkg\\contracts\\GATE_CATALOG.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 2778,
+      "size_kb": 2.7,
+      "path": ".idpkg\\contracts\\IDPKG_CONFIG.schema.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 572,
+      "size_kb": 0.6,
+      "path": ".idpkg\\contracts\\PREFIX_POLICY.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 2046,
+      "size_kb": 2.0,
+      "path": ".idpkg\\contracts\\UNIFIED_INGEST_ENVELOPE.schema.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 863,
+      "size_kb": 0.8,
+      "path": ".idpkg\\config.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 3569,
+      "size_kb": 3.5,
+      "path": ".state\\evidence\\phase1\\envelope_validation_report.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 9259,
+      "size_kb": 9.0,
+      "path": ".state\\evidence\\phase1\\PHASE_1_COMPLETION_REPORT.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 13528,
+      "size_kb": 13.2,
+      "path": ".state\\evidence\\phase2\\PHASE_2_COMPLETION_REPORT.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 1912,
+      "size_kb": 1.9,
+      "path": ".state\\gates\\gates_spec.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 6916,
+      "size_kb": 6.8,
+      "path": ".state\\issues\\component_inventory.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 5035,
+      "size_kb": 4.9,
+      "path": ".state\\issues\\contract_taxonomy.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 13457,
+      "size_kb": 13.1,
+      "path": ".state\\issues\\normalized_issues.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 17604,
+      "size_kb": 17.2,
+      "path": ".state\\matrix\\contract_gap_matrix.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 13867,
+      "size_kb": 13.5,
+      "path": ".state\\programspec\\programspec_mapping.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 8443,
+      "size_kb": 8.2,
+      "path": ".state\\programspec\\runner_capability_map.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 528633,
+      "size_kb": 516.2,
+      "path": ".state\\purpose_mapping\\SHA256_TO_FILE_ID.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 1677,
+      "size_kb": 1.6,
+      "path": ".state\\remediation\\remediation_plan.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 25967,
+      "size_kb": 25.4,
+      "path": ".state\\complete_phase_step_gate_contracts.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 3441,
+      "size_kb": 3.4,
+      "path": ".state\\phase_plan_core.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 13002,
+      "size_kb": 12.7,
+      "path": "01260207201000001158_FILE WATCHER\\01260207201000001159_schemas\\01260207233100000582_column_dictionary.example.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 13332,
+      "size_kb": 13.0,
+      "path": "01260207201000001158_FILE WATCHER\\01260207201000001159_schemas\\01260207233100000583_column_dictionary.schema.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 11712,
+      "size_kb": 11.4,
+      "path": "01260207201000001158_FILE WATCHER\\01260207201000001159_schemas\\01260207233100000584_step_pipeline.schema.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 2908,
+      "size_kb": 2.8,
+      "path": "01260207201000001158_FILE WATCHER\\01260207201000000379_CLAUDE.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 62685,
+      "size_kb": 61.2,
+      "path": "01260207201000001162_GEU\\01260207201000001165_ID\\01260207201000000112_ChatGPT-File scanner description.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 276,
+      "size_kb": 0.3,
+      "path": "01260207201000001162_GEU\\01260207201000001165_ID\\01260207201000000116_COUNTER_STORE.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 976,
+      "size_kb": 1.0,
+      "path": "01260207201000001162_GEU\\01260207201000001165_ID\\01260207201000000117_COUNTER_STORE.schema.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 13503,
+      "size_kb": 13.2,
+      "path": "01260207201000001162_GEU\\01260207201000001165_ID\\01260207201000000189_traceability_matrix.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 667898,
+      "size_kb": 652.2,
+      "path": "01260207201000001274_tests\\01260207201000000874_registry_test.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 1219,
+      "size_kb": 1.2,
+      "path": "01260207201000001313_capability_mapping_system\\01260207220000001317_docs\\01260207201000000454_capability_mapping_status_report.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 32862,
+      "size_kb": 32.1,
+      "path": "01260207201000001313_capability_mapping_system\\01260207220000001318_mapp_py\\01260202173939000019_Column to Script Mapping.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 32161,
+      "size_kb": 31.4,
+      "path": "01260207201000001313_capability_mapping_system\\01260207220000001318_mapp_py\\01260202173939000020_mapp_py_file.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 20542,
+      "size_kb": 20.1,
+      "path": "01260207201000001313_capability_mapping_system\\01260207220000001318_mapp_py\\01260202173939000040_mapp_py_file.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 12732,
+      "size_kb": 12.4,
+      "path": "01260207201000001313_capability_mapping_system\\01260207220000001318_mapp_py\\01260202173939000041_mapp_py_file.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 17298,
+      "size_kb": 16.9,
+      "path": "01260207201000001313_capability_mapping_system\\01260207220000001318_mapp_py\\01260207201000000860_TECHNICAL_COMPATIBILITY_SPEC.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 5633,
+      "size_kb": 5.5,
+      "path": "01260207201000001313_capability_mapping_system\\01260207220000001320_schemas\\01260207201000000529_CAPABILITIES.schema.v1.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 719,
+      "size_kb": 0.7,
+      "path": "01260207201000001313_capability_mapping_system\\01260207220000001320_schemas\\01260207220000001327_COMPONENT_CAPABILITY_VOCAB.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 4284,
+      "size_kb": 4.2,
+      "path": "01260207201000001313_capability_mapping_system\\01999000042260125146_AI_CLI_PROVENANCE_SOLUTION\\01999000042260125147_tests\\P_01999000042260125161_README.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 7070,
+      "size_kb": 6.9,
+      "path": "01260207201000001313_capability_mapping_system\\01999000042260125146_AI_CLI_PROVENANCE_SOLUTION\\P_01999000042260125182_PROV-SOL_All Phases Complete - AI CLI Provenance Solution.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 3019,
+      "size_kb": 2.9,
+      "path": "01260207201000001313_capability_mapping_system\\01999000042260125146_AI_CLI_PROVENANCE_SOLUTION\\P_01999000042260125183_PROV-SOL_Deterministic Codebase Triage & De-Noise System.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 2563,
+      "size_kb": 2.5,
+      "path": "01260207201000001313_capability_mapping_system\\01999000042260125146_AI_CLI_PROVENANCE_SOLUTION\\P_01999000042260125184_PROV-SOL_DIRECTORY_STRUCTURE.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 7382,
+      "size_kb": 7.2,
+      "path": "01260207201000001313_capability_mapping_system\\01999000042260125146_AI_CLI_PROVENANCE_SOLUTION\\P_01999000042260125186_PROV-SOL_README.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 1314,
+      "size_kb": 1.3,
+      "path": "01260207201000001313_capability_mapping_system\\01999000042260125146_AI_CLI_PROVENANCE_SOLUTION\\P_01999000042260125189_PROV-SOL_SETUP.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 7405,
+      "size_kb": 7.2,
+      "path": "01260207201000001313_capability_mapping_system\\01260207220000001319_README.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 151,
+      "size_kb": 0.1,
+      "path": "01260207201000001313_capability_mapping_system\\01260207220000001321_SCRIPT_CLASSIFIER_OVERRIDES.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 4637,
+      "size_kb": 4.5,
+      "path": "archive\\analysis_reports\\COLUMN_COMPARISON_20260216_072011.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 3261,
+      "size_kb": 3.2,
+      "path": "archive\\analysis_reports\\DEPRECATION_ANALYSIS_20260216_030558.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 6917,
+      "size_kb": 6.8,
+      "path": "archive\\analysis_reports\\POPULATION_SCRIPTS_ANALYSIS_20260216_074750.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 17374,
+      "size_kb": 17.0,
+      "path": "archive\\chat_sourced\\ChatGPT-ID System Sources.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 25903,
+      "size_kb": 25.3,
+      "path": "archive\\chat_sourced\\ChatGPT-Registry Explanation.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 14566,
+      "size_kb": 14.2,
+      "path": "archive\\chat_sourced\\Registry Issues Remediation Plan.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 34857,
+      "size_kb": 34.0,
+      "path": "archive\\chat_sourced\\Repository Source File Description and Dependency Audi.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 10958,
+      "size_kb": 10.7,
+      "path": "archive\\PHASE_0_A11_SOLUTION\\A11_DESIGN_DECISIONS_RESOLVED.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 6878,
+      "size_kb": 6.7,
+      "path": "archive\\PHASE_0_A11_SOLUTION\\README.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 11400,
+      "size_kb": 11.1,
+      "path": "archive\\pre_cleanup_20260222_223320\\01260202173939000112_NON_AUTHORITATIVE_FILES_ANALYSIS.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 23668,
+      "size_kb": 23.1,
+      "path": "archive\\pre_cleanup_20260222_223320\\01260207201000000854_GEU_SETS_ANALYSIS.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 223252,
+      "size_kb": 218.0,
+      "path": "archive\\pre_cleanup_20260225_173348\\01260207233100000466_geu_sets.regenerated.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 1916217,
+      "size_kb": 1871.3,
+      "path": "archive\\pre_cleanup_20260225_173348\\01999000042260124503_REGISTRY_file.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 4481,
+      "size_kb": 4.4,
+      "path": "archive\\pre_cleanup_20260225_173348\\registry_decontamination_report_20260225_173348.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 24038,
+      "size_kb": 23.5,
+      "path": "archive\\remediation_plans\\FINAL_REFINED_EXECUTION_PLAN.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 1454,
+      "size_kb": 1.4,
+      "path": "archive\\remediation_plans\\PRE_REMEDIATION_FIXES_COMPLETE.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 7593,
+      "size_kb": 7.4,
+      "path": "archive\\superseded_plans\\breezy-tickling-rose_MERGED_INTO_V3.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 10485,
+      "size_kb": 10.2,
+      "path": "archive\\superseded_plans\\polymorphic-cuddling-kurzweil_MERGED_INTO_V3.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 89512,
+      "size_kb": 87.4,
+      "path": "archive\\superseded_plans\\UNIFIED_SOLUTION_PLAN_V2_SUPERSEDED.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 1842529,
+      "size_kb": 1799.3,
+      "path": "archive\\pre_prune_20260306_210353_REGISTRY_file.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 219581,
+      "size_kb": 214.4,
+      "path": "COLUMN_HEADERS\\01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 9700,
+      "size_kb": 9.5,
+      "path": "COLUMN_HEADERS\\PY_COLUMN_PIPELINE_MAPPING.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 13446,
+      "size_kb": 13.1,
+      "path": "COLUMN_HEADERS\\REGISTRY_COLUMN_HEADERS.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 34230,
+      "size_kb": 33.4,
+      "path": "COLUMN_HEADERS\\RELATIONSHIP_COLUMNS_REFERENCE.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 4191,
+      "size_kb": 4.1,
+      "path": "docs\\00_REPORTS_INDEX.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 26768,
+      "size_kb": 26.1,
+      "path": "docs\\AI_EXECUTION_INSTRUCTIONS.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 43399,
+      "size_kb": 42.4,
+      "path": "docs\\ARCHITECTURE_RUNTIME_ENGINE.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 5640,
+      "size_kb": 5.5,
+      "path": "docs\\BACKUP_HIERARCHY.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 2821,
+      "size_kb": 2.8,
+      "path": "docs\\DUPLICATE_ID_PREVENTION.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 33263,
+      "size_kb": 32.5,
+      "path": "docs\\END_TO_END_REGISTRY_PROCESS.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 2840,
+      "size_kb": 2.8,
+      "path": "docs\\KNOWN_ISSUES.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 12364,
+      "size_kb": 12.1,
+      "path": "docs\\P_01999000042260125105_README_ENHANCED_SCANNER.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 18786,
+      "size_kb": 18.3,
+      "path": "docs\\PARALLEL_WORKSTREAMS_FEATURE_GUIDE.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 2036,
+      "size_kb": 2.0,
+      "path": "ID\\3_schemas\\.dir_id.schema.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 3946,
+      "size_kb": 3.9,
+      "path": "ID\\3_schemas\\01260207201000000877_DIR_ID_ANCHOR.schema.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 4177,
+      "size_kb": 4.1,
+      "path": "ID\\3_schemas\\GATE_CATALOG.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 572,
+      "size_kb": 0.6,
+      "path": "ID\\3_schemas\\PREFIX_POLICY.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 2046,
+      "size_kb": 2.0,
+      "path": "ID\\3_schemas\\UNIFIED_INGEST_ENVELOPE.schema.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 863,
+      "size_kb": 0.8,
+      "path": "ID\\4_config\\idpkg_active_config.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 8777,
+      "size_kb": 8.6,
+      "path": "ID\\6_docs\\contracts\\01260207201000000174_ID_IDENTITY_CONTRACT.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 11144,
+      "size_kb": 10.9,
+      "path": "ID\\6_docs\\00_MANIFEST.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 5132,
+      "size_kb": 5.0,
+      "path": "ID\\6_docs\\01_CONTEXT_PRIMER.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 11943,
+      "size_kb": 11.7,
+      "path": "ID\\6_docs\\01260207201000000129_DOCUMENTATION_CORRECTIONS_2026-02-13.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 13971,
+      "size_kb": 13.6,
+      "path": "ID\\6_docs\\01260207201000000181_PATH_ABSTRACTION_INDIRECTION_LAYER.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 23109,
+      "size_kb": 22.6,
+      "path": "ID\\6_docs\\01260207201000000195_VERIFIED_ARTIFACT_BUNDLE.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 2036,
+      "size_kb": 2.0,
+      "path": "ID\\dir_id\\.dir_id.schema.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 1180,
+      "size_kb": 1.2,
+      "path": "ID\\dir_id\\dir_id.schema.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 3764,
+      "size_kb": 3.7,
+      "path": "ID\\00_README.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 9634,
+      "size_kb": 9.4,
+      "path": "REGISTRY_AUTOMATION\\docs\\FINAL_EXECUTION_REPORT.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 28770,
+      "size_kb": 28.1,
+      "path": "REGISTRY_AUTOMATION\\test_output\\.state\\purpose_mapping\\SHA256_TO_FILE_ID.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 242,
+      "size_kb": 0.2,
+      "path": "REGISTRY_AUTOMATION\\test_output\\e2e_test_20260306_211035\\mock_analysis.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 13173,
+      "size_kb": 12.9,
+      "path": "REGISTRY_AUTOMATION\\ADDITIONAL_ISSUES_REPORT.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 8716,
+      "size_kb": 8.5,
+      "path": "REGISTRY_AUTOMATION\\DEPLOYMENT_COMPLETE.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 4851,
+      "size_kb": 4.7,
+      "path": "REGISTRY_AUTOMATION\\EXECUTION_SUMMARY_20260306_211159.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 5868,
+      "size_kb": 5.7,
+      "path": "REGISTRY_AUTOMATION\\README.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 6360,
+      "size_kb": 6.2,
+      "path": "REGISTRY_AUTOMATION\\SCRIPT_INDEX.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 35990,
+      "size_kb": 35.1,
+      "path": "REGISTRY_AUTOMATION\\The REGISTRY_AUTOMATION package.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 4850,
+      "size_kb": 4.7,
+      "path": "00_REGISTRY_FOLDER_MANIFEST.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 7788,
+      "size_kb": 7.6,
+      "path": "01260202173939000109_CLAUDE.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 221,
+      "size_kb": 0.2,
+      "path": "01260207201000000116_COUNTER_STORE.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 26493,
+      "size_kb": 25.9,
+      "path": "01260207201000000122_DIR_ID_SYSTEM_DOCUMENTATION.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 196615,
+      "size_kb": 192.0,
+      "path": "01260207233100000466_geu_sets.regenerated.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 99131,
+      "size_kb": 96.8,
+      "path": "01999000042260124012_governance_registry_schema.v3.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 526991,
+      "size_kb": 514.6,
+      "path": "01999000042260124503_REGISTRY_file.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 13263,
+      "size_kb": 13.0,
+      "path": "ACCEPTANCE_VALIDATION_REPORT.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 526991,
+      "size_kb": 514.6,
+      "path": "backup_20260306_210445_01999000042260124503_REGISTRY_file.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 11795,
+      "size_kb": 11.5,
+      "path": "BEFORE_AFTER_COMPARISON.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 15398,
+      "size_kb": 15.0,
+      "path": "CONTRACT_GAP_MATRIX.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 9527,
+      "size_kb": 9.3,
+      "path": "CORRECTION_REPORT.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 5783,
+      "size_kb": 5.6,
+      "path": "EXECUTION_COMPLETE.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 6408,
+      "size_kb": 6.3,
+      "path": "EXECUTION_PROGRESS_REPORT.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 9634,
+      "size_kb": 9.4,
+      "path": "FINAL_EXECUTION_REPORT.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 11277,
+      "size_kb": 11.0,
+      "path": "FINAL_VALIDATION_REPORT.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 9176,
+      "size_kb": 9.0,
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 6934,
+      "size_kb": 6.8,
+      "path": "INDEX.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 22098,
+      "size_kb": 21.6,
+      "path": "ISSUE_REMEDIATION_PLAN.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 6605,
+      "size_kb": 6.5,
+      "path": "README.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 13744,
+      "size_kb": 13.4,
+      "path": "REG_AUTO_PLAN_REWRITTEN_TEMPLATE_NATIVE.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 14308,
+      "size_kb": 14.0,
+      "path": "resilient-skipping-rainbow.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 39412,
+      "size_kb": 38.5,
+      "path": "UNIFIED_SOLUTION_PLAN_V3_MERGED.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 17494,
+      "size_kb": 17.1,
+      "path": "UNIFIED_SOLUTION_PLAN_V3_REMAINING_STEPS.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 68137,
+      "size_kb": 66.5,
+      "path": "UNIFIED_SSOT_REGISTRY_DERIVATIONS.corrected.v1.0.0.json",
+      "exists": true
+    },
+    {
+      "size_bytes": 9416,
+      "size_kb": 9.2,
+      "path": "COMPLETION_CERTIFICATE.txt",
+      "exists": true
+    },
+    {
+      "size_bytes": 295301,
+      "size_kb": 288.4,
+      "path": "REG_AUTO_PLAN.txt",
+      "exists": true
+    },
+    {
+      "size_bytes": 58997,
+      "size_kb": 57.6,
+      "path": "ChatGPT-Automation Alignment Assessment.md",
+      "exists": true
+    },
+    {
+      "size_bytes": 69661,
+      "size_kb": 68.0,
+      "path": "zany-napping-lollipop.md",
+      "exists": true
+    }
+  ]
+}

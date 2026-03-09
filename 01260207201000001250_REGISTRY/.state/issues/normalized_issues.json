@@ -1,0 +1,83 @@
+{
+  "high_priority": [
+    {
+      "id": "ITEM-07",
+      "priority": "HIGH",
+      "status": "pending",
+      "title": "SHA256 Promotion Incomplete"
+    },
+    {
+      "id": "ITEM-09",
+      "priority": "HIGH",
+      "status": "pending",
+      "title": "E2E Validation Shallow"
+    },
+    {
+      "id": "ITEM-11",
+      "priority": "HIGH",
+      "status": "pending",
+      "title": "Doc ID Resolver Analysis-Only"
+    },
+    {
+      "id": "ITEM-12",
+      "priority": "HIGH",
+      "status": "pending",
+      "title": "Module Dedup Analysis-Only"
+    },
+    {
+      "id": "ITEM-14",
+      "priority": "HIGH",
+      "status": "pending",
+      "title": "Phase B/C Not Wired"
+    }
+  ],
+  "source_audit": "AUDIT_SUMMARY_AND_EXECUTION_PLAN.md",
+  "medium_priority": [
+    {
+      "id": "ITEM-10",
+      "priority": "MEDIUM",
+      "status": "pending",
+      "title": "Timestamp Authority Hardcoded"
+    },
+    {
+      "id": "ITEM-13",
+      "priority": "MEDIUM",
+      "status": "pending",
+      "title": "Evidence Contracts Weak"
+    }
+  ],
+  "created": "2026-03-09T13:39:10Z",
+  "version": "1.0.0",
+  "critical_blockers": [
+    {
+      "id": "ITEM-03",
+      "priority": "CRITICAL",
+      "status": "pending",
+      "title": "Preflight Checks Missing"
+    },
+    {
+      "id": "ITEM-06",
+      "priority": "CRITICAL",
+      "status": "pending",
+      "title": "Pipeline Staging Bug"
+    },
+    {
+      "id": "ITEM-08",
+      "priority": "CRITICAL",
+      "status": "pending",
+      "title": "Defaults System Broken"
+    },
+    {
+      "id": "ITEM-15",
+      "priority": "CRITICAL",
+      "status": "pending",
+      "title": "Documentation Drift"
+    },
+    {
+      "id": "ITEM-16",
+      "priority": "CRITICAL",
+      "status": "pending",
+      "title": "Zero Test Coverage"
+    }
+  ]
+}

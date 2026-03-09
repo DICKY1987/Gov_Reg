@@ -1,0 +1,93 @@
+{
+  "metadata": {
+    "generated_at": "2026-03-08T15:34:15Z",
+    "purpose": "Controlled vocabulary for contract types and framework categories"
+  },
+  "framework_categories": {
+    "Gate": {
+      "description": "Validation, pass/fail enforcement, drift checks, invariant verification",
+      "responsibility": "Binary decision making with evidence; blocks progression on failure",
+      "examples": ["e2e_validator.py", "column_validator.py", "doc_generator.py"]
+    },
+    "Phase": {
+      "description": "Multi-step transformation or staged enrichment with inputs/outputs/invariants",
+      "responsibility": "Transform data from one shape to another with contract guarantees",
+      "examples": ["default_injector.py", "timestamp_clusterer.py", "phase_a_transformer.py"]
+    },
+    "Mutation": {
+      "description": "Patch/apply/update/change to SSOT with rollback capability",
+      "responsibility": "Write to governed registry with mutation-safety contract",
+      "examples": ["metadata_backfill.py", "edges_builder.py", "entries_pruner.py"]
+    },
+    "Transport": {
+      "description": "Move/copy/sync/transfer artifacts between scopes",
+      "responsibility": "Relocate data without transformation",
+      "examples": []
+    },
+    "Executor": {
+      "description": "Orchestration, task launching, lifecycle control, result envelope management",
+      "responsibility": "Coordinate multi-phase execution with deterministic handoffs",
+      "examples": ["pipeline_runner.py", "file_id_reconciler.py"]
+    }
+  },
+  "standard_contract_types": {
+    "input_contract": {
+      "description": "Required inputs present and valid before execution",
+      "fields": ["required_inputs", "input_validation_rules", "must_exist_checks"],
+      "enforcement": "Precondition validation before step execution",
+      "example_violation": "timestamp_clusterer reads wrong field name (FCA-004)"
+    },
+    "identity_contract": {
+      "description": "file_id resolution and canonicalization; entity identity consistency",
+      "fields": ["identity_resolution_rules", "canonical_id_source", "deduplication_policy"],
+      "enforcement": "Identity validation before mutation or promotion",
+      "example_violation": "SHA256 used instead of 20-digit file_id (FCA-005)"
+    },
+    "output_result_envelope_contract": {
+      "description": "Consistent result shape between components; predictable handoff format",
+      "fields": ["output_schema", "required_envelope_keys", "success_failure_shape"],
+      "enforcement": "Postcondition validation after step execution",
+      "example_violation": "pipeline_runner expects wrapped data key but gets flat dict (FCA-001)"
+    },
+    "evidence_contract": {
+      "description": "Artifacts proving execution outcome; audit trail requirements",
+      "fields": ["required_evidence_files", "evidence_location", "retention_policy"],
+      "enforcement": "Evidence validation before gate pass",
+      "example_violation": "e2e_validator does not enforce evidence artifacts (FCA-003)"
+    },
+    "pass_fail_criteria_contract": {
+      "description": "Binary gate decision rules; deterministic pass/fail conditions",
+      "fields": ["pass_conditions", "fail_conditions", "expected_metrics"],
+      "enforcement": "Gate execution with regex/file/metric checks",
+      "example_violation": "e2e_validator checks structure but not policy invariants (FCA-003)"
+    },
+    "mutation_safety_contract": {
+      "description": "Lock, backup, rollback before writes; write-path ownership",
+      "fields": ["lock_policy", "backup_required", "rollback_plan", "write_authorization"],
+      "enforcement": "Pre-mutation validation and post-mutation verification",
+      "example_violation": "doc_id_resolver has no write path to registry (FCA-006)"
+    },
+    "rollback_contract": {
+      "description": "Undo artifacts required before commit; revert capability",
+      "fields": ["rollback_command", "rollback_artifacts", "rollback_verification"],
+      "enforcement": "Rollback artifacts generated before mutation applied",
+      "example_violation": "No rollback mechanism defined for any mutation script"
+    },
+    "fingerprint_idempotency_contract": {
+      "description": "Skip-if-same-inputs behavior; replay avoidance",
+      "fields": ["fingerprint_computation", "fingerprint_storage", "skip_logic"],
+      "enforcement": "Fingerprint check before execution; skip if match found",
+      "example_violation": "No idempotency in validation gates (FCA-008)"
+    }
+  },
+  "contract_to_category_mapping": {
+    "input_contract": ["Phase", "Gate"],
+    "identity_contract": ["Executor", "Mutation"],
+    "output_result_envelope_contract": ["Phase", "Executor"],
+    "evidence_contract": ["Gate", "Mutation"],
+    "pass_fail_criteria_contract": ["Gate", "Phase"],
+    "mutation_safety_contract": ["Mutation"],
+    "rollback_contract": ["Mutation"],
+    "fingerprint_idempotency_contract": ["Gate", "Executor"]
+  }
+}

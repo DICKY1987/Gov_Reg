@@ -1,0 +1,401 @@
+{
+  "mapping_version": "1.0.0",
+  "generated_at": "2026-03-08T19:00:36Z",
+  "source_matrix": "CONTRACT_GAP_MATRIX.md",
+  "purpose": "Maps each contract-gap matrix row to required ProgramSpec fields",
+  "mapping_rules": {
+    "description": "Each issue must map to at least one ProgramSpec field target",
+    "allowed_targets": [
+      "category",
+      "inputs",
+      "steps",
+      "locks_write_policy",
+      "evidence_contract",
+      "pass_criteria",
+      "fingerprint_contract",
+      "outputs",
+      "remediation"
+    ]
+  },
+  "issue_mappings": [
+    {
+      "issue_id": "REG-001",
+      "current_component": "pipeline_runner.py",
+      "programspec_targets": {
+        "category": "Executor",
+        "outputs": {
+          "field": "result_envelope_validation",
+          "required": true,
+          "description": "Must validate transform results before staging"
+        },
+        "evidence_contract": {
+          "field": "output_validation_evidence",
+          "required_files": ["result_validation.log", "envelope_check.json"]
+        },
+        "pass_criteria": {
+          "field": "envelope_completeness_check",
+          "criteria": "All required envelope fields present and valid"
+        }
+      }
+    },
+    {
+      "issue_id": "REG-002",
+      "current_component": "default_injector.py",
+      "programspec_targets": {
+        "category": "Phase",
+        "steps": {
+          "field": "postcondition_enforcement",
+          "required": true,
+          "description": "Phase must enforce declared default semantics"
+        },
+        "pass_criteria": {
+          "field": "default_application_verification",
+          "criteria": "Defaults applied and verifiable in output"
+        },
+        "evidence_contract": {
+          "field": "default_injection_evidence",
+          "required_files": ["before_defaults.json", "after_defaults.json", "injection_diff.json"]
+        }
+      }
+    },
+    {
+      "issue_id": "REG-003",
+      "current_component": "e2e_validator.py",
+      "programspec_targets": {
+        "category": "Gate",
+        "pass_criteria": {
+          "field": "deep_validation_rules",
+          "required": true,
+          "description": "Must validate internal consistency, not just file existence"
+        },
+        "evidence_contract": {
+          "field": "validation_evidence",
+          "required_files": ["validation_report.json", "consistency_checks.log", "failed_rules.json"]
+        },
+        "inputs": {
+          "field": "validation_policy",
+          "required": true,
+          "description": "Explicit validation policy document"
+        }
+      }
+    },
+    {
+      "issue_id": "REG-004",
+      "current_component": "timestamp_clusterer.py",
+      "programspec_targets": {
+        "category": "Phase",
+        "inputs": {
+          "field": "authoritative_timestamp_source",
+          "required": true,
+          "description": "Must use mtime_ns_utc or other authoritative timestamp"
+        },
+        "pass_criteria": {
+          "field": "timestamp_authority_check",
+          "criteria": "Clustering uses only authoritative timestamp fields"
+        },
+        "evidence_contract": {
+          "field": "timestamp_usage_evidence",
+          "required_files": ["timestamp_field_audit.json", "cluster_basis.log"]
+        }
+      }
+    },
+    {
+      "issue_id": "REG-005",
+      "current_component": "file_id_reconciler.py",
+      "programspec_targets": {
+        "category": "Mutation",
+        "fingerprint_contract": {
+          "field": "file_id_promotion_rules",
+          "required": true,
+          "description": "20-digit file_id must be proven before promotion"
+        },
+        "locks_write_policy": {
+          "field": "identity_write_lock",
+          "policy": "fail_closed",
+          "description": "Cannot write identity fields until file_id resolved"
+        },
+        "evidence_contract": {
+          "field": "file_id_resolution_evidence",
+          "required_files": ["file_id_proof.json", "sha256_to_file_id_map.json", "promotion_audit.log"]
+        }
+      }
+    },
+    {
+      "issue_id": "REG-006",
+      "current_component": "doc_id_resolver.py",
+      "programspec_targets": {
+        "category": "Mutation",
+        "locks_write_policy": {
+          "field": "doc_id_collision_policy",
+          "policy": "collision_detection_required",
+          "description": "Must detect and handle doc_id collisions"
+        },
+        "pass_criteria": {
+          "field": "collision_resolution_verification",
+          "criteria": "All collisions detected and resolved with evidence"
+        },
+        "evidence_contract": {
+          "field": "doc_id_resolution_evidence",
+          "required_files": ["collision_detection.log", "resolution_strategy.json", "final_doc_id_map.json"]
+        }
+      }
+    },
+    {
+      "issue_id": "REG-007",
+      "current_component": "module_dedup.py",
+      "programspec_targets": {
+        "category": "Phase",
+        "inputs": {
+          "field": "canonical_path_source",
+          "required": true,
+          "description": "Must use FILE_WATCHER canonical paths for deduplication"
+        },
+        "pass_criteria": {
+          "field": "dedup_correctness_check",
+          "criteria": "Deduplication based on canonical paths only"
+        },
+        "evidence_contract": {
+          "field": "dedup_evidence",
+          "required_files": ["canonical_path_audit.json", "dedup_decisions.log"]
+        }
+      }
+    },
+    {
+      "issue_id": "REG-008",
+      "current_component": "relationship_builder.py",
+      "programspec_targets": {
+        "category": "Phase",
+        "outputs": {
+          "field": "edges_generation_required",
+          "required": true,
+          "description": "Must generate non-empty edges[] when relationships exist"
+        },
+        "pass_criteria": {
+          "field": "relationship_completeness_check",
+          "criteria": "All detected relationships present in edges[]"
+        },
+        "evidence_contract": {
+          "field": "relationship_evidence",
+          "required_files": ["relationship_detection.log", "edges_output.json", "completeness_check.json"]
+        }
+      }
+    },
+    {
+      "issue_id": "REG-009",
+      "current_component": "entity_grouper.py",
+      "programspec_targets": {
+        "category": "Phase",
+        "outputs": {
+          "field": "entries_grouping_required",
+          "required": true,
+          "description": "All entities must be assigned to logical groups"
+        },
+        "pass_criteria": {
+          "field": "grouping_completeness_check",
+          "criteria": "No orphaned entries[], all assigned to valid groups"
+        },
+        "evidence_contract": {
+          "field": "grouping_evidence",
+          "required_files": ["grouping_decisions.log", "orphan_check.json", "entries_output.json"]
+        }
+      }
+    },
+    {
+      "issue_id": "REG-010",
+      "current_component": "repo_root_finder.py",
+      "programspec_targets": {
+        "category": "Phase",
+        "outputs": {
+          "field": "repo_root_id_required",
+          "required": true,
+          "description": "Must populate repo_root_id for all repository entities"
+        },
+        "pass_criteria": {
+          "field": "repo_root_presence_check",
+          "criteria": "All repo entities have valid repo_root_id"
+        },
+        "evidence_contract": {
+          "field": "repo_root_evidence",
+          "required_files": ["repo_detection.log", "repo_root_assignments.json"]
+        }
+      }
+    },
+    {
+      "issue_id": "REG-011",
+      "current_component": "metadata_enricher.py",
+      "programspec_targets": {
+        "category": "Phase",
+        "outputs": {
+          "field": "required_metadata_fields",
+          "required": true,
+          "description": "Must populate doc_id, file_size, canonicality, and other required metadata"
+        },
+        "pass_criteria": {
+          "field": "metadata_completeness_check",
+          "criteria": "All required metadata fields present and valid"
+        },
+        "evidence_contract": {
+          "field": "metadata_evidence",
+          "required_files": ["metadata_population.log", "field_coverage.json", "validation_report.json"]
+        }
+      }
+    },
+    {
+      "issue_id": "REG-012",
+      "current_component": "contract_documentation.md",
+      "programspec_targets": {
+        "category": "Phase",
+        "remediation": {
+          "field": "documentation_sync_required",
+          "required": true,
+          "description": "Documentation must match current contract implementation"
+        },
+        "evidence_contract": {
+          "field": "documentation_evidence",
+          "required_files": ["doc_drift_report.json", "sync_verification.log"]
+        }
+      }
+    },
+    {
+      "issue_id": "REG-013",
+      "current_component": "phase_b_phase_c_integration.py",
+      "programspec_targets": {
+        "category": "Executor",
+        "steps": {
+          "field": "phase_integration_contracts",
+          "required": true,
+          "description": "Phase B/C integration must have explicit contracts and validation"
+        },
+        "pass_criteria": {
+          "field": "integration_validation",
+          "criteria": "Phase outputs match next phase inputs"
+        },
+        "evidence_contract": {
+          "field": "integration_evidence",
+          "required_files": ["integration_validation.log", "contract_adherence.json"]
+        }
+      }
+    },
+    {
+      "issue_id": "REG-014",
+      "current_component": "analyzer_output_consumer.py",
+      "programspec_targets": {
+        "category": "Phase",
+        "inputs": {
+          "field": "analyzer_output_schema",
+          "required": true,
+          "description": "Must use explicit schema, not field assumptions"
+        },
+        "pass_criteria": {
+          "field": "schema_adherence_check",
+          "criteria": "All field access validated against schema"
+        },
+        "evidence_contract": {
+          "field": "schema_evidence",
+          "required_files": ["schema_validation.log", "field_access_audit.json"]
+        }
+      }
+    },
+    {
+      "issue_id": "REG-015",
+      "current_component": "safe_mutation_layer.py",
+      "programspec_targets": {
+        "category": "Mutation",
+        "locks_write_policy": {
+          "field": "mutation_safety_contract",
+          "policy": "explicit_mutation_contracts_required",
+          "description": "All registry writes must go through governed mutation layer"
+        },
+        "evidence_contract": {
+          "field": "mutation_evidence",
+          "required_files": ["mutation_log.json", "safety_checks.log", "rollback_plan.json"]
+        }
+      }
+    },
+    {
+      "issue_id": "REG-016",
+      "current_component": "rollback_manager.py",
+      "programspec_targets": {
+        "category": "Mutation",
+        "remediation": {
+          "field": "rollback_contract_required",
+          "required": true,
+          "description": "All mutations must have deterministic rollback capability"
+        },
+        "evidence_contract": {
+          "field": "rollback_evidence",
+          "required_files": ["rollback_plan.json", "state_snapshot.json", "rollback_test.log"]
+        }
+      }
+    },
+    {
+      "issue_id": "REG-017",
+      "current_component": "idempotency_enforcer.py",
+      "programspec_targets": {
+        "category": "Phase",
+        "fingerprint_contract": {
+          "field": "idempotency_fingerprint_required",
+          "required": true,
+          "description": "Phases must use fingerprints to ensure idempotent execution"
+        },
+        "pass_criteria": {
+          "field": "idempotency_verification",
+          "criteria": "Repeated execution with same inputs produces identical outputs"
+        },
+        "evidence_contract": {
+          "field": "idempotency_evidence",
+          "required_files": ["fingerprint_log.json", "idempotency_test.log", "comparison_report.json"]
+        }
+      }
+    },
+    {
+      "issue_id": "REG-018",
+      "current_component": "transport_staging.py",
+      "programspec_targets": {
+        "category": "Transport",
+        "outputs": {
+          "field": "staging_contract_required",
+          "required": true,
+          "description": "Artifact staging must follow explicit transport contracts"
+        },
+        "evidence_contract": {
+          "field": "transport_evidence",
+          "required_files": ["staging_log.json", "artifact_manifest.json", "transport_verification.log"]
+        }
+      }
+    },
+    {
+      "issue_id": "REG-019",
+      "current_component": "ground_truth_validator.py",
+      "programspec_targets": {
+        "category": "Gate",
+        "pass_criteria": {
+          "field": "ground_truth_validation_required",
+          "required": true,
+          "description": "Must validate against authoritative ground truth sources"
+        },
+        "evidence_contract": {
+          "field": "ground_truth_evidence",
+          "required_files": ["ground_truth_comparison.json", "validation_report.log", "discrepancy_log.json"]
+        }
+      }
+    }
+  ],
+  "coverage_summary": {
+    "total_issues": 19,
+    "issues_mapped": 19,
+    "issues_unmapped": 0,
+    "programspec_field_coverage": {
+      "category": 19,
+      "inputs": 5,
+      "steps": 2,
+      "locks_write_policy": 3,
+      "evidence_contract": 19,
+      "pass_criteria": 13,
+      "fingerprint_contract": 2,
+      "outputs": 7,
+      "remediation": 3
+    },
+    "validation_status": "COMPLETE"
+  }
+}

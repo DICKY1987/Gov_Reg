@@ -1,0 +1,45 @@
+  Audit findings classified and incorporated
+
+  Finding 1: INDEX.md has 8 wrong sizes → FIX-009
+
+  All 8 deltas verified against VERIFICATION_MANIFEST.json (the
+  authoritative source with actual size_bytes fields). The largest
+  errors: CONTRACT_GAP_MATRIX.md claimed ~42KB but is 15.4KB;
+  remediation_plan.json claimed ~8KB but is 1.7KB. These are
+  pre-execution estimates that were never updated against actual output.
+
+  Finding 2: INDEX.md references a phantom file → FIX-009
+
+  REMEDIATION_PLAN_SUMMARY.md is marked "To be created (optional)" — it
+  was never created. The plan requires removing or explicitly marking it
+   NOT_CREATED.
+
+  Finding 3: INDEX.md missing 9 rewrite-delivery files → FIX-009
+
+  README.md, BEFORE_AFTER_COMPARISON.md, EXECUTION_COMPLETE.md,
+  ACCEPTANCE_VALIDATION_REPORT.md, CORRECTION_REPORT.md,
+  IMPLEMENTATION_CHECKLIST.md, ISSUE_REMEDIATION_PLAN.md,
+  COMPLETION_CERTIFICATE.txt, and zany-napping-lollipop.md all exist on
+  disk and belong to the rewrite delivery but are absent from the index.
+
+  Finding 4: INDEX.md template path wrong → FIX-009
+
+  newPhasePlanProcess/... → ../newPhasePlanProcess/... (consistent with
+  the FIX-003 repo-relative strategy already in the plan).
+
+  Finding 5: VERIFICATION_MANIFEST.json missing 4 entries → FIX-010
+
+  COMPLETION_CERTIFICATE.txt, REG_AUTO_PLAN.txt, ChatGPT-Automation
+  Alignment Assessment.md, and zany-napping-lollipop.md all exist on
+  disk but postdate the manifest's 2026-03-08T19:00:36Z creation
+  timestamp. The plan adds them with actual byte sizes read from disk
+  (not estimated). VERIFICATION_MANIFEST.json itself is excluded from
+  self-referential entry as an acceptable gap. Target: 126 → 130
+  artifacts.
+
+  What this does NOT claim to fix
+
+  The manifest covering 126 files vs index covering 21 paths is by
+  design — the manifest covers the entire registry repository; the index
+   covers only the rewrite delivery package. The plan does not attempt
+  to make them match 1:1.

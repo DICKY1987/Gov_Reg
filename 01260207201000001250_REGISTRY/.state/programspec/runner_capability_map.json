@@ -1,0 +1,236 @@
+{
+  "mapping_version": "1.0.0",
+  "generated_at": "2026-03-08T19:00:36Z",
+  "purpose": "Maps required runner capabilities to issue remediation needs",
+  "runner_capability_definitions": {
+    "output_validation": {
+      "description": "Runner must validate transform outputs before staging",
+      "required_for": ["REG-001"],
+      "implementation": "Result envelope validation with schema checking",
+      "runner_type": "Executor"
+    },
+    "postcondition_enforcement": {
+      "description": "Runner must enforce phase postconditions",
+      "required_for": ["REG-002"],
+      "implementation": "Explicit postcondition checks after phase execution",
+      "runner_type": "Phase"
+    },
+    "deep_validation": {
+      "description": "Runner must perform deep structural validation, not shallow checks",
+      "required_for": ["REG-003"],
+      "implementation": "Policy-driven validation with consistency checks",
+      "runner_type": "Gate"
+    },
+    "input_schema_validation": {
+      "description": "Runner must validate inputs against explicit schemas",
+      "required_for": ["REG-004", "REG-007", "REG-014"],
+      "implementation": "Schema-based input validation before phase execution",
+      "runner_type": "Phase"
+    },
+    "identity_promotion_gate": {
+      "description": "Runner must gate identity field writes until proven",
+      "required_for": ["REG-005"],
+      "implementation": "Fail-closed write policy for identity fields",
+      "runner_type": "Mutation"
+    },
+    "collision_detection": {
+      "description": "Runner must detect and handle ID collisions",
+      "required_for": ["REG-006"],
+      "implementation": "Pre-write collision detection with resolution policy",
+      "runner_type": "Mutation"
+    },
+    "relationship_validation": {
+      "description": "Runner must validate relationship completeness",
+      "required_for": ["REG-008"],
+      "implementation": "Verify edges[] population matches detected relationships",
+      "runner_type": "Phase"
+    },
+    "grouping_validation": {
+      "description": "Runner must validate entity grouping completeness",
+      "required_for": ["REG-009"],
+      "implementation": "Orphan detection and group assignment verification",
+      "runner_type": "Phase"
+    },
+    "required_field_enforcement": {
+      "description": "Runner must enforce required field population",
+      "required_for": ["REG-010", "REG-011"],
+      "implementation": "Field presence and validity checks",
+      "runner_type": "Phase"
+    },
+    "documentation_sync": {
+      "description": "Runner must verify documentation currency",
+      "required_for": ["REG-012"],
+      "implementation": "Doc drift detection and sync verification",
+      "runner_type": "Phase"
+    },
+    "phase_integration_validation": {
+      "description": "Runner must validate inter-phase contracts",
+      "required_for": ["REG-013"],
+      "implementation": "Output-to-input contract matching",
+      "runner_type": "Executor"
+    },
+    "mutation_safety": {
+      "description": "Runner must enforce mutation safety contracts",
+      "required_for": ["REG-015"],
+      "implementation": "Governed mutation layer with evidence requirements",
+      "runner_type": "Mutation"
+    },
+    "rollback_capability": {
+      "description": "Runner must support deterministic rollback",
+      "required_for": ["REG-016"],
+      "implementation": "State snapshots and rollback execution",
+      "runner_type": "Mutation"
+    },
+    "idempotency_enforcement": {
+      "description": "Runner must enforce idempotent execution",
+      "required_for": ["REG-017"],
+      "implementation": "Fingerprint-based execution gating",
+      "runner_type": "Phase"
+    },
+    "transport_contract_enforcement": {
+      "description": "Runner must enforce transport contracts",
+      "required_for": ["REG-018"],
+      "implementation": "Staging validation and artifact manifest checking",
+      "runner_type": "Transport"
+    },
+    "ground_truth_validation": {
+      "description": "Runner must validate against ground truth",
+      "required_for": ["REG-019"],
+      "implementation": "Authoritative source comparison",
+      "runner_type": "Gate"
+    }
+  },
+  "capability_implementation_order": [
+    {
+      "priority": 1,
+      "capability": "output_validation",
+      "rationale": "Executor output enforcement is foundational",
+      "blocks": ["phase_integration_validation"]
+    },
+    {
+      "priority": 2,
+      "capability": "identity_promotion_gate",
+      "rationale": "Identity prerequisites must be established early",
+      "blocks": ["mutation_safety", "collision_detection"]
+    },
+    {
+      "priority": 3,
+      "capability": "postcondition_enforcement",
+      "rationale": "Phase contract enforcement needed for reliability",
+      "blocks": ["phase_integration_validation"]
+    },
+    {
+      "priority": 4,
+      "capability": "input_schema_validation",
+      "rationale": "Input authority prevents downstream issues",
+      "blocks": ["relationship_validation", "grouping_validation"]
+    },
+    {
+      "priority": 5,
+      "capability": "deep_validation",
+      "rationale": "Evidence-driven validation closes quality gaps",
+      "blocks": ["ground_truth_validation"]
+    },
+    {
+      "priority": 6,
+      "capability": "mutation_safety",
+      "rationale": "Safe mutation layer protects registry integrity",
+      "blocks": ["rollback_capability"]
+    },
+    {
+      "priority": 7,
+      "capability": "collision_detection",
+      "rationale": "Collision handling prevents data corruption",
+      "blocks": []
+    },
+    {
+      "priority": 8,
+      "capability": "relationship_validation",
+      "rationale": "Relationship completeness needed for graph integrity",
+      "blocks": []
+    },
+    {
+      "priority": 9,
+      "capability": "grouping_validation",
+      "rationale": "Entity grouping prevents orphaned data",
+      "blocks": []
+    },
+    {
+      "priority": 10,
+      "capability": "required_field_enforcement",
+      "rationale": "Required metadata ensures usability",
+      "blocks": []
+    },
+    {
+      "priority": 11,
+      "capability": "phase_integration_validation",
+      "rationale": "Inter-phase contracts prevent integration failures",
+      "blocks": []
+    },
+    {
+      "priority": 12,
+      "capability": "idempotency_enforcement",
+      "rationale": "Idempotency enables safe re-execution",
+      "blocks": []
+    },
+    {
+      "priority": 13,
+      "capability": "rollback_capability",
+      "rationale": "Rollback provides safety net for mutations",
+      "blocks": []
+    },
+    {
+      "priority": 14,
+      "capability": "transport_contract_enforcement",
+      "rationale": "Transport contracts ensure artifact integrity",
+      "blocks": []
+    },
+    {
+      "priority": 15,
+      "capability": "ground_truth_validation",
+      "rationale": "Ground truth validation closes final quality gaps",
+      "blocks": []
+    },
+    {
+      "priority": 16,
+      "capability": "documentation_sync",
+      "rationale": "Documentation sync ensures maintainability",
+      "blocks": []
+    }
+  ],
+  "runner_type_summary": {
+    "Executor": {
+      "capabilities": ["output_validation", "phase_integration_validation"],
+      "issues_addressed": ["REG-001", "REG-013"]
+    },
+    "Phase": {
+      "capabilities": [
+        "postcondition_enforcement",
+        "input_schema_validation",
+        "relationship_validation",
+        "grouping_validation",
+        "required_field_enforcement",
+        "documentation_sync",
+        "idempotency_enforcement"
+      ],
+      "issues_addressed": ["REG-002", "REG-004", "REG-007", "REG-008", "REG-009", "REG-010", "REG-011", "REG-012", "REG-014", "REG-017"]
+    },
+    "Mutation": {
+      "capabilities": [
+        "identity_promotion_gate",
+        "collision_detection",
+        "mutation_safety",
+        "rollback_capability"
+      ],
+      "issues_addressed": ["REG-005", "REG-006", "REG-015", "REG-016"]
+    },
+    "Gate": {
+      "capabilities": ["deep_validation", "ground_truth_validation"],
+      "issues_addressed": ["REG-003", "REG-019"]
+    },
+    "Transport": {
+      "capabilities": ["transport_contract_enforcement"],
+      "issues_addressed": ["REG-018"]
+    }
+  }
+}

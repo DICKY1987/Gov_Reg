@@ -1,0 +1,95 @@
+{
+  "phase_plan": {
+    "phase_overview": [
+      {
+        "phase_id": "PH-01",
+        "name": "Source Inventory and Issue Harvest",
+        "purpose": "Extract and normalize all issues from source documents into machine-readable inventory",
+        "duration_estimate": "2 hours",
+        "steps": 3,
+        "gates": ["GATE-001-SOURCE-COMPLETE"],
+        "outputs": [
+          ".state/issues/normalized_issues.json",
+          ".state/issues/component_inventory.json",
+          ".state/issues/contract_taxonomy.json"
+        ]
+      },
+      {
+        "phase_id": "PH-02",
+        "name": "Contract-Gap Matrix Authoring",
+        "purpose": "Convert normalized issues into authoritative contract-gap matrix with all required fields",
+        "duration_estimate": "4 hours",
+        "steps": 4,
+        "gates": ["GATE-002-MATRIX-COMPLETE"],
+        "outputs": [
+          "CONTRACT_GAP_MATRIX.md",
+          ".state/matrix/contract_gap_matrix.json"
+        ]
+      },
+      {
+        "phase_id": "PH-03",
+        "name": "ProgramSpec Mapping",
+        "purpose": "Map each matrix row to required ProgramSpec fields and runner capabilities",
+        "duration_estimate": "3 hours",
+        "steps": 3,
+        "gates": ["GATE-003-MAPPING-COMPLETE"],
+        "outputs": [
+          ".state/programspec/programspec_mapping.json",
+          ".state/programspec/runner_capability_map.json"
+        ]
+      },
+      {
+        "phase_id": "PH-04",
+        "name": "Remediation Delivery Plan Synthesis",
+        "purpose": "Organize remediation by dependency order and generate delivery plan",
+        "duration_estimate": "4 hours",
+        "steps": 4,
+        "gates": ["GATE-004-STEP-CONTRACTS-COMPLETE"],
+        "outputs": [
+          ".state/remediation/remediation_plan.json"
+        ]
+      },
+      {
+        "phase_id": "PH-05",
+        "name": "Gate and Test Generation",
+        "purpose": "Generate deterministic validation gates and verification tests for all issues",
+        "duration_estimate": "3 hours",
+        "steps": 2,
+        "gates": ["GATE-005-VERIFICATION-DEFINED"],
+        "outputs": [
+          ".state/gates/gates_spec.json"
+        ]
+      },
+      {
+        "phase_id": "PH-06",
+        "name": "Final Plan Assembly",
+        "purpose": "Assemble final rewritten plan and validate template conformance",
+        "duration_estimate": "2 hours",
+        "steps": 2,
+        "gates": ["GATE-006-TEMPLATE-CONFORMANT"],
+        "outputs": [
+          "REG_AUTO_PLAN_REWRITTEN_TEMPLATE_NATIVE.json"
+        ]
+      }
+    ],
+    "parallel_execution_groups": [],
+    "execution_strategy": {
+      "parallel_execution": false,
+      "max_concurrent": 1,
+      "scheduling_policy": "sequential",
+      "step_ordering": "dependency_graph",
+      "rationale": "Phases must execute sequentially because each phase depends on outputs from previous phase"
+    },
+    "time_estimate": {
+      "sequential_total_hours": 18,
+      "parallel_total_hours": null,
+      "speedup_percent": 0,
+      "formula": "All phases sequential due to data dependencies"
+    },
+    "dag_validation": {
+      "command": "python scripts/P_01260207233100000238_generate_dag.py --input .state/phase_plan.json --validate",
+      "expect": "exit_code == 0 AND no_cycles == true",
+      "evidence": ".state/evidence/PH-00/dag_validation.json"
+    }
+  }
+}
