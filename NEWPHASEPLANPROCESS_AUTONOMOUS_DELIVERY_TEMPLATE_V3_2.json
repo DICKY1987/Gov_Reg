@@ -39,7 +39,100 @@
     "rules": [
       "Every rule, gate, and contract must be expressible as: config entry, executable command, evidence artifact path, pass/fail condition",
       "Items that cannot be expressed this way MUST be marked NOT_AUTOMATABLE and escalated to manual steps",
-      "EVERY STEP must have explicit inputs/outputs/invariants defined"
+      "EVERY STEP must have explicit inputs/outputs/invariants defined",
+      "Executable steps must not leave pattern_id blank or null; when no approved pattern exists, create and validate a PATTERN_CREATION path before implementation.",
+      "Behavior may only be bound through registered executors plus approved spec/config/schema artifacts; prompt-only or ad hoc runtime behavior is forbidden.",
+      "Executable steps may not invoke unregistered executors or bypass GATE-CFG-001 through GATE-CFG-006."
+    ]
+  },
+  "configuration_driven_development": {
+    "enabled": true,
+    "enforcement_mode": "fail_closed",
+    "engine_spec_separation_required": true,
+    "allowed_behavior_sources": [
+      "pattern_parameters",
+      "config_file",
+      "spec_file",
+      "schema_validated_defaults"
+    ],
+    "forbidden_behavior_sources": [
+      "inline_ad_hoc_logic",
+      "runtime_prompt_override",
+      "manual_command_substitution",
+      "unregistered_executor"
+    ],
+    "no_pattern_policy": {
+      "implementation_blocked_until_pattern_validated": true,
+      "required_action": "create_pattern_first"
+    },
+    "validator_command": "python scripts/validate_configuration_driven_development.py",
+    "expect_exit_code": 0,
+    "evidence": ".state/evidence/configuration_driven_development_validation.json"
+  },
+  "pattern_governance": {
+    "mode": "PATTERN_FIRST_REQUIRED",
+    "registry_path": "PATTERN_INDEX.yaml",
+    "unknown_pattern_policy": "CREATE_AND_VALIDATE_BEFORE_EXECUTION",
+    "ad_hoc_execution_policy": "FORBIDDEN",
+    "pre_execution_gate": "GATE-CFG-001",
+    "pattern_resolution_phase": {
+      "required": true,
+      "steps": [
+        "classify_task_archetype",
+        "search_pattern_registry",
+        "select_best_matching_pattern",
+        "validate_pattern_applicability",
+        "if_no_match_create_pattern_candidate",
+        "validate_new_pattern",
+        "register_pattern",
+        "bind_task_to_pattern"
+      ],
+      "required_decision_outputs": [
+        "pattern_resolution_decision",
+        "existing_pattern_match",
+        "new_pattern_required",
+        "executor_family",
+        "config_driven_feasibility"
+      ]
+    },
+    "pattern_creation_contract": {
+      "trigger": "NO_MATCHING_PATTERN_FOUND",
+      "required_outputs": [
+        "execution_pattern_file",
+        "pattern_registry_entry",
+        "pattern_validation_report",
+        "pattern_applicability_statement"
+      ],
+      "must_complete_before": [
+        "task_decomposition",
+        "file_modification",
+        "tool_execution"
+      ]
+    },
+    "manual_exception_policy": {
+      "allowed": false,
+      "override_requires": [
+        "human_approved_variance_id",
+        "documented_reason",
+        "temporary_expiration"
+      ]
+    },
+    "required_step_fields": [
+      "pattern_id",
+      "implementation_mode",
+      "executor_binding",
+      "behavior_spec",
+      "behavior_binding_proof",
+      "allowed_extension_slots",
+      "bespoke_logic_allowed"
+    ],
+    "enforcement_gates": [
+      "GATE-CFG-001",
+      "GATE-CFG-002",
+      "GATE-CFG-003",
+      "GATE-CFG-004",
+      "GATE-CFG-005",
+      "GATE-CFG-006"
     ]
   },
   "usage_instructions": {
@@ -139,6 +232,13 @@
         "timestamp": ""
       }
     },
+    "pattern_resolution_outputs": {
+      "pattern_resolution_decision": "",
+      "existing_pattern_match": "",
+      "new_pattern_required": false,
+      "executor_family": "",
+      "config_driven_feasibility": ""
+    },
     "classification_rules": {
       "simple": {
         "condition": "file_count <= 3 AND loc < 200",
@@ -203,6 +303,16 @@
     "description": "Complete list of all files that will be touched during execution",
     "purpose": "Enable change impact analysis, conflict detection, parallel execution safety, and review scoping",
     "global_files": [],
+    "entry_extensions": {
+      "pattern_id": "",
+      "generated_from_pattern": false,
+      "pattern_role": "",
+      "pattern_role_allowed_values": [
+        "pattern_artifact",
+        "pattern_output",
+        "manual_exception"
+      ]
+    },
     "by_phase": {},
     "by_step": {},
     "conflict_analysis": {
@@ -781,7 +891,7 @@
           "enabled": false,
           "paths": []
         },
-        "pattern_id": "PATTERN-EXAMPLE-001",
+        "pattern_id": "PAT-EXAMPLE-PLAN-DOC",
         "pattern_parameters": {},
         "requires_manual_review": false,
         "manual_review_reason": "",
@@ -799,7 +909,27 @@
           "require_error_message": true,
           "require_stack_trace": true,
           "require_retry_history": true
-        }
+        },
+        "implementation_mode": "PATTERN_EXECUTION",
+        "executor_binding": {
+          "executor_id": "EXEC-PLAN-DOC-WRITER",
+          "executor_version": "1.0.0",
+          "invocation_ref": "python scripts/execute_pattern.py --executor plan_doc_writer"
+        },
+        "behavior_spec": {
+          "pattern_id": "PAT-EXAMPLE-PLAN-DOC",
+          "pattern_version": "1.0.0",
+          "spec_file": ".state/patterns/PAT-EXAMPLE-PLAN-DOC/spec.yaml",
+          "config_instance_file": ".state/config/PH-00_STEP-001.plan_doc.json",
+          "config_schema_file": ".state/patterns/PAT-EXAMPLE-PLAN-DOC/config_schema.json",
+          "parameter_schema_file": ".state/patterns/PAT-EXAMPLE-PLAN-DOC/parameter_schema.json"
+        },
+        "behavior_binding_proof": {
+          "command": "python scripts/validate_behavior_binding.py --executor EXEC-PLAN-DOC-WRITER --pattern PAT-EXAMPLE-PLAN-DOC --config .state/config/PH-00_STEP-001.plan_doc.json",
+          "evidence": ".state/evidence/PH-00/STEP-001/behavior_binding.json"
+        },
+        "allowed_extension_slots": [],
+        "bespoke_logic_allowed": false
       }
     },
     "PH-02": {
@@ -887,7 +1017,7 @@
           "enabled": false,
           "paths": []
         },
-        "pattern_id": "PATTERN-EXAMPLE-002",
+        "pattern_id": "PAT-EXAMPLE-GATE-EXTRACTION",
         "pattern_parameters": {},
         "requires_manual_review": false,
         "manual_review_reason": "",
@@ -905,7 +1035,27 @@
           "require_error_message": true,
           "require_stack_trace": true,
           "require_retry_history": true
-        }
+        },
+        "implementation_mode": "PATTERN_EXECUTION",
+        "executor_binding": {
+          "executor_id": "EXEC-GATE-EXTRACTOR",
+          "executor_version": "1.0.0",
+          "invocation_ref": "python scripts/execute_pattern.py --executor gate_extractor"
+        },
+        "behavior_spec": {
+          "pattern_id": "PAT-EXAMPLE-GATE-EXTRACTION",
+          "pattern_version": "1.0.0",
+          "spec_file": ".state/patterns/PAT-EXAMPLE-GATE-EXTRACTION/spec.yaml",
+          "config_instance_file": ".state/config/PH-02_STEP-001.gate_extraction.json",
+          "config_schema_file": ".state/patterns/PAT-EXAMPLE-GATE-EXTRACTION/config_schema.json",
+          "parameter_schema_file": ".state/patterns/PAT-EXAMPLE-GATE-EXTRACTION/parameter_schema.json"
+        },
+        "behavior_binding_proof": {
+          "command": "python scripts/validate_behavior_binding.py --executor EXEC-GATE-EXTRACTOR --pattern PAT-EXAMPLE-GATE-EXTRACTION --config .state/config/PH-02_STEP-001.gate_extraction.json",
+          "evidence": ".state/evidence/PH-02/STEP-001/behavior_binding.json"
+        },
+        "allowed_extension_slots": [],
+        "bespoke_logic_allowed": false
       }
     }
   },
@@ -1091,6 +1241,162 @@
         }
       ],
       "evidence": ".state/evidence/file_mutations"
+    },
+    {
+      "gate_id": "GATE-CFG-001",
+      "phase": "PH-02",
+      "step_id": null,
+      "purpose": "Every executable step has pattern_id, executor_id, spec_file, config_schema_file",
+      "command": "python scripts/validate_pattern_completeness.py",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "/GATE-CFG-001 PASSED/"
+      ],
+      "forbid_stdout_regex": [
+        "/GATE-CFG-001 FAILED/",
+        "/error|failed/i"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-CFG-001/validation.json",
+          "content_regex": [
+            "/{\"passed\": true}|\"passed\": true/"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-CFG-001"
+    },
+    {
+      "gate_id": "GATE-CFG-002",
+      "phase": "PH-02",
+      "step_id": null,
+      "purpose": "Behavior supplied by external spec/config, not step prose or custom commands",
+      "command": "python scripts/validate_engine_spec_separation.py",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "/GATE-CFG-002 PASSED/"
+      ],
+      "forbid_stdout_regex": [
+        "/GATE-CFG-002 FAILED/",
+        "/error|failed/i"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-CFG-002/validation.json",
+          "content_regex": [
+            "/{\"passed\": true}|\"passed\": true/"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-CFG-002"
+    },
+    {
+      "gate_id": "GATE-CFG-003",
+      "phase": "PH-02",
+      "step_id": null,
+      "purpose": "Reject bespoke commands where a registered pattern exists for the task kind",
+      "command": "python scripts/validate_no_adhoc_execution.py",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "/GATE-CFG-003 PASSED/"
+      ],
+      "forbid_stdout_regex": [
+        "/GATE-CFG-003 FAILED/",
+        "/error|failed/i"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-CFG-003/validation.json",
+          "content_regex": [
+            "/{\"passed\": true}|\"passed\": true/"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-CFG-003"
+    },
+    {
+      "gate_id": "GATE-CFG-004",
+      "phase": "PH-02",
+      "step_id": null,
+      "purpose": "Reject executor_ids not present in executor_registry",
+      "command": "python scripts/validate_executor_registration.py",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "/GATE-CFG-004 PASSED/"
+      ],
+      "forbid_stdout_regex": [
+        "/GATE-CFG-004 FAILED/",
+        "/error|failed/i"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-CFG-004/validation.json",
+          "content_regex": [
+            "/{\"passed\": true}|\"passed\": true/"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-CFG-004"
+    },
+    {
+      "gate_id": "GATE-CFG-005",
+      "phase": "PH-02",
+      "step_id": null,
+      "purpose": "Implementation steps cannot be scheduled before PATTERN_CREATION work when no pattern exists",
+      "command": "python scripts/validate_pattern_first_gap_resolution.py",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "/GATE-CFG-005 PASSED/"
+      ],
+      "forbid_stdout_regex": [
+        "/GATE-CFG-005 FAILED/",
+        "/error|failed/i"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-CFG-005/validation.json",
+          "content_regex": [
+            "/{\"passed\": true}|\"passed\": true/"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-CFG-005"
+    },
+    {
+      "gate_id": "GATE-CFG-006",
+      "phase": "PH-02",
+      "step_id": null,
+      "purpose": "Executor + spec + config + expected outputs are mechanically linked",
+      "command": "python scripts/validate_behavior_binding_proof.py",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "/GATE-CFG-006 PASSED/"
+      ],
+      "forbid_stdout_regex": [
+        "/GATE-CFG-006 FAILED/",
+        "/error|failed/i"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-CFG-006/validation.json",
+          "content_regex": [
+            "/{\"passed\": true}|\"passed\": true/"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-CFG-006"
     }
   ],
   "metrics": {
@@ -1525,6 +1831,7 @@
     "when_receiving_project_request": [
       "Read the user's request carefully and paste it verbatim into original_request",
       "Classify the project using the decision tree (count files, LOC, determine complexity)",
+      "For every task kind: search the pattern registry for a matching approved pattern; if found, bind the task; if not found, create a PATTERN_CREATION step before any implementation step for that task kind; record pattern_resolution_decision in task_analysis before proceeding",
       "Determine average steps per phase based on complexity classification",
       "Transform vague requirements into quantified targets with validation commands and regex",
       "For every assumption: assign impact score, define validation method, write executable command",
@@ -1549,7 +1856,14 @@
       "Create phases without breaking them into steps",
       "Define steps without complete contracts (inputs/outputs/invariants/pre/post/file_scope/failure_modes)",
       "Skip step_id assignment",
-      "Forget to link gates to steps via step_id field"
+      "Forget to link gates to steps via step_id field",
+      "Do not leave pattern_id blank on executable steps",
+      "Do not propose bespoke scripts where a registered pattern exists",
+      "Do not treat prose instructions as a substitute for config/schema",
+      "Do not start implementation before pattern creation/validation when no pattern exists",
+      "Do not bind behavior through runtime prompt overrides",
+      "Do not create or invoke unregistered executors",
+      "Do not place unique behavior in arbitrary code outside approved extension slots"
     ],
     "remember": [
       "Every rule = config + command + evidence + pass/fail condition",
@@ -1557,42 +1871,168 @@
       "Every step must have step_id for tracking",
       "File scopes nest: step scopes must be subsets of phase scopes",
       "Evidence paths include phase AND step_id",
-      "Metrics track both phase-level and step-level progress"
+      "Metrics track both phase-level and step-level progress",
+      "All automatable behavior = executor + spec/config + schema + evidence",
+      "Pattern gap => create pattern first, then implement",
+      "Executable step without validated pattern = invalid plan",
+      "Configuration is the behavior surface; code is the engine surface"
     ]
   },
   "planning_hierarchy": {
     "system_level": {},
     "module_level": [],
     "component_level": [],
-    "execution_packet_level": []
+    "execution_packet_level": [],
+    "field_extensions": {
+      "module_level": {
+        "implementation_style": "",
+        "engine_component_id": "",
+        "behavior_spec_artifacts": [],
+        "config_schema_artifacts": [],
+        "executor_dependencies": [],
+        "approved_extension_slots": []
+      },
+      "component_level": {
+        "implementation_style": "",
+        "engine_component_id": "",
+        "behavior_spec_artifacts": [],
+        "config_schema_artifacts": [],
+        "executor_dependencies": [],
+        "approved_extension_slots": []
+      }
+    }
   },
   "pipeline_boundary_contract": {
     "planning_stage_output": "",
     "execution_stage_input": "",
-    "validation_required_before_execution": [],
-    "input_exclusivity_rule": ""
+    "validation_required_before_execution": [
+      "GATE-001",
+      "GATE-002",
+      "GATE-003",
+      "GATE-004",
+      "GATE-005",
+      "GATE-006",
+      "GATE-FILE-MUTATIONS",
+      "GATE-CFG-001",
+      "GATE-CFG-002",
+      "GATE-CFG-003",
+      "GATE-CFG-004",
+      "GATE-CFG-005",
+      "GATE-CFG-006"
+    ],
+    "input_exclusivity_rule": "",
+    "allowed_execution_inputs": [
+      "plan_json",
+      "registered_pattern_spec",
+      "schema_validated_config"
+    ],
+    "forbid_direct_source_mutation_without_pattern": true,
+    "forbid_unregistered_executor_invocation": true,
+    "forbid_runtime_behavior_override": true
   },
   "execution_patterns": {
     "pattern_registry_reference": "PATTERN_INDEX.yaml",
     "required_for_task_kinds": true,
-    "task_pattern_mappings": [],
+    "allow_null_pattern_id": false,
+    "require_validated_pattern_before_execution": true,
+    "require_executor_binding_per_pattern": true,
+    "missing_pattern_action": "fail_closed_create_pattern_task",
+    "task_pattern_mappings": [
+      {
+        "task_kind": "plan_document_creation",
+        "pattern_id": "PAT-EXAMPLE-PLAN-DOC",
+        "executor_id": "EXEC-PLAN-DOC-WRITER",
+        "constraints": [
+          "write PLAN.md only",
+          "preserve line endings"
+        ]
+      },
+      {
+        "task_kind": "gate_requirement_extraction",
+        "pattern_id": "PAT-EXAMPLE-GATE-EXTRACTION",
+        "executor_id": "EXEC-GATE-EXTRACTOR",
+        "constraints": [
+          "read PLAN.md only",
+          "write .state/gates_draft.yaml"
+        ]
+      }
+    ],
     "pattern_validation": {
       "require_pattern_id_per_step": true,
       "required_pattern_components": [
         "spec_file",
-        "schema_file",
-        "executor_function",
+        "config_schema_file",
+        "parameter_schema_file",
+        "executor_id",
         "pattern_index_entry",
-        "guardrails_block"
+        "guardrails_block",
+        "output_contract_ref",
+        "golden_test_fixture"
       ],
       "validation_command": "python scripts/validate_pattern_registry.py",
-      "expect_exit_code": 0
+      "expect_exit_code": 0,
+      "require_behavior_binding_proof": true
     },
     "guardrail_policy": {
       "bypass_allowed": false,
       "runtime_override_allowed": false,
-      "missing_guardrails_action": "fail_closed"
+      "missing_guardrails_action": "fail_closed",
+      "ad_hoc_execution_action": "fail_closed_create_pattern_task"
     }
+  },
+  "executor_registry": {
+    "registered_executors": [
+      {
+        "executor_id": "EXEC-PLAN-DOC-WRITER",
+        "executor_entrypoint": "python scripts/execute_pattern.py --executor plan_doc_writer",
+        "supported_pattern_ids": [
+          "PAT-EXAMPLE-PLAN-DOC"
+        ],
+        "supported_config_schema_versions": [
+          "1.0.0"
+        ],
+        "supported_parameter_schema_versions": [
+          "1.0.0"
+        ],
+        "output_contract_refs": [
+          "OUT-PLAN-DOC"
+        ],
+        "determinism_requirements": [
+          "stable_input_order",
+          "no_runtime_prompt_override"
+        ],
+        "forbidden_capabilities": [
+          "write_outside_file_scope",
+          "invoke_unregistered_subexecutor"
+        ]
+      },
+      {
+        "executor_id": "EXEC-GATE-EXTRACTOR",
+        "executor_entrypoint": "python scripts/execute_pattern.py --executor gate_extractor",
+        "supported_pattern_ids": [
+          "PAT-EXAMPLE-GATE-EXTRACTION"
+        ],
+        "supported_config_schema_versions": [
+          "1.0.0"
+        ],
+        "supported_parameter_schema_versions": [
+          "1.0.0"
+        ],
+        "output_contract_refs": [
+          "OUT-GATE-DRAFT"
+        ],
+        "determinism_requirements": [
+          "stable_regex_set",
+          "schema_backed_defaults_only"
+        ],
+        "forbidden_capabilities": [
+          "modify_PLAN_md",
+          "invoke_unregistered_subexecutor"
+        ]
+      }
+    ],
+    "validation_command": "python scripts/validate_executor_registry.py",
+    "expect_exit_code": 0
   },
   "mutation_model": {
     "allowed_mutation_types": [
@@ -1620,7 +2060,12 @@
       "require_all_gaps_resolved_or_deferred": true,
       "validation_command": "python scripts/validate_gap_traceability.py",
       "expect_exit_code": 0
-    }
+    },
+    "requirement_to_pattern": [],
+    "component_to_pattern": [],
+    "step_to_executor": [],
+    "pattern_to_config_schema": [],
+    "pattern_to_output_contract": []
   },
   "execution_baseline": {
     "description": "Baseline system state before execution begins",
@@ -1872,7 +2317,15 @@
       "planning_loop_over_threshold",
       "empty_implementation_artifact",
       "complexity_limit_exceeded",
-      "worktree_contamination"
+      "worktree_contamination",
+      "patternless_execution",
+      "null_pattern_id_on_executable_step",
+      "unregistered_executor_invocation",
+      "inline_behavior_logic_outside_extension_slot",
+      "runtime_override_of_guardrailed_parameters",
+      "spec_without_engine_binding",
+      "executor_without_config_schema",
+      "freehand_script_created_where_pattern_exists"
     ],
     "checkpoints": [
       "post_task",
