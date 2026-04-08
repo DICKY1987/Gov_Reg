@@ -1,0 +1,339 @@
+{
+  "gates": {
+    "IDX-GATE-01": {
+      "details": [],
+      "name": "identity_uniqueness",
+      "status": "PASS"
+    },
+    "IDX-GATE-02": {
+      "details": [
+        {
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "id": "ENH-001",
+          "map": "by_enhancement_id",
+          "pointer": "/final_summary/what_was_delivered/enhancements/0"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "id": "ENH-002",
+          "map": "by_enhancement_id",
+          "pointer": "/final_summary/what_was_delivered/enhancements/1"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "id": "ENH-003",
+          "map": "by_enhancement_id",
+          "pointer": "/final_summary/what_was_delivered/enhancements/2"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "id": "ENH-004",
+          "map": "by_enhancement_id",
+          "pointer": "/final_summary/what_was_delivered/enhancements/3"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "id": "ENH-005",
+          "map": "by_enhancement_id",
+          "pointer": "/final_summary/what_was_delivered/enhancements/4"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "id": "ENH-006",
+          "map": "by_enhancement_id",
+          "pointer": "/final_summary/what_was_delivered/enhancements/5"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "id": "ENH-007",
+          "map": "by_enhancement_id",
+          "pointer": "/final_summary/what_was_delivered/enhancements/6"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "id": "ENH-008",
+          "map": "by_enhancement_id",
+          "pointer": "/final_summary/what_was_delivered/enhancements/7"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "id": "ENH-009",
+          "map": "by_enhancement_id",
+          "pointer": "/final_summary/what_was_delivered/enhancements/8"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "id": "ENH-010",
+          "map": "by_enhancement_id",
+          "pointer": "/final_summary/what_was_delivered/enhancements/9"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "id": "GATE-001",
+          "map": "by_gate_id",
+          "pointer": "/validation_gates/0"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "id": "GATE-002",
+          "map": "by_gate_id",
+          "pointer": "/validation_gates/1"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "id": "GATE-003",
+          "map": "by_gate_id",
+          "pointer": "/validation_gates/2"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "id": "GATE-004",
+          "map": "by_gate_id",
+          "pointer": "/validation_gates/3"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "id": "GATE-005",
+          "map": "by_gate_id",
+          "pointer": "/validation_gates/4"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "id": "GATE-006",
+          "map": "by_gate_id",
+          "pointer": "/validation_gates/5"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "id": "GATE-FILE-MUTATIONS",
+          "map": "by_gate_id",
+          "pointer": "/validation_gates/6"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "id": "PH-00/STEP-001",
+          "map": "by_step_id",
+          "pointer": "/step_contracts/PH-00/STEP-001"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "id": "PH-02/STEP-001",
+          "map": "by_step_id",
+          "pointer": "/step_contracts/PH-02/STEP-001"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "COMP-L1-01",
+          "map": "by_component_id",
+          "pointer": "/architecture/system_layers/layer_1_planning/components/0"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "COMP-L1-02",
+          "map": "by_component_id",
+          "pointer": "/architecture/system_layers/layer_1_planning/components/1"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "COMP-L1-03",
+          "map": "by_component_id",
+          "pointer": "/architecture/system_layers/layer_1_planning/components/2"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "COMP-L2-01",
+          "map": "by_component_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/0"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "COMP-L2-02",
+          "map": "by_component_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/1"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "COMP-L2-03",
+          "map": "by_component_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/2"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "COMP-L3-01",
+          "map": "by_component_id",
+          "pointer": "/architecture/system_layers/layer_3_execution/components/0"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "COMP-L3-02",
+          "map": "by_component_id",
+          "pointer": "/architecture/system_layers/layer_3_execution/components/1"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "COMP-L3-03",
+          "map": "by_component_id",
+          "pointer": "/architecture/system_layers/layer_3_execution/components/2"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "COMP-L3-04",
+          "map": "by_component_id",
+          "pointer": "/architecture/system_layers/layer_3_execution/components/3"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "COMP-L4-01",
+          "map": "by_component_id",
+          "pointer": "/architecture/system_layers/layer_4_observability/components/0"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "GATE-000",
+          "map": "by_gate_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/0"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "GATE-001",
+          "map": "by_gate_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/1"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "GATE-002",
+          "map": "by_gate_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/2"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "GATE-003",
+          "map": "by_gate_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/3"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "GATE-004",
+          "map": "by_gate_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/4"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "GATE-005",
+          "map": "by_gate_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/5"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "GATE-006",
+          "map": "by_gate_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/6"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "GATE-007",
+          "map": "by_gate_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/7"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "GATE-008",
+          "map": "by_gate_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/8"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "GATE-009",
+          "map": "by_gate_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/9"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "GATE-010",
+          "map": "by_gate_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/10"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "GATE-011",
+          "map": "by_gate_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/11"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "GATE-012",
+          "map": "by_gate_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/12"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "GATE-013",
+          "map": "by_gate_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/13"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "GATE-014",
+          "map": "by_gate_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/14"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "GATE-015",
+          "map": "by_gate_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/15"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "GATE-016",
+          "map": "by_gate_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/16"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "GATE-017",
+          "map": "by_gate_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/17"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "GATE-998",
+          "map": "by_gate_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/18"
+        },
+        {
+          "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "id": "GATE-999",
+          "map": "by_gate_id",
+          "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/19"
+        }
+      ],
+      "name": "pointer_resolution",
+      "status": "PASS"
+    },
+    "IDX-GATE-03": {
+      "details": [],
+      "name": "source_hash_freshness",
+      "status": "PASS"
+    },
+    "IDX-GATE-04": {
+      "details": [
+        {
+          "checked_maps": [
+            "by_gate_id",
+            "by_enhancement_id"
+          ],
+          "status": "PASS"
+        }
+      ],
+      "name": "resolver_roundtrip",
+      "status": "PASS"
+    },
+    "IDX-GATE-05": {
+      "details": [],
+      "name": "classification_completeness",
+      "status": "PASS"
+    }
+  },
+  "status": "PASS"
+}
