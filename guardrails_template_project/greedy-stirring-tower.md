@@ -93,7 +93,7 @@ Authoring task only; no source edits.
 
 ### Phase B — Governance migration (edit order: spec → template → instruction)
 
-Precondition: `phase_b_override_map.md` and `reserved_id_namespaces.json` both committed. The override map must list, minimally:
+Precondition: `phase_b_override_map.md` and `reserved_id_namespaces.json`, co-located with this runbook, are both committed. The override map must list, minimally:
 
 - Registry path = `PATTERN_INDEX.yaml` (overrides any `registry/pattern_registry.yaml` reference).
 - Version bump policy = conditional (default = no forced `v3.3.0`). If the override map elects a `v3.3.0` release, run the explicit metadata/history/migration updates listed in B.1/B.2/B.3; otherwise preserve current version labels while still applying the governance edits.
@@ -201,19 +201,19 @@ Run after B.3 completes.
 
 ## Planning artifacts to author (new files, not source edits)
 
-- `phase_b_override_map.md` — required before Phase B.
-- `reserved_id_namespaces.json` — required before Phase B (B.0 deliverable).
+- `phase_b_override_map.md` — required before Phase B and stored beside this runbook.
+- `reserved_id_namespaces.json` — required before Phase B (B.0 deliverable) and stored beside this runbook.
 - `evidence/blocker_{1..4}_*/` and `evidence/final_blocker_resolution_report.json`.
 - `inventory.json`, `index_generator.py`, `resolver.py` — Phase A.2.
 
 ## Source plans referenced
 
-- `plansforthis\FINAL_EDIT_PLAN_V3_2_TO_V3_3.md` — T-01..T-17, S-01..S-10, I-01..I-14 operation list.
-- `plansforthis\MERGED_CORRECTED_FINAL_EDIT_PLAN.md` — override layer.
-- `plansforthis\cli_blocker_fix_guide.md` — BLK-001..004 acceptance checks.
-- `plansforthis\final_indexing_implementation_plan.json` — PH-03, PH-05..PH-09 for index infrastructure.
-- `plansforthis\v3_3_patch_plan_machine_style.json` — **deferred to Phase C**, not applied in v3.3.
-- `plansforthis\v3_3_patch_plan_machine_layer2.json` — **deferred to Phase C**, not applied in v3.3.
+- `FINAL_EDIT_PLAN_V3_2_TO_V3_3.md` — T-01..T-17, S-01..S-10, I-01..I-14 operation list.
+- `MERGED_CORRECTED_FINAL_EDIT_PLAN.md` — override layer.
+- `cli_blocker_fix_guide.md` — BLK-001..004 acceptance checks.
+- `final_indexing_implementation_plan.json` — PH-03, PH-05..PH-09 for index infrastructure.
+- `v3_3_patch_plan_machine_style.json` — **deferred to Phase C**, not applied in v3.3.
+- `v3_3_patch_plan_machine_layer2.json` — **deferred to Phase C**, not applied in v3.3.
 
 ## Verification
 

@@ -9,6 +9,8 @@ The plan is not execution-ready in a strict sense.
 
 It is close to usable as a human or agent runbook, but it still has hard blockers that prevent deterministic, fully reproducible execution.
 
+Update: `phase_b_override_map.md` and `reserved_id_namespaces.json` have since been authored in this same directory, and the runbook's bad support-plan paths have been corrected. The remaining strict-run blockers are now validator/tooling drift and the dirty repo state.
+
 ## Hard issues
 
 ### 1. `phase_b_override_map.md` is required but missing
