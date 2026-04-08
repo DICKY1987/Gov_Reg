@@ -191,13 +191,14 @@
           {
             "component_id": "COMP-L2-02",
             "name": "Validation Gate System",
-            "total_gates": 26,
-            "mandatory_gates": 26,
+            "total_gates": 27,
+            "mandatory_gates": 27,
             "optional_gates": 0,
             "gate_dependency_graph": "scripts/gate_dependencies.json",
             "execution_phases": [
               "pre-validation (GATE-000)",
               "core-validation (GATE-001 to GATE-005)",
+              "mutation validation (GATE-FILE-MUTATIONS)",
               "automation (GATE-006 to GATE-009)",
               "wiring (GATE-010 to GATE-013)",
               "validation (GATE-014 to GATE-017)",
@@ -276,6 +277,14 @@
                 "name": "Assumptions Documented",
                 "script": "validate_assumptions.py",
                 "purpose": "Validate all assumptions have risk assessment and validation method"
+              },
+              {
+                "id": "GATE-FILE-MUTATIONS",
+                "name": "File Mutation Determinism",
+                "script": "validate_file_mutations.py",
+                "purpose": "Verify file mutation plans declare deterministic execution methods, hash guards, and evidence paths",
+                "critical_rule": "Every planned file mutation must declare a deterministic application method with before/after integrity checks",
+                "failure_impact": "File mutation execution may become non-deterministic or unverifiable"
               },
               {
                 "id": "GATE-005",
@@ -1776,7 +1785,7 @@
           "actor": "Human User",
           "action": "Run validation gates",
           "command": "python scripts/NEWPHASEPLANPROCESS_plan_cli.py run-gates --plan-file [plan].json",
-          "expected_result": "All 26 validation gates pass + All 14 FM checks pass",
+          "expected_result": "All 27 validation gates pass + All 14 FM checks pass",
           "outputs": [
             "Gate validation report"
           ]
@@ -1800,7 +1809,7 @@
       ],
       "success_criteria": [
         "Plan file validates against schema",
-        "All 26 validation gates pass",
+        "All 27 validation gates pass",
         "All 14 failure mode checks pass",
         "Plan is executable without manual intervention"
       ]

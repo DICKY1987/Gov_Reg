@@ -1,9 +1,227 @@
 {
+  "cross_file_integrity": {
+    "checked_count": 36,
+    "checks": [
+      {
+        "id": "PAT-EXAMPLE-PLAN-DOC",
+        "phase": "PH-00",
+        "pointer": "/execution_patterns/task_pattern_mappings/0",
+        "step": "STEP-001",
+        "type": "step_pattern"
+      },
+      {
+        "id": "EXEC-PLAN-DOC-WRITER",
+        "phase": "PH-00",
+        "pointer": "/executor_registry/registered_executors/0",
+        "step": "STEP-001",
+        "type": "step_executor"
+      },
+      {
+        "id": "PAT-EXAMPLE-PLAN-DOC",
+        "phase": "PH-00",
+        "pointer": "/execution_patterns/task_pattern_mappings/0",
+        "step": "STEP-001",
+        "type": "behavior_pattern"
+      },
+      {
+        "id": "PAT-EXAMPLE-GATE-EXTRACTION",
+        "phase": "PH-02",
+        "pointer": "/execution_patterns/task_pattern_mappings/1",
+        "step": "STEP-001",
+        "type": "step_pattern"
+      },
+      {
+        "id": "EXEC-GATE-EXTRACTOR",
+        "phase": "PH-02",
+        "pointer": "/executor_registry/registered_executors/1",
+        "step": "STEP-001",
+        "type": "step_executor"
+      },
+      {
+        "id": "PAT-EXAMPLE-GATE-EXTRACTION",
+        "phase": "PH-02",
+        "pointer": "/execution_patterns/task_pattern_mappings/1",
+        "step": "STEP-001",
+        "type": "behavior_pattern"
+      },
+      {
+        "id": "PAT-EXAMPLE-PLAN-DOC",
+        "pointer": "/execution_patterns/task_pattern_mappings/0",
+        "task_kind": "plan_document_creation",
+        "type": "mapping_pattern"
+      },
+      {
+        "id": "EXEC-PLAN-DOC-WRITER",
+        "pointer": "/executor_registry/registered_executors/0",
+        "task_kind": "plan_document_creation",
+        "type": "mapping_executor"
+      },
+      {
+        "id": "PAT-EXAMPLE-GATE-EXTRACTION",
+        "pointer": "/execution_patterns/task_pattern_mappings/1",
+        "task_kind": "gate_requirement_extraction",
+        "type": "mapping_pattern"
+      },
+      {
+        "id": "EXEC-GATE-EXTRACTOR",
+        "pointer": "/executor_registry/registered_executors/1",
+        "task_kind": "gate_requirement_extraction",
+        "type": "mapping_executor"
+      },
+      {
+        "id": "GATE-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/1",
+        "type": "boundary_gate"
+      },
+      {
+        "id": "GATE-002",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/2",
+        "type": "boundary_gate"
+      },
+      {
+        "id": "GATE-003",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/3",
+        "type": "boundary_gate"
+      },
+      {
+        "id": "GATE-004",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/4",
+        "type": "boundary_gate"
+      },
+      {
+        "id": "GATE-005",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/6",
+        "type": "boundary_gate"
+      },
+      {
+        "id": "GATE-006",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/7",
+        "type": "boundary_gate"
+      },
+      {
+        "id": "GATE-FILE-MUTATIONS",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/5",
+        "type": "boundary_gate"
+      },
+      {
+        "id": "GATE-CFG-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/19",
+        "type": "boundary_gate"
+      },
+      {
+        "id": "GATE-CFG-002",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/20",
+        "type": "boundary_gate"
+      },
+      {
+        "id": "GATE-CFG-003",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/21",
+        "type": "boundary_gate"
+      },
+      {
+        "id": "GATE-CFG-004",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/22",
+        "type": "boundary_gate"
+      },
+      {
+        "id": "GATE-CFG-005",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/23",
+        "type": "boundary_gate"
+      },
+      {
+        "id": "GATE-CFG-006",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/24",
+        "type": "boundary_gate"
+      },
+      {
+        "id": "GATE-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/1",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-002",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/2",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-003",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/3",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-004",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/4",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-005",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/6",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-006",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/7",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-FILE-MUTATIONS",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/5",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-CFG-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/19",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-CFG-002",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/20",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-CFG-003",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/21",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-CFG-004",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/22",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-CFG-005",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/23",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-CFG-006",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/24",
+        "type": "template_gate"
+      }
+    ],
+    "errors": [],
+    "status": "PASS"
+  },
   "files": [
     "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
     "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json",
     "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json"
   ],
+  "namespace_validation": {
+    "counts": {
+      "COMP": 17,
+      "EXEC": 2,
+      "GATE-CFG": 6,
+      "PAT": 2
+    },
+    "required_non_empty": [
+      "GATE-CFG",
+      "PAT",
+      "EXEC",
+      "COMP"
+    ],
+    "status": "PASS"
+  },
   "required_artifacts_present": true,
   "status": "PASS"
 }

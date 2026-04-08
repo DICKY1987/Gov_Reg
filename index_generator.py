@@ -58,6 +58,18 @@ ARRAY_RULES = {
         },
     },
     "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json": {
+        "/execution_patterns/task_pattern_mappings": {
+            "classification": "index_eligible",
+            "identity_field": "pattern_id",
+            "identity_pattern": r"^PAT-[A-Z0-9-]+$",
+            "index_output": "by_pattern_id",
+        },
+        "/executor_registry/registered_executors": {
+            "classification": "index_eligible",
+            "identity_field": "executor_id",
+            "identity_pattern": r"^EXEC-[A-Z0-9-]+$",
+            "index_output": "by_executor_id",
+        },
         "/final_summary/what_was_delivered/enhancements": {
             "classification": "index_eligible",
             "identity_field": "id",
@@ -176,7 +188,7 @@ def build_inventory() -> dict[str, Any]:
             "arrays": arrays,
         }
     return {
-        "inventory_version": "1.0.0",
+        "inventory_version": "1.1.0",
         "files": files,
     }
 
@@ -241,13 +253,25 @@ def build_indexes(inventory: dict[str, Any]) -> dict[str, Any]:
         if file_name == "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json":
             build_step_map(data, maps)
         outputs[file_name] = {
-            "index_version": "1.0.0",
+            "index_version": "1.1.0",
             "source_file": file_name,
             "source_sha256": sha256(path),
             "canonical_locator_type": "json_pointer",
             "maps": {name: dict(sorted(entries.items())) for name, entries in sorted(maps.items())},
         }
     return outputs
+
+
+def resolve_from_artifact(artifact: dict[str, Any], semantic_id: str) -> str:
+    matches: list[str] = []
+    for entries in artifact.get("maps", {}).values():
+        if semantic_id in entries:
+            matches.append(entries[semantic_id])
+    if not matches:
+        raise KeyError(f"Unknown semantic id: {semantic_id}")
+    if len(matches) > 1:
+        raise KeyError(f"Ambiguous semantic id: {semantic_id}")
+    return matches[0]
 
 
 def validate_indexes(inventory: dict[str, Any], indexes: dict[str, Any]) -> dict[str, Any]:
@@ -279,6 +303,12 @@ def validate_indexes(inventory: dict[str, Any], indexes: dict[str, Any]) -> dict
                 elif map_name == "by_enhancement_id":
                     if node.get("id") != semantic_id:
                         gate_results["IDX-GATE-02"]["status"] = "FAIL"
+                elif map_name == "by_pattern_id":
+                    if node.get("pattern_id") != semantic_id:
+                        gate_results["IDX-GATE-02"]["status"] = "FAIL"
+                elif map_name == "by_executor_id":
+                    if node.get("executor_id") != semantic_id:
+                        gate_results["IDX-GATE-02"]["status"] = "FAIL"
                 elif map_name == "by_gate_id":
                     gate_value = node.get("gate_id", node.get("id"))
                     if gate_value != semantic_id:
@@ -294,10 +324,119 @@ def validate_indexes(inventory: dict[str, Any], indexes: dict[str, Any]) -> dict
     if sandbox_result["status"] != "PASS":
         gate_results["IDX-GATE-04"]["status"] = "FAIL"
 
+    namespace_validation = validate_reserved_namespaces(indexes)
+    cross_file_integrity = validate_cross_file_integrity(indexes)
+    gate_results["IDX-GATE-04"]["details"].append(cross_file_integrity)
+    if cross_file_integrity["status"] != "PASS":
+        gate_results["IDX-GATE-04"]["status"] = "FAIL"
+
     overall = "PASS" if all(result["status"] == "PASS" for result in gate_results.values()) else "FAIL"
     return {
         "status": overall,
         "gates": gate_results,
+        "namespace_validation": namespace_validation,
+        "cross_file_integrity": cross_file_integrity,
+    }
+
+
+def validate_reserved_namespaces(indexes: dict[str, Any]) -> dict[str, Any]:
+    spec_artifact = indexes["NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json"]
+    template_artifact = indexes["NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json"]
+    counts = {
+        "GATE-CFG": sum(1 for gate_id in spec_artifact["maps"].get("by_gate_id", {}) if gate_id.startswith("GATE-CFG-")),
+        "PAT": len(template_artifact["maps"].get("by_pattern_id", {})),
+        "EXEC": len(template_artifact["maps"].get("by_executor_id", {})),
+        "COMP": len(spec_artifact["maps"].get("by_component_id", {})),
+    }
+    required_non_empty = ["GATE-CFG", "PAT", "EXEC", "COMP"]
+    status = "PASS" if all(counts[name] > 0 for name in required_non_empty) else "FAIL"
+    return {
+        "status": status,
+        "counts": counts,
+        "required_non_empty": required_non_empty,
+    }
+
+
+def validate_cross_file_integrity(indexes: dict[str, Any]) -> dict[str, Any]:
+    template_file = "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json"
+    spec_file = "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json"
+    template_data = json_load(SOURCE_FILES[template_file])
+    template_artifact = indexes[template_file]
+    spec_artifact = indexes[spec_file]
+
+    checks: list[dict[str, Any]] = []
+    errors: list[dict[str, Any]] = []
+
+    for phase_id, steps in object_items_sorted(template_data.get("step_contracts", {})):
+        if not isinstance(steps, dict):
+            continue
+        for step_id, step in object_items_sorted(steps):
+            if not isinstance(step, dict):
+                continue
+            pattern_id = step.get("pattern_id")
+            if pattern_id:
+                try:
+                    pointer = resolve_from_artifact(template_artifact, pattern_id)
+                    checks.append({"type": "step_pattern", "phase": phase_id, "step": step_id, "id": pattern_id, "pointer": pointer})
+                except KeyError as exc:
+                    errors.append({"type": "step_pattern", "phase": phase_id, "step": step_id, "id": pattern_id, "error": str(exc)})
+            executor_id = step.get("executor_binding", {}).get("executor_id")
+            if executor_id:
+                try:
+                    pointer = resolve_from_artifact(template_artifact, executor_id)
+                    checks.append({"type": "step_executor", "phase": phase_id, "step": step_id, "id": executor_id, "pointer": pointer})
+                except KeyError as exc:
+                    errors.append({"type": "step_executor", "phase": phase_id, "step": step_id, "id": executor_id, "error": str(exc)})
+            behavior_pattern = step.get("behavior_spec", {}).get("pattern_id")
+            if behavior_pattern:
+                try:
+                    pointer = resolve_from_artifact(template_artifact, behavior_pattern)
+                    checks.append({"type": "behavior_pattern", "phase": phase_id, "step": step_id, "id": behavior_pattern, "pointer": pointer})
+                except KeyError as exc:
+                    errors.append({"type": "behavior_pattern", "phase": phase_id, "step": step_id, "id": behavior_pattern, "error": str(exc)})
+
+    for mapping in template_data.get("execution_patterns", {}).get("task_pattern_mappings", []):
+        if not isinstance(mapping, dict):
+            continue
+        pattern_id = mapping.get("pattern_id")
+        if pattern_id:
+            try:
+                pointer = resolve_from_artifact(template_artifact, pattern_id)
+                checks.append({"type": "mapping_pattern", "task_kind": mapping.get("task_kind"), "id": pattern_id, "pointer": pointer})
+            except KeyError as exc:
+                errors.append({"type": "mapping_pattern", "task_kind": mapping.get("task_kind"), "id": pattern_id, "error": str(exc)})
+        executor_id = mapping.get("executor_id")
+        if executor_id:
+            try:
+                pointer = resolve_from_artifact(template_artifact, executor_id)
+                checks.append({"type": "mapping_executor", "task_kind": mapping.get("task_kind"), "id": executor_id, "pointer": pointer})
+            except KeyError as exc:
+                errors.append({"type": "mapping_executor", "task_kind": mapping.get("task_kind"), "id": executor_id, "error": str(exc)})
+
+    for gate_id in template_data.get("pipeline_boundary_contract", {}).get("validation_required_before_execution", []):
+        try:
+            pointer = resolve_from_artifact(spec_artifact, gate_id)
+            checks.append({"type": "boundary_gate", "id": gate_id, "pointer": pointer})
+        except KeyError as exc:
+            errors.append({"type": "boundary_gate", "id": gate_id, "error": str(exc)})
+
+    for gate in template_data.get("validation_gates", []):
+        if not isinstance(gate, dict):
+            continue
+        gate_id = gate.get("gate_id")
+        if not gate_id:
+            continue
+        try:
+            pointer = resolve_from_artifact(spec_artifact, gate_id)
+            checks.append({"type": "template_gate", "id": gate_id, "pointer": pointer})
+        except KeyError as exc:
+            errors.append({"type": "template_gate", "id": gate_id, "error": str(exc)})
+
+    return {
+        "status": "PASS" if not errors else "FAIL",
+        "checked_count": len(checks),
+        "checks": checks,
+        "errors": errors,
     }
 
 
@@ -314,6 +453,12 @@ def run_sandbox_reorder_test(indexes: dict[str, Any]) -> dict[str, Any]:
     template_copy["final_summary"]["what_was_delivered"]["enhancements"] = list(
         reversed(template_copy["final_summary"]["what_was_delivered"]["enhancements"])
     )
+    template_copy["execution_patterns"]["task_pattern_mappings"] = list(
+        reversed(template_copy["execution_patterns"]["task_pattern_mappings"])
+    )
+    template_copy["executor_registry"]["registered_executors"] = list(
+        reversed(template_copy["executor_registry"]["registered_executors"])
+    )
     spec_copy["architecture"]["system_layers"]["layer_2_validation"]["components"][1]["gate_registry"] = list(
         reversed(spec_copy["architecture"]["system_layers"]["layer_2_validation"]["components"][1]["gate_registry"])
     )
@@ -322,6 +467,8 @@ def run_sandbox_reorder_test(indexes: dict[str, Any]) -> dict[str, Any]:
     sandbox_indexes["NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json"]["maps"]["by_gate_id"] = {}
     sandbox_indexes["NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json"]["maps"]["by_gate_id"] = {}
     sandbox_indexes["NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json"]["maps"]["by_enhancement_id"] = {}
+    sandbox_indexes["NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json"]["maps"]["by_pattern_id"] = {}
+    sandbox_indexes["NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json"]["maps"]["by_executor_id"] = {}
 
     build_index_for_rule(
         spec_copy,
@@ -344,6 +491,20 @@ def run_sandbox_reorder_test(indexes: dict[str, Any]) -> dict[str, Any]:
         "by_enhancement_id",
         sandbox_indexes["NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json"]["maps"],
     )
+    build_index_for_rule(
+        template_copy,
+        "/execution_patterns/task_pattern_mappings",
+        "pattern_id",
+        "by_pattern_id",
+        sandbox_indexes["NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json"]["maps"],
+    )
+    build_index_for_rule(
+        template_copy,
+        "/executor_registry/registered_executors",
+        "executor_id",
+        "by_executor_id",
+        sandbox_indexes["NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json"]["maps"],
+    )
 
     key_sets_match = (
         set(sandbox_indexes["NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json"]["maps"]["by_gate_id"]) ==
@@ -352,10 +513,14 @@ def run_sandbox_reorder_test(indexes: dict[str, Any]) -> dict[str, Any]:
         set(indexes["NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json"]["maps"]["by_gate_id"])
         and set(sandbox_indexes["NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json"]["maps"]["by_enhancement_id"]) ==
         set(indexes["NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json"]["maps"]["by_enhancement_id"])
+        and set(sandbox_indexes["NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json"]["maps"]["by_pattern_id"]) ==
+        set(indexes["NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json"]["maps"]["by_pattern_id"])
+        and set(sandbox_indexes["NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json"]["maps"]["by_executor_id"]) ==
+        set(indexes["NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json"]["maps"]["by_executor_id"])
     )
     return {
         "status": "PASS" if key_sets_match else "FAIL",
-        "checked_maps": ["by_gate_id", "by_enhancement_id"],
+        "checked_maps": ["by_gate_id", "by_enhancement_id", "by_pattern_id", "by_executor_id"],
     }
 
 
@@ -376,6 +541,8 @@ def write_reports(inventory: dict[str, Any], indexes: dict[str, Any], validation
                 file_name: sum(len(entries) for entries in artifact["maps"].values())
                 for file_name, artifact in indexes.items()
             },
+            "namespace_validation": validation["namespace_validation"],
+            "cross_file_integrity": validation["cross_file_integrity"],
         },
     )
     json_dump(EVIDENCE_DIR / "PH-08" / "validation_gate_report.json", validation)
@@ -385,6 +552,8 @@ def write_reports(inventory: dict[str, Any], indexes: dict[str, Any], validation
             "status": validation["status"],
             "required_artifacts_present": True,
             "files": sorted(SOURCE_FILES),
+            "namespace_validation": validation["namespace_validation"],
+            "cross_file_integrity": validation["cross_file_integrity"],
         },
     )
 

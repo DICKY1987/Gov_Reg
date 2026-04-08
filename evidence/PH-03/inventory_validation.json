@@ -111,6 +111,22 @@
           "element_type": "str",
           "index_output": null,
           "patch_mode": "replace_whole_array",
+          "path": "/configuration_driven_development/allowed_behavior_sources",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/configuration_driven_development/forbidden_behavior_sources",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
           "path": "/critical_constraint/rules",
           "reason": "default structural classification"
         },
@@ -163,11 +179,145 @@
           "reason": "default structural classification"
         },
         {
+          "classification": "index_eligible",
+          "duplicate_identity_action": "fail_closed",
+          "element_type": "object",
+          "identity_field": "pattern_id",
+          "identity_pattern": "^PAT-[A-Z0-9-]+$",
+          "index_output": "by_pattern_id",
+          "missing_identity_action": "fail_closed",
+          "patch_mode": "element_by_identity",
+          "path": "/execution_patterns/task_pattern_mappings"
+        },
+        {
           "classification": "structural",
-          "element_type": "empty",
+          "element_type": "str",
           "index_output": null,
           "patch_mode": "replace_whole_array",
-          "path": "/execution_patterns/task_pattern_mappings",
+          "path": "/execution_patterns/task_pattern_mappings/0/constraints",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/execution_patterns/task_pattern_mappings/1/constraints",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "index_eligible",
+          "duplicate_identity_action": "fail_closed",
+          "element_type": "object",
+          "identity_field": "executor_id",
+          "identity_pattern": "^EXEC-[A-Z0-9-]+$",
+          "index_output": "by_executor_id",
+          "missing_identity_action": "fail_closed",
+          "patch_mode": "element_by_identity",
+          "path": "/executor_registry/registered_executors"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/executor_registry/registered_executors/0/determinism_requirements",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/executor_registry/registered_executors/0/forbidden_capabilities",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/executor_registry/registered_executors/0/output_contract_refs",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/executor_registry/registered_executors/0/supported_config_schema_versions",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/executor_registry/registered_executors/0/supported_parameter_schema_versions",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/executor_registry/registered_executors/0/supported_pattern_ids",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/executor_registry/registered_executors/1/determinism_requirements",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/executor_registry/registered_executors/1/forbidden_capabilities",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/executor_registry/registered_executors/1/output_contract_refs",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/executor_registry/registered_executors/1/supported_config_schema_versions",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/executor_registry/registered_executors/1/supported_parameter_schema_versions",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/executor_registry/registered_executors/1/supported_pattern_ids",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/file_manifest/entry_extensions/pattern_role_allowed_values",
           "reason": "default structural classification"
         },
         {
@@ -527,6 +677,62 @@
         },
         {
           "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/pattern_governance/enforcement_gates",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/pattern_governance/manual_exception_policy/override_requires",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/pattern_governance/pattern_creation_contract/must_complete_before",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/pattern_governance/pattern_creation_contract/required_outputs",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/pattern_governance/pattern_resolution_phase/required_decision_outputs",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/pattern_governance/pattern_resolution_phase/steps",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/pattern_governance/required_step_fields",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
           "element_type": "object",
           "index_output": null,
           "patch_mode": "replace_whole_array",
@@ -711,7 +917,15 @@
         },
         {
           "classification": "structural",
-          "element_type": "empty",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/pipeline_boundary_contract/allowed_execution_inputs",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
           "index_output": null,
           "patch_mode": "replace_whole_array",
           "path": "/pipeline_boundary_contract/validation_required_before_execution",
@@ -731,6 +945,70 @@
           "index_output": null,
           "patch_mode": "replace_whole_array",
           "path": "/planning_hierarchy/execution_packet_level",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "empty",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/planning_hierarchy/field_extensions/component_level/approved_extension_slots",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "empty",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/planning_hierarchy/field_extensions/component_level/behavior_spec_artifacts",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "empty",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/planning_hierarchy/field_extensions/component_level/config_schema_artifacts",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "empty",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/planning_hierarchy/field_extensions/component_level/executor_dependencies",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "empty",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/planning_hierarchy/field_extensions/module_level/approved_extension_slots",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "empty",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/planning_hierarchy/field_extensions/module_level/behavior_spec_artifacts",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "empty",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/planning_hierarchy/field_extensions/module_level/config_schema_artifacts",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "empty",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/planning_hierarchy/field_extensions/module_level/executor_dependencies",
           "reason": "default structural classification"
         },
         {
@@ -946,6 +1224,14 @@
           "element_type": "empty",
           "index_output": null,
           "patch_mode": "replace_whole_array",
+          "path": "/step_contracts/PH-00/STEP-001/allowed_extension_slots",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "empty",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
           "path": "/step_contracts/PH-00/STEP-001/before_after_hash/paths",
           "reason": "default structural classification"
         },
@@ -1059,6 +1345,14 @@
           "index_output": null,
           "patch_mode": "replace_whole_array",
           "path": "/step_contracts/PH-00/STEP-001/rollback_strategy/evidence",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "empty",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/step_contracts/PH-02/STEP-001/allowed_extension_slots",
           "reason": "default structural classification"
         },
         {
@@ -1290,6 +1584,14 @@
           "element_type": "empty",
           "index_output": null,
           "patch_mode": "replace_whole_array",
+          "path": "/traceability/component_to_pattern",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "empty",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
           "path": "/traceability/deferred_gaps",
           "reason": "default structural classification"
         },
@@ -1314,7 +1616,39 @@
           "element_type": "empty",
           "index_output": null,
           "patch_mode": "replace_whole_array",
+          "path": "/traceability/pattern_to_config_schema",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "empty",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/traceability/pattern_to_output_contract",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "empty",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
           "path": "/traceability/requirement_to_module",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "empty",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/traceability/requirement_to_pattern",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "empty",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/traceability/step_to_executor",
           "reason": "default structural classification"
         },
         {
@@ -1422,6 +1756,102 @@
           "index_output": null,
           "patch_mode": "replace_whole_array",
           "path": "/validation_gates/1/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/10/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/10/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/10/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/10/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/11/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/11/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/11/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/11/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/12/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/12/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/12/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/12/forbid_stdout_regex",
           "reason": "default structural classification"
         },
         {
@@ -1586,6 +2016,102 @@
         },
         {
           "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/7/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/7/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/7/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/7/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/8/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/8/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/8/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/8/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/9/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/9/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/9/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/9/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
           "element_type": "str",
           "index_output": null,
           "patch_mode": "replace_whole_array",
@@ -1641,11 +2167,11 @@
           "reason": "default structural classification"
         }
       ],
-      "source_sha256": "95a299e3306178441393869c93cb70c016a0c4bb1bda111155020667124c8e08"
+      "source_sha256": "bbfc466b1aa68a19cfe65458d0f563f41ac0f77144fb01c3d23d033d9301e7c3"
     },
     "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json": {
       "arrays": [],
-      "source_sha256": "607f70766002fbfab326406de303f616b6db28595f99ec2775a6b4f67b5ea0e7"
+      "source_sha256": "12af4ebb26476889fca04316e9a341e45e35383d33f628cdc7c35ca529ab68c4"
     },
     "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json": {
       "arrays": [
@@ -1737,6 +2263,30 @@
           "element_type": "str",
           "index_output": null,
           "patch_mode": "replace_whole_array",
+          "path": "/architecture/system_layers/layer_1_planning/components/3/features",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/architecture/system_layers/layer_1_planning/components/4/features",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/architecture/system_layers/layer_1_planning/components/5/outputs",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
           "path": "/architecture/system_layers/layer_1_planning/inputs",
           "reason": "default structural classification"
         },
@@ -1799,7 +2349,7 @@
           "element_type": "str",
           "index_output": null,
           "patch_mode": "replace_whole_array",
-          "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/10/checks",
+          "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/11/checks",
           "reason": "default structural classification"
         },
         {
@@ -1807,7 +2357,7 @@
           "element_type": "str",
           "index_output": null,
           "patch_mode": "replace_whole_array",
-          "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/15/required",
+          "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/16/required",
           "reason": "default structural classification"
         },
         {
@@ -1823,7 +2373,7 @@
           "element_type": "str",
           "index_output": null,
           "patch_mode": "replace_whole_array",
-          "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/6/checks",
+          "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/7/checks",
           "reason": "default structural classification"
         },
         {
@@ -1840,6 +2390,30 @@
           "index_output": null,
           "patch_mode": "replace_whole_array",
           "path": "/architecture/system_layers/layer_2_validation/components/2/checks",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/architecture/system_layers/layer_2_validation/components/3/checks",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/architecture/system_layers/layer_2_validation/components/4/checks",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/architecture/system_layers/layer_2_validation/components/5/gate_ids",
           "reason": "default structural classification"
         },
         {
@@ -2042,6 +2616,46 @@
         },
         {
           "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/configuration_driven_development/allowed_behavior_sources",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/configuration_driven_development/forbidden_behavior_sources",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/configuration_driven_development/pattern_creation_lifecycle",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/configuration_driven_development/pattern_creation_lifecycle/6/required_gates",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/configuration_driven_development/validation_guarantees",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
           "element_type": "object",
           "index_output": null,
           "patch_mode": "replace_whole_array",
@@ -2070,6 +2684,14 @@
           "index_output": null,
           "patch_mode": "replace_whole_array",
           "path": "/data_structures/plan_document/section_purpose_map/sections",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/data_structures/plan_document/step_contract/required_fields/implementation_mode/allowed_values",
           "reason": "default structural classification"
         },
         {
@@ -2150,6 +2772,14 @@
           "index_output": null,
           "patch_mode": "replace_whole_array",
           "path": "/executive_summary/primary_use_cases",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/executor_registry/structure/registered_executors",
           "reason": "default structural classification"
         },
         {
@@ -2438,6 +3068,62 @@
           "index_output": null,
           "patch_mode": "replace_whole_array",
           "path": "/integration_points/registry_integration/flow/3/triggers",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/pattern_governance/enforcement_gates",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/pattern_governance/manual_exception_policy/override_requires",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/pattern_governance/pattern_creation_contract/must_complete_before",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/pattern_governance/pattern_creation_contract/required_outputs",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/pattern_governance/pattern_resolution_phase/required_decision_outputs",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/pattern_governance/pattern_resolution_phase/steps",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/pattern_governance/required_step_fields",
           "reason": "default structural classification"
         },
         {
@@ -2841,8 +3527,8 @@
           "reason": "default structural classification"
         }
       ],
-      "source_sha256": "47d2c34789a309d56afc48e034b83b70cebe19bcf89959c32fe0c23548a9ea0b"
+      "source_sha256": "7087870386dfad63aecee05c74ef9b0c859a3e3a681366f1178ddea07f13bf0d"
     }
   },
-  "inventory_version": "1.0.0"
+  "inventory_version": "1.1.0"
 }
