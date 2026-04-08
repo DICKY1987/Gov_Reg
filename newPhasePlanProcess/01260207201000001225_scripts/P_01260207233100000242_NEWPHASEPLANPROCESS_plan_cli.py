@@ -34,7 +34,23 @@ except ImportError:
 # ============================================================================
 
 NAVIGATION_ALGORITHM_VERSION = "nav-v2.0"
-SCHEMA_PATH = Path(__file__).parent.parent / "schemas" / "01260207233100000674_NEWPHASEPLANPROCESS_plan.schema.v2.4.0.json"
+
+SCHEMA_CANDIDATES = [
+    Path(__file__).parent.parent / "01260207201000001223_schemas" / "01260207201000000532_NEWPHASEPLANPROCESS_plan.schema.v2.4.0.json",
+    Path(__file__).parent.parent / "01260207201000001223_schemas" / "01260207233100000675_NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json",
+    Path(__file__).parent.parent / "schemas" / "01260207233100000674_NEWPHASEPLANPROCESS_plan.schema.v2.4.0.json",
+]
+
+
+def resolve_schema_path() -> Path:
+    """Resolve the canonical schema path, preserving compatibility with older layouts."""
+    for candidate in SCHEMA_CANDIDATES:
+        if candidate.exists():
+            return candidate
+    return SCHEMA_CANDIDATES[0]
+
+
+SCHEMA_PATH = resolve_schema_path()
 
 # ============================================================================
 # SAFE FORMULA EVALUATOR (NO eval())
