@@ -28,7 +28,7 @@
       "Worktree isolation for parallel execution safety",
       "Ground truth validation levels (L0-L5) with mechanical pass/fail",
       "Metrics tracking at phase and step granularity",
-      "Deterministic execution: same input → same plan hash → byte-identical output",
+      "Deterministic execution: same input \u2192 same plan hash \u2192 byte-identical output",
       "Planning hierarchy with system/module/component/execution packet decomposition",
       "Pipeline boundary contract specifying planning-to-execution boundary",
       "Pattern-first execution with task to pattern registry mappings",
@@ -39,7 +39,12 @@
       "Concurrency control policies and lifecycle state machine",
       "Rollback plan and evidence requirements",
       "Canonicalization contract for consistent artifact representation",
-      "Merge policy and platform profile for cross-platform support"
+      "Merge policy and platform profile for cross-platform support",
+      "Registered executor model with pattern-to-executor binding and config schema enforcement",
+      "Configuration schema validation for every executable pattern instance",
+      "Mandatory pattern creation before implementation when no matching pattern exists in registry",
+      "Behavior-binding proof chain from requirement to pattern to config to executor to evidence",
+      "Ad hoc implementation detection and rejection via GATE-CFG series"
     ],
     "design_principles": [
       "NO IMPLIED BEHAVIOR: Every rule must be expressible as config + command + evidence + pass/fail",
@@ -47,7 +52,8 @@
       "SINGLE SOURCE OF TRUTH: No duplicate IDs, canonical derivation rules",
       "EXPLICIT CONTRACTS: Every step declares inputs, outputs, pre/post conditions",
       "AUDIT TRAIL: Cryptographic evidence chain for all execution steps",
-      "BOUNDED AUTOMATION: Self-healing with hard limits and escalation paths"
+      "BOUNDED AUTOMATION: Self-healing with hard limits and escalation paths",
+      "CONFIGURATION-DRIVEN DEVELOPMENT: Executable behavior must be determined by approved external specifications and configurations consumed by registered executors; ad hoc imperative task logic is prohibited by default"
     ],
     "primary_use_cases": [
       "AI-driven software project planning and execution",
@@ -104,6 +110,45 @@
               "Good vs bad examples",
               "Validation checklist"
             ]
+          },
+          {
+            "component_id": "COMP-L1-04",
+            "name": "Pattern Registry",
+            "file": "PATTERN_INDEX.yaml",
+            "role": "Single source of truth for approved execution patterns and their registry bindings",
+            "features": [
+              "Pattern-to-task-kind mappings",
+              "Pattern package metadata",
+              "Guardrail block references",
+              "Output contract references",
+              "Golden fixture references"
+            ]
+          },
+          {
+            "component_id": "COMP-L1-05",
+            "name": "Executor Registry",
+            "file": "registry/executor_registry.yaml",
+            "role": "Registry of approved executors and the pattern/config surfaces they support",
+            "features": [
+              "Executor-to-pattern bindings",
+              "Supported config schema versions",
+              "Supported parameter schema versions",
+              "Output contract references",
+              "Determinism requirements"
+            ]
+          },
+          {
+            "component_id": "COMP-L1-06",
+            "name": "Pattern Creation Workflow",
+            "trigger": "NO_MATCHING_PATTERN_FOUND",
+            "role": "Mandatory workflow for creating and validating a new pattern package before implementation begins",
+            "outputs": [
+              "pattern_spec.yaml",
+              "config_schema.json",
+              "parameter_schema.json",
+              "golden_test_fixture.json",
+              "pattern_validation_report.json"
+            ]
           }
         ],
         "inputs": [
@@ -146,16 +191,17 @@
           {
             "component_id": "COMP-L2-02",
             "name": "Validation Gate System",
-            "total_gates": 19,
-            "mandatory_gates": 17,
-            "optional_gates": 5,
+            "total_gates": 26,
+            "mandatory_gates": 26,
+            "optional_gates": 0,
             "gate_dependency_graph": "scripts/gate_dependencies.json",
             "execution_phases": [
               "pre-validation (GATE-000)",
               "core-validation (GATE-001 to GATE-005)",
-              "automation (GATE-006 to GATE-008)",
+              "automation (GATE-006 to GATE-009)",
               "wiring (GATE-010 to GATE-013)",
               "validation (GATE-014 to GATE-017)",
+              "configuration-driven enforcement (GATE-CFG-001 to GATE-CFG-006)",
               "meta-validation (GATE-998, GATE-999)"
             ],
             "template_defaults": {
@@ -214,9 +260,15 @@
                   "evidence (directory + required_files)",
                   "ground_truth_level",
                   "timeout_sec",
-                  "retries"
+                  "retries",
+                  "implementation_mode",
+                  "executor_binding (executor_id, executor_version, invocation_ref)",
+                  "behavior_spec (pattern_id, pattern_version, spec_file, config_instance_file, config_schema_file, parameter_schema_file)",
+                  "behavior_binding_proof (command, evidence)",
+                  "allowed_extension_slots",
+                  "bespoke_logic_allowed"
                 ],
-                "critical_rule": "All 13 contract fields mandatory for every step",
+                "critical_rule": "All 19 executable-step contract fields mandatory for every step",
                 "failure_impact": "Step cannot be mechanically verified or safely executed"
               },
               {
@@ -329,6 +381,54 @@
                 "failure_impact": "Ambiguous references, broken traceability"
               },
               {
+                "id": "GATE-CFG-001",
+                "name": "Pattern Completeness",
+                "script": "validate_pattern_completeness.py",
+                "purpose": "Verify every executable step has a pattern binding, executor binding, and schema-backed behavior spec",
+                "critical_rule": "Every executable step must declare implementation_mode, pattern_id, executor_binding, and behavior_spec with schema-backed artifacts",
+                "failure_impact": "Execution can proceed without a complete validated pattern package"
+              },
+              {
+                "id": "GATE-CFG-002",
+                "name": "Engine-Spec Separation",
+                "script": "validate_engine_spec_separation.py",
+                "purpose": "Reject executable behavior that is encoded in prompt prose or bespoke step logic instead of approved spec/config artifacts",
+                "critical_rule": "Behavior must come from approved external spec/config artifacts consumed by a registered executor",
+                "failure_impact": "NO IMPLIED BEHAVIOR is violated and execution becomes non-deterministic"
+              },
+              {
+                "id": "GATE-CFG-003",
+                "name": "No Ad Hoc Execution",
+                "script": "validate_no_adhoc_execution.py",
+                "purpose": "Reject bespoke execution paths when an approved registered pattern exists for the task kind",
+                "critical_rule": "Ad hoc execution is forbidden when a registered pattern exists or can be created first",
+                "failure_impact": "Execution bypasses guardrails and loses reproducibility"
+              },
+              {
+                "id": "GATE-CFG-004",
+                "name": "Registered Executor Only",
+                "script": "validate_executor_registration.py",
+                "purpose": "Verify every executor binding resolves to an approved executor registry entry",
+                "critical_rule": "All executor_binding.executor_id values must exist in executor_registry",
+                "failure_impact": "Unapproved executors can run without validated capability boundaries"
+              },
+              {
+                "id": "GATE-CFG-005",
+                "name": "Pattern-First Gap Resolution",
+                "script": "validate_pattern_first_gap_resolution.py",
+                "purpose": "Ensure implementation work is blocked until a PATTERN_CREATION path exists when no matching pattern is available",
+                "critical_rule": "PATTERN_EXECUTION steps may not be scheduled before required PATTERN_CREATION work is complete",
+                "failure_impact": "Implementation can begin without a validated governing pattern"
+              },
+              {
+                "id": "GATE-CFG-006",
+                "name": "Behavior-Binding Proof",
+                "script": "validate_behavior_binding_proof.py",
+                "purpose": "Verify executor, spec, config, output contract, and evidence are mechanically linked",
+                "critical_rule": "Every executable step must provide behavior_binding_proof linking executor, spec, config, outputs, and evidence",
+                "failure_impact": "Behavior cannot be audited or reproduced mechanically"
+              },
+              {
                 "id": "GATE-998",
                 "name": "Automation Audit",
                 "script": "validate_automation_audit.py",
@@ -364,6 +464,42 @@
               "FM-13: Timeout inconsistencies (steps with unrealistic timeouts)",
               "FM-14: Contract contradictions (postcondition contradicts invariant)"
             ]
+          },
+          {
+            "component_id": "COMP-L2-04",
+            "name": "Configuration Schema Validator",
+            "script": "scripts/validate_configuration_driven_development.py",
+            "role": "Validates config instances against registered pattern config schemas",
+            "checks": [
+              "Approved config schema exists for every executable pattern",
+              "Config instance matches schema version",
+              "Parameter schema exists for declared pattern parameters"
+            ]
+          },
+          {
+            "component_id": "COMP-L2-05",
+            "name": "Behavior Binding Validator",
+            "script": "scripts/validate_behavior_binding.py",
+            "role": "Verifies executor, behavior spec, config, and output contracts are mechanically linked",
+            "checks": [
+              "Executor exists in executor registry",
+              "Behavior spec references approved artifacts",
+              "Expected outputs map to an output contract reference",
+              "Evidence command proves executor/spec/config binding"
+            ]
+          },
+          {
+            "component_id": "COMP-L2-06",
+            "name": "CDD Enforcement Gates",
+            "role": "GATE-CFG-001 through GATE-CFG-006 block execution until configuration-driven requirements are satisfied",
+            "gate_ids": [
+              "GATE-CFG-001",
+              "GATE-CFG-002",
+              "GATE-CFG-003",
+              "GATE-CFG-004",
+              "GATE-CFG-005",
+              "GATE-CFG-006"
+            ]
           }
         ],
         "validation_guarantees": [
@@ -374,7 +510,10 @@
           "Verifiability: all steps have mechanical verification",
           "Uniqueness: no ID collisions",
           "Executability: all commands are valid shell syntax",
-          "Safety: all parallel operations are conflict-free"
+          "Safety: all parallel operations are conflict-free",
+          "Configuration-driven enforcement: executable behavior is bound to approved spec/config artifacts",
+          "Executor integrity: all executor bindings resolve to registered supported executors",
+          "Pattern completeness: missing pattern packages block implementation until resolved"
         ]
       },
       "layer_3_execution": {
@@ -693,6 +832,8 @@
         "required_sections": [
           "template_metadata",
           "critical_constraint",
+          "configuration_driven_development",
+          "pattern_governance",
           "usage_instructions",
           "v3_enhancements",
           "task_analysis",
@@ -712,6 +853,7 @@
           "planning_hierarchy",
           "pipeline_boundary_contract",
           "execution_patterns",
+          "executor_registry",
           "mutation_model",
           "task_intake_model",
           "traceability",
@@ -746,6 +888,18 @@
             "purpose": "Non-negotiable rules (NO IMPLIED BEHAVIOR) that govern all plans.",
             "example": "\"critical_constraint\": {\"name\": \"NO_IMPLIED_BEHAVIOR\"}",
             "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/critical_constraint"
+          },
+          {
+            "section": "configuration_driven_development",
+            "purpose": "Declare the fail-closed configuration-driven development model, allowed behavior sources, and validation guarantees that block ad hoc execution.",
+            "example": "\"configuration_driven_development\": {\"enabled\": true, \"enforcement_mode\": \"fail_closed\"}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/configuration_driven_development"
+          },
+          {
+            "section": "pattern_governance",
+            "purpose": "Define pattern-first resolution, pattern creation, manual exception policy, and enforcement gates before executable work is permitted.",
+            "example": "\"pattern_governance\": {\"mode\": \"PATTERN_FIRST_REQUIRED\", \"registry_path\": \"PATTERN_INDEX.yaml\"}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/pattern_governance"
           },
           {
             "section": "usage_instructions",
@@ -862,6 +1016,12 @@
             "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/execution_patterns"
           },
           {
+            "section": "executor_registry",
+            "purpose": "Register approved executors and the pattern/config schema surfaces they support for deterministic execution.",
+            "example": "\"executor_registry\": {\"registered_executors\": [{\"executor_id\": \"EXEC-EXAMPLE-DOCS\"}]}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/executor_registry"
+          },
+          {
             "section": "mutation_model",
             "purpose": "Declare allowed mutation types (edit_existing, create_new, remove_existing) and define rules for decomposing modifications into independent workstreams.",
             "example": "\"mutation_model\": {\"allowed_mutation_types\": [\"edit_existing\", \"create_new\", \"remove_existing\"], \"workstream_decomposition_rules\": [], \"independence_criteria\": []}",
@@ -965,7 +1125,7 @@
           },
           {
             "section": "mutation_ledger",
-            "purpose": "State machine for tracking each patch through its full lifecycle (created → validated → queued → applied → verified → committed or rolled_back). Requires atomic, locked updates.",
+            "purpose": "State machine for tracking each patch through its full lifecycle (created \u2192 validated \u2192 queued \u2192 applied \u2192 verified \u2192 committed or rolled_back). Requires atomic, locked updates.",
             "example": "\"mutation_ledger\": {\"path\": \".state/ledger/mutation_ledger.jsonl\", \"states\": [\"created\", \"committed\"], \"atomic_update_required\": true}",
             "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/mutation_ledger"
           }
@@ -1105,6 +1265,58 @@
               "require_stack_trace": "boolean - capture stack trace on failure",
               "require_retry_history": "boolean - log all retry attempts and outcomes"
             }
+          },
+          "implementation_mode": {
+            "type": "string",
+            "allowed_values": [
+              "PATTERN_EXECUTION",
+              "PATTERN_CREATION",
+              "NOT_AUTOMATABLE"
+            ],
+            "description": "Execution mode for the step. PATTERN_EXECUTION is the default for executable work; PATTERN_CREATION is used only to create a new pattern package; NOT_AUTOMATABLE is reserved for manual-only work."
+          },
+          "executor_binding": {
+            "type": "object",
+            "description": "Registered executor binding used to run this step mechanically",
+            "required_fields": {
+              "executor_id": "Registered executor identifier (EXEC-*)",
+              "executor_version": "Version of the registered executor contract",
+              "invocation_ref": "Command, module path, or workflow reference used to invoke the executor"
+            }
+          },
+          "behavior_spec": {
+            "type": "object",
+            "description": "Approved pattern and configuration artifacts that define the behavior surface for the step",
+            "required_fields": {
+              "pattern_id": "Registered pattern identifier (PAT-*)",
+              "pattern_version": "Version of the selected pattern contract",
+              "spec_file": "Pattern specification artifact that defines the behavior contract",
+              "config_instance_file": "Concrete config instance used for this step",
+              "config_schema_file": "Schema used to validate the config instance",
+              "parameter_schema_file": "Schema used to validate pattern parameters for this step"
+            }
+          },
+          "behavior_binding_proof": {
+            "type": "object",
+            "description": "Mechanical proof that executor, pattern, config, and outputs are bound together",
+            "required_fields": {
+              "command": "Executable command that validates or materializes the binding",
+              "evidence": "Evidence artifact proving the binding check passed"
+            }
+          },
+          "allowed_extension_slots": {
+            "type": "array",
+            "description": "Approved extension slots where bounded bespoke logic may execute",
+            "item_structure": {
+              "slot_id": "Named extension slot defined by the pattern",
+              "description": "Why the extension slot exists and what behavior it permits",
+              "runtime_limits": "Object describing time, file, or resource limits for logic inside the slot"
+            }
+          },
+          "bespoke_logic_allowed": {
+            "type": "boolean",
+            "description": "If true, bespoke logic is permitted only inside approved allowed_extension_slots",
+            "default": false
           }
         }
       },
@@ -1206,9 +1418,13 @@
         "planning_stage_output": "Path or identifier of the canonical plan produced by planning.",
         "execution_stage_input": "Path or identifier of the plan consumed by execution stage.",
         "validation_required_before_execution": "List of validation gates or scripts that must pass before execution begins.",
-        "input_exclusivity_rule": "Rule ensuring that only the specified plan document may be used as input for execution."
+        "input_exclusivity_rule": "Rule ensuring that only the specified plan document may be used as input for execution.",
+        "allowed_execution_inputs": "Array of the only permitted execution inputs (plan_json, registered_pattern_spec, schema_validated_config).",
+        "forbid_direct_source_mutation_without_pattern": "Boolean blocking direct source mutation unless a validated pattern authorizes it.",
+        "forbid_unregistered_executor_invocation": "Boolean blocking executor calls unless the executor is registered and approved.",
+        "forbid_runtime_behavior_override": "Boolean blocking runtime prompt or command overrides of guardrailed behavior."
       },
-      "purpose": "Ensure that plans are validated and immutable when handed off to execution."
+      "purpose": "Ensure that plans are validated, pattern-bound, and immutable when handed off to execution."
     },
     "execution_patterns": {
       "description": "Mapping of task kinds to reusable pattern definitions stored in a registry.",
@@ -1217,18 +1433,22 @@
         "required_for_task_kinds": "Boolean indicating whether pattern mapping is mandatory for all task kinds.",
         "task_pattern_mappings": "Array mapping task kinds to pattern IDs and optional constraints.",
         "pattern_validation": {
-          "require_pattern_id_per_step": "Boolean indicating whether every step must reference a pattern ID.",
-          "required_pattern_components": "Array of components every registered pattern must define (spec_file, schema_file, executor_function, pattern_index_entry, guardrails_block).",
+          "require_pattern_id_per_step": "Boolean indicating whether every executable step must reference a non-null pattern ID.",
+          "required_pattern_components": "Array of components every registered pattern must define (spec_file, config_schema_file, parameter_schema_file, executor_id, pattern_index_entry, guardrails_block, output_contract_ref, golden_test_fixture).",
           "validation_command": "Command validating the pattern registry and per-step bindings.",
-          "expect_exit_code": "Expected exit code from pattern validation command."
+          "expect_exit_code": "Expected exit code from pattern validation command.",
+          "require_executor_binding_per_pattern": "Boolean requiring every executable pattern to bind to a registered executor.",
+          "require_behavior_binding_proof": "Boolean requiring every executable step to provide mechanical behavior-binding proof.",
+          "missing_pattern_action": "Action when no matching pattern exists (fail_closed_create_pattern_task)."
         },
         "guardrail_policy": {
-          "bypass_allowed": "boolean - whether guardrails may be bypassed",
-          "runtime_override_allowed": "boolean - whether runtime overrides are permitted",
-          "missing_guardrails_action": "Action when a referenced pattern has no guardrails (fail_closed)"
+          "bypass_allowed": "boolean - whether guardrails may be bypassed (must remain false)",
+          "runtime_override_allowed": "boolean - whether runtime overrides are permitted (must remain false)",
+          "missing_guardrails_action": "Action when a referenced pattern has no guardrails (fail_closed)",
+          "ad_hoc_execution_action": "Action when a task attempts freeform execution outside a registered pattern (fail_closed_create_pattern_task)"
         }
       },
-      "purpose": "Reduce variability and enforce consistent execution by referencing pattern contracts."
+      "purpose": "Reduce variability and enforce consistent execution by requiring validated pattern packages, registered executors, and fail-closed guardrails."
     },
     "mutation_model": {
       "description": "Declares allowed mutation types and rules for decomposing modifications into independent workstreams.",
@@ -1258,9 +1478,14 @@
         "component_to_execution_packet": "Array of mappings from components to execution packets (steps or tasks).",
         "gap_to_execution_packet": "Array of mappings from identified gaps to the steps or tasks that close them.",
         "deferred_gaps": "Array of unresolved gaps with explicit deferral justifications.",
-        "gap_closure_validation": "Validation configuration ensuring every gap is resolved or explicitly deferred."
+        "gap_closure_validation": "Validation configuration ensuring every gap is resolved or explicitly deferred.",
+        "requirement_to_pattern": "Array of mappings from requirements to the patterns that satisfy them.",
+        "component_to_pattern": "Array of mappings from implementation components to the patterns they rely on.",
+        "step_to_executor": "Array of mappings from executable steps to registered executor IDs.",
+        "pattern_to_config_schema": "Array of mappings from patterns to the config schemas that validate their behavior surfaces.",
+        "pattern_to_output_contract": "Array of mappings from patterns to the output contracts used to validate produced artifacts."
       },
-      "purpose": "Maintain traceability from requirements through design to implementation, enabling verification and auditing."
+      "purpose": "Maintain traceability from requirements through patterns, executors, and implementation artifacts, enabling verification and auditing."
     },
     "worktree_isolation": {
       "description": "Configuration for isolated Git worktrees used during parallel execution to prevent contamination.",
@@ -1386,11 +1611,11 @@
       "description": "Configuration for detecting common failure anti-patterns and specifying remediation.",
       "structure": {
         "enabled": "boolean - enable or disable the detection system",
-        "triggers": "Array of trigger identifiers (hallucinated_success, planning_loop_over_threshold, empty_implementation_artifact, complexity_limit_exceeded, worktree_contamination)",
+        "triggers": "Array of trigger identifiers (hallucinated_success, planning_loop_over_threshold, empty_implementation_artifact, complexity_limit_exceeded, worktree_contamination, patternless_execution, null_pattern_id_on_executable_step, unregistered_executor_invocation, inline_behavior_logic_outside_extension_slot, runtime_override_of_guardrailed_parameters, spec_without_engine_binding, executor_without_config_schema, freehand_script_created_where_pattern_exists)",
         "checkpoints": "Array of pipeline checkpoints (post_task, post_phase, pre_commit)",
         "actions": "Object mapping severity levels (critical, recoverable) to actions (halt, self_heal_or_escalate)"
       },
-      "purpose": "Detect and respond to known failure anti-patterns early to maintain plan integrity."
+      "purpose": "Detect and respond to known failure anti-patterns early, including patternless or unregistered execution, to maintain plan integrity."
     },
     "run_status_contract": {
       "description": "Schema and validation rules for the run_status.json file tracking execution progress.",
@@ -1525,11 +1750,12 @@
           "checks": [
             "No TODO/TBD/FIXME anywhere",
             "All IDs unique (step_id, artifact_id, phase_id)",
-            "All steps have 9 required contract fields",
+            "All executable steps have the full 19-field executable-step contract",
             "All commands are executable shell syntax",
             "All artifact flows close",
             "No circular dependencies",
-            "All evidence paths follow pattern"
+            "All evidence paths follow pattern",
+            "All required pattern and executor bindings are present for executable work"
           ],
           "outputs": [
             "Self-validation report"
@@ -1550,7 +1776,7 @@
           "actor": "Human User",
           "action": "Run validation gates",
           "command": "python scripts/NEWPHASEPLANPROCESS_plan_cli.py run-gates --plan-file [plan].json",
-          "expected_result": "All 19 gates pass + All 14 FM checks pass",
+          "expected_result": "All 26 validation gates pass + All 14 FM checks pass",
           "outputs": [
             "Gate validation report"
           ]
@@ -1574,7 +1800,7 @@
       ],
       "success_criteria": [
         "Plan file validates against schema",
-        "All 19 validation gates pass",
+        "All 26 validation gates pass",
         "All 14 failure mode checks pass",
         "Plan is executable without manual intervention"
       ]
@@ -2194,16 +2420,195 @@
       ]
     }
   },
+  "configuration_driven_development": {
+    "description": "Normative configuration-driven development contract for executable behavior.",
+    "definition": "Configuration-Driven Development requires all automatable behavior to be expressed through approved external pattern specifications, config schemas, and parameter schemas consumed by registered executors.",
+    "core_principle": "Behavior belongs to validated specification and configuration artifacts; implementation code supplies the engine surface and approved extension slots only.",
+    "mandatory_separation": {
+      "engine": "Registered executors provide reusable mechanics and must not encode task-specific behavior directly.",
+      "behavior_surface": "Pattern specs, config instances, config schemas, and parameter schemas define task-specific behavior.",
+      "extension_surface": "Bounded extension slots are the only place bespoke logic may exist, with explicit runtime limits and evidence requirements."
+    },
+    "allowed_behavior_sources": [
+      "pattern_parameters",
+      "config_file",
+      "spec_file",
+      "schema_validated_defaults"
+    ],
+    "forbidden_behavior_sources": [
+      "inline_ad_hoc_logic",
+      "runtime_prompt_override",
+      "manual_command_substitution",
+      "unregistered_executor"
+    ],
+    "glossary": {
+      "executor": "A registered execution engine identified by executor_id and constrained by declared supported surfaces.",
+      "pattern": "An approved reusable behavior contract that maps a task kind to spec, schemas, outputs, and guardrails.",
+      "config_schema": "The schema used to validate configuration instances consumed by a pattern.",
+      "parameter_schema": "The schema used to validate pattern parameters bound at planning time.",
+      "behavior_binding_proof": "Mechanical evidence linking executor, pattern, config, and expected outputs for a step.",
+      "extension_slot": "A named and bounded location where bespoke logic may execute under explicit limits.",
+      "pattern_creation_step": "A step whose sole purpose is to create and validate a new pattern package before implementation.",
+      "executable_step": "A step scheduled to run through a registered executor under PATTERN_EXECUTION mode.",
+      "ad_hoc_logic": "Task-specific imperative behavior not sourced from an approved pattern/config surface.",
+      "variance_path": "An approved manual exception path requiring explicit human authorization and expiration."
+    },
+    "pattern_creation_lifecycle": [
+      {
+        "step": 1,
+        "action": "detect_no_matching_pattern",
+        "output": "gap_detection_report"
+      },
+      {
+        "step": 2,
+        "action": "create_pattern_spec_file",
+        "output": "pattern_spec.yaml"
+      },
+      {
+        "step": 3,
+        "action": "create_config_schema_file",
+        "output": "config_schema.json"
+      },
+      {
+        "step": 4,
+        "action": "create_parameter_schema_file",
+        "output": "parameter_schema.json"
+      },
+      {
+        "step": 5,
+        "action": "register_executor_binding",
+        "output": "executor_registry_entry"
+      },
+      {
+        "step": 6,
+        "action": "create_golden_fixture",
+        "output": "golden_test_fixture.json"
+      },
+      {
+        "step": 7,
+        "action": "pass_pattern_validation_gates",
+        "required_gates": [
+          "GATE-CFG-001",
+          "GATE-CFG-004",
+          "GATE-CFG-006"
+        ]
+      },
+      {
+        "step": 8,
+        "action": "implementation_steps_now_permitted",
+        "precondition": "All required pattern gates passed"
+      }
+    ],
+    "validation_guarantees": [
+      "Every executable step is bound to a validated pattern package before execution.",
+      "Every config instance is validated against an approved config schema.",
+      "Every executor binding resolves to a registered executor with declared supported surfaces.",
+      "Every behavior binding produces evidence that links executor, pattern, config, and outputs.",
+      "Pattern gaps fail closed until pattern creation and validation complete."
+    ],
+    "purpose": "Make executable behavior deterministic, auditable, and fail-closed by separating engine logic from approved behavior artifacts."
+  },
+  "pattern_governance": {
+    "description": "Pattern-first governance rules that must be satisfied before executable work is planned or run.",
+    "mode": "PATTERN_FIRST_REQUIRED",
+    "registry_path": "PATTERN_INDEX.yaml",
+    "unknown_pattern_policy": "CREATE_AND_VALIDATE_BEFORE_EXECUTION",
+    "ad_hoc_execution_policy": "FORBIDDEN",
+    "pre_execution_gate": "GATE-CFG-001",
+    "pattern_resolution_phase": {
+      "required": true,
+      "steps": [
+        "classify_task_archetype",
+        "search_pattern_registry",
+        "select_best_matching_pattern",
+        "validate_pattern_applicability",
+        "if_no_match_create_pattern_candidate",
+        "validate_new_pattern",
+        "register_pattern",
+        "bind_task_to_pattern"
+      ],
+      "required_decision_outputs": [
+        "pattern_resolution_decision",
+        "existing_pattern_match",
+        "new_pattern_required",
+        "executor_family",
+        "config_driven_feasibility"
+      ]
+    },
+    "pattern_creation_contract": {
+      "trigger": "NO_MATCHING_PATTERN_FOUND",
+      "required_outputs": [
+        "execution_pattern_file",
+        "pattern_registry_entry",
+        "pattern_validation_report",
+        "pattern_applicability_statement"
+      ],
+      "must_complete_before": [
+        "task_decomposition",
+        "file_modification",
+        "tool_execution"
+      ]
+    },
+    "manual_exception_policy": {
+      "allowed": false,
+      "override_requires": [
+        "human_approved_variance_id",
+        "documented_reason",
+        "temporary_expiration"
+      ]
+    },
+    "required_step_fields": [
+      "pattern_id",
+      "implementation_mode",
+      "executor_binding",
+      "behavior_spec",
+      "behavior_binding_proof",
+      "allowed_extension_slots",
+      "bespoke_logic_allowed"
+    ],
+    "enforcement_gates": [
+      "GATE-CFG-001",
+      "GATE-CFG-002",
+      "GATE-CFG-003",
+      "GATE-CFG-004",
+      "GATE-CFG-005",
+      "GATE-CFG-006"
+    ],
+    "purpose": "Force pattern resolution, pattern creation, and registered executor binding to complete before implementation work is planned or executed."
+  },
+  "executor_registry": {
+    "description": "Specification for the registered executor catalog used by pattern-bound steps.",
+    "structure": {
+      "registered_executors": [
+        {
+          "executor_id": "Unique executor identifier matching ^EXEC-[A-Z0-9-]+$",
+          "executor_entrypoint": "Command, module path, or workflow reference used to invoke the executor",
+          "supported_pattern_ids": "Array of pattern IDs the executor may run",
+          "supported_config_schema_versions": "Array of config schema versions supported by the executor",
+          "supported_parameter_schema_versions": "Array of parameter schema versions supported by the executor",
+          "output_contract_refs": "Array of output contract references validated for this executor",
+          "determinism_requirements": "Array of deterministic execution constraints the executor must satisfy",
+          "forbidden_capabilities": "Array of capabilities the executor is prohibited from performing"
+        }
+      ],
+      "validation_command": "Command validating executor registry completeness and cross-file bindings",
+      "expect_exit_code": "Expected exit code from executor registry validation command"
+    },
+    "purpose": "Ensure every executable step binds only to a registered executor with validated pattern, config, and output contract compatibility."
+  },
   "development_guidelines": {
     "adding_new_features": {
-      "principle": "Features must be compatible with NO IMPLIED BEHAVIOR constraint",
+      "principle": "Features must preserve the configuration-driven, pattern-first execution contract",
       "requirements": [
-        "Feature must be expressible as: config entry + executable command + evidence artifact + pass/fail condition",
+        "Feature must be expressible as: registered executor + validated spec/config artifact + evidence artifact + pass/fail condition",
         "If feature cannot be automated, it must be marked NOT_AUTOMATABLE and routed to manual process",
         "Feature must not break existing validation gates",
         "Feature must include evidence collection",
         "Feature must include rollback procedure",
-        "Feature must update schema, template, and AI instructions"
+        "Feature must update schema, template, and AI instructions",
+        "If no pattern exists, first create a pattern package (spec, config schema, parameter schema, executor binding, golden fixture) and validate it",
+        "No plan may schedule PATTERN_EXECUTION steps against a task kind lacking a validated registered pattern",
+        "Spec-only pattern definitions are invalid unless a corresponding executor binding exists in executor_registry"
       ],
       "workflow": [
         {
@@ -2566,7 +2971,7 @@
           {
             "step": 4,
             "action": "Convert pre/postcondition descriptions to executable commands",
-            "example": "Install dependencies → pip install -r requirements.txt"
+            "example": "Install dependencies \u2192 pip install -r requirements.txt"
           },
           {
             "step": 5,
