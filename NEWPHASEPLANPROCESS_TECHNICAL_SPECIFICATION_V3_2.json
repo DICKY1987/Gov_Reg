@@ -1,0 +1,2580 @@
+{
+  "document_metadata": {
+    "document_id": "DOC-TECH-SPEC-NEWPHASEPLAN-002",
+    "title": "newPhasePlanProcess v3.2.0 - Technical Specification & Architecture",
+    "version": "3.2.0",
+    "created_at": "2026-04-04T03:08:44.753530Z",
+    "status": "AUTHORITATIVE",
+    "purpose": "Comprehensive technical documentation describing the newPhasePlanProcess system architecture, components, workflows, and integration points for feature development",
+    "audience": [
+      "developers",
+      "architects",
+      "ai_agents",
+      "system_integrators"
+    ],
+    "scope": "Complete system specification covering data structures, validation gates, execution flow, and extension points"
+  },
+  "executive_summary": {
+    "system_name": "newPhasePlanProcess v3.2.0",
+    "system_type": "Autonomous Project Planning & Execution Framework",
+    "core_purpose": "Generate, validate, and execute deterministic, mechanically-verifiable project plans with step-level contracts and evidence chains",
+    "key_capabilities": [
+      "AI-executable plan generation from natural language requirements",
+      "Step-level contracts with inputs/outputs/invariants/preconditions/postconditions",
+      "Template-defined validation gates (5 default gates, extensible)",
+      "File manifest with conflict analysis and step-level file scoping",
+      "Cryptographic evidence chain linking all execution steps",
+      "Self-healing failure types with bounded retries and convergence detection (5 defaults)",
+      "Worktree isolation for parallel execution safety",
+      "Ground truth validation levels (L0-L5) with mechanical pass/fail",
+      "Metrics tracking at phase and step granularity",
+      "Deterministic execution: same input → same plan hash → byte-identical output",
+      "Planning hierarchy with system/module/component/execution packet decomposition",
+      "Pipeline boundary contract specifying planning-to-execution boundary",
+      "Pattern-first execution with task to pattern registry mappings",
+      "Mutation model for classifying file changes and decomposing workstreams",
+      "Task intake model for continuous or queued task processing",
+      "Traceability mappings across requirements, modules, components, and execution packets",
+      "Execution baseline capture and drift detection",
+      "Concurrency control policies and lifecycle state machine",
+      "Rollback plan and evidence requirements",
+      "Canonicalization contract for consistent artifact representation",
+      "Merge policy and platform profile for cross-platform support"
+    ],
+    "design_principles": [
+      "NO IMPLIED BEHAVIOR: Every rule must be expressible as config + command + evidence + pass/fail",
+      "MECHANICAL VERIFICATION: All validation automated via executable commands and regex patterns",
+      "SINGLE SOURCE OF TRUTH: No duplicate IDs, canonical derivation rules",
+      "EXPLICIT CONTRACTS: Every step declares inputs, outputs, pre/post conditions",
+      "AUDIT TRAIL: Cryptographic evidence chain for all execution steps",
+      "BOUNDED AUTOMATION: Self-healing with hard limits and escalation paths"
+    ],
+    "primary_use_cases": [
+      "AI-driven software project planning and execution",
+      "Governance-compliant infrastructure changes",
+      "Auditable deployment pipelines",
+      "Multi-phase parallel development workflows",
+      "Contract-driven system integration"
+    ]
+  },
+  "architecture": {
+    "system_layers": {
+      "layer_1_planning": {
+        "name": "Planning Layer",
+        "purpose": "Transform user requirements into validated, executable plans",
+        "components": [
+          {
+            "name": "Plan Template v3.2.0",
+            "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+            "role": "Master template defining complete plan structure",
+            "features": [
+              "Step-level contracts",
+              "Phase contracts",
+              "File manifests",
+              "Ground truth levels",
+              "Self-healing configuration",
+              "Metrics definitions",
+              "Worktree isolation specs"
+            ]
+          },
+          {
+            "name": "Plan Schema v3.0.0",
+            "file": "schemas/NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json",
+            "role": "JSON Schema defining validation rules for plans",
+            "validation_scope": [
+              "Required fields and data types",
+              "ID pattern enforcement (PLAN-*, PH-*, STEP-*, ART-*)",
+              "Enum value validation",
+              "Cross-reference integrity",
+              "Semantic versioning patterns"
+            ]
+          },
+          {
+            "name": "AI Agent Instructions",
+            "file": "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json",
+            "role": "Complete guide for AI agents to generate valid plans",
+            "includes": [
+              "Required reading order",
+              "Output structure requirements",
+              "Critical validation rules",
+              "Step-by-step generation process",
+              "Good vs bad examples",
+              "Validation checklist"
+            ]
+          }
+        ],
+        "inputs": [
+          "User project description",
+          "Complexity classification (simple/moderate/complex/enterprise)",
+          "Quality requirements (prototype/production/critical)",
+          "Environment specifications"
+        ],
+        "outputs": [
+          "Complete plan JSON file",
+          "File mutation set (PLAN_FILE_MUTATION_SET.json)",
+          "Decision ledger",
+          "Assumption ledger"
+        ]
+      },
+      "layer_2_validation": {
+        "name": "Validation Layer",
+        "purpose": "Mechanically verify plan correctness and completeness",
+        "components": [
+          {
+            "name": "Plan CLI",
+            "file": "scripts/NEWPHASEPLANPROCESS_plan_cli.py",
+            "role": "Command-line interface for plan operations",
+            "commands": {
+              "validate": "Schema validation only",
+              "normalize": "Normalize plan structure (sort arrays, build ID maps)",
+              "compile": "Normalize + regenerate navigation + validate formulas",
+              "execute": "Execute plan with step-by-step tracking",
+              "diff": "Compare two plans (ignoring timestamps)",
+              "run-gates": "Execute all validation gates in dependency order"
+            },
+            "features": [
+              "Auto-detect v2.4.0 vs v3.0.0 format",
+              "Safe formula evaluator (no eval())",
+              "Evidence path generation",
+              "Exit code standardization"
+            ]
+          },
+          {
+            "name": "Validation Gate System",
+            "total_gates": 19,
+            "mandatory_gates": 17,
+            "optional_gates": 5,
+            "gate_dependency_graph": "scripts/gate_dependencies.json",
+            "execution_phases": [
+              "pre-validation (GATE-000)",
+              "core-validation (GATE-001 to GATE-005)",
+              "automation (GATE-006 to GATE-008)",
+              "wiring (GATE-010 to GATE-013)",
+              "validation (GATE-014 to GATE-017)",
+              "meta-validation (GATE-998, GATE-999)"
+            ],
+            "template_defaults": {
+              "count": 5,
+              "gate_ids": [
+                "GATE-001",
+                "GATE-002",
+                "GATE-003",
+                "GATE-004",
+                "GATE-FILE-MUTATIONS"
+              ],
+              "description": "Gates pre-populated in NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json; additional gates are optional extensions."
+            },
+            "gate_registry": [
+              {
+                "id": "GATE-000",
+                "name": "No Obfuscation Check",
+                "script": "validate_plan_structure.py",
+                "purpose": "Ensure no TODO/TBD/FIXME placeholders exist",
+                "critical_rule": "Every field must have real, specific content",
+                "failure_impact": "Plan is incomplete and cannot be executed"
+              },
+              {
+                "id": "GATE-001",
+                "name": "Schema Validation",
+                "script": "validate_structure.py",
+                "purpose": "Validate plan conforms to JSON Schema",
+                "checks": [
+                  "Required fields present",
+                  "Data types correct",
+                  "ID patterns valid",
+                  "Enum values within allowed set"
+                ]
+              },
+              {
+                "id": "GATE-002",
+                "name": "Gate Definitions Valid",
+                "script": "validate_gates.py",
+                "purpose": "Ensure all gates have executable commands and evidence paths"
+              },
+              {
+                "id": "GATE-003",
+                "name": "Step Contracts Complete",
+                "script": "validate_step_contracts.py",
+                "purpose": "Verify every step has complete contract",
+                "required_fields": [
+                  "step_id (unique)",
+                  "purpose",
+                  "inputs (id, type, path, required, must_exist)",
+                  "outputs (id, type, path, required)",
+                  "invariants",
+                  "preconditions (executable shell checks)",
+                  "postconditions (executable shell checks)",
+                  "file_scope (allowed_paths, forbidden_paths, read_only_paths)",
+                  "failure_modes (code, meaning, remediation)",
+                  "evidence (directory + required_files)",
+                  "ground_truth_level",
+                  "timeout_sec",
+                  "retries"
+                ],
+                "critical_rule": "All 13 contract fields mandatory for every step",
+                "failure_impact": "Step cannot be mechanically verified or safely executed"
+              },
+              {
+                "id": "GATE-004",
+                "name": "Assumptions Documented",
+                "script": "validate_assumptions.py",
+                "purpose": "Validate all assumptions have risk assessment and validation method"
+              },
+              {
+                "id": "GATE-005",
+                "name": "Unit Tests Pass",
+                "script": "pytest",
+                "purpose": "Verify all unit tests pass",
+                "critical_rule": "All unit tests must pass before phase completion",
+                "failure_impact": "Code quality cannot be verified"
+              },
+              {
+                "id": "GATE-006",
+                "name": "Coverage Threshold",
+                "script": "pytest --cov",
+                "purpose": "Verify test coverage meets minimum threshold",
+                "checks": [
+                  "Coverage >= 80%"
+                ],
+                "critical_rule": "Test coverage must meet project standards",
+                "failure_impact": "Insufficient test coverage creates reliability risk"
+              },
+              {
+                "id": "GATE-007",
+                "name": "Automation Spec",
+                "script": "validate_automation_spec.py",
+                "purpose": "Validate automation configuration"
+              },
+              {
+                "id": "GATE-008",
+                "name": "Automation Spec",
+                "script": "validate_automation_spec.py",
+                "purpose": "Validate automation configuration"
+              },
+              {
+                "id": "GATE-008",
+                "name": "Automation Index",
+                "script": "build_automation_index.py",
+                "purpose": "Build searchable index of automation elements"
+              },
+              {
+                "id": "GATE-009",
+                "name": "Automation Diagrams",
+                "script": "generate_automation_diagrams.py",
+                "purpose": "Generate DAG visualization of phase dependencies"
+              },
+              {
+                "id": "GATE-010",
+                "name": "Wiring Proof",
+                "script": "validate_wiring_proof.py",
+                "purpose": "Validate artifact flow integrity",
+                "checks": [
+                  "All artifacts have producers",
+                  "All artifacts have consumers (except final deliverables)",
+                  "No circular artifact dependencies"
+                ]
+              },
+              {
+                "id": "GATE-011",
+                "name": "Artifact Registry",
+                "script": "validate_artifact_registry.py",
+                "purpose": "Validate artifact metadata completeness"
+              },
+              {
+                "id": "GATE-012",
+                "name": "Failure Modes Audit",
+                "script": "wiring/audit_failure_modes.py",
+                "purpose": "Enumerate and validate all failure modes"
+              },
+              {
+                "id": "GATE-013",
+                "name": "E2E Wiring Validation",
+                "script": "wiring/validate_e2e_proof_linkage.py",
+                "purpose": "End-to-end artifact flow validation"
+              },
+              {
+                "id": "GATE-014",
+                "name": "Artifact Closure",
+                "script": "validate_artifact_closure.py",
+                "purpose": "Ensure all artifacts close (no orphans or dead ends)",
+                "critical_rule": "Every input needs producer, every output needs consumer",
+                "failure_impact": "Broken data flow, missing dependencies"
+              },
+              {
+                "id": "GATE-015",
+                "name": "Rollback Completeness",
+                "script": "validate_rollback_completeness.py",
+                "purpose": "Verify every step has rollback procedure",
+                "required": [
+                  "Rollback strategy (delete/restore/revert/manual)",
+                  "Rollback commands",
+                  "Rollback evidence path"
+                ],
+                "critical_rule": "Every step must be reversible",
+                "failure_impact": "Cannot safely undo failed steps"
+              },
+              {
+                "id": "GATE-016",
+                "name": "Verification Completeness",
+                "script": "validate_verification_completeness.py",
+                "purpose": "Ensure all steps have postconditions with evidence",
+                "critical_rule": "Every step must have verification method",
+                "failure_impact": "Cannot mechanically verify step success"
+              },
+              {
+                "id": "GATE-017",
+                "name": "Single Source of Truth",
+                "script": "validate_single_source_of_truth.py",
+                "purpose": "Verify no duplicate IDs (step_id, artifact_id, assumption_id)",
+                "critical_rule": "All IDs must be globally unique",
+                "failure_impact": "Ambiguous references, broken traceability"
+              },
+              {
+                "id": "GATE-998",
+                "name": "Automation Audit",
+                "script": "validate_automation_audit.py",
+                "purpose": "Meta-validation of automation completeness"
+              },
+              {
+                "id": "GATE-999",
+                "name": "Goal Reconciliation",
+                "script": "validate_goal_reconciliation.py",
+                "purpose": "Final validation that plan achieves stated objectives"
+              }
+            ]
+          },
+          {
+            "name": "Failure Mode Checker",
+            "total_checks": 14,
+            "template_inclusion": "Not included in base template v3.0.0; add via extension points as needed",
+            "purpose": "Detect wiring integrity issues",
+            "checks": [
+              "FM-01: Missing producers (artifacts consumed but not produced)",
+              "FM-02: Orphan artifacts (artifacts produced but never consumed)",
+              "FM-03: Circular dependencies (A depends on B depends on A)",
+              "FM-04: Dead flows (artifact chains that never reach final deliverable)",
+              "FM-05: Dormant flows (artifacts defined but not in any step)",
+              "FM-06: Invalid handoffs (type mismatches between producer/consumer)",
+              "FM-07: Evidence bundle gaps (missing evidence files)",
+              "FM-08: Recovery policy violations (missing rollback for critical steps)",
+              "FM-09: Idempotency violations (non-rerunnable steps without guards)",
+              "FM-10: File scope violations (step accesses forbidden paths)",
+              "FM-11: Write conflicts (parallel steps writing same files)",
+              "FM-12: DAG cycle detection (phase dependency cycles)",
+              "FM-13: Timeout inconsistencies (steps with unrealistic timeouts)",
+              "FM-14: Contract contradictions (postcondition contradicts invariant)"
+            ]
+          }
+        ],
+        "validation_guarantees": [
+          "Plan completeness: all required sections present",
+          "Contract completeness: all steps have full contracts",
+          "Artifact integrity: all data flows close",
+          "Reversibility: all steps can be rolled back",
+          "Verifiability: all steps have mechanical verification",
+          "Uniqueness: no ID collisions",
+          "Executability: all commands are valid shell syntax",
+          "Safety: all parallel operations are conflict-free"
+        ]
+      },
+      "layer_3_execution": {
+        "name": "Execution Layer",
+        "purpose": "Execute validated plans with evidence collection and self-healing",
+        "components": [
+          {
+            "name": "Execution Engine",
+            "file": "scripts/NEWPHASEPLANPROCESS_plan_cli.py (execute command)",
+            "execution_model": "sequential_phases_with_parallel_steps",
+            "features": [
+              "Step-by-step execution with contract enforcement",
+              "Precondition checking before step execution",
+              "Postcondition verification after step execution",
+              "Evidence collection and hashing",
+              "Rollback on failure",
+              "Self-healing retry logic",
+              "Real-time metrics emission"
+            ]
+          },
+          {
+            "name": "Worktree Isolation System",
+            "purpose": "Enable parallel execution with conflict prevention",
+            "base_concept": "Each parallel phase executes in isolated git worktree",
+            "configuration": {
+              "enabled": true,
+              "base_ref": "main",
+              "max_parallel": 3,
+              "naming_pattern": ".worktrees/{phase}/{task_id}",
+              "branch_pattern": "wt/{phase}/{task_id}"
+            },
+            "lifecycle": [
+              {
+                "stage": "create",
+                "command": "git worktree add {worktree_path} -b {branch_name} {base_ref}",
+                "validation": [
+                  "test -d {worktree_path}",
+                  "git branch --show-current"
+                ],
+                "evidence": ".state/evidence/{phase}/worktree_created.log"
+              },
+              {
+                "stage": "execute",
+                "working_directory": "{worktree_path}",
+                "file_scope_enforcement": "python scripts/check_file_scope.py",
+                "violations_action": "abort_phase"
+              },
+              {
+                "stage": "validate",
+                "required_checks": [
+                  "schema_validate",
+                  "step_contracts",
+                  "unit_tests",
+                  "gate_suite"
+                ]
+              },
+              {
+                "stage": "merge",
+                "strategy": "squash",
+                "conflict_policy": "abort_and_escalate",
+                "command": "git checkout {base_ref} && git merge --squash {branch_name}",
+                "evidence": ".state/evidence/{phase}/merge_result.json"
+              },
+              {
+                "stage": "cleanup",
+                "on_success": true,
+                "on_failure": false,
+                "command": "git worktree remove {worktree_path} && git branch -D {branch_name}"
+              }
+            ],
+            "safety_rules": [
+              "Each worktree writes ONLY inside its own root",
+              "Shared artifacts written only by orchestrator after validation",
+              "No direct commits to base_ref; merge via squash-merge",
+              "Worktree must pass all validation gates before merge",
+              "Step-level file scopes enforced within worktree"
+            ]
+          },
+          {
+            "name": "Self-Healing System",
+            "purpose": "Automatically recover from common failure types",
+            "configuration": {
+              "enabled": true,
+              "budgets": {
+                "per_phase_max_attempts": 2,
+                "per_gate_max_attempts": 1,
+                "per_step_max_attempts": 2,
+                "global_max_attempts": 10
+              }
+            },
+            "failure_types": [
+              {
+                "id": "DEP_INSTALL_FAIL",
+                "allowed_actions": [
+                  "pip install -r requirements.txt",
+                  "pip install -r requirements-dev.txt"
+                ],
+                "max_attempts": 2,
+                "abort_if": [
+                  "permission denied",
+                  "no space left on device"
+                ],
+                "step_context_required": true
+              },
+              {
+                "id": "TEST_FAIL",
+                "allowed_actions": [
+                  "pytest -q --last-failed",
+                  "pytest -q --maxfail=1"
+                ],
+                "max_attempts": 2,
+                "abort_if": [
+                  "segmentation fault",
+                  "ImportError"
+                ],
+                "step_context_required": true
+              },
+              {
+                "id": "LINT_FAIL",
+                "allowed_actions": [
+                  "python -m ruff check . --fix",
+                  "python -m ruff check ."
+                ],
+                "max_attempts": 2,
+                "abort_if": [
+                  "invalid configuration"
+                ],
+                "step_context_required": false
+              },
+              {
+                "id": "TYPE_CHECK_FAIL",
+                "allowed_actions": [
+                  "python -m mypy .",
+                  "python -m mypy . --ignore-missing-imports"
+                ],
+                "max_attempts": 2,
+                "abort_if": [
+                  "mypy: error:.*config"
+                ],
+                "step_context_required": false
+              },
+              {
+                "id": "INTEGRATION_TEST_FAIL",
+                "allowed_actions": [
+                  "pytest -q -m integration",
+                  "pytest -q -m integration --maxfail=1"
+                ],
+                "max_attempts": 2,
+                "abort_if": [
+                  "connection refused",
+                  "timeout"
+                ],
+                "step_context_required": true
+              }
+            ],
+            "convergence_detection": {
+              "metric": "levenshtein_distance(attempt_n, attempt_n_minus_1)",
+              "threshold": "< 10% change",
+              "window": 2,
+              "action_if_not_converging": "abort_and_escalate"
+            },
+            "escalation": {
+              "trigger": [
+                "per_phase_max_attempts exceeded",
+                "per_step_max_attempts exceeded",
+                "abort_if condition met",
+                "not converging after 2 attempts"
+              ],
+              "action": [
+                "write .state/escalation/{phase}_{step_id}_{gate}_escalation.json",
+                "emit structured error report",
+                "stop execution"
+              ]
+            },
+            "evidence_tracking": {
+              "required_files": [
+                ".state/attempts/{phase}/{step_id}/{gate}/attempt_{n}/stdout.log",
+                ".state/attempts/{phase}/{step_id}/{gate}/attempt_{n}/stderr.log",
+                ".state/attempts/{phase}/{step_id}/{gate}/attempt_{n}/diff.patch",
+                ".state/attempts/{phase}/{step_id}/{gate}/attempt_{n}/result.json"
+              ]
+            }
+          },
+          {
+            "name": "Evidence Chain System",
+            "purpose": "Cryptographic proof of execution integrity",
+            "chain_structure": {
+              "step_start_hash": "SHA256 of inputs + preconditions",
+              "step_end_hash": "SHA256 of outputs + postconditions",
+              "previous_step_hash": "link to parent step",
+              "chain_validation": "verify unbroken evidence chain"
+            },
+            "evidence_locations": {
+              "per_step": ".state/evidence/{phase_id}/{step_id}/",
+              "per_phase": ".state/evidence/{phase_id}/",
+              "global": ".state/evidence/",
+              "chain_manifest": ".state/evidence/{phase}/evidence_chain.json"
+            },
+            "required_files_per_step": [
+              "precondition_checks.log",
+              "postcondition_checks.log",
+              "file_scope_validation.json",
+              "step_result.json",
+              "stdout.log",
+              "stderr.log"
+            ],
+            "validation_command": "python scripts/validate_evidence_chain.py {phase}"
+          }
+        ]
+      },
+      "layer_4_observability": {
+        "name": "Observability Layer",
+        "purpose": "Track execution progress and collect metrics",
+        "components": [
+          {
+            "name": "Metrics System",
+            "configuration": {
+              "enabled": true,
+              "sink": {
+                "type": "jsonl",
+                "path": ".state/metrics/metrics.jsonl",
+                "rotation": {
+                  "max_size_mb": 100,
+                  "keep_files": 10
+                }
+              }
+            },
+            "tracked_metrics": [
+              {
+                "name": "phase_duration_sec",
+                "type": "timer",
+                "unit": "sec",
+                "target": "< estimated_time_min * 1.2"
+              },
+              {
+                "name": "step_duration_sec",
+                "type": "timer",
+                "unit": "sec",
+                "target": "< estimated_time_min * 1.2"
+              },
+              {
+                "name": "tests_passed",
+                "type": "counter",
+                "unit": "count",
+                "target": ">= 1"
+              },
+              {
+                "name": "tests_failed",
+                "type": "counter",
+                "unit": "count",
+                "target": "== 0"
+              },
+              {
+                "name": "coverage_percent",
+                "type": "gauge",
+                "unit": "percent",
+                "target": ">= 80"
+              },
+              {
+                "name": "gates_pass_rate",
+                "type": "ratio",
+                "unit": "percent",
+                "target": ">= 95"
+              },
+              {
+                "name": "steps_pass_rate",
+                "type": "ratio",
+                "unit": "percent",
+                "target": ">= 100"
+              },
+              {
+                "name": "self_heal_attempts",
+                "type": "counter",
+                "unit": "count",
+                "target": "<= 2"
+              },
+              {
+                "name": "parallel_efficiency_percent",
+                "type": "ratio",
+                "unit": "percent",
+                "target": ">= 60"
+              },
+              {
+                "name": "lint_errors",
+                "type": "counter",
+                "unit": "count",
+                "target": "== 0"
+              },
+              {
+                "name": "step_contract_violations",
+                "type": "counter",
+                "unit": "count",
+                "target": "== 0"
+              }
+            ],
+            "summary_generation": {
+              "per_phase": ".state/metrics/{phase}/summary.json",
+              "per_step": ".state/metrics/{phase}/{step_id}/summary.json",
+              "global_report": "reports/metrics.html"
+            },
+            "validation_command": "python scripts/validate_metrics.py .state/metrics/metrics.jsonl"
+          }
+        ]
+      }
+    }
+  },
+  "data_structures": {
+    "plan_document": {
+      "root_structure": {
+        "description": "Template v3.2.0 top-level sections (plan instances follow this layout).",
+        "required_sections": [
+          "template_metadata",
+          "critical_constraint",
+          "usage_instructions",
+          "v3_enhancements",
+          "task_analysis",
+          "assumptions_scope",
+          "file_manifest",
+          "phase_plan",
+          "self_healing",
+          "worktree_isolation",
+          "ground_truth_levels",
+          "phase_contracts",
+          "step_contracts",
+          "validation_gates",
+          "metrics",
+          "infrastructure",
+          "final_summary",
+          "ai_instructions",
+          "planning_hierarchy",
+          "pipeline_boundary_contract",
+          "execution_patterns",
+          "mutation_model",
+          "task_intake_model",
+          "traceability",
+          "execution_baseline",
+          "concurrency_control",
+          "rollback_plan",
+          "evidence_requirements",
+          "lifecycle_states",
+          "state_transitions",
+          "reconciliation_states",
+          "canonicalization_contract",
+          "merge_policy",
+          "platform_profile",
+          "protected_paths",
+          "run_artifact_policy",
+          "anti_pattern_detection",
+          "run_status_contract",
+          "mutation_ledger"
+        ]
+      },
+      "section_purpose_map": {
+        "description": "Purpose of each top-level template section.",
+        "sections": [
+          {
+            "section": "template_metadata",
+            "purpose": "Versioning, format, and breaking-change notes for the template.",
+            "example": "\"template_metadata\": {\"version\": \"3.2.0\"}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/template_metadata"
+          },
+          {
+            "section": "critical_constraint",
+            "purpose": "Non-negotiable rules (NO IMPLIED BEHAVIOR) that govern all plans.",
+            "example": "\"critical_constraint\": {\"name\": \"NO_IMPLIED_BEHAVIOR\"}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/critical_constraint"
+          },
+          {
+            "section": "usage_instructions",
+            "purpose": "Step-by-step guidance for filling out the template.",
+            "example": "\"usage_instructions\": {\"steps\": [\"Read the entire template\"]}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/usage_instructions"
+          },
+          {
+            "section": "v3_enhancements",
+            "purpose": "Descriptions of v3 features such as step contracts, evidence chains, and file scoping.",
+            "example": "\"v3_enhancements\": {\"step_level_contracts\": {\"description\": \"Machine-checkable contracts\"}}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/v3_enhancements"
+          },
+          {
+            "section": "task_analysis",
+            "purpose": "Original request capture, classification, and derived success criteria.",
+            "example": "\"task_analysis\": {\"original_request\": \"Add logging\"}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/task_analysis"
+          },
+          {
+            "section": "assumptions_scope",
+            "purpose": "Assumptions, in-scope/out-of-scope boundaries, and definition of done.",
+            "example": "\"assumptions_scope\": {\"assumptions\": [\"API key provided\"]}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/assumptions_scope"
+          },
+          {
+            "section": "file_manifest",
+            "purpose": "Complete file inventory with read/write scope and conflict checks.",
+            "example": "\"file_manifest\": {\"global_files\": [\"README.md\"]}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/file_manifest"
+          },
+          {
+            "section": "phase_plan",
+            "purpose": "Phase structure, parallelization plan, timing estimates, and DAG validation.",
+            "example": "\"phase_plan\": {\"phase_overview\": [{\"phase_id\": \"PH-00\"}]}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/phase_plan"
+          },
+          {
+            "section": "self_healing",
+            "purpose": "Failure types, retry budgets, evidence capture, convergence detection, and escalation rules.",
+            "example": "\"self_healing\": {\"enabled\": true}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/self_healing"
+          },
+          {
+            "section": "worktree_isolation",
+            "purpose": "Parallel worktree configuration, lifecycle, and safety rules.",
+            "example": "\"worktree_isolation\": {\"enabled\": true, \"base_ref\": \"main\"}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/worktree_isolation"
+          },
+          {
+            "section": "ground_truth_levels",
+            "purpose": "Validation rigor levels (L0-L5) with evidence and enforcement rules.",
+            "example": "\"ground_truth_levels\": {\"required_by_phase\": {\"PH-00\": \"L1\"}}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/ground_truth_levels"
+          },
+          {
+            "section": "phase_contracts",
+            "purpose": "Per-phase contracts defining inputs, outputs, invariants, and failure modes.",
+            "example": "\"phase_contracts\": {\"PH-00\": {\"purpose\": \"Bootstrap\"}}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/phase_contracts"
+          },
+          {
+            "section": "step_contracts",
+            "purpose": "Per-step contracts with pre/post checks, file scope, and evidence.",
+            "example": "\"step_contracts\": {\"PH-00\": {\"STEP-001\": {\"purpose\": \"Create PLAN.md\"}}}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/step_contracts"
+          },
+          {
+            "section": "validation_gates",
+            "purpose": "Executable validation gates with regex expectations and evidence paths.",
+            "example": "\"validation_gates\": [{\"gate_id\": \"GATE-001\"}]",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/validation_gates"
+          },
+          {
+            "section": "metrics",
+            "purpose": "Tracked metrics, targets, summaries, and validation reporting.",
+            "example": "\"metrics\": {\"enabled\": true}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/metrics"
+          },
+          {
+            "section": "infrastructure",
+            "purpose": "Required and optional environment dependencies and resource checks.",
+            "example": "\"infrastructure\": {\"required\": {\"python\": {\"version\": \">=3.10\"}}}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/infrastructure"
+          },
+          {
+            "section": "final_summary",
+            "purpose": "Summary of deliverables, determinism score, and gate outcomes.",
+            "example": "\"final_summary\": {\"what_was_delivered\": {\"title\": \"Phase Plan v3\"}}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/final_summary"
+          },
+          {
+            "section": "ai_instructions",
+            "purpose": "Agent instructions for generating compliant plans.",
+            "example": "\"ai_instructions\": {\"do_not\": [\"Leave placeholders\"]}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/ai_instructions"
+          },
+          {
+            "section": "planning_hierarchy",
+            "purpose": "Define nested planning levels across system, module, component and execution packet scopes to ensure hierarchical decomposition and planning completeness.",
+            "example": "\"planning_hierarchy\": {\"system_level\": {...}, \"module_level\": [...], \"component_level\": [...], \"execution_packet_level\": [...]}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/planning_hierarchy"
+          },
+          {
+            "section": "pipeline_boundary_contract",
+            "purpose": "Specify outputs of the planning stage and inputs required by the execution stage, and define required validations before execution begins.",
+            "example": "\"pipeline_boundary_contract\": {\"planning_stage_output\": \"path/to/plan.json\", \"execution_stage_input\": \"path/to/plan.json\", \"validation_required_before_execution\": [...], \"input_exclusivity_rule\": \"only this plan.json is allowed\"}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/pipeline_boundary_contract"
+          },
+          {
+            "section": "execution_patterns",
+            "purpose": "Map tasks to pattern definitions stored in a registry, enabling pattern-first execution and reducing variability across similar tasks.",
+            "example": "\"execution_patterns\": {\"pattern_registry_reference\": \"registry_id\", \"required_for_task_kinds\": true, \"task_pattern_mappings\": [{\"task_kind\": \"unit_test\", \"pattern_id\": \"UT_PATTERN_001\"}]}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/execution_patterns"
+          },
+          {
+            "section": "mutation_model",
+            "purpose": "Declare allowed mutation types (edit_existing, create_new, remove_existing) and define rules for decomposing modifications into independent workstreams.",
+            "example": "\"mutation_model\": {\"allowed_mutation_types\": [\"edit_existing\", \"create_new\", \"remove_existing\"], \"workstream_decomposition_rules\": [], \"independence_criteria\": []}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/mutation_model"
+          },
+          {
+            "section": "task_intake_model",
+            "purpose": "(Optional) Define sources and policies for continuous or queued task intake and normalization to the canonical project plan.",
+            "example": "\"task_intake_model\": {\"sources\": [\"user_request\", \"automated_detection\"], \"normalization_target\": \"project_plan_json\", \"queueing_policy\": {}, \"deduplication_policy\": {}, \"prioritization_policy\": {} }",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/task_intake_model"
+          },
+          {
+            "section": "traceability",
+            "purpose": "Provide mappings from high-level requirements to modules, modules to components, and components to execution packets to ensure alignment across planning layers.",
+            "example": "\"traceability\": {\"requirement_to_module\": [...], \"module_to_component\": [...], \"component_to_execution_packet\": [...]}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/traceability"
+          },
+          {
+            "section": "execution_baseline",
+            "purpose": "Define the baseline state of the system or repository before execution to enable drift detection and rollback.",
+            "example": "\"execution_baseline\": {\"commit_hash\": \"abc123\", \"dependencies\": [\"python==3.10\"], \"scripts\": [\"pip freeze > baseline.txt\"]}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/execution_baseline"
+          },
+          {
+            "section": "concurrency_control",
+            "purpose": "Specify policies for global and group-based concurrency limits across phases and steps.",
+            "example": "\"concurrency_control\": {\"max_global_concurrency\": 4, \"concurrency_groups\": [\"test_group\"], \"policies\": [\"no two steps modify same file\"]}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/concurrency_control"
+          },
+          {
+            "section": "rollback_plan",
+            "purpose": "Provide procedures and commands to revert changes at phase and step levels in case of irrecoverable failures.",
+            "example": "\"rollback_plan\": {\"global_procedure\": \"git reset --hard $BASE_COMMIT\", \"per_phase\": {}, \"per_step\": {}}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/rollback_plan"
+          },
+          {
+            "section": "evidence_requirements",
+            "purpose": "Declare required evidence artifacts for validating success of phases and steps.",
+            "example": "\"evidence_requirements\": {\"by_phase\": {}, \"by_step\": {}}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/evidence_requirements"
+          },
+          {
+            "section": "lifecycle_states",
+            "purpose": "Enumerate allowed lifecycle states for tasks and artifacts (e.g., pending, in_progress, completed, failed, rolled_back).",
+            "example": "\"lifecycle_states\": {\"states\": [\"pending\", \"completed\"], \"initial_state\": \"pending\"}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/lifecycle_states"
+          },
+          {
+            "section": "state_transitions",
+            "purpose": "Define allowed and disallowed transitions between lifecycle states.",
+            "example": "\"state_transitions\": {\"allowed\": [{\"from\": \"pending\", \"to\": \"in_progress\"}], \"invalid_transitions\": []}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/state_transitions"
+          },
+          {
+            "section": "reconciliation_states",
+            "purpose": "List states used during drift reconciliation between planned and actual system state.",
+            "example": "\"reconciliation_states\": {\"states\": [\"drift_detected\", \"reconciled\"]}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/reconciliation_states"
+          },
+          {
+            "section": "canonicalization_contract",
+            "purpose": "Define rules for ensuring canonical form of artifacts and results across environments.",
+            "example": "\"canonicalization_contract\": {\"rules\": [\"sort JSON keys\", \"normalize timestamps\"]}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/canonicalization_contract"
+          },
+          {
+            "section": "merge_policy",
+            "purpose": "Describe how worktrees or branches are merged back into the base branch, including strategy and review requirements.",
+            "example": "\"merge_policy\": {\"strategy\": \"squash\", \"review_required\": true}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/merge_policy"
+          },
+          {
+            "section": "platform_profile",
+            "purpose": "Specify OS support and platform-specific configuration for commands and path separators.",
+            "example": "\"platform_profile\": {\"os_support\": [\"Linux\", \"macOS\"], \"commands\": {\"linux\": \"bash\", \"macos\": \"bash\"}, \"path_separators\": {\"unix\": \"/\"}}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/platform_profile"
+          },
+          {
+            "section": "protected_paths",
+            "purpose": "Global list of file paths or patterns that must never be modified by any step. Enforced at runtime and verified post-run.",
+            "example": "\"protected_paths\": {\"paths\": [\".git/objects/**\", \"SYSTEM_INVARIANTS.md\"], \"enforcement\": {\"runtime_block\": true, \"violation_action\": \"halt_and_rollback\"}}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/protected_paths"
+          },
+          {
+            "section": "run_artifact_policy",
+            "purpose": "Containment policy ensuring all artifacts produced during a run are stored under a run-specific root directory, with leak detection.",
+            "example": "\"run_artifact_policy\": {\"run_root_pattern\": \".state/\", \"all_artifacts_must_be_under_run_root\": true}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/run_artifact_policy"
+          },
+          {
+            "section": "anti_pattern_detection",
+            "purpose": "Registry of known failure anti-patterns (hallucinated success, empty artifacts, planning loops, worktree contamination) with trigger conditions and corrective actions.",
+            "example": "\"anti_pattern_detection\": {\"enabled\": true, \"triggers\": [\"hallucinated_success\"], \"actions\": {\"critical\": \"halt\"}}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/anti_pattern_detection"
+          },
+          {
+            "section": "run_status_contract",
+            "purpose": "Schema and coherence rules for the run_status.json file that tracks execution progress and validates phase/task counts against reality.",
+            "example": "\"run_status_contract\": {\"path\": \".state/run_status.json\", \"required_fields\": [\"run_id\", \"status\"], \"coherence_checks\": [\"timestamps_monotonic\"]}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/run_status_contract"
+          },
+          {
+            "section": "mutation_ledger",
+            "purpose": "State machine for tracking each patch through its full lifecycle (created → validated → queued → applied → verified → committed or rolled_back). Requires atomic, locked updates.",
+            "example": "\"mutation_ledger\": {\"path\": \".state/ledger/mutation_ledger.jsonl\", \"states\": [\"created\", \"committed\"], \"atomic_update_required\": true}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/mutation_ledger"
+          }
+        ]
+      },
+      "step_contract": {
+        "description": "Complete contract for a single execution step (template format)",
+        "required_fields": {
+          "step_id": {
+            "type": "string",
+            "pattern": "^STEP-\\d{3,}$",
+            "description": "Unique step identifier",
+            "example": "STEP-001"
+          },
+          "purpose": {
+            "type": "string",
+            "description": "Why this step exists and what it produces"
+          },
+          "inputs": {
+            "type": "array",
+            "description": "Required input files or data",
+            "item_structure": {
+              "id": "Input identifier",
+              "type": "file | dir | data",
+              "required": "boolean - true if input must be present",
+              "must_exist": "boolean - true if input must exist before step",
+              "path": "File or directory path"
+            }
+          },
+          "outputs": {
+            "type": "array",
+            "description": "Produced output files or data",
+            "item_structure": {
+              "id": "Output identifier",
+              "type": "file | dir | data",
+              "required": "boolean - true if output must be produced",
+              "path": "File or directory path",
+              "content_requirements": "Optional list of output constraints"
+            }
+          },
+          "invariants": {
+            "type": "array",
+            "description": "Conditions that must remain true during step execution"
+          },
+          "preconditions": {
+            "type": "array",
+            "description": "Executable shell checks run before the step (string commands)"
+          },
+          "postconditions": {
+            "type": "array",
+            "description": "Executable shell checks run after the step (string commands)"
+          },
+          "file_scope": {
+            "type": "object",
+            "description": "Per-step file access policy",
+            "required_fields": {
+              "allowed_paths": "Array of glob patterns for permitted access",
+              "forbidden_paths": "Array of glob patterns for denied access",
+              "read_only_paths": "Array of paths that cannot be modified"
+            }
+          },
+          "failure_modes": {
+            "type": "array",
+            "description": "Enumerated failure modes with remediation",
+            "item_structure": {
+              "code": "Failure code identifier",
+              "meaning": "Human-readable meaning",
+              "remediation": "Action to recover"
+            }
+          },
+          "evidence": {
+            "type": "object",
+            "description": "Evidence collection specification",
+            "required_fields": {
+              "directory": "Directory for evidence files",
+              "required_files": "Array of expected evidence files"
+            }
+          },
+          "ground_truth_level": {
+            "type": "string",
+            "description": "Validation level (L0-L5)"
+          },
+          "timeout_sec": {
+            "type": "number",
+            "description": "Timeout in seconds for this step"
+          },
+          "retries": {
+            "type": "number",
+            "description": "Retry count for this step"
+          },
+          "pattern_id": {
+            "type": "string",
+            "description": "Pattern identifier mapping this step to a registered execution pattern",
+            "example": "PATTERN-XYZ"
+          },
+          "pattern_parameters": {
+            "type": "object",
+            "description": "Key/value parameters passed to the execution pattern",
+            "example": {
+              "timeout": 300
+            }
+          },
+          "requires_manual_review": {
+            "type": "boolean",
+            "description": "Indicates whether manual review is required before this step executes"
+          },
+          "manual_review_reason": {
+            "type": "string",
+            "description": "Explanation for why manual review is required (e.g., modifies protected path)"
+          },
+          "high_risk_operation": {
+            "type": "boolean",
+            "description": "If true, this step performs a high-risk operation requiring additional approvals or guards"
+          },
+          "runtime_limits": {
+            "type": "object",
+            "description": "Per-step resource caps beyond timeout",
+            "required_fields": {
+              "max_files_touched": "number (nullable) - maximum files this step may modify",
+              "max_total_loc_changed": "number (nullable) - maximum total lines changed",
+              "max_file_size_mb": "number (nullable) - maximum size of any single file modified"
+            }
+          },
+          "audit_fields": {
+            "type": "object",
+            "description": "Configuration for audit trail record emission",
+            "required_fields": {
+              "emit_audit_record": "boolean - if true, emit an audit record for this step",
+              "audit_event_type": "string - classification (e.g., step_execution)"
+            }
+          },
+          "failure_logging": {
+            "type": "object",
+            "description": "Logging requirements for failure events at this step",
+            "required_fields": {
+              "require_error_message": "boolean - capture error message on failure",
+              "require_stack_trace": "boolean - capture stack trace on failure",
+              "require_retry_history": "boolean - log all retry attempts and outcomes"
+            }
+          }
+        }
+      },
+      "artifact_definition": {
+        "description": "Optional metadata for a file or data artifact (not present in base template v3.0.0)",
+        "structure": {
+          "artifact_id": "Unique ID (ART-XXX)",
+          "name": "Human-readable name",
+          "path": "File or directory path",
+          "type": "file | directory | data",
+          "producer_step": "Step ID that creates this artifact",
+          "consumer_steps": "Array of step IDs that consume this artifact",
+          "metadata": "Optional additional metadata"
+        }
+      },
+      "phase_definition": {
+        "description": "Collection of related steps",
+        "structure": {
+          "phase_id": "Unique ID (PH-XXX)",
+          "name": "Human-readable name",
+          "objective": "What this phase accomplishes",
+          "steps": "Array of step contracts",
+          "depends_on": "Array of prerequisite phase IDs",
+          "parallel_safe": "boolean - true if can run parallel with other phases"
+        }
+      }
+    },
+    "file_mutation_set": {
+      "description": "Planning output declaring all file changes",
+      "file": "PLAN_FILE_MUTATION_SET.json",
+      "location": ".state/planning/{plan_id}/file_mutations.json",
+      "structure": {
+        "mutation_set_id": "Unique mutation set ID",
+        "plan_id": "Associated plan ID",
+        "created_at": "ISO 8601 timestamp",
+        "status": "proposed | approved | rejected | applied",
+        "hash": {
+          "algorithm": "SHA256",
+          "value": "Hash of mutation set"
+        },
+        "mutations": {
+          "created_files": "Array of file creation specs",
+          "modified_files": "Array of file modification specs",
+          "deleted_files": "Array of file deletion specs"
+        }
+      },
+      "purpose": "Enable registry integration and change impact analysis"
+    },
+    "evidence_chain": {
+      "description": "Cryptographic evidence linking all steps",
+      "file": ".state/evidence/{phase}/evidence_chain.json",
+      "structure": {
+        "chain_id": "Unique chain ID",
+        "phase_id": "Associated phase ID",
+        "created_at": "Chain start timestamp",
+        "steps": [
+          {
+            "step_id": "Step identifier",
+            "step_start_hash": "SHA256(inputs + preconditions)",
+            "step_end_hash": "SHA256(outputs + postconditions)",
+            "previous_step_hash": "Link to previous step",
+            "timestamp": "Execution timestamp",
+            "duration_sec": "Execution duration",
+            "exit_code": "Command exit code",
+            "evidence_files": "Array of evidence file paths"
+          }
+        ],
+        "chain_valid": "boolean - true if chain is unbroken"
+      }
+    },
+    "gate_dependency_graph": {
+      "description": "Defines validation gate execution order",
+      "file": "scripts/gate_dependencies.json",
+      "structure": {
+        "gates": [
+          {
+            "id": "Gate ID (GATE-XXX)",
+            "name": "Human-readable name",
+            "script": "Validation script filename",
+            "depends_on": "Array of prerequisite gate IDs",
+            "phase": "Execution phase classification"
+          }
+        ]
+      }
+    },
+    "planning_hierarchy": {
+      "description": "Defines nested planning levels and their contents.",
+      "structure": {
+        "system_level": "High-level description of entire program/application, including mission and overall capabilities.",
+        "module_level": "Array of modules (or services) with their responsibilities, interfaces and boundaries.",
+        "component_level": "Array of components within modules, describing feature-level breakdown.",
+        "execution_packet_level": "Array of execution packets that map implementation tasks to components."
+      },
+      "purpose": "Provide multi-level decomposition of the project to ensure planning completeness and traceability."
+    },
+    "pipeline_boundary_contract": {
+      "description": "Formal contract between planning and execution stages.",
+      "structure": {
+        "planning_stage_output": "Path or identifier of the canonical plan produced by planning.",
+        "execution_stage_input": "Path or identifier of the plan consumed by execution stage.",
+        "validation_required_before_execution": "List of validation gates or scripts that must pass before execution begins.",
+        "input_exclusivity_rule": "Rule ensuring that only the specified plan document may be used as input for execution."
+      },
+      "purpose": "Ensure that plans are validated and immutable when handed off to execution."
+    },
+    "execution_patterns": {
+      "description": "Mapping of task kinds to reusable pattern definitions stored in a registry.",
+      "structure": {
+        "pattern_registry_reference": "Identifier or path to the pattern registry to be consulted.",
+        "required_for_task_kinds": "Boolean indicating whether pattern mapping is mandatory for all task kinds.",
+        "task_pattern_mappings": "Array mapping task kinds to pattern IDs and optional constraints.",
+        "pattern_validation": {
+          "require_pattern_id_per_step": "Boolean indicating whether every step must reference a pattern ID.",
+          "required_pattern_components": "Array of components every registered pattern must define (spec_file, schema_file, executor_function, pattern_index_entry, guardrails_block).",
+          "validation_command": "Command validating the pattern registry and per-step bindings.",
+          "expect_exit_code": "Expected exit code from pattern validation command."
+        },
+        "guardrail_policy": {
+          "bypass_allowed": "boolean - whether guardrails may be bypassed",
+          "runtime_override_allowed": "boolean - whether runtime overrides are permitted",
+          "missing_guardrails_action": "Action when a referenced pattern has no guardrails (fail_closed)"
+        }
+      },
+      "purpose": "Reduce variability and enforce consistent execution by referencing pattern contracts."
+    },
+    "mutation_model": {
+      "description": "Declares allowed mutation types and rules for decomposing modifications into independent workstreams.",
+      "structure": {
+        "allowed_mutation_types": "Enumeration of permissible file mutation operations (edit_existing, create_new, remove_existing).",
+        "workstream_decomposition_rules": "Rules for breaking down large mutation sets into independent workstreams.",
+        "independence_criteria": "Criteria for determining when workstreams can be executed in parallel without conflicts."
+      },
+      "purpose": "Provide a deterministic model for file mutations and parallel workstream planning."
+    },
+    "task_intake_model": {
+      "description": "Optional structure for continuous or queued task intake and normalization.",
+      "structure": {
+        "sources": "Sources from which new tasks or issues are collected (e.g., user requests, automated detections).",
+        "normalization_target": "Format into which tasks are normalized (typically project-specific JSON plan).",
+        "queueing_policy": "Policy governing how tasks are queued for planning.",
+        "deduplication_policy": "Rules to remove duplicates before processing.",
+        "prioritization_policy": "Rules for ordering tasks based on priority."
+      },
+      "purpose": "Allow the system to operate autonomously by continuously ingesting and normalizing new work items."
+    },
+    "traceability": {
+      "description": "Mappings that link planning levels to ensure end-to-end requirement satisfaction.",
+      "structure": {
+        "requirement_to_module": "Array of mappings from high-level requirements to modules that implement them.",
+        "module_to_component": "Array of mappings from modules to components.",
+        "component_to_execution_packet": "Array of mappings from components to execution packets (steps or tasks).",
+        "gap_to_execution_packet": "Array of mappings from identified gaps to the steps or tasks that close them.",
+        "deferred_gaps": "Array of unresolved gaps with explicit deferral justifications.",
+        "gap_closure_validation": "Validation configuration ensuring every gap is resolved or explicitly deferred."
+      },
+      "purpose": "Maintain traceability from requirements through design to implementation, enabling verification and auditing."
+    },
+    "worktree_isolation": {
+      "description": "Configuration for isolated Git worktrees used during parallel execution to prevent contamination.",
+      "structure": {
+        "enabled": "boolean - enable or disable worktree isolation",
+        "base_ref": "String - base branch for worktree creation",
+        "preflight": {
+          "clean_base_branch_required": "boolean - require base branch to be clean before worktree creation",
+          "base_branch_name": "String - name of base branch expected to be clean",
+          "clean_check_commands": "Array of commands verifying base branch cleanliness",
+          "on_dirty_action": "String - action when base is dirty (fail_or_require_manual_cleanup)",
+          "forbid_untracked_sensitive_files": "boolean - reject untracked sensitive files in base branch"
+        },
+        "post_run_verification": {
+          "verify_base_ref_unchanged_before_merge": "boolean - confirm base ref unchanged since worktree creation",
+          "verify_no_direct_writes_to_base_ref": "boolean - confirm no direct writes to base branch occurred"
+        }
+      },
+      "purpose": "Ensure safe parallel isolation via separate Git worktrees with clean base-state entry and post-run verification."
+    },
+    "execution_baseline": {
+      "description": "Capture baseline state of the repository before execution for drift detection and rollback reference.",
+      "structure": {
+        "commit_hash": "String - baseline commit identifier",
+        "dependencies": "Array of pinned dependency versions",
+        "scripts": "Array of baseline capture/verify commands",
+        "git_state": {
+          "required_clean": "boolean - require repository to be clean at baseline",
+          "must_match_base_ref": "boolean - require HEAD to match base_ref",
+          "check_commands": "Array of commands checking current git state"
+        },
+        "artifact_root_baseline": {
+          "allowed_roots": "Array of allowed root directories for artifacts (.state/, .worktrees/)"
+        }
+      },
+      "purpose": "Provide reproducible baseline for drift detection, environment verification, and rollback support."
+    },
+    "rollback_plan": {
+      "description": "Procedures to undo changes when failures occur at global, phase and step levels.",
+      "structure": {
+        "global_procedure": "High-level commands for global rollback",
+        "per_phase": "Object mapping phase IDs to rollback procedures",
+        "per_step": "Object mapping step IDs to rollback definitions",
+        "failure_mode_to_recovery_mapping": "Array mapping failure mode IDs to one or more recovery patterns",
+        "fail_if_no_recovery_path": "boolean - fail plan generation if any failure mode lacks a recovery path"
+      },
+      "purpose": "Ensure reliable, safe restoration from failures with explicit recovery paths for every known failure mode."
+    },
+    "evidence_requirements": {
+      "description": "Required evidence artifacts for validating success of phases and steps.",
+      "structure": {
+        "by_phase": "Object mapping phase IDs to required evidence file arrays",
+        "by_step": "Object mapping step IDs to required evidence file arrays",
+        "audit_trail": {
+          "path": "File path for audit trail (.state/audit/pattern_audit.jsonl)",
+          "required_fields": "Array of fields required in each audit record",
+          "atomic_append": "boolean - writes must be atomic"
+        },
+        "observable_success_requirements": {
+          "require_exit_code": "boolean - exit code must be captured",
+          "require_expected_files": "boolean - expected files must exist post-execution",
+          "require_validation_proof": "boolean - schema/contract checks required",
+          "require_ledger_update": "boolean - mutation ledger must be updated to confirm success"
+        }
+      },
+      "purpose": "Ensure success is observable and auditable via mandatory evidence artifacts and audit trail records."
+    },
+    "lifecycle_states": {
+      "description": "Lifecycle state machine for tasks and artifacts.",
+      "structure": {
+        "states": "Array of allowed task/artifact states (pending, in_progress, completed, failed, rolled_back)",
+        "initial_state": "String - starting state for all tasks",
+        "run_status_states": "Array of high-level run states (pending, running, blocked, failed, completed, rolled_back)",
+        "mutation_ledger_states": "Array of mutation lifecycle states (created, validated, queued, applied, verified, committed, rejected, failed, rolled_back)"
+      },
+      "purpose": "Provide the state machine controlling task progression and patch lifecycle."
+    },
+    "state_transitions": {
+      "description": "Allowed and forbidden transitions between lifecycle states.",
+      "structure": {
+        "allowed": "Array of {from, to} objects for valid task transitions",
+        "invalid_transitions": "Array of forbidden transitions",
+        "run_status_allowed": "Array of valid run-status state transitions",
+        "mutation_ledger_allowed": "Array of valid mutation-ledger state transitions",
+        "lock_required_for_mutation_ledger": "boolean - mutation ledger updates require a lock",
+        "atomic_update_required": "boolean - all state updates must be atomic"
+      },
+      "purpose": "Enforce state coherence and prevent illegal transitions in tasks, run status, and mutation ledger."
+    },
+    "merge_policy": {
+      "description": "Strategy and controls for merging worktrees back into the base branch.",
+      "structure": {
+        "strategy": "String - merge strategy (squash, fast-forward, no_ff)",
+        "review_required": "boolean - true if manual code review is required",
+        "manual_review_triggers": "Array of conditions requiring mandatory human review (bulk_rename_over_threshold, schema_change, pattern_addition, protected_path_request)",
+        "approval_evidence_required": "boolean - approval must be evidenced before merge proceeds"
+      },
+      "purpose": "Enforce merge discipline including human review gates for high-risk operations."
+    },
+    "protected_paths": {
+      "description": "Global protected file paths that cannot be modified by any step.",
+      "structure": {
+        "paths": "Array of glob patterns identifying protected files or directories",
+        "enforcement": {
+          "runtime_block": "boolean - halt execution on protected path violation",
+          "post_run_verification": "boolean - verify no protected files were modified",
+          "violation_action": "String - action when violation occurs (halt_and_rollback)"
+        }
+      },
+      "purpose": "Prevent modification of critical system files globally, beyond step-level forbidden_paths."
+    },
+    "run_artifact_policy": {
+      "description": "Rules ensuring all runtime artifacts are stored under a canonical runtime root.",
+      "structure": {
+        "run_root_pattern": "String pattern for the canonical runtime root (e.g., .state/)",
+        "all_artifacts_must_be_under_run_root": "boolean - strict containment within the canonical runtime root",
+        "leak_detection_command": "Command detecting artifacts outside the run root",
+        "on_leak_action": "Action when artifacts leak (move_to_run_root_and_warn or fail)"
+      },
+      "purpose": "Ensure runtime artifact containment for isolation, auditing, and reproducibility."
+    },
+    "anti_pattern_detection": {
+      "description": "Configuration for detecting common failure anti-patterns and specifying remediation.",
+      "structure": {
+        "enabled": "boolean - enable or disable the detection system",
+        "triggers": "Array of trigger identifiers (hallucinated_success, planning_loop_over_threshold, empty_implementation_artifact, complexity_limit_exceeded, worktree_contamination)",
+        "checkpoints": "Array of pipeline checkpoints (post_task, post_phase, pre_commit)",
+        "actions": "Object mapping severity levels (critical, recoverable) to actions (halt, self_heal_or_escalate)"
+      },
+      "purpose": "Detect and respond to known failure anti-patterns early to maintain plan integrity."
+    },
+    "run_status_contract": {
+      "description": "Schema and validation rules for the run_status.json file tracking execution progress.",
+      "structure": {
+        "path": "File path (.state/run_status.json)",
+        "required_fields": "Array of required status fields (run_id, current_phase, phase_counts, task_counts, status, timestamps)",
+        "coherence_checks": "Validation rules ensuring counts and status match actual execution state",
+        "validation_command": "Command validating run status against plan and runtime",
+        "expect_exit_code": "Expected exit code from validation command"
+      },
+      "purpose": "Ensure accurate, coherent tracking of execution progress and detect inconsistencies early."
+    },
+    "mutation_ledger": {
+      "description": "State machine for tracking every patch through its full lifecycle.",
+      "structure": {
+        "path": "File path (.state/ledger/mutation_ledger.jsonl)",
+        "states": "Array of allowed ledger states (created, validated, queued, applied, verified, committed, rejected, failed, rolled_back)",
+        "allowed_transitions": "Array of {from, to} objects representing valid state transitions",
+        "atomic_update_required": "boolean - ledger updates must be atomic",
+        "lock_required": "boolean - ledger updates require a lock",
+        "validation_command": "Command validating ledger transitions",
+        "expect_exit_code": "Expected exit code from validation command"
+      },
+      "purpose": "Ensure tamper-proof tracking of patch states and enforce consistent progress through the change pipeline."
+    }
+  },
+  "workflows": {
+    "plan_generation_workflow": {
+      "description": "Generate a new plan from requirements",
+      "actors": [
+        "AI Agent",
+        "Human User"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "actor": "Human User",
+          "action": "Provide project description and requirements",
+          "inputs": [
+            "Project goal",
+            "Complexity level",
+            "Quality requirements"
+          ],
+          "outputs": [
+            "Requirements document"
+          ]
+        },
+        {
+          "step": 2,
+          "actor": "AI Agent",
+          "action": "Read required files",
+          "inputs": [
+            "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json",
+            "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+            "schemas/NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json"
+          ],
+          "outputs": [
+            "Understanding of template structure and rules"
+          ]
+        },
+        {
+          "step": 3,
+          "actor": "AI Agent",
+          "action": "Analyze and classify project",
+          "tasks": [
+            "Determine complexity (simple/moderate/complex/enterprise)",
+            "Estimate file count and LOC",
+            "Identify required phases",
+            "Define success criteria"
+          ],
+          "outputs": [
+            "Project classification",
+            "Phase breakdown"
+          ]
+        },
+        {
+          "step": 4,
+          "actor": "AI Agent",
+          "action": "Generate plan structure",
+          "tasks": [
+            "Create meta section with plan_id",
+            "Define phases and dependencies",
+            "Break phases into steps with unique step_ids",
+            "Define artifacts and their flows",
+            "Document assumptions and unknowns",
+            "Specify validation gates",
+            "Configure self-healing",
+            "Build navigation DAG"
+          ],
+          "outputs": [
+            "Complete plan JSON"
+          ]
+        },
+        {
+          "step": 5,
+          "actor": "AI Agent",
+          "action": "Define step contracts",
+          "for_each_step": {
+            "tasks": [
+              "Define inputs with artifact references",
+              "Define outputs with artifact references",
+              "Write preconditions with evidence paths",
+              "Write executable commands (not descriptions)",
+              "Write postconditions with evidence paths",
+              "Define rollback procedure",
+              "Specify evidence requirements",
+              "Configure idempotency"
+            ]
+          },
+          "outputs": [
+            "Complete step contracts for all steps"
+          ]
+        },
+        {
+          "step": 6,
+          "actor": "AI Agent",
+          "action": "Validate artifact closure",
+          "tasks": [
+            "Verify every input has a producer",
+            "Verify every output has a consumer (or is final deliverable)",
+            "Check for orphan artifacts",
+            "Check for missing producers"
+          ],
+          "outputs": [
+            "Artifact closure validation"
+          ]
+        },
+        {
+          "step": 7,
+          "actor": "AI Agent",
+          "action": "Self-validate against checklist",
+          "checks": [
+            "No TODO/TBD/FIXME anywhere",
+            "All IDs unique (step_id, artifact_id, phase_id)",
+            "All steps have 9 required contract fields",
+            "All commands are executable shell syntax",
+            "All artifact flows close",
+            "No circular dependencies",
+            "All evidence paths follow pattern"
+          ],
+          "outputs": [
+            "Self-validation report"
+          ]
+        },
+        {
+          "step": 8,
+          "actor": "AI Agent",
+          "action": "Output plan file",
+          "format": "JSON conforming to schema v3.0.0",
+          "filename": "[project_name].plan.json",
+          "outputs": [
+            "Complete validated plan file"
+          ]
+        },
+        {
+          "step": 9,
+          "actor": "Human User",
+          "action": "Run validation gates",
+          "command": "python scripts/NEWPHASEPLANPROCESS_plan_cli.py run-gates --plan-file [plan].json",
+          "expected_result": "All 19 gates pass + All 14 FM checks pass",
+          "outputs": [
+            "Gate validation report"
+          ]
+        },
+        {
+          "step": 10,
+          "actor": "Human User",
+          "action": "Review and approve plan",
+          "if_validation_fails": {
+            "action": "Send errors to AI Agent",
+            "ai_action": "Fix issues and regenerate plan",
+            "goto_step": 7
+          },
+          "if_validation_passes": {
+            "action": "Approve plan for execution"
+          },
+          "outputs": [
+            "Approved plan"
+          ]
+        }
+      ],
+      "success_criteria": [
+        "Plan file validates against schema",
+        "All 19 validation gates pass",
+        "All 14 failure mode checks pass",
+        "Plan is executable without manual intervention"
+      ]
+    },
+    "plan_execution_workflow": {
+      "description": "Execute a validated plan",
+      "actors": [
+        "Execution Engine",
+        "Self-Healing System",
+        "Evidence Collector"
+      ],
+      "preconditions": [
+        "Plan has passed all validation gates",
+        "Infrastructure requirements met",
+        "Environment prepared"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "actor": "Execution Engine",
+          "action": "Load and parse plan",
+          "tasks": [
+            "Read plan JSON",
+            "Validate schema",
+            "Build execution graph",
+            "Initialize state directory (.state/)"
+          ],
+          "outputs": [
+            "Execution context",
+            "Phase DAG"
+          ]
+        },
+        {
+          "step": 2,
+          "actor": "Execution Engine",
+          "action": "Create worktrees (if parallel execution enabled)",
+          "for_each": "parallel phase group",
+          "tasks": [
+            "Create git worktree",
+            "Checkout base branch",
+            "Initialize evidence directory"
+          ],
+          "outputs": [
+            "Isolated worktrees"
+          ]
+        },
+        {
+          "step": 3,
+          "actor": "Execution Engine",
+          "action": "Execute phases in dependency order",
+          "substeps": [
+            {
+              "step": "3a",
+              "action": "Check phase preconditions",
+              "tasks": [
+                "Verify prerequisite phases completed",
+                "Check phase-level preconditions"
+              ],
+              "on_failure": "Skip phase and mark as blocked"
+            },
+            {
+              "step": "3b",
+              "action": "Execute phase steps sequentially",
+              "step_sequence": [
+                {
+                  "step": "i",
+                  "action": "Check step preconditions",
+                  "command": "Execute precondition checks",
+                  "evidence": ".state/evidence/{phase}/{step_id}/pre_check.json"
+                },
+                {
+                  "step": "ii",
+                  "action": "Execute step commands",
+                  "for_each": "command in step.commands",
+                  "tasks": [
+                    "Set working directory",
+                    "Execute command with timeout",
+                    "Capture stdout/stderr",
+                    "Verify exit code"
+                  ],
+                  "evidence": [
+                    ".state/evidence/{phase}/{step_id}/stdout.log",
+                    ".state/evidence/{phase}/{step_id}/stderr.log"
+                  ],
+                  "on_failure": "Invoke self-healing or rollback"
+                },
+                {
+                  "step": "iii",
+                  "action": "Check step postconditions",
+                  "command": "Execute postcondition checks",
+                  "evidence": ".state/evidence/{phase}/{step_id}/post_check.json",
+                  "on_failure": "Rollback step"
+                },
+                {
+                  "step": "iv",
+                  "action": "Update evidence chain",
+                  "tasks": [
+                    "Hash step inputs",
+                    "Hash step outputs",
+                    "Link to previous step",
+                    "Write evidence chain entry"
+                  ],
+                  "evidence": ".state/evidence/{phase}/evidence_chain.json"
+                },
+                {
+                  "step": "v",
+                  "action": "Emit metrics",
+                  "metrics": [
+                    "step_duration_sec",
+                    "preconditions_passed",
+                    "postconditions_passed",
+                    "files_modified"
+                  ],
+                  "sink": ".state/metrics/metrics.jsonl"
+                }
+              ]
+            },
+            {
+              "step": "3c",
+              "action": "Validate phase completion",
+              "tasks": [
+                "Verify all steps completed",
+                "Validate phase artifacts produced",
+                "Check ground truth level achieved"
+              ]
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "actor": "Execution Engine",
+          "action": "Merge worktrees (if parallel execution enabled)",
+          "for_each": "completed phase",
+          "tasks": [
+            "Run validation gates on worktree",
+            "Squash-merge to base branch",
+            "Resolve conflicts (or escalate)",
+            "Cleanup worktree"
+          ],
+          "outputs": [
+            "Merged changes to main branch"
+          ]
+        },
+        {
+          "step": 5,
+          "actor": "Execution Engine",
+          "action": "Run final validation",
+          "command": "python scripts/NEWPHASEPLANPROCESS_plan_cli.py run-gates --plan-file [plan].json",
+          "expected": "All gates pass",
+          "outputs": [
+            "Final validation report"
+          ]
+        },
+        {
+          "step": 6,
+          "actor": "Execution Engine",
+          "action": "Generate execution summary",
+          "tasks": [
+            "Aggregate phase summaries",
+            "Calculate metrics",
+            "Generate reports",
+            "Validate evidence chain"
+          ],
+          "outputs": [
+            ".state/execution_summary.json",
+            "reports/metrics.html",
+            "reports/evidence_chain_validation.json"
+          ]
+        }
+      ],
+      "failure_handling": {
+        "description": "Multi-step failure recovery process",
+        "steps": [
+          {
+            "step": 1,
+            "action": "Check if self-healing available",
+            "if": "failure_type in self_healing.failure_types",
+            "then": "Invoke self-healing system"
+          },
+          {
+            "step": 2,
+            "action": "Attempt self-healing",
+            "max_attempts": "per_step_max_attempts (default 2)",
+            "on_success": "Continue execution",
+            "on_convergence_failure": "Escalate and stop",
+            "on_max_attempts": "Escalate and stop"
+          },
+          {
+            "step": 3,
+            "action": "Execute rollback",
+            "tasks": [
+              "Run rollback commands from step.rollback",
+              "Verify rollback postconditions",
+              "Collect rollback evidence"
+            ]
+          },
+          {
+            "step": 4,
+            "action": "Escalate to human",
+            "outputs": [
+              ".state/escalation/{phase}_{step_id}_escalation.json",
+              "Structured error report with remediation suggestions"
+            ]
+          }
+        ]
+      }
+    },
+    "validation_gate_execution_workflow": {
+      "description": "Execute all validation gates in dependency order",
+      "command": "python scripts/NEWPHASEPLANPROCESS_plan_cli.py run-gates --plan-file [plan].json",
+      "execution_algorithm": [
+        {
+          "step": 1,
+          "action": "Load gate dependency graph",
+          "input": "scripts/gate_dependencies.json",
+          "output": "Topologically sorted gate list"
+        },
+        {
+          "step": 2,
+          "action": "Execute gates in dependency order",
+          "substeps": [
+            {
+              "step": "a",
+              "action": "Check gate dependencies satisfied",
+              "if": "all prerequisite gates passed",
+              "then": "execute gate"
+            },
+            {
+              "step": "b",
+              "action": "Execute gate validation script",
+              "command": "python scripts/{gate.script} [plan].json",
+              "timeout": "60-300 seconds (gate-specific)",
+              "capture": [
+                "stdout",
+                "stderr",
+                "exit_code"
+              ]
+            },
+            {
+              "step": "c",
+              "action": "Evaluate gate result",
+              "pass_criteria": "exit_code == 0 AND no defects found",
+              "outputs": [
+                "Gate result",
+                "Defect list (if any)"
+              ]
+            },
+            {
+              "step": "d",
+              "action": "Record gate result",
+              "evidence": ".state/evidence/gates/{gate_id}_result.json"
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "action": "Run failure mode checks",
+          "for_each": "FM-01 through FM-14",
+          "script": "scripts/wiring/{check_script}.py",
+          "outputs": [
+            "FM check results"
+          ]
+        },
+        {
+          "step": 4,
+          "action": "Generate validation report",
+          "aggregate": [
+            "Total gates: 19",
+            "Gates passed: X",
+            "Gates failed: Y",
+            "FM checks passed: Z",
+            "Overall result: PASS/FAIL"
+          ],
+          "outputs": [
+            ".state/validation_report.json",
+            "Console summary"
+          ]
+        }
+      ]
+    }
+  },
+  "integration_points": {
+    "registry_integration": {
+      "description": "Integration with file registry system",
+      "document": "REGISTRY_PLANNING_INTEGRATION_SPEC.md",
+      "mechanism": "File Mutation Contract",
+      "flow": [
+        {
+          "step": 1,
+          "action": "Planning reads current registry state",
+          "interface": "Registry read API",
+          "data": "File metadata, classifications, ownership"
+        },
+        {
+          "step": 2,
+          "action": "Planning generates file mutation set",
+          "output": "PLAN_FILE_MUTATION_SET.json",
+          "location": ".state/planning/{plan_id}/file_mutations.json"
+        },
+        {
+          "step": 3,
+          "action": "Registry ingestion pipeline processes mutation set",
+          "validates": [
+            "File uniqueness",
+            "Path validity",
+            "Ownership rules"
+          ],
+          "actions": [
+            "Create registry entries",
+            "Update existing entries",
+            "Mark deletions"
+          ]
+        },
+        {
+          "step": 4,
+          "action": "Registry emits updated state",
+          "output": "Updated registry with new/modified entries",
+          "triggers": [
+            "Change notifications",
+            "Audit log entries"
+          ]
+        }
+      ],
+      "benefits": [
+        "Explicit declaration of all file changes",
+        "Automated registry updates",
+        "Traceability from plan to registry",
+        "Conflict detection before execution"
+      ]
+    },
+    "governance_integration": {
+      "description": "Integration with governance system",
+      "document": "governance_task_spec.json",
+      "governance_layers": {
+        "G1": "Identity & Namespace Governance",
+        "G2": "Schema & Type Governance",
+        "G3": "Derivation & System Invariant Governance",
+        "G4": "Write-Policy Governance",
+        "G5": "Process & Gate Governance",
+        "G6": "Evidence & Audit Governance"
+      },
+      "enforcement_points": [
+        {
+          "layer": "G1",
+          "enforced_by": "GATE-017 (Single Source of Truth)",
+          "validates": [
+            "ID uniqueness",
+            "ID format patterns",
+            "Allocator rules"
+          ]
+        },
+        {
+          "layer": "G2",
+          "enforced_by": "GATE-001 (Schema Validation)",
+          "validates": [
+            "Schema conformance",
+            "Type correctness",
+            "Required fields"
+          ]
+        },
+        {
+          "layer": "G3",
+          "enforced_by": "Evidence chain system",
+          "validates": [
+            "Derivation rules",
+            "Hashing protocols",
+            "Determinism"
+          ]
+        },
+        {
+          "layer": "G4",
+          "enforced_by": "File scope enforcement",
+          "validates": [
+            "Write permissions",
+            "Actor authorization",
+            "Phase restrictions"
+          ]
+        },
+        {
+          "layer": "G5",
+          "enforced_by": "Gate execution system",
+          "validates": [
+            "Gate completeness",
+            "Pass/fail criteria",
+            "Evidence requirements"
+          ]
+        },
+        {
+          "layer": "G6",
+          "enforced_by": "Evidence collection system",
+          "validates": [
+            "Evidence completeness",
+            "Retention compliance",
+            "Audit trail"
+          ]
+        }
+      ]
+    },
+    "ci_cd_integration": {
+      "description": "Integration with CI/CD pipelines",
+      "validation_gate": "VAL-CI-COMPAT",
+      "requirements": [
+        "No TTY-dependent operations",
+        "All inputs via config files or environment variables",
+        "Timeouts on all blocking operations",
+        "Structured output (JSON/JSONL) for parsing",
+        "Exit codes follow conventions (0=success, non-zero=failure)"
+      ],
+      "ci_pipeline_example": [
+        {
+          "step": 1,
+          "name": "Generate Plan",
+          "command": "ai-agent generate-plan --input requirements.md --output project.plan.json"
+        },
+        {
+          "step": 2,
+          "name": "Validate Plan",
+          "command": "python scripts/NEWPHASEPLANPROCESS_plan_cli.py run-gates --plan-file project.plan.json",
+          "exit_code_check": "== 0"
+        },
+        {
+          "step": 3,
+          "name": "Execute Plan",
+          "command": "python scripts/NEWPHASEPLANPROCESS_plan_cli.py execute project.plan.json",
+          "artifacts": [
+            ".state/evidence/",
+            ".state/metrics/",
+            "reports/"
+          ]
+        },
+        {
+          "step": 4,
+          "name": "Publish Metrics",
+          "command": "python scripts/generate_metrics_report.py .state/metrics/metrics.jsonl",
+          "outputs": [
+            "reports/metrics.html",
+            "reports/metrics.json"
+          ]
+        }
+      ]
+    }
+  },
+  "extension_points": {
+    "adding_new_validation_gates": {
+      "description": "How to add a new validation gate",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create validation script",
+          "location": "scripts/validate_{gate_name}.py",
+          "template": "Use existing validators as template",
+          "requirements": [
+            "Accept plan file path as argument",
+            "Return 0 on success, non-zero on failure",
+            "Output structured defects to stdout (JSON)",
+            "Generate evidence file in .state/evidence/"
+          ]
+        },
+        {
+          "step": 2,
+          "action": "Register gate in dependency graph",
+          "file": "scripts/gate_dependencies.json",
+          "add_entry": {
+            "id": "GATE-XXX",
+            "name": "Human-readable name",
+            "script": "validate_{gate_name}.py",
+            "depends_on": [
+              "prerequisite gate IDs"
+            ],
+            "phase": "validation phase category"
+          }
+        },
+        {
+          "step": 3,
+          "action": "Update schema if needed",
+          "file": "schemas/NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json",
+          "if": "gate requires new plan fields"
+        },
+        {
+          "step": 4,
+          "action": "Update template",
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "add": "Documentation and examples for new gate"
+        },
+        {
+          "step": 5,
+          "action": "Update AI instructions",
+          "file": "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json",
+          "add": "Gate requirements and failure scenarios"
+        },
+        {
+          "step": 6,
+          "action": "Test gate",
+          "commands": [
+            "Create test plan with gate-specific scenarios",
+            "Run gate validator on test plan",
+            "Verify correct pass/fail behavior",
+            "Verify defect output format"
+          ]
+        }
+      ]
+    },
+    "adding_new_failure_modes": {
+      "description": "How to add a new failure mode check",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create failure mode script",
+          "location": "scripts/wiring/{check_name}.py",
+          "requirements": [
+            "Accept plan file path as argument",
+            "Detect specific failure pattern",
+            "Return 0 if no failures, non-zero if failures found",
+            "Output structured failure report"
+          ]
+        },
+        {
+          "step": 2,
+          "action": "Register in wiring validation suite",
+          "file": "scripts/wiring/run_all_e2e_proofs.py",
+          "add": "Import and call new failure mode check"
+        },
+        {
+          "step": 3,
+          "action": "Document failure mode",
+          "update": "This technical specification",
+          "section": "failure_mode_checker.checks[]"
+        }
+      ]
+    },
+    "adding_new_self_healing_types": {
+      "description": "How to add a new self-healing failure type",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Identify failure pattern",
+          "requirements": [
+            "Failure must be deterministic (detectable via regex)",
+            "Remediation must be automated (no human input)",
+            "Recovery success must be verifiable"
+          ]
+        },
+        {
+          "step": 2,
+          "action": "Add to template self_healing section",
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "add_entry": {
+            "id": "FAILURE_TYPE_ID",
+            "allowed_actions": [
+              "list of remediation commands"
+            ],
+            "max_attempts": 2,
+            "abort_if": [
+              "list of abort condition regexes"
+            ],
+            "step_context_required": "boolean"
+          }
+        },
+        {
+          "step": 3,
+          "action": "Implement detection logic",
+          "location": "Execution engine (NEWPHASEPLANPROCESS_plan_cli.py)",
+          "add": "Pattern matching and remediation dispatch"
+        },
+        {
+          "step": 4,
+          "action": "Test failure type",
+          "steps": [
+            "Create scenario that triggers failure",
+            "Verify detection",
+            "Verify remediation attempt",
+            "Verify convergence detection",
+            "Verify escalation on max attempts"
+          ]
+        }
+      ]
+    },
+    "adding_new_ground_truth_levels": {
+      "description": "How to extend ground truth validation",
+      "current_levels": [
+        "L0",
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Define level characteristics",
+          "specify": [
+            "Validation commands",
+            "Evidence requirements",
+            "Timeout thresholds",
+            "Retry policy",
+            "Use cases"
+          ]
+        },
+        {
+          "step": 2,
+          "action": "Add to template ground_truth_levels section",
+          "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json"
+        },
+        {
+          "step": 3,
+          "action": "Update schema enum",
+          "file": "schemas/NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json",
+          "add": "New level to ground_truth_level enum"
+        },
+        {
+          "step": 4,
+          "action": "Implement validation",
+          "file": "scripts/validate_ground_truth.py",
+          "add": "Level-specific validation logic"
+        }
+      ]
+    }
+  },
+  "development_guidelines": {
+    "adding_new_features": {
+      "principle": "Features must be compatible with NO IMPLIED BEHAVIOR constraint",
+      "requirements": [
+        "Feature must be expressible as: config entry + executable command + evidence artifact + pass/fail condition",
+        "If feature cannot be automated, it must be marked NOT_AUTOMATABLE and routed to manual process",
+        "Feature must not break existing validation gates",
+        "Feature must include evidence collection",
+        "Feature must include rollback procedure",
+        "Feature must update schema, template, and AI instructions"
+      ],
+      "workflow": [
+        {
+          "step": 1,
+          "action": "Design feature specification",
+          "outputs": [
+            "Feature requirements",
+            "Acceptance criteria",
+            "Evidence requirements"
+          ]
+        },
+        {
+          "step": 2,
+          "action": "Update data structures",
+          "files": [
+            "schemas/NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json",
+            "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json"
+          ]
+        },
+        {
+          "step": 3,
+          "action": "Implement validation",
+          "create": "New validator script or extend existing",
+          "register": "In gate dependency graph if new gate"
+        },
+        {
+          "step": 4,
+          "action": "Update execution engine",
+          "file": "scripts/NEWPHASEPLANPROCESS_plan_cli.py",
+          "if": "feature affects execution"
+        },
+        {
+          "step": 5,
+          "action": "Update documentation",
+          "files": [
+            "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json",
+            "This technical specification"
+          ]
+        },
+        {
+          "step": 6,
+          "action": "Create test plan",
+          "using": "newPhasePlanProcess itself",
+          "demonstrate": "Feature works end-to-end with validation"
+        },
+        {
+          "step": 7,
+          "action": "Execute test plan",
+          "verify": "All gates pass with new feature"
+        }
+      ]
+    },
+    "compatibility_requirements": {
+      "backward_compatibility": {
+        "rule": "v3.0.0 must support v2.4.0 plans",
+        "mechanism": "Auto-detection in Plan CLI",
+        "upgrade_path": "python scripts/NEWPHASEPLANPROCESS_plan_cli.py normalize --upgrade [v2.4.0_plan].json"
+      },
+      "forward_compatibility": {
+        "rule": "Future versions must not break v3.0.0 validation",
+        "mechanism": "Schema versioning and additive changes only"
+      },
+      "extension_compatibility": {
+        "rule": "Extensions must not require core system changes",
+        "mechanism": "Plugin architecture via external validators and custom gates"
+      }
+    },
+    "testing_requirements": {
+      "unit_tests": {
+        "scope": "Individual validators and utility functions",
+        "framework": "pytest",
+        "coverage_target": ">= 80%"
+      },
+      "integration_tests": {
+        "scope": "Gate execution sequences and evidence chain validation",
+        "framework": "pytest with fixtures",
+        "required_scenarios": [
+          "Complete plan generation and validation",
+          "Failed plan with self-healing recovery",
+          "Parallel execution with worktrees",
+          "Rollback on step failure"
+        ]
+      },
+      "end_to_end_tests": {
+        "scope": "Full plan lifecycle from generation to execution",
+        "method": "Create real plans for test projects",
+        "validation": "All gates pass and execution completes successfully"
+      }
+    }
+  },
+  "file_structure": {
+    "description": "Physical file organization of newPhasePlanProcess",
+    "root_directory": "LP_LONG_PLAN/newPhasePlanProcess/",
+    "key_files": {
+      "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json": "Master plan template",
+      "governance_task_spec.json": "Governance integration specification",
+      "REGISTRY_PLANNING_INTEGRATION_SPEC.md": "Registry integration design",
+      "PLAN_AI_USAGE_GUIDE.md": "Quick reference for AI usage",
+      "GOVERNANCE_DISCOVERY_REPORT.md": "Governance coverage analysis",
+      "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json": "AI agent guide for plan generation"
+    },
+    "directories": {
+      "schemas/": {
+        "purpose": "JSON schemas for validation",
+        "files": [
+          "NEWPHASEPLANPROCESS_plan.schema.v2.4.0.json",
+          "NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json",
+          "coverage_v1.json",
+          "defect_log.schema.json",
+          "parquet_schema_v1.json"
+        ]
+      },
+      "scripts/": {
+        "purpose": "Executable scripts for validation and execution",
+        "categories": {
+          "cli": [
+            "NEWPHASEPLANPROCESS_plan_cli.py"
+          ],
+          "validators": [
+            "validate_*.py (20 validators)",
+            "validate_step_contracts.py",
+            "validate_artifact_closure.py",
+            "validate_rollback_completeness.py",
+            "validate_verification_completeness.py",
+            "validate_single_source_of_truth.py"
+          ],
+          "utilities": [
+            "generate_dag.py",
+            "generate_automation_diagrams.py",
+            "generate_metrics_report.py",
+            "build_automation_index.py"
+          ],
+          "wiring": [
+            "wiring/ subdirectory with 14 failure mode checkers"
+          ]
+        }
+      },
+      ".state/": {
+        "purpose": "Canonical runtime root for state, evidence, metrics, and per-run artifacts",
+        "structure": {
+          "evidence/": "Evidence files organized by phase and step",
+          "metrics/": "Metrics JSONL files and summaries",
+          "planning/": "Planning artifacts and file mutation sets",
+          "attempts/": "Self-healing attempt logs",
+          "escalation/": "Escalation reports"
+        }
+      }
+    }
+  },
+  "glossary": {
+    "terms": [
+      {
+        "term": "Step Contract",
+        "definition": "Complete specification of a single execution step including inputs, outputs, preconditions, postconditions, commands, rollback, evidence, and idempotency configuration"
+      },
+      {
+        "term": "Artifact Closure",
+        "definition": "Property ensuring every artifact input has a producer and every artifact output has a consumer (or is a final deliverable), with no orphans or dead ends"
+      },
+      {
+        "term": "Validation Gate",
+        "definition": "Automated check that validates a specific aspect of plan correctness, executed via script with pass/fail result"
+      },
+      {
+        "term": "Failure Mode",
+        "definition": "Specific pattern of plan defect detectable via automated check (e.g., circular dependency, missing producer)"
+      },
+      {
+        "term": "Evidence Chain",
+        "definition": "Cryptographically-linked sequence of execution proofs showing what was done, when, and with what result"
+      },
+      {
+        "term": "Ground Truth Level",
+        "definition": "Degree of validation rigor (L0-L5) ranging from documentation-only to production-like validation"
+      },
+      {
+        "term": "Worktree Isolation",
+        "definition": "Technique using git worktrees to enable parallel phase execution without file conflicts"
+      },
+      {
+        "term": "Self-Healing",
+        "definition": "Automated recovery from common failure types with bounded retries and convergence detection"
+      },
+      {
+        "term": "Idempotency",
+        "definition": "Property of a step that allows safe re-execution with same result"
+      },
+      {
+        "term": "Phase DAG",
+        "definition": "Directed Acyclic Graph defining phase dependencies and execution order"
+      },
+      {
+        "term": "File Mutation Set",
+        "definition": "Explicit declaration of all file creations, modifications, and deletions planned by a project"
+      },
+      {
+        "term": "NO IMPLIED BEHAVIOR",
+        "definition": "Core design principle requiring all rules to be expressible as config + command + evidence + pass/fail"
+      },
+      {
+        "term": "Planning Hierarchy",
+        "definition": "A structured decomposition of planning across multiple scope levels (system, module, component, execution packet) to improve comprehensiveness and traceability."
+      },
+      {
+        "term": "Pipeline Boundary Contract",
+        "definition": "Formal specification of the outputs from the planning stage and the inputs required by the execution stage, including required validations before execution."
+      },
+      {
+        "term": "Execution Pattern",
+        "definition": "A reusable contract-like template stored in a registry that defines how a particular type of task should be executed."
+      },
+      {
+        "term": "Mutation Model",
+        "definition": "Model specifying allowed file mutation operations and guidelines for decomposing them into independent workstreams."
+      },
+      {
+        "term": "Task Intake Model",
+        "definition": "Structure describing how new tasks are ingested, normalized, deduplicated, prioritized and queued for planning."
+      },
+      {
+        "term": "Traceability",
+        "definition": "Mappings that link requirements to modules, modules to components, and components to execution steps to ensure end-to-end alignment and auditability."
+      },
+      {
+        "term": "Execution Baseline",
+        "definition": "Baseline system state captured before execution, including commit hash, dependencies and environment snapshot."
+      },
+      {
+        "term": "Concurrency Control",
+        "definition": "Policies that limit or coordinate parallel execution of phases and steps."
+      },
+      {
+        "term": "Rollback Plan",
+        "definition": "Set of procedures to revert changes when execution cannot proceed or must be undone."
+      },
+      {
+        "term": "Evidence Requirements",
+        "definition": "List of artefacts required to demonstrate success of each phase and step."
+      },
+      {
+        "term": "Lifecycle States",
+        "definition": "Enumerated states representing progression of tasks and artefacts through the pipeline."
+      },
+      {
+        "term": "State Transitions",
+        "definition": "Allowed transitions between lifecycle states."
+      },
+      {
+        "term": "Reconciliation States",
+        "definition": "States used during drift detection and reconciliation."
+      },
+      {
+        "term": "Canonicalization Contract",
+        "definition": "Rules ensuring consistent representation of data and artefacts across environments."
+      },
+      {
+        "term": "Merge Policy",
+        "definition": "Strategy and requirements for merging changes from worktrees into the main branch."
+      },
+      {
+        "term": "Platform Profile",
+        "definition": "Definition of supported operating systems and platform-specific configuration."
+      }
+    ]
+  },
+  "appendix": {
+    "references": [
+      {
+        "title": "Plan Template v3.2.0",
+        "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+        "description": "Complete template with all features and examples"
+      },
+      {
+        "title": "Plan Schema v3.0.0",
+        "file": "schemas/NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json",
+        "description": "JSON Schema defining plan validation rules"
+      },
+      {
+        "title": "Instruction Document v3.2.0",
+        "file": "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json",
+        "description": "Complete guide for AI-driven plan generation and plan-filling behavior"
+      },
+      {
+        "title": "Gate Dependency Graph",
+        "file": "scripts/gate_dependencies.json",
+        "description": "Validation gate execution order"
+      },
+      {
+        "title": "Registry Integration Spec",
+        "file": "REGISTRY_PLANNING_INTEGRATION_SPEC.md",
+        "description": "Design for registry-planning integration"
+      },
+      {
+        "title": "Governance Task Spec",
+        "file": "governance_task_spec.json",
+        "description": "Governance layer definitions and coverage"
+      }
+    ],
+    "version_history": {
+      "v3.0.0": {
+        "date": "2026-02-03",
+        "changes": [
+          "Added step-level contracts with template-required fields",
+          "Added cryptographic evidence chain",
+          "Added self-healing with bounded retries",
+          "Added worktree isolation for parallel execution",
+          "Added ground truth validation levels",
+          "Added per-step file scoping",
+          "Added step_id tracking throughout pipeline",
+          "Added template default validation gates (5, extensible)"
+        ]
+      },
+      "v2.4.0": {
+        "date": "2026-01-15",
+        "changes": [
+          "Phase-level contracts",
+          "Basic validation gates",
+          "Artifact registry",
+          "Parallel execution support"
+        ]
+      }
+    },
+    "migration_guide": {
+      "from_v2_4_to_v3_0": {
+        "breaking_changes": [
+          "Step contracts now mandatory (13 required fields)",
+          "step_id must be unique across all phases",
+          "Evidence paths must follow pattern: .state/evidence/{phase_id}/{step_id}/",
+          "Preconditions and postconditions must be executable shell syntax (not descriptions)"
+        ],
+        "migration_steps": [
+          {
+            "step": 1,
+            "action": "Add step_id to all steps",
+            "pattern": "STEP-XXX where XXX is 001, 002, etc."
+          },
+          {
+            "step": 2,
+            "action": "Add complete contracts to all steps",
+            "fields": [
+              "purpose",
+              "inputs",
+              "outputs",
+              "invariants",
+              "preconditions",
+              "postconditions",
+              "file_scope",
+              "failure_modes",
+              "evidence",
+              "ground_truth_level",
+              "timeout_sec",
+              "retries"
+            ]
+          },
+          {
+            "step": 3,
+            "action": "Update evidence paths",
+            "new_pattern": ".state/evidence/{phase_id}/{step_id}/"
+          },
+          {
+            "step": 4,
+            "action": "Convert pre/postcondition descriptions to executable commands",
+            "example": "Install dependencies → pip install -r requirements.txt"
+          },
+          {
+            "step": 5,
+            "action": "Run normalization",
+            "command": "python scripts/NEWPHASEPLANPROCESS_plan_cli.py normalize --upgrade [v2.4_plan].json"
+          },
+          {
+            "step": 6,
+            "action": "Validate upgraded plan",
+            "command": "python scripts/NEWPHASEPLANPROCESS_plan_cli.py run-gates --plan-file [upgraded_plan].json"
+          }
+        ]
+      }
+    }
+  }
+}

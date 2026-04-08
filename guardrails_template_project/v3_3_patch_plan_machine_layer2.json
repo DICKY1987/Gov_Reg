@@ -1,0 +1,935 @@
+{
+  "patch_layer_metadata": {
+    "layer_id": "NPP-V3_3-PATCH-LAYER2-DETERMINISTIC-CONTEXT-002",
+    "layer_sequence": 2,
+    "layer_version": "1.0.0",
+    "target_release": "3.3.0",
+    "layer_type": "machine_optimized_patch_layer",
+    "execution_mode": "cli_consumable",
+    "depends_on_plan_id": "NPP-V3_3-PATCH-IMPLEMENTATION-BEHAVIOR-001",
+    "depends_on_artifact": "v3_3_patch_plan_machine.json",
+    "serialization": {
+      "format": "json",
+      "canonicalization_required": true,
+      "pointer_standard": "RFC-6901",
+      "mutation_standard": "RFC-6902"
+    },
+    "objective": "Close the remaining deterministic-default gaps not covered by layer 1 by formalizing shared-core/thin-wrapper CLI architecture, standard I/O and state defaults, unified packaging policy, mandatory agent-context injection, machine-readable interface contracts, dependency-direction enforcement, and a compatibility/audit stack."
+  },
+  "gap_coverage_summary": {
+    "source_gap_classes": [
+      "shared_core_library_required",
+      "thin_cli_wrapper_required",
+      "standard_io_handoff_policy_missing",
+      "simultaneous_run_state_coordination_policy_missing",
+      "unified_packaging_policy_missing",
+      "canonical_context_injection_missing",
+      "machine_readable_interface_contracts_missing",
+      "hard_static_analysis_gate_stack_missing",
+      "dependency_direction_enforcement_missing",
+      "boundary_schema_type_policy_missing",
+      "drift_audit_loop_missing",
+      "pre_commit_ci_compatibility_stack_missing"
+    ],
+    "layer_2_solution_sections": [
+      "shared_core_architecture_contract",
+      "agent_context_contract",
+      "compatibility_enforcement_stack"
+    ],
+    "compatibility_with_layer_1": {
+      "relationship": "additive",
+      "replaces_existing_sections": [],
+      "extends_existing_sections": [
+        "pipeline_boundary_contract",
+        "execution_patterns",
+        "step_contracts",
+        "traceability",
+        "validation_gates",
+        "anti_pattern_detection",
+        "infrastructure",
+        "evidence_requirements",
+        "cli_execution_hints"
+      ]
+    }
+  },
+  "additive_change_set": {
+    "new_top_level_sections_required": [
+      "shared_core_architecture_contract",
+      "agent_context_contract",
+      "compatibility_enforcement_stack"
+    ],
+    "new_step_fields_required": [
+      "context_binding",
+      "boundary_contract_binding",
+      "packaging_binding",
+      "state_coordination_binding"
+    ],
+    "new_traceability_maps_required": [
+      "component_to_context_profile",
+      "step_to_context_contract",
+      "step_to_boundary_contract",
+      "step_to_packaging_profile"
+    ],
+    "new_validation_gates_required": [
+      "GATE-CFGCTX-001",
+      "GATE-CFGCTX-002",
+      "GATE-CFGCTX-003",
+      "GATE-CFGCTX-004",
+      "GATE-CFGCTX-005"
+    ]
+  },
+  "document_patch_plans": {
+    "template": {
+      "target_file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+      "resulting_version": "3.3.0",
+      "patches": [
+        {
+          "patch_id": "L2-TPL-001",
+          "operation_type": "append_array_items",
+          "json_pointer": "/template_metadata/breaking_changes",
+          "items": [
+            "Added shared_core_architecture_contract top-level section defining shared-core, thin-wrapper, standard I/O, concurrent-state, and packaging defaults.",
+            "Added agent_context_contract top-level section defining required CLI agent context files, interface contracts, and post-write validation hooks.",
+            "Added compatibility_enforcement_stack top-level section defining static-analysis gates, boundary-schema policy, dependency-direction rules, audit loop, and CI/pre-commit enforcement.",
+            "Extended step contracts with context_binding, boundary_contract_binding, packaging_binding, and state_coordination_binding.",
+            "Extended traceability with context/contract/packaging mappings.",
+            "Added GATE-CFGCTX-001 through GATE-CFGCTX-005 for deterministic context and compatibility enforcement."
+          ],
+          "purpose": "Record layer-2 breaking changes."
+        },
+        {
+          "patch_id": "L2-TPL-002",
+          "operation_type": "insert_object_member",
+          "json_pointer": "",
+          "member_name": "shared_core_architecture_contract",
+          "new_value": {
+            "enabled": true,
+            "enforcement_mode": "fail_closed",
+            "shared_core_required": true,
+            "thin_cli_wrapper_required": true,
+            "cli_framework_default": "click",
+            "cli_wrapper_rules": [
+              "CLI entrypoints may parse args/options and map them to shared-core function calls only.",
+              "Business logic in CLI wrapper is forbidden except input normalization and result presentation.",
+              "Side effects at import time are forbidden."
+            ],
+            "standard_io_contract": {
+              "machine_output_default": "json",
+              "allowed_handoff_modes": [
+                "stdin_stdout",
+                "intermediate_json_artifact",
+                "intermediate_csv_artifact"
+              ],
+              "default_handoff_mode": "stdin_stdout_when_stream_safe_else_intermediate_json_artifact",
+              "stdin_stdout_required_for_pipeline_capable_tools": true
+            },
+            "concurrent_state_policy": {
+              "default_shared_state_backend": "sqlite",
+              "flat_file_shared_state_forbidden_for_concurrent_writers": true,
+              "flat_file_exchange_allowed_for_serial_handoffs": true
+            },
+            "packaging_policy": {
+              "pyproject_toml_required": true,
+              "console_script_entry_points_required": true,
+              "loose_unregistered_script_distribution_forbidden": true
+            },
+            "validator_command": "python scripts/validate_shared_core_architecture.py --plan-file {plan_file}",
+            "expect_exit_code": 0,
+            "evidence": ".state/evidence/architecture/shared_core_architecture_validation.json"
+          },
+          "purpose": "Make shared-core/thin-wrapper, I/O, state, and packaging defaults first-class."
+        },
+        {
+          "patch_id": "L2-TPL-003",
+          "operation_type": "insert_object_member",
+          "json_pointer": "",
+          "member_name": "agent_context_contract",
+          "new_value": {
+            "enabled": true,
+            "enforcement_mode": "fail_closed",
+            "required_context_files": [
+              "CLAUDE.md",
+              "AGENTS.md",
+              ".aider.conf"
+            ],
+            "minimum_required_context_sections": [
+              "module_interface_contracts",
+              "naming_conventions",
+              "forbidden_patterns",
+              "import_rules",
+              "validation_gate_commands",
+              "definition_of_done"
+            ],
+            "session_context_injection_required": true,
+            "required_contract_artifacts": [
+              "contracts/**/*.py",
+              "contracts/**/*.json",
+              "schemas/**/*.py",
+              "schemas/**/*.json"
+            ],
+            "missing_context_action": "block_execution",
+            "post_write_hook_command": "make validate",
+            "validator_command": "python scripts/validate_agent_context_contract.py --plan-file {plan_file}",
+            "expect_exit_code": 0,
+            "evidence": ".state/evidence/context/agent_context_contract_validation.json"
+          },
+          "purpose": "Force deterministic codebase context injection for CLI agents."
+        },
+        {
+          "patch_id": "L2-TPL-004",
+          "operation_type": "insert_object_member",
+          "json_pointer": "",
+          "member_name": "compatibility_enforcement_stack",
+          "new_value": {
+            "enabled": true,
+            "enforcement_mode": "fail_closed",
+            "static_analysis": {
+              "post_write_required": true,
+              "required_commands": [
+                "mypy --strict src/",
+                "ruff check src/",
+                "import-linter",
+                "python tools/audit_contracts.py"
+              ]
+            },
+            "boundary_schema_policy": {
+              "shared_schema_directory": "src/schemas",
+              "boundary_types_required": [
+                "Pydantic",
+                "TypedDict"
+              ],
+              "cross_module_boundary_types_must_be_declared": true
+            },
+            "dependency_direction_policy": {
+              "layers": [
+                "cli",
+                "services",
+                "core",
+                "schemas"
+              ],
+              "upward_imports_forbidden": true,
+              "cross_service_imports_forbidden": true
+            },
+            "drift_audit_loop": {
+              "audit_script": "tools/audit_contracts.py",
+              "ci_required": true,
+              "pre_commit_required": true,
+              "audit_output_path": ".state/evidence/context/audit_contracts_report.json"
+            },
+            "validator_command": "python scripts/validate_compatibility_stack.py --plan-file {plan_file}",
+            "expect_exit_code": 0,
+            "evidence": ".state/evidence/context/compatibility_stack_validation.json"
+          },
+          "purpose": "Add structural codebase-compatibility controls."
+        },
+        {
+          "patch_id": "L2-TPL-005",
+          "operation_type": "merge_object_fields",
+          "json_pointer": "/pipeline_boundary_contract",
+          "fields": {
+            "allowed_context_inputs": [
+              "plan_json",
+              "registered_pattern_spec",
+              "schema_validated_config",
+              "validated_agent_context_files",
+              "validated_interface_contract_artifacts"
+            ],
+            "validation_required_before_execution_append": [
+              "GATE-CFGCTX-001",
+              "GATE-CFGCTX-002",
+              "GATE-CFGCTX-003",
+              "GATE-CFGCTX-004",
+              "GATE-CFGCTX-005"
+            ],
+            "forbid_execution_without_context_contract": true,
+            "forbid_execution_without_boundary_contracts": true
+          },
+          "purpose": "Block execution when deterministic context or compatibility stack is missing."
+        },
+        {
+          "patch_id": "L2-TPL-006",
+          "operation_type": "merge_object_fields",
+          "json_pointer": "/execution_patterns",
+          "fields": {
+            "require_shared_core_binding": true,
+            "require_context_profile_binding": true,
+            "require_boundary_contract_refs": true,
+            "require_packaging_profile_binding": true
+          },
+          "purpose": "Require pattern mappings to bind into the new deterministic context layer."
+        },
+        {
+          "patch_id": "L2-TPL-007",
+          "operation_type": "merge_object_fields",
+          "json_pointer": "/traceability",
+          "fields": {
+            "component_to_context_profile": [],
+            "step_to_context_contract": [],
+            "step_to_boundary_contract": [],
+            "step_to_packaging_profile": []
+          },
+          "purpose": "Make context, contracts, and packaging auditable."
+        },
+        {
+          "patch_id": "L2-TPL-008",
+          "operation_type": "append_array_items",
+          "json_pointer": "/anti_pattern_detection/triggers",
+          "items": [
+            "missing_agent_context_file",
+            "missing_interface_contract_stub",
+            "boundary_type_not_declared",
+            "forbidden_import_direction",
+            "shared_state_flat_file_concurrency",
+            "entrypoint_without_shared_core",
+            "business_logic_in_cli_wrapper",
+            "packaging_without_entry_points"
+          ],
+          "purpose": "Detect missing deterministic-context controls and compatibility violations."
+        },
+        {
+          "patch_id": "L2-TPL-009",
+          "operation_type": "append_array_items",
+          "json_pointer": "/validation_gates",
+          "items": [
+            {
+              "gate_id": "GATE-CFGCTX-001",
+              "phase": null,
+              "step_id": null,
+              "purpose": "Shared core / thin wrapper architecture is declared and valid",
+              "command": "python scripts/validate_shared_core_architecture.py --plan-file {plan_file}",
+              "timeout_sec": 120,
+              "retries": 0,
+              "expect_exit_code": 0,
+              "evidence": ".state/evidence/gates/GATE-CFGCTX-001"
+            },
+            {
+              "gate_id": "GATE-CFGCTX-002",
+              "phase": null,
+              "step_id": null,
+              "purpose": "Agent context files and contract artifacts are declared and valid",
+              "command": "python scripts/validate_agent_context_contract.py --plan-file {plan_file}",
+              "timeout_sec": 120,
+              "retries": 0,
+              "expect_exit_code": 0,
+              "evidence": ".state/evidence/gates/GATE-CFGCTX-002"
+            },
+            {
+              "gate_id": "GATE-CFGCTX-003",
+              "phase": null,
+              "step_id": null,
+              "purpose": "Boundary schema policy and dependency direction rules are valid",
+              "command": "python scripts/validate_boundary_dependency_contracts.py --plan-file {plan_file}",
+              "timeout_sec": 180,
+              "retries": 0,
+              "expect_exit_code": 0,
+              "evidence": ".state/evidence/gates/GATE-CFGCTX-003"
+            },
+            {
+              "gate_id": "GATE-CFGCTX-004",
+              "phase": null,
+              "step_id": null,
+              "purpose": "Packaging policy and entry-point declarations are valid",
+              "command": "python scripts/validate_packaging_profiles.py --plan-file {plan_file}",
+              "timeout_sec": 120,
+              "retries": 0,
+              "expect_exit_code": 0,
+              "evidence": ".state/evidence/gates/GATE-CFGCTX-004"
+            },
+            {
+              "gate_id": "GATE-CFGCTX-005",
+              "phase": null,
+              "step_id": null,
+              "purpose": "Audit/compatibility stack passes and reports no drift",
+              "command": "python tools/audit_contracts.py --plan-file {plan_file}",
+              "timeout_sec": 180,
+              "retries": 0,
+              "expect_exit_code": 0,
+              "evidence": ".state/evidence/gates/GATE-CFGCTX-005"
+            }
+          ],
+          "purpose": "Add mandatory layer-2 validation gates."
+        },
+        {
+          "patch_id": "L2-TPL-010",
+          "operation_type": "merge_object_fields",
+          "json_pointer": "/infrastructure/dependencies",
+          "fields": {
+            "python_packages_append": [
+              {
+                "name": "pydantic",
+                "version": ">=2.0",
+                "purpose": "runtime boundary validation",
+                "dev_only": false
+              },
+              {
+                "name": "import-linter",
+                "version": ">=2.0",
+                "purpose": "layer/dependency direction enforcement",
+                "dev_only": true
+              },
+              {
+                "name": "pre-commit",
+                "version": ">=4.0",
+                "purpose": "local hook enforcement for deterministic validation stack",
+                "dev_only": true
+              }
+            ]
+          },
+          "purpose": "Pin additional tooling required by the compatibility stack."
+        },
+        {
+          "patch_id": "L2-TPL-011",
+          "operation_type": "extend_sample_step_contracts",
+          "json_pointer": "/step_contracts",
+          "fields_to_add": {
+            "context_binding": {
+              "context_profile_id": "",
+              "required_context_files": [],
+              "post_write_hook_command": "make validate"
+            },
+            "boundary_contract_binding": {
+              "interface_contract_refs": [],
+              "schema_refs": [],
+              "dependency_rule_profile_id": ""
+            },
+            "packaging_binding": {
+              "packaging_profile_id": "",
+              "entry_point_names": [],
+              "pyproject_section_ref": ""
+            },
+            "state_coordination_binding": {
+              "shared_state_backend": "sqlite",
+              "concurrent_write_policy": "single_writer_or_db_locking",
+              "artifact_exchange_mode": "stdin_stdout_or_intermediate_json"
+            }
+          },
+          "purpose": "Require step-level declaration of context, boundaries, packaging, and state coordination."
+        }
+      ]
+    },
+    "technical_spec": {
+      "target_file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+      "resulting_version": "3.3.0",
+      "patches": [
+        {
+          "patch_id": "L2-SPEC-001",
+          "operation_type": "append_array_items",
+          "json_pointer": "/executive_summary/key_capabilities",
+          "items": [
+            "Shared-core / thin-wrapper architecture contract for CLI-oriented implementations",
+            "Mandatory agent-context injection contract for CLI coding agents",
+            "Compatibility enforcement stack covering static analysis, dependency layering, boundary schemas, and drift audits"
+          ],
+          "purpose": "Reflect layer-2 capabilities."
+        },
+        {
+          "patch_id": "L2-SPEC-002",
+          "operation_type": "append_array_items",
+          "json_pointer": "/executive_summary/design_principles",
+          "items": [
+            "DETERMINISTIC CONTEXT INJECTION: Agents must receive canonical codebase context through validated context artifacts before execution or code generation.",
+            "SHARED-CORE CLI ARCHITECTURE: CLI entrypoints are wrappers; business logic lives in shared-core modules with explicit boundary contracts."
+          ],
+          "purpose": "Add the missing deterministic-default principles."
+        },
+        {
+          "patch_id": "L2-SPEC-003",
+          "operation_type": "append_array_items",
+          "json_pointer": "/data_structures/plan_document/root_structure/required_sections",
+          "items": [
+            "shared_core_architecture_contract",
+            "agent_context_contract",
+            "compatibility_enforcement_stack"
+          ],
+          "purpose": "Make the three layer-2 sections required."
+        },
+        {
+          "patch_id": "L2-SPEC-004",
+          "operation_type": "append_array_items",
+          "json_pointer": "/data_structures/plan_document/section_purpose_map/sections",
+          "items": [
+            {
+              "section": "shared_core_architecture_contract",
+              "purpose": "Defines shared-core / thin-wrapper architecture, standard I/O handoff rules, concurrent-state defaults, and packaging requirements for CLI-oriented implementations.",
+              "example": "\"shared_core_architecture_contract\": {\"shared_core_required\": true, \"thin_cli_wrapper_required\": true}",
+              "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/shared_core_architecture_contract"
+            },
+            {
+              "section": "agent_context_contract",
+              "purpose": "Defines required context files, contract artifacts, and post-write validation hooks that must be injected into every CLI-agent session.",
+              "example": "\"agent_context_contract\": {\"required_context_files\": [\"CLAUDE.md\", \"AGENTS.md\", \".aider.conf\"]}",
+              "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/agent_context_contract"
+            },
+            {
+              "section": "compatibility_enforcement_stack",
+              "purpose": "Defines the enforced static-analysis, boundary-schema, dependency-direction, audit, and CI/pre-commit controls for codebase compatibility.",
+              "example": "\"compatibility_enforcement_stack\": {\"static_analysis\": {\"required_commands\": [\"mypy --strict src/\"]}}",
+              "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/compatibility_enforcement_stack"
+            }
+          ],
+          "purpose": "Document new required sections."
+        },
+        {
+          "patch_id": "L2-SPEC-005",
+          "operation_type": "insert_object_member",
+          "json_pointer": "/data_structures",
+          "member_name": "shared_core_architecture_contract",
+          "new_value": {
+            "description": "Shared-core / thin-wrapper deterministic architecture contract for CLI-oriented implementations.",
+            "structure": {
+              "shared_core_required": "boolean - business logic must reside outside CLI wrappers",
+              "thin_cli_wrapper_required": "boolean - CLI wrappers may only normalize input, invoke shared-core, and present output",
+              "standard_io_contract": "object - allowed handoff modes and machine-output defaults",
+              "concurrent_state_policy": "object - required backend and concurrent-writer policy",
+              "packaging_policy": "object - pyproject and entry-point requirements"
+            },
+            "purpose": "Prevent business-logic drift into entrypoints and standardize handoff/state/packaging behavior."
+          },
+          "purpose": "Define shared-core architecture semantics."
+        },
+        {
+          "patch_id": "L2-SPEC-006",
+          "operation_type": "insert_object_member",
+          "json_pointer": "/data_structures",
+          "member_name": "agent_context_contract",
+          "new_value": {
+            "description": "Deterministic context-injection contract for CLI coding agents.",
+            "structure": {
+              "required_context_files": "array - files such as CLAUDE.md, AGENTS.md, .aider.conf",
+              "minimum_required_context_sections": "array - mandatory rule categories inside the context files",
+              "required_contract_artifacts": "array - machine-readable interface and schema stubs",
+              "post_write_hook_command": "string - command every agent must run before marking work complete"
+            },
+            "purpose": "Ensure agents receive the same codebase constitution every session."
+          },
+          "purpose": "Define context-injection semantics."
+        },
+        {
+          "patch_id": "L2-SPEC-007",
+          "operation_type": "insert_object_member",
+          "json_pointer": "/data_structures",
+          "member_name": "compatibility_enforcement_stack",
+          "new_value": {
+            "description": "Compatibility stack enforcing static analysis, boundary schemas, dependency layering, and audit loops.",
+            "structure": {
+              "static_analysis": "object - required post-write commands",
+              "boundary_schema_policy": "object - shared boundary types and schema directory",
+              "dependency_direction_policy": "object - layer order and forbidden import classes",
+              "drift_audit_loop": "object - audit script, report path, CI/pre-commit requirements"
+            },
+            "purpose": "Make codebase compatibility structural rather than advisory."
+          },
+          "purpose": "Define compatibility-stack semantics."
+        },
+        {
+          "patch_id": "L2-SPEC-008",
+          "operation_type": "extend_existing_definition",
+          "json_pointer": "/data_structures/step_contract",
+          "fields_to_add": {
+            "context_binding": {
+              "type": "object",
+              "description": "Binding to the context profile required for this step"
+            },
+            "boundary_contract_binding": {
+              "type": "object",
+              "description": "References to interface contracts, schemas, and dependency-rule profiles for this step"
+            },
+            "packaging_binding": {
+              "type": "object",
+              "description": "Packaging/entry-point declaration for executable tools produced or modified by this step"
+            },
+            "state_coordination_binding": {
+              "type": "object",
+              "description": "State backend and concurrent-write policy required by this step"
+            }
+          },
+          "purpose": "Make layer-2 fields part of the formal step contract."
+        },
+        {
+          "patch_id": "L2-SPEC-009",
+          "operation_type": "append_array_items",
+          "json_pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry",
+          "items": [
+            {
+              "id": "GATE-CFGCTX-001",
+              "name": "Shared Core Architecture",
+              "script": "validate_shared_core_architecture.py",
+              "purpose": "Verify shared-core/thin-wrapper, standard-I/O, concurrent-state, and packaging defaults are declared and valid"
+            },
+            {
+              "id": "GATE-CFGCTX-002",
+              "name": "Agent Context Contract",
+              "script": "validate_agent_context_contract.py",
+              "purpose": "Verify required context files and machine-readable contract artifacts are declared"
+            },
+            {
+              "id": "GATE-CFGCTX-003",
+              "name": "Boundary & Dependency Contract",
+              "script": "validate_boundary_dependency_contracts.py",
+              "purpose": "Verify boundary-type policy and dependency-direction rules"
+            },
+            {
+              "id": "GATE-CFGCTX-004",
+              "name": "Packaging Profile",
+              "script": "validate_packaging_profiles.py",
+              "purpose": "Verify pyproject and entry-point requirements"
+            },
+            {
+              "id": "GATE-CFGCTX-005",
+              "name": "Compatibility Audit",
+              "script": "audit_contracts.py",
+              "purpose": "Run codebase compatibility audit and fail on drift"
+            }
+          ],
+          "purpose": "Add layer-2 gates to gate registry."
+        },
+        {
+          "patch_id": "L2-SPEC-010",
+          "operation_type": "append_array_items",
+          "json_pointer": "/workflows/plan_generation_workflow/steps",
+          "items": [
+            {
+              "step": 5.5,
+              "actor": "AI Agent",
+              "action": "Resolve deterministic context and shared-core architecture bindings",
+              "tasks": [
+                "Select shared_core_architecture_contract values",
+                "Bind context profiles and required context files",
+                "Bind boundary contracts and dependency-rule profile",
+                "Bind packaging and state-coordination policy"
+              ],
+              "outputs": [
+                "Layer-2 deterministic context bindings"
+              ]
+            }
+          ],
+          "purpose": "Integrate layer-2 resolution into plan generation workflow."
+        }
+      ]
+    },
+    "instruction_document": {
+      "target_file": "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json",
+      "resulting_version": "3.3.0",
+      "patches": [
+        {
+          "patch_id": "L2-INST-001",
+          "operation_type": "update_markdown_content",
+          "target_markdown_heading": "## Overview",
+          "instruction_delta": [
+            "State that v3.3 additionally requires deterministic shared-core / thin-wrapper architecture rules, mandatory agent-context injection, and a compatibility enforcement stack."
+          ],
+          "purpose": "Extend overview with layer-2 scope."
+        },
+        {
+          "patch_id": "L2-INST-002",
+          "operation_type": "update_markdown_content",
+          "target_markdown_heading": "## General principles",
+          "instruction_delta": [
+            "Add a principle that CLI-oriented implementations must separate shared-core business logic from thin entrypoint wrappers.",
+            "Add a principle that every agent session must load validated context artifacts before code generation or modification.",
+            "Add a principle that boundary types, dependency direction, and audit loops are mandatory structural controls, not optional quality checks."
+          ],
+          "purpose": "Promote layer-2 controls to general principles."
+        },
+        {
+          "patch_id": "L2-INST-003",
+          "operation_type": "insert_markdown_section",
+          "target_position_after_heading": "### `execution_patterns`",
+          "new_heading": "### `shared_core_architecture_contract`",
+          "markdown_body_lines": [
+            "Populate this section whenever the plan involves CLI tools, wrappers, commands, or executable entrypoints.",
+            "Set `shared_core_required: true` unless the step is explicitly `NOT_AUTOMATABLE`.",
+            "Set `thin_cli_wrapper_required: true` and ensure wrappers only parse input, invoke shared-core code, and present output.",
+            "Declare `standard_io_contract`, `concurrent_state_policy`, and `packaging_policy` explicitly.",
+            "Use SQLite as the default shared-state backend for simultaneous local writers unless a stronger managed store is explicitly justified."
+          ],
+          "purpose": "Tell the AI how to fill the new architecture contract."
+        },
+        {
+          "patch_id": "L2-INST-004",
+          "operation_type": "insert_markdown_section",
+          "target_position_after_heading": "### `shared_core_architecture_contract`",
+          "new_heading": "### `agent_context_contract`",
+          "markdown_body_lines": [
+            "Populate `required_context_files` with `CLAUDE.md`, `AGENTS.md`, and `.aider.conf` when CLI coding agents are part of execution or remediation.",
+            "Treat these files as mandatory governance inputs, not convenience documentation.",
+            "Also declare required machine-readable contract artifacts such as Python stubs, JSON schemas, TypedDict definitions, or Pydantic models."
+          ],
+          "purpose": "Teach the AI to formalize context injection."
+        },
+        {
+          "patch_id": "L2-INST-005",
+          "operation_type": "insert_markdown_section",
+          "target_position_after_heading": "### `agent_context_contract`",
+          "new_heading": "### `compatibility_enforcement_stack`",
+          "markdown_body_lines": [
+            "Populate required static-analysis commands, boundary-schema rules, dependency-direction policy, and drift-audit configuration.",
+            "Do not mark a tool-producing or code-modifying step complete unless the declared post-write hook command passes.",
+            "Treat import-layering and boundary-schema violations as structural failures, not warnings."
+          ],
+          "purpose": "Teach the AI to fill the compatibility stack."
+        },
+        {
+          "patch_id": "L2-INST-006",
+          "operation_type": "update_markdown_content",
+          "target_markdown_heading": "### `step_contracts`",
+          "instruction_delta": [
+            "Require `context_binding`, `boundary_contract_binding`, `packaging_binding`, and `state_coordination_binding` for every executable step that generates or modifies code, CLI tools, contracts, or schemas.",
+            "Reject steps that create CLI entrypoints without shared-core binding or packaging binding.",
+            "Reject steps that share flat-file mutable state across concurrent writers."
+          ],
+          "purpose": "Make layer-2 step fields mandatory."
+        },
+        {
+          "patch_id": "L2-INST-007",
+          "operation_type": "update_markdown_content",
+          "target_markdown_heading": "### `validation_gates`",
+          "instruction_delta": [
+            "Add GATE-CFGCTX-001 through GATE-CFGCTX-005 to plans that involve CLI coding agents, code generation, or code modification.",
+            "These gates must be listed in `pipeline_boundary_contract.validation_required_before_execution`."
+          ],
+          "purpose": "Require layer-2 gates."
+        },
+        {
+          "patch_id": "L2-INST-008",
+          "operation_type": "update_markdown_content",
+          "target_markdown_heading": "### `ai_instructions`",
+          "instruction_delta": [
+            "Remind the AI that context files, contract stubs, boundary schemas, and dependency rules are mandatory governance inputs.",
+            "Remind the AI that packaging and entry-point declarations are required for executable CLI tools.",
+            "Remind the AI that compatibility audits must feed back into subsequent repair steps without changing approved behavior contracts."
+          ],
+          "purpose": "Reflect layer-2 rules in final AI reminders."
+        }
+      ]
+    }
+  },
+  "required_new_supporting_artifacts": {
+    "context_files": [
+      {
+        "path": "templates/CLAUDE.md.template",
+        "purpose": "Canonical context template containing module contracts, naming conventions, forbidden patterns, import rules, gate commands, and definition of done."
+      },
+      {
+        "path": "templates/AGENTS.md.template",
+        "purpose": "Alternate agent-context template for tools that consume AGENTS.md."
+      },
+      {
+        "path": "templates/.aider.conf.example",
+        "purpose": "Canonical Aider context/profile template aligned with the same governance fields."
+      }
+    ],
+    "contracts": [
+      {
+        "path": "contracts/io_contract.py",
+        "purpose": "Machine-readable example boundary contract for inter-module I/O."
+      },
+      {
+        "path": "contracts/module_contracts/example_contract.py",
+        "purpose": "Stub pattern for module interface contracts that agents must consume."
+      }
+    ],
+    "configs": [
+      {
+        "path": ".importlinter",
+        "purpose": "Dependency-direction contract enforcing cli -> services -> core -> schemas layering."
+      },
+      {
+        "path": "pyproject.toml",
+        "purpose": "Defines console-script entry points and package metadata for unified packaging."
+      },
+      {
+        "path": ".pre-commit-config.yaml",
+        "purpose": "Local hook runner for deterministic validation stack."
+      }
+    ],
+    "schemas": [
+      {
+        "path": "schemas/shared_core_architecture_contract.schema.json",
+        "purpose": "Validate shared-core/thin-wrapper, I/O, state, and packaging contract."
+      },
+      {
+        "path": "schemas/agent_context_contract.schema.json",
+        "purpose": "Validate required context files and contract artifacts."
+      },
+      {
+        "path": "schemas/compatibility_enforcement_stack.schema.json",
+        "purpose": "Validate static-analysis, layering, audit, and CI/pre-commit controls."
+      },
+      {
+        "path": "schemas/context_binding.schema.json",
+        "purpose": "Validate step-level context binding object."
+      },
+      {
+        "path": "schemas/boundary_contract_binding.schema.json",
+        "purpose": "Validate step-level boundary contract binding object."
+      },
+      {
+        "path": "schemas/packaging_binding.schema.json",
+        "purpose": "Validate step-level packaging binding object."
+      },
+      {
+        "path": "schemas/state_coordination_binding.schema.json",
+        "purpose": "Validate step-level state-coordination binding object."
+      }
+    ],
+    "scripts": [
+      {
+        "path": "scripts/validate_shared_core_architecture.py",
+        "purpose": "Validate shared-core/thin-wrapper contract, handoff modes, state backend, and packaging profile."
+      },
+      {
+        "path": "scripts/validate_agent_context_contract.py",
+        "purpose": "Validate context files, required sections, and contract-artifact declarations."
+      },
+      {
+        "path": "scripts/validate_boundary_dependency_contracts.py",
+        "purpose": "Validate boundary-schema declarations and dependency-direction policy."
+      },
+      {
+        "path": "scripts/validate_packaging_profiles.py",
+        "purpose": "Validate pyproject and entry-point requirements."
+      },
+      {
+        "path": "scripts/validate_compatibility_stack.py",
+        "purpose": "Validate compatibility_enforcement_stack section and required command declarations."
+      },
+      {
+        "path": "tools/audit_contracts.py",
+        "purpose": "Run deterministic drift audit against contracts, imports, schemas, and registry references."
+      }
+    ],
+    "tests": [
+      {
+        "path": "tests/test_shared_core_architecture.py",
+        "purpose": "Reject business logic in wrappers, missing SQLite default, or absent packaging declarations."
+      },
+      {
+        "path": "tests/test_agent_context_contract.py",
+        "purpose": "Reject missing context files, missing sections, or absent contract artifacts."
+      },
+      {
+        "path": "tests/test_boundary_dependency_contracts.py",
+        "purpose": "Reject forbidden import directions or missing boundary schema declarations."
+      },
+      {
+        "path": "tests/test_packaging_profiles.py",
+        "purpose": "Reject missing entry points or loose unregistered scripts."
+      },
+      {
+        "path": "tests/test_audit_contracts.py",
+        "purpose": "Verify drift audit detects declared violation classes and emits deterministic reports."
+      }
+    ]
+  },
+  "execution_order": [
+    {
+      "stage": 1,
+      "name": "apply_layer_2_template_patches",
+      "depends_on": [
+        "NPP-V3_3-PATCH-IMPLEMENTATION-BEHAVIOR-001"
+      ],
+      "outputs": [
+        "template_v3_3_candidate_layer2"
+      ]
+    },
+    {
+      "stage": 2,
+      "name": "apply_layer_2_technical_spec_patches",
+      "depends_on": [
+        "apply_layer_2_template_patches"
+      ],
+      "outputs": [
+        "technical_spec_v3_3_candidate_layer2"
+      ]
+    },
+    {
+      "stage": 3,
+      "name": "apply_layer_2_instruction_patches",
+      "depends_on": [
+        "apply_layer_2_template_patches",
+        "apply_layer_2_technical_spec_patches"
+      ],
+      "outputs": [
+        "instruction_document_v3_3_candidate_layer2"
+      ]
+    },
+    {
+      "stage": 4,
+      "name": "create_layer_2_supporting_artifacts",
+      "depends_on": [
+        "apply_layer_2_template_patches",
+        "apply_layer_2_technical_spec_patches",
+        "apply_layer_2_instruction_patches"
+      ],
+      "outputs": [
+        "context_templates",
+        "contracts",
+        "compatibility_schemas",
+        "compatibility_validators",
+        "audit_tooling",
+        "layer_2_tests"
+      ]
+    },
+    {
+      "stage": 5,
+      "name": "run_layer_2_validation_suite",
+      "depends_on": [
+        "create_layer_2_supporting_artifacts"
+      ],
+      "outputs": [
+        "layer_2_schema_validation_report",
+        "layer_2_gate_validation_report",
+        "layer_2_audit_report",
+        "layer_2_test_results",
+        "layer_2_evidence_bundle"
+      ]
+    }
+  ],
+  "acceptance_criteria": {
+    "template_acceptance": [
+      "shared_core_architecture_contract, agent_context_contract, and compatibility_enforcement_stack exist at top level and validate against schema.",
+      "Every executable code-producing or code-modifying step can declare context_binding, boundary_contract_binding, packaging_binding, and state_coordination_binding.",
+      "validation_gates contains GATE-CFGCTX-001 through GATE-CFGCTX-005.",
+      "pipeline_boundary_contract blocks execution when deterministic context or compatibility controls are missing."
+    ],
+    "technical_spec_acceptance": [
+      "Root structure marks the three new layer-2 sections as required.",
+      "Section purpose map documents all three new sections.",
+      "Step contract definition includes the four new layer-2 binding objects.",
+      "Gate registry documents GATE-CFGCTX-001 through GATE-CFGCTX-005."
+    ],
+    "instruction_acceptance": [
+      "Instructions explicitly require shared-core/thin-wrapper separation for CLI-oriented implementations.",
+      "Instructions explicitly require context files and machine-readable contract artifacts for CLI coding agents.",
+      "Instructions require compatibility stack and audit loop population when code generation or modification is planned."
+    ],
+    "runtime_acceptance": [
+      "validate_shared_core_architecture.py exits non-zero on missing shared-core/thin-wrapper declarations.",
+      "validate_agent_context_contract.py exits non-zero on missing context files or contract artifacts.",
+      "audit_contracts.py emits deterministic evidence under .state/evidence/context/ and fails on forbidden import directions or missing boundary schemas."
+    ]
+  },
+  "failure_conditions": [
+    "Any of the three new top-level layer-2 sections are missing after patch application.",
+    "Any executable CLI-producing or code-modifying step lacks the required layer-2 binding objects when applicable.",
+    "Layer-2 gates are absent from validation_gates or omitted from pipeline boundary validation requirements.",
+    "Context files remain advisory rather than execution-blocking governance inputs.",
+    "Shared mutable flat files remain allowed for concurrent writers without explicit justified exception.",
+    "Packaging policy allows loose unregistered executable scripts without pyproject entry-point governance."
+  ],
+  "cli_execution_hints": {
+    "preferred_mutation_strategy": "apply_after_layer1_rfc6902_patch_batches",
+    "pointer_resolution_policy": "object_keys_preferred_over_array_indices_when_available",
+    "array_mutation_policy": "append_by_id_then_normalize",
+    "normalization_required_after_patch": true,
+    "suggested_commands": [
+      "python scripts/NEWPHASEPLANPROCESS_plan_cli.py validate --plan-file <candidate>",
+      "python scripts/validate_shared_core_architecture.py --plan-file <candidate>",
+      "python scripts/validate_agent_context_contract.py --plan-file <candidate>",
+      "python scripts/validate_boundary_dependency_contracts.py --plan-file <candidate>",
+      "python scripts/validate_packaging_profiles.py --plan-file <candidate>",
+      "python tools/audit_contracts.py --plan-file <candidate>"
+    ]
+  }
+}

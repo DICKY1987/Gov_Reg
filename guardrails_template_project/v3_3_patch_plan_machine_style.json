@@ -1,0 +1,833 @@
+{
+  "patch_plan_metadata": {
+    "plan_id": "NPP-V3_3-PATCH-IMPLEMENTATION-BEHAVIOR-001",
+    "plan_version": "1.0.0",
+    "target_release": "3.3.0",
+    "plan_type": "machine_optimized_patch_plan",
+    "execution_mode": "cli_consumable",
+    "serialization": {
+      "format": "json",
+      "canonicalization_required": true,
+      "pointer_standard": "RFC-6901",
+      "mutation_standard": "RFC-6902"
+    },
+    "objective": "Upgrade newPhasePlanProcess v3.2.x to v3.3.0 by adding deterministic implementation-behavior governance, explicit engine/spec separation controls, step-level behavior bindings, and mandatory behavior validation gates across template, technical specification, and instruction document.",
+    "source_documents": [
+      {
+        "logical_id": "template",
+        "path": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+        "current_version": "3.2.0",
+        "role": "primary_mutation_target"
+      },
+      {
+        "logical_id": "technical_spec",
+        "path": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+        "current_version": "3.2.0",
+        "role": "authoritative_semantics_target"
+      },
+      {
+        "logical_id": "instruction_document",
+        "path": "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json",
+        "current_version": "3.2.0",
+        "role": "ai_generation_rules_target"
+      }
+    ],
+    "governing_constraints": [
+      "NO_IMPLIED_BEHAVIOR",
+      "PATTERN_FIRST_EXECUTION",
+      "FAIL_CLOSED_GUARDRAILS",
+      "MECHANICAL_VERIFICATION_REQUIRED",
+      "JSON_POINTER_ADDRESSING_FOR_PATCH_TARGETS"
+    ]
+  },
+  "design_intent": {
+    "problem_statement": [
+      "v3.2 already supports pattern-first execution, plan-as-canonical-input, explicit contracts, protected paths, anti-pattern detection, and fail-closed guardrail policy, but it does not yet make deterministic implementation behavior a first-class governed surface.",
+      "v3.2 binds tasks to patterns but still leaves a gap between structural pattern selection and concrete implementation-behavior policy.",
+      "v3.3 must prevent implicit or ad hoc implementation-style decisions by requiring explicit defaults profiles, conditional situational rules, step-level resolved behavior bindings, and mandatory validation of those bindings before execution."
+    ],
+    "solution_model": {
+      "new_control_layer": "implementation_behavior_contract",
+      "control_stack": [
+        "behavior policy",
+        "execution pattern",
+        "step contract binding",
+        "validation gates",
+        "evidence artifacts",
+        "anti-pattern detection"
+      ],
+      "required_properties": [
+        "deterministic defaults",
+        "condition-action situational rules",
+        "step-level resolved behavior binding",
+        "registered executor linkage",
+        "fail-closed validation",
+        "evidence-backed enforcement"
+      ]
+    }
+  },
+  "global_change_set": {
+    "breaking_change_required": true,
+    "new_sections_required": [
+      "implementation_behavior_contract"
+    ],
+    "new_step_fields_required": [
+      "behavior_binding"
+    ],
+    "new_execution_pattern_fields_required": [
+      "behavior_profile_id",
+      "situational_rule_ids"
+    ],
+    "new_traceability_maps_required": [
+      "requirement_to_behavior_rule",
+      "component_to_behavior_profile",
+      "step_to_behavior_rule"
+    ],
+    "new_validation_gates_required": [
+      "GATE-BEH-001",
+      "GATE-BEH-002",
+      "GATE-BEH-003"
+    ],
+    "schema_follow_up_required": true
+  },
+  "document_patch_plans": {
+    "template": {
+      "target_file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+      "resulting_version": "3.3.0",
+      "patches": [
+        {
+          "patch_id": "TPL-001",
+          "operation_type": "update_value",
+          "json_pointer": "/template_metadata/version",
+          "new_value": "3.3.0",
+          "purpose": "Bump template version to 3.3.0."
+        },
+        {
+          "patch_id": "TPL-002",
+          "operation_type": "update_value",
+          "json_pointer": "/template_metadata/last_updated",
+          "new_value": "REPLACE_AT_EXECUTION_TIME",
+          "purpose": "Set release date when patch is applied."
+        },
+        {
+          "patch_id": "TPL-003",
+          "operation_type": "append_array_items",
+          "json_pointer": "/template_metadata/breaking_changes",
+          "items": [
+            "Added implementation_behavior_contract top-level governance section for deterministic implementation defaults and situational behavior rules.",
+            "Extended execution_patterns mappings with behavior_profile_id and situational_rule_ids.",
+            "Extended step_contracts with mandatory behavior_binding object describing resolved behavior for each executable step.",
+            "Extended planning_hierarchy with behavior-profile declarations at module/component scope.",
+            "Extended traceability with requirement/component/step behavior mappings.",
+            "Added validation gates GATE-BEH-001, GATE-BEH-002, and GATE-BEH-003 and made them eligible for pipeline-boundary pre-execution enforcement."
+          ],
+          "purpose": "Record all v3.3 breaking changes in template metadata."
+        },
+        {
+          "patch_id": "TPL-004",
+          "operation_type": "append_array_items",
+          "json_pointer": "/critical_constraint/rules",
+          "items": [
+            "All executable implementation behavior MUST resolve through implementation_behavior_contract defaults plus triggered situational rules; implicit behavior selection is forbidden.",
+            "Every executable step MUST declare behavior_binding with resolved behavior and validation evidence.",
+            "Behavioral variability MUST live in approved defaults, approved situational rules, pattern parameters, or explicit config artifacts; ad hoc behavioral prose is non-authoritative.",
+            "If behavior resolution is ambiguous, planning MUST fail closed before execution."
+          ],
+          "purpose": "Elevate deterministic implementation behavior to critical constraint status."
+        },
+        {
+          "patch_id": "TPL-005",
+          "operation_type": "append_array_items",
+          "json_pointer": "/usage_instructions/steps",
+          "items": [
+            "Populate implementation_behavior_contract before completing execution_patterns or step_contracts.",
+            "Resolve default behavior profile and situational rules for every executable step and record them in behavior_binding.",
+            "Add behavior validation gates to pipeline_boundary_contract.validation_required_before_execution when implementation behavior governance is enabled."
+          ],
+          "purpose": "Make behavior-governance fill order explicit."
+        },
+        {
+          "patch_id": "TPL-006",
+          "operation_type": "add_object_member_after",
+          "anchor_json_pointer": "/execution_patterns",
+          "member_name": "implementation_behavior_contract",
+          "member_value": {
+            "enabled": true,
+            "enforcement_mode": "fail_closed",
+            "defaults_profile_id": "BEHAVIOR-DEFAULTS-001",
+            "defaults": {
+              "language": "python",
+              "naming_convention": "snake_case",
+              "path_handling": "pathlib",
+              "error_handling": "EAFP",
+              "machine_output": "json",
+              "cli_framework": "click",
+              "type_hints_required": true,
+              "docstring_style": "google",
+              "logging_mode": "structured",
+              "shared_core_required": true,
+              "thin_cli_wrapper_required": true
+            },
+            "situational_rules": [
+              {
+                "rule_id": "BEH-001",
+                "condition": "task_kind == 'cli_wrapper'",
+                "required_behavior": {
+                  "thin_cli_wrapper_required": true,
+                  "shared_core_required": true
+                },
+                "validation_command": "python scripts/validate_behavior_rule.py --rule-id BEH-001 --plan-file {plan_file}",
+                "expect_exit_code": 0,
+                "evidence": ".state/evidence/behavior/BEH-001.json",
+                "violation_action": "fail_step"
+              },
+              {
+                "rule_id": "BEH-002",
+                "condition": "interacts_with_other_tools == true",
+                "required_behavior": {
+                  "machine_output": "json"
+                },
+                "validation_command": "python scripts/validate_behavior_rule.py --rule-id BEH-002 --plan-file {plan_file}",
+                "expect_exit_code": 0,
+                "evidence": ".state/evidence/behavior/BEH-002.json",
+                "violation_action": "fail_step"
+              },
+              {
+                "rule_id": "BEH-003",
+                "condition": "cross_platform_support == true",
+                "required_behavior": {
+                  "path_handling": "pathlib"
+                },
+                "validation_command": "python scripts/validate_behavior_rule.py --rule-id BEH-003 --plan-file {plan_file}",
+                "expect_exit_code": 0,
+                "evidence": ".state/evidence/behavior/BEH-003.json",
+                "violation_action": "fail_step"
+              }
+            ],
+            "override_policy": {
+              "override_allowed": false,
+              "manual_exception_path": "NOT_AUTOMATABLE_OR_MANUAL_REVIEW_ONLY",
+              "override_evidence_required": true
+            },
+            "validation": {
+              "validate_defaults_command": "python scripts/validate_behavior_profiles.py --plan-file {plan_file}",
+              "validate_resolution_command": "python scripts/validate_behavior_resolution.py --plan-file {plan_file}",
+              "validate_step_compliance_command": "python scripts/validate_step_behavior_compliance.py --plan-file {plan_file}",
+              "expect_exit_code": 0
+            },
+            "evidence": {
+              "directory": ".state/evidence/behavior",
+              "required_files": [
+                "defaults_validation.json",
+                "resolution_validation.json",
+                "step_behavior_compliance.json"
+              ]
+            }
+          },
+          "purpose": "Add the new top-level behavior governance section."
+        },
+        {
+          "patch_id": "TPL-007",
+          "operation_type": "merge_object_fields",
+          "json_pointer": "/execution_patterns",
+          "fields": {
+            "behavior_profiles_required": true,
+            "situational_rules_allowed": true,
+            "require_behavior_binding_per_step": true
+          },
+          "purpose": "Promote behavior governance to execution-pattern contract layer."
+        },
+        {
+          "patch_id": "TPL-008",
+          "operation_type": "extend_array_item_schema_example",
+          "json_pointer": "/execution_patterns/task_pattern_mappings",
+          "example_item_fields": {
+            "behavior_profile_id": "BEHAVIOR-DEFAULTS-001",
+            "situational_rule_ids": [
+              "BEH-001",
+              "BEH-002"
+            ]
+          },
+          "purpose": "Require task kind to carry behavior linkage."
+        },
+        {
+          "patch_id": "TPL-009",
+          "operation_type": "merge_object_fields",
+          "json_pointer": "/planning_hierarchy",
+          "fields": {
+            "behavior_governance_required": true,
+            "system_level_behavior_profile": null,
+            "module_level_required_fields": [
+              "behavior_profile_id"
+            ],
+            "component_level_required_fields": [
+              "behavior_profile_id",
+              "approved_situational_rule_ids"
+            ]
+          },
+          "purpose": "Push behavior declaration into decomposition layers."
+        },
+        {
+          "patch_id": "TPL-010",
+          "operation_type": "merge_object_fields",
+          "json_pointer": "/traceability",
+          "fields": {
+            "requirement_to_behavior_rule": [],
+            "component_to_behavior_profile": [],
+            "step_to_behavior_rule": []
+          },
+          "purpose": "Add behavior traceability maps."
+        },
+        {
+          "patch_id": "TPL-011",
+          "operation_type": "append_array_items",
+          "json_pointer": "/pipeline_boundary_contract/validation_required_before_execution",
+          "items": [
+            "GATE-BEH-001",
+            "GATE-BEH-002",
+            "GATE-BEH-003"
+          ],
+          "purpose": "Make behavior validation mandatory before execution."
+        },
+        {
+          "patch_id": "TPL-012",
+          "operation_type": "merge_object_fields",
+          "json_pointer": "/pipeline_boundary_contract",
+          "fields": {
+            "behavior_policy_input_required": true,
+            "forbid_runtime_behavior_override": true,
+            "behavior_resolution_must_be_complete": true
+          },
+          "purpose": "Close runtime override loopholes."
+        },
+        {
+          "patch_id": "TPL-013",
+          "operation_type": "append_nested_required_fields",
+          "json_pointer": "/step_contracts/*/*",
+          "fields": {
+            "behavior_binding": {
+              "defaults_profile_id": "BEHAVIOR-DEFAULTS-001",
+              "triggered_rule_ids": [],
+              "resolved_behavior": {},
+              "override_used": false,
+              "validation_evidence": ".state/evidence/{phase}/{step_id}/behavior_binding.json"
+            }
+          },
+          "purpose": "Require per-step resolved behavior declaration."
+        },
+        {
+          "patch_id": "TPL-014",
+          "operation_type": "append_array_items",
+          "json_pointer": "/anti_pattern_detection/triggers",
+          "items": [
+            "behavior_resolution_missing",
+            "behavior_override_attempt",
+            "step_without_behavior_binding",
+            "pattern_behavior_mismatch"
+          ],
+          "purpose": "Add behavior-specific anti-pattern detection."
+        },
+        {
+          "patch_id": "TPL-015",
+          "operation_type": "append_array_items",
+          "json_pointer": "/validation_gates",
+          "items": [
+            {
+              "gate_id": "GATE-BEH-001",
+              "phase": null,
+              "step_id": null,
+              "purpose": "Defaults profile complete and valid",
+              "command": "python scripts/validate_behavior_profiles.py --plan-file {plan_file}",
+              "timeout_sec": 120,
+              "retries": 0,
+              "expect_exit_code": 0,
+              "expect_stdout_regex": [
+                "/behavior_profiles_valid: true/"
+              ],
+              "forbid_stdout_regex": [
+                "/FAILED|invalid/i"
+              ],
+              "expect_files": [
+                {
+                  "path": ".state/evidence/behavior/defaults_validation.json",
+                  "content_regex": [
+                    "/\"passed\": true/"
+                  ]
+                }
+              ],
+              "evidence": ".state/evidence/behavior"
+            },
+            {
+              "gate_id": "GATE-BEH-002",
+              "phase": null,
+              "step_id": null,
+              "purpose": "Situational behavior rules resolve deterministically",
+              "command": "python scripts/validate_behavior_resolution.py --plan-file {plan_file}",
+              "timeout_sec": 120,
+              "retries": 0,
+              "expect_exit_code": 0,
+              "expect_stdout_regex": [
+                "/behavior_resolution_valid: true/"
+              ],
+              "forbid_stdout_regex": [
+                "/FAILED|ambiguous/i"
+              ],
+              "expect_files": [
+                {
+                  "path": ".state/evidence/behavior/resolution_validation.json",
+                  "content_regex": [
+                    "/\"passed\": true/"
+                  ]
+                }
+              ],
+              "evidence": ".state/evidence/behavior"
+            },
+            {
+              "gate_id": "GATE-BEH-003",
+              "phase": null,
+              "step_id": null,
+              "purpose": "Step contracts conform to resolved behavior bindings",
+              "command": "python scripts/validate_step_behavior_compliance.py --plan-file {plan_file}",
+              "timeout_sec": 180,
+              "retries": 0,
+              "expect_exit_code": 0,
+              "expect_stdout_regex": [
+                "/step_behavior_compliance_valid: true/"
+              ],
+              "forbid_stdout_regex": [
+                "/FAILED|missing behavior_binding/i"
+              ],
+              "expect_files": [
+                {
+                  "path": ".state/evidence/behavior/step_behavior_compliance.json",
+                  "content_regex": [
+                    "/\"passed\": true/"
+                  ]
+                }
+              ],
+              "evidence": ".state/evidence/behavior"
+            }
+          ],
+          "purpose": "Introduce mandatory behavior-governance gates."
+        }
+      ]
+    },
+    "technical_spec": {
+      "target_file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+      "resulting_version": "3.3.0",
+      "patches": [
+        {
+          "patch_id": "SPEC-001",
+          "operation_type": "update_value",
+          "json_pointer": "/document_metadata/version",
+          "new_value": "3.3.0",
+          "purpose": "Bump technical specification version."
+        },
+        {
+          "patch_id": "SPEC-002",
+          "operation_type": "append_array_items",
+          "json_pointer": "/executive_summary/key_capabilities",
+          "items": [
+            "Deterministic implementation behavior governance via implementation_behavior_contract",
+            "Step-level behavior binding proof for every executable step",
+            "Behavior defaults profiles and situational rule resolution with fail-closed validation"
+          ],
+          "purpose": "Advertise new capability set."
+        },
+        {
+          "patch_id": "SPEC-003",
+          "operation_type": "append_array_items",
+          "json_pointer": "/executive_summary/design_principles",
+          "items": [
+            "DETERMINISTIC IMPLEMENTATION BEHAVIOR: Defaults and situational rules must be declared and mechanically validated before execution.",
+            "EXPLICIT BEHAVIOR RESOLUTION: Step behavior must be computable from policy plus pattern binding, never inferred from prose alone."
+          ],
+          "purpose": "Elevate behavior governance to design principle status."
+        },
+        {
+          "patch_id": "SPEC-004",
+          "operation_type": "insert_array_item_after_value",
+          "json_pointer": "/data_structures/plan_document/root_structure/required_sections",
+          "after_value": "execution_patterns",
+          "item": "implementation_behavior_contract",
+          "purpose": "Make new section formally required in plan structure."
+        },
+        {
+          "patch_id": "SPEC-005",
+          "operation_type": "insert_array_item_after_match",
+          "json_pointer": "/data_structures/plan_document/section_purpose_map/sections",
+          "after_match": {
+            "section": "execution_patterns"
+          },
+          "item": {
+            "section": "implementation_behavior_contract",
+            "purpose": "Declare deterministic implementation defaults, situational behavior rules, override policy, and validation/evidence requirements for resolved step behavior.",
+            "example": "\"implementation_behavior_contract\": {\"enabled\": true, \"enforcement_mode\": \"fail_closed\", \"defaults\": {\"path_handling\": \"pathlib\"}}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/implementation_behavior_contract"
+          },
+          "purpose": "Document new top-level section in purpose map."
+        },
+        {
+          "patch_id": "SPEC-006",
+          "operation_type": "merge_object_fields",
+          "json_pointer": "/data_structures/execution_patterns/structure",
+          "fields": {
+            "behavior_profiles_required": "Boolean indicating whether each task-pattern mapping must bind to a behavior defaults profile.",
+            "behavior_profile_id": "Identifier of the defaults profile applied to a task kind.",
+            "situational_rule_ids": "Array of implementation-behavior rule IDs that may modify defaults for the mapped task kind."
+          },
+          "purpose": "Extend execution_patterns data contract."
+        },
+        {
+          "patch_id": "SPEC-007",
+          "operation_type": "add_sibling_object_after",
+          "anchor_json_pointer": "/data_structures/execution_patterns",
+          "member_name": "implementation_behavior_contract",
+          "member_value": {
+            "description": "Policy section governing deterministic implementation defaults and condition-action situational behavior rules.",
+            "structure": {
+              "enabled": "boolean - enable or disable behavior-governance enforcement",
+              "enforcement_mode": "String - fail_closed or warn_only",
+              "defaults_profile_id": "String - identifier of the canonical defaults profile",
+              "defaults": "Object - approved default implementation behavior values",
+              "situational_rules": "Array of rule objects defining condition, required_behavior, validation command, evidence path, and violation action",
+              "override_policy": "Object defining whether overrides are permitted and what evidence they require",
+              "validation": "Commands and expected exit codes for defaults, resolution, and step-compliance checks",
+              "evidence": "Directory and required evidence files for behavior validation"
+            },
+            "purpose": "Provide explicit, mechanically-verifiable implementation-behavior policy that resolves before execution."
+          },
+          "purpose": "Add formal technical definition for the new section."
+        },
+        {
+          "patch_id": "SPEC-008",
+          "operation_type": "merge_object_fields",
+          "json_pointer": "/data_structures/plan_document/step_contract/required_fields",
+          "fields": {
+            "behavior_binding": {
+              "type": "object",
+              "description": "Per-step resolved implementation behavior after combining defaults profile, situational rules, and step context.",
+              "required_fields": {
+                "defaults_profile_id": "string - identifier of defaults profile used",
+                "triggered_rule_ids": "array - behavior rule IDs activated for the step",
+                "resolved_behavior": "object - final computed behavior contract for this step",
+                "override_used": "boolean - whether governed exception path was used",
+                "validation_evidence": "string - evidence path proving behavior resolution and compliance"
+              }
+            }
+          },
+          "purpose": "Extend step contract definition with behavior binding."
+        },
+        {
+          "patch_id": "SPEC-009",
+          "operation_type": "merge_object_fields",
+          "json_pointer": "/data_structures/planning_hierarchy/structure",
+          "fields": {
+            "behavior_profile_binding": "Behavior profile declarations at system, module, and component levels to constrain implementation choices before step generation."
+          },
+          "purpose": "Extend hierarchy semantics."
+        },
+        {
+          "patch_id": "SPEC-010",
+          "operation_type": "merge_object_fields",
+          "json_pointer": "/data_structures/traceability/structure",
+          "fields": {
+            "requirement_to_behavior_rule": "Array mapping high-level requirements to governing behavior rules.",
+            "component_to_behavior_profile": "Array mapping components to their required defaults profiles.",
+            "step_to_behavior_rule": "Array mapping execution packets or step IDs to the behavior rules they must satisfy."
+          },
+          "purpose": "Add traceability semantics for behavior governance."
+        },
+        {
+          "patch_id": "SPEC-011",
+          "operation_type": "append_array_items",
+          "json_pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry",
+          "items": [
+            {
+              "id": "GATE-BEH-001",
+              "name": "Behavior Defaults Validation",
+              "script": "validate_behavior_profiles.py",
+              "purpose": "Validate completeness and correctness of implementation defaults profiles."
+            },
+            {
+              "id": "GATE-BEH-002",
+              "name": "Behavior Resolution Validation",
+              "script": "validate_behavior_resolution.py",
+              "purpose": "Ensure situational rules resolve deterministically without ambiguity."
+            },
+            {
+              "id": "GATE-BEH-003",
+              "name": "Step Behavior Compliance",
+              "script": "validate_step_behavior_compliance.py",
+              "purpose": "Verify every executable step has valid behavior_binding matching policy and pattern context."
+            }
+          ],
+          "purpose": "Register new validation gates in authoritative gate registry."
+        },
+        {
+          "patch_id": "SPEC-012",
+          "operation_type": "append_array_items",
+          "json_pointer": "/workflows/plan_generation_workflow/steps/4/tasks",
+          "items": [
+            "Define implementation_behavior_contract defaults and situational rules",
+            "Bind behavior profiles to task kinds and planning hierarchy nodes"
+          ],
+          "purpose": "Update generation workflow to include behavior governance."
+        },
+        {
+          "patch_id": "SPEC-013",
+          "operation_type": "append_array_items",
+          "json_pointer": "/workflows/plan_generation_workflow/steps/5/for_each_step/tasks",
+          "items": [
+            "Resolve defaults profile and situational rule set for the step",
+            "Write behavior_binding with resolved_behavior and evidence path"
+          ],
+          "purpose": "Update step-definition workflow."
+        },
+        {
+          "patch_id": "SPEC-014",
+          "operation_type": "append_array_items",
+          "json_pointer": "/glossary/terms",
+          "items": [
+            {
+              "term": "Implementation Behavior Contract",
+              "definition": "A top-level policy section declaring deterministic implementation defaults, situational behavior rules, validation commands, and evidence obligations for resolved step behavior."
+            },
+            {
+              "term": "Behavior Binding",
+              "definition": "The resolved per-step implementation behavior computed from the defaults profile, triggered situational rules, and step context."
+            }
+          ],
+          "purpose": "Add formal terminology."
+        }
+      ]
+    },
+    "instruction_document": {
+      "target_file": "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json",
+      "resulting_version": "3.3.0",
+      "patches": [
+        {
+          "patch_id": "INST-001",
+          "operation_type": "update_value",
+          "json_pointer": "/document_metadata/version",
+          "new_value": "3.3.0",
+          "purpose": "Bump instruction document version."
+        },
+        {
+          "patch_id": "INST-002",
+          "operation_type": "replace_markdown_substring",
+          "target": "content",
+          "search": "Version 3.2 extends the v3.1 template with additional fields for baseline capture, concurrency control, rollback planning, evidence requirements, lifecycle state management, reconciliation, canonicalisation, merge policies and platform profiles.",
+          "replace_with": "Version 3.3 extends the v3.2 template with deterministic implementation behavior governance.  In addition to the v3.2 fields for baseline capture, concurrency control, rollback planning, evidence requirements, lifecycle state management, reconciliation, canonicalisation, merge policies and platform profiles, v3.3 adds a mandatory `implementation_behavior_contract` section, behavior-profile bindings on task-pattern mappings, and `behavior_binding` on every executable step."
+        },
+        {
+          "patch_id": "INST-003",
+          "operation_type": "insert_markdown_bullet_after",
+          "target": "content",
+          "after": "- **Pattern‑first execution** – Do not invent bespoke scripts for common tasks.  Instead, map each task kind to a reusable pattern from the pattern registry via the `execution_patterns` section.  If no pattern exists, identify the gap so one can be added.",
+          "bullet": "- **Deterministic implementation behavior** – Do not leave naming conventions, path handling, logging style, CLI surface, machine output format or similar implementation decisions implicit.  Declare defaults and condition-action situational rules in `implementation_behavior_contract`, then bind their resolved result into each executable step via `behavior_binding`."
+        },
+        {
+          "patch_id": "INST-004",
+          "operation_type": "insert_markdown_section_after_heading",
+          "target": "content",
+          "after_heading": "### `execution_patterns`",
+          "section_markdown": "### `implementation_behavior_contract`\nPopulate this mandatory section before finalising `execution_patterns` or `step_contracts`.  Define one authoritative defaults profile covering baseline implementation behavior such as naming convention, path handling, error handling model, machine output format, CLI framework, typing requirements, and logging mode.  Define `situational_rules` as condition→required_behavior objects with explicit `validation_command`, `expect_exit_code`, evidence path, and violation action.  Do not write prose-only preferences; every situational rule must be machine-checkable.  Set `enforcement_mode` to `fail_closed` unless the plan explicitly routes exceptions to manual review.  Define `validation` commands for defaults completeness, behavior resolution, and step compliance, and declare all required evidence files under the section’s `evidence` block."
+        },
+        {
+          "patch_id": "INST-005",
+          "operation_type": "replace_markdown_substring",
+          "target": "content",
+          "search": "For every task kind in your plan (e.g., unit_test, deploy_container, generate_docs), create an entry in `task_pattern_mappings` specifying the `task_kind`, the `pattern_id` from the registry, and any constraints or parameters required by the pattern.",
+          "replace_with": "For every task kind in your plan (e.g., unit_test, deploy_container, generate_docs), create an entry in `task_pattern_mappings` specifying the `task_kind`, the `pattern_id` from the registry, the `behavior_profile_id` that governs default implementation behavior, the `situational_rule_ids` that may alter those defaults, and any constraints or parameters required by the pattern."
+        },
+        {
+          "patch_id": "INST-006",
+          "operation_type": "replace_markdown_substring",
+          "target": "content",
+          "search": "When no pattern exists, set `pattern_id` to `null` and flag that a new pattern is needed.",
+          "replace_with": "When no pattern exists, stop and add a governed pattern-creation path; do not leave executable work with a null `pattern_id`.  Behavior-governed execution may only proceed after a valid pattern and behavior profile binding exist."
+        },
+        {
+          "patch_id": "INST-007",
+          "operation_type": "insert_markdown_list_items_after",
+          "target": "content",
+          "after": "Additionally specify for every step:",
+          "items": [
+            "- `behavior_binding` – record the `defaults_profile_id`, all triggered `rule_ids`, the final `resolved_behavior`, whether any override was used, and the evidence path proving compliance.",
+            "- Do not treat prose in `purpose`, `invariants`, or `commands` as authoritative implementation behavior when `behavior_binding` disagrees; the resolved behavior contract wins."
+          ]
+        },
+        {
+          "patch_id": "INST-008",
+          "operation_type": "insert_markdown_list_items_after",
+          "target": "content",
+          "after": "- Use pattern‑first execution whenever possible via `execution_patterns`.",
+          "items": [
+            "- Populate `implementation_behavior_contract` and fail closed when defaults or situational rules are missing or ambiguous.",
+            "- Bind every executable step to resolved behavior via `behavior_binding` and ensure the evidence path is declared.",
+            "- Add behavior validation gates (`GATE-BEH-001` through `GATE-BEH-003`) to the pipeline boundary when implementation behavior governance is enabled."
+          ]
+        },
+        {
+          "patch_id": "INST-009",
+          "operation_type": "insert_markdown_list_items_after",
+          "target": "content",
+          "after": "- Review the technical specification for definitions and examples of the new sections introduced in v3.2.",
+          "items": [
+            "- Do not allow step generation to outrun behavior-policy definition.  Defaults and situational rules must be defined before step-level commands are finalized.",
+            "- When a component requires a different implementation style, model it as a governed behavior profile or explicit situational rule rather than ad hoc per-step prose."
+          ]
+        }
+      ]
+    }
+  },
+  "required_new_supporting_artifacts": {
+    "scripts": [
+      {
+        "path": "scripts/validate_behavior_profiles.py",
+        "purpose": "Validate defaults profile completeness and approved values."
+      },
+      {
+        "path": "scripts/validate_behavior_resolution.py",
+        "purpose": "Resolve situational rules and fail on ambiguity."
+      },
+      {
+        "path": "scripts/validate_step_behavior_compliance.py",
+        "purpose": "Verify step behavior_binding matches behavior policy and pattern mapping."
+      },
+      {
+        "path": "scripts/validate_behavior_rule.py",
+        "purpose": "Rule-level checker for individual situational rules."
+      }
+    ],
+    "schemas": [
+      {
+        "path": "schemas/implementation_behavior_contract.schema.json",
+        "purpose": "Validate top-level behavior governance section."
+      },
+      {
+        "path": "schemas/behavior_binding.schema.json",
+        "purpose": "Validate step-level behavior binding object."
+      }
+    ],
+    "tests": [
+      {
+        "path": "tests/test_behavior_profiles.py",
+        "purpose": "Validate approved defaults and rejection of invalid defaults."
+      },
+      {
+        "path": "tests/test_behavior_resolution.py",
+        "purpose": "Verify deterministic rule resolution and fail-on-ambiguity."
+      },
+      {
+        "path": "tests/test_step_behavior_compliance.py",
+        "purpose": "Verify missing or mismatched behavior_binding fails validation."
+      }
+    ]
+  },
+  "execution_order": [
+    {
+      "stage": 1,
+      "name": "patch_template",
+      "depends_on": [],
+      "outputs": [
+        "template_v3_3_candidate"
+      ]
+    },
+    {
+      "stage": 2,
+      "name": "patch_technical_spec",
+      "depends_on": [
+        "patch_template"
+      ],
+      "outputs": [
+        "technical_spec_v3_3_candidate"
+      ]
+    },
+    {
+      "stage": 3,
+      "name": "patch_instruction_document",
+      "depends_on": [
+        "patch_template",
+        "patch_technical_spec"
+      ],
+      "outputs": [
+        "instruction_document_v3_3_candidate"
+      ]
+    },
+    {
+      "stage": 4,
+      "name": "create_behavior_supporting_artifacts",
+      "depends_on": [
+        "patch_template",
+        "patch_technical_spec",
+        "patch_instruction_document"
+      ],
+      "outputs": [
+        "behavior_validation_scripts",
+        "behavior_schemas",
+        "behavior_tests"
+      ]
+    },
+    {
+      "stage": 5,
+      "name": "run_validation_suite",
+      "depends_on": [
+        "create_behavior_supporting_artifacts"
+      ],
+      "outputs": [
+        "schema_validation_report",
+        "gate_validation_report",
+        "test_results",
+        "evidence_bundle"
+      ]
+    }
+  ],
+  "acceptance_criteria": {
+    "template_acceptance": [
+      "implementation_behavior_contract exists at top level and validates against schema.",
+      "Every executable step includes behavior_binding.",
+      "execution_patterns mappings can bind behavior profiles and situational rules.",
+      "validation_gates contains GATE-BEH-001, GATE-BEH-002, and GATE-BEH-003.",
+      "pipeline_boundary_contract requires the behavior gates before execution."
+    ],
+    "technical_spec_acceptance": [
+      "Root structure marks implementation_behavior_contract as required.",
+      "Section purpose map documents the new section.",
+      "Step contract definition includes behavior_binding.",
+      "Gate registry documents the three new behavior gates."
+    ],
+    "instruction_acceptance": [
+      "Instructions explicitly require deterministic implementation behavior declaration.",
+      "Instructions forbid null pattern_id for executable work when behavior-governed execution is enabled.",
+      "Instructions require behavior_binding population for every executable step."
+    ],
+    "runtime_acceptance": [
+      "Behavior validation scripts exit 0 on valid plans and non-zero on missing/ambiguous behavior resolution.",
+      "Evidence files are emitted under .state/evidence/behavior/.",
+      "Behavior-specific anti-patterns are detectable through anti_pattern_detection triggers."
+    ]
+  },
+  "failure_conditions": [
+    "Top-level implementation_behavior_contract missing after patch.",
+    "Any executable step lacks behavior_binding.",
+    "Any task-pattern mapping omits required behavior profile linkage.",
+    "Behavior validation gates missing from validation_gates or pipeline boundary.",
+    "Technical specification and instruction document do not reflect new template semantics.",
+    "Behavior resolution allows ambiguity or runtime override without governed exception path."
+  ],
+  "cli_execution_hints": {
+    "preferred_mutation_strategy": "apply_rfc6902_patch_batches",
+    "pointer_resolution_policy": "object_keys_preferred_over_array_indices_when_available",
+    "array_mutation_policy": "append_by_id_then_normalize",
+    "normalization_required_after_patch": true,
+    "suggested_commands": [
+      "python scripts/NEWPHASEPLANPROCESS_plan_cli.py validate --plan-file <candidate>",
+      "python scripts/NEWPHASEPLANPROCESS_plan_cli.py run-gates --plan-file <candidate>",
+      "python scripts/validate_behavior_profiles.py --plan-file <candidate>",
+      "python scripts/validate_behavior_resolution.py --plan-file <candidate>",
+      "python scripts/validate_step_behavior_compliance.py --plan-file <candidate>"
+    ]
+  }
+}

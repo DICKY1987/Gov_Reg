@@ -1,0 +1,799 @@
+{
+  "plan_metadata": {
+    "plan_id": "FINAL_INDEXING_IMPLEMENTATION_PLAN",
+    "plan_version": "1.0.0",
+    "plan_status": "ready_for_cli_execution_after_prerequisites",
+    "document_type": "machine_execution_plan",
+    "format": "json",
+    "intended_executor": "cli_application",
+    "authoring_basis": {
+      "source_documents": [
+        "ChatGPT-Indexing JSON Files Plan.md",
+        "file_Indexing_with_json.txt"
+      ],
+      "consolidation_policy": [
+        "remove duplicates",
+        "remove conversational residue",
+        "retain only actionable implementation content",
+        "preserve hard constraints and prerequisites"
+      ]
+    }
+  },
+  "objective": {
+    "primary_goal": "Implement a deterministic indexing system for three JSON source files that enables stable exact addressing for RFC-6902 patch workflows without making indexes part of source-file SSOT.",
+    "outcome_definition": [
+      "JSON Pointer is the canonical exact locator",
+      "mutable arrays are addressed through compiled semantic-ID to JSON Pointer maps",
+      "generated index artifacts are deterministic and external to source JSON",
+      "Plan CLI normalize and compile flows own index verification and generation",
+      "validation gates fail closed on identity, pointer, and staleness violations"
+    ]
+  },
+  "scope": {
+    "included_source_files": [
+      "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+      "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+      "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json"
+    ],
+    "included_workstreams": [
+      "indexing contract definition",
+      "array classification",
+      "schema changes required for stable identities",
+      "index generator implementation",
+      "index resolver implementation",
+      "Plan CLI integration",
+      "validation gate implementation",
+      "evidence generation"
+    ],
+    "excluded_workstreams": [
+      "inline navigation index as source-file authority",
+      "byte-level indexing",
+      "JSONPath as canonical patch locator",
+      "fine-grained instruction-document indexing without structural refactor"
+    ]
+  },
+  "authoritative_decisions": {
+    "canonical_locator": {
+      "method": "json_pointer",
+      "standard": "RFC-6901",
+      "rules": [
+        "All authoritative patch paths SHALL resolve through JSON Pointer.",
+        "JSONPath MAY be used for discovery or search but SHALL NOT be the authoritative locator.",
+        "Relative JSON Pointer MAY be used only for narrow internal validator or schema-local logic.",
+        "Byte-level indexing SHALL NOT be implemented for this plan.",
+        "Schema fragments MAY be used only when referencing subschemas, not as the main runtime locator."
+      ]
+    },
+    "array_safety_mechanism": {
+      "method": "compiled_id_to_pointer_maps",
+      "description": "Mutable arrays SHALL be addressed by semantic identity through generated maps rather than hardcoded numeric positions.",
+      "examples": [
+        "gate_id -> /validation_gates/<current_index>",
+        "step_id -> /step_contracts/PH-XX/STEP-YYY",
+        "section -> /section_purpose_map/sections/<current_index>"
+      ]
+    },
+    "index_location": {
+      "policy": "external_derived_artifacts",
+      "rules": [
+        "Indexes SHALL NOT be hand-maintained inline inside the three source JSON files.",
+        "Indexes SHALL be regenerated from source JSON.",
+        "Indexes SHALL NOT become editing authority.",
+        "Source JSON remains authoritative content SSOT.",
+        "Generated index JSON becomes authoritative locator artifact for tooling only."
+      ],
+      "target_artifact_paths": [
+        "indexes/NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.index.json",
+        "indexes/NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.index.json",
+        "indexes/NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.index.json"
+      ]
+    },
+    "execution_mode": {
+      "style": "deterministic_fail_closed",
+      "rules": [
+        "No implied behavior.",
+        "No nondeterministic index fields.",
+        "No tolerance for duplicate semantic identifiers in index-eligible arrays.",
+        "No tolerance for missing required identity fields in index-eligible arrays.",
+        "No raw array-position patching for indexed collections."
+      ]
+    }
+  },
+  "prerequisite_blockers": [
+    {
+      "blocker_id": "BLK-001",
+      "title": "Duplicate gate identity in technical specification gate_registry",
+      "target_path": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json:/gate_registry",
+      "problem": "Duplicate GATE-008 breaks uniqueness and prevents reliable semantic ID lookup.",
+      "required_resolution": [
+        "Detect all duplicate gate ids.",
+        "Assign unique stable semantic ids.",
+        "Update all internal references to renamed ids.",
+        "Fail execution if duplicates remain."
+      ],
+      "completion_criteria": [
+        "All gate_registry ids unique.",
+        "All references to gate ids consistent.",
+        "Validation report proves uniqueness."
+      ]
+    },
+    {
+      "blocker_id": "BLK-002",
+      "title": "Ordinal numeric identifiers in template final summary enhancements",
+      "target_path": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json:/final_summary/what_was_delivered/enhancements",
+      "problem": "Numeric ids are ordinal and unstable, so they are not valid semantic identities for indexing.",
+      "required_resolution": [
+        "Replace numeric or ordinal enhancement ids with stable semantic ids.",
+        "Define id pattern for enhancement entries.",
+        "Update schema and downstream references.",
+        "Fail execution if any enhancement entry still uses ordinal-only identity."
+      ],
+      "completion_criteria": [
+        "Each enhancement has a stable semantic id.",
+        "No enhancement identity changes when array order changes.",
+        "Validation report proves semantic-id compliance."
+      ]
+    },
+    {
+      "blocker_id": "BLK-003",
+      "title": "execution_phases lacks stable element identity model",
+      "target_path": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json:/execution_phases",
+      "problem": "Plain-string or identity-free execution phase entries cannot support reliable element-by-identity indexing.",
+      "required_resolution": [
+        "Decide whether execution_phases remains structural or is redesigned as index-eligible objects.",
+        "If structural, declare replace-whole-array semantics and do not index by element.",
+        "If index-eligible, refactor entries into objects with stable phase ids and schema validation.",
+        "Fail execution if classified index-eligible without declared stable identity."
+      ],
+      "completion_criteria": [
+        "execution_phases explicitly classified.",
+        "Classification reflected in contract registry.",
+        "Schema matches classification."
+      ]
+    },
+    {
+      "blocker_id": "BLK-004",
+      "title": "System layer components lack stable component_id",
+      "target_path": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json:/architecture/system_layers/*/components",
+      "problem": "Using component name as identity is fragile and insufficient for deterministic element-level indexing.",
+      "required_resolution": [
+        "Add stable component_id to each component object if component arrays are to be index-eligible.",
+        "Define component_id pattern and uniqueness rules.",
+        "Update references and schema.",
+        "Fail execution if component arrays are classified index-eligible without component_id."
+      ],
+      "completion_criteria": [
+        "All index-eligible component entries contain unique component_id values.",
+        "No component array relies on display name as sole identity.",
+        "Validation report proves identity completeness."
+      ]
+    }
+  ],
+  "array_classification_contract": {
+    "default_classification": "structural",
+    "required_classifications": [
+      "index_eligible",
+      "structural"
+    ],
+    "contract_rules": [
+      "No array may be treated as index-eligible by implication.",
+      "Every array in scope SHALL have an explicit classification record.",
+      "Index-eligible arrays SHALL declare identity_field, identity_type, identity_pattern, patch_mode, index_output, duplicate_identity_action, and missing_identity_action.",
+      "Structural arrays SHALL declare replace-whole-array semantics and SHALL NOT emit ID-based index output.",
+      "Empty arrays expected to become identity-patched later SHALL declare identity schema before first population."
+    ],
+    "decision_test": [
+      {
+        "order": 1,
+        "question": "Will tooling patch individual elements here?",
+        "yes_next": 2,
+        "no_result": "structural"
+      },
+      {
+        "order": 2,
+        "question": "Is the patch target selected by business identity rather than list position?",
+        "yes_next": 3,
+        "no_result": "structural"
+      },
+      {
+        "order": 3,
+        "question": "Does every element already contain a stable identity field?",
+        "yes_next": 4,
+        "no_result": "blocked_until_schema_adds_identity"
+      },
+      {
+        "order": 4,
+        "question": "Is the identity semantic rather than ordinal?",
+        "yes_next": 5,
+        "no_result": "blocked_until_semantic_identity_exists"
+      },
+      {
+        "order": 5,
+        "question": "Can the array reorder without changing meaning?",
+        "yes_result": "index_eligible",
+        "no_result": "structural_or_fixed_order_by_explicit_policy"
+      }
+    ],
+    "required_metadata_templates": {
+      "index_eligible": {
+        "path": "/validation_gates",
+        "classification": "index_eligible",
+        "identity_field": "gate_id",
+        "identity_type": "string",
+        "identity_pattern": "^GATE-[A-Z0-9-]+$",
+        "patch_mode": "element_by_identity",
+        "index_output": "by_gate_id",
+        "duplicate_identity_action": "fail_closed",
+        "missing_identity_action": "fail_closed"
+      },
+      "structural": {
+        "path": "/critical_constraint/rules",
+        "classification": "structural",
+        "patch_mode": "replace_whole_array",
+        "index_output": null
+      }
+    }
+  },
+  "file_specific_strategy": {
+    "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json": {
+      "addressing_strategy": {
+        "object_keyed_sections": {
+          "method": "json_pointer_direct",
+          "examples": [
+            "/template_metadata",
+            "/phase_plan",
+            "/phase_contracts/PH-00",
+            "/step_contracts/PH-00/STEP-001"
+          ]
+        },
+        "array_sections": {
+          "method": "semantic_id_to_pointer_map_when_index_eligible",
+          "notes": [
+            "No hardcoded numeric array positions in consumer patches for index-eligible arrays.",
+            "Structural arrays remain replace-whole-array targets."
+          ]
+        }
+      },
+      "known_index_targets": [
+        {
+          "path": "/validation_gates",
+          "classification": "index_eligible",
+          "identity_field": "gate_id",
+          "index_output": "by_gate_id"
+        },
+        {
+          "path": "/self_healing/failure_types",
+          "classification": "index_eligible",
+          "identity_field": "id",
+          "index_output": "by_failure_type_id"
+        },
+        {
+          "path": "/metrics/tracked_metrics",
+          "classification": "candidate_index_eligible",
+          "identity_field": "name",
+          "condition": "verify actual final field name and semantic stability before implementation"
+        },
+        {
+          "path": "/concurrency_control/concurrency_groups",
+          "classification": "candidate_index_eligible",
+          "identity_field": "name",
+          "condition": "verify semantic stability before implementation"
+        }
+      ],
+      "known_structural_or_whole_array_targets": [
+        "/critical_constraint/rules",
+        "/usage_instructions/steps",
+        "/worktree_isolation/rules",
+        "/ai_instructions/do_not",
+        "/ai_instructions/remember",
+        "/classification_rules/*/phases",
+        "/execution_patterns/required_pattern_components"
+      ],
+      "blocked_targets": [
+        "/final_summary/what_was_delivered/enhancements"
+      ],
+      "empty_arrays_requiring_predeclared_schema": [
+        "/phase_plan/phase_overview",
+        "/phase_plan/parallel_execution_groups"
+      ]
+    },
+    "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json": {
+      "addressing_strategy": {
+        "stable_objects": {
+          "method": "json_pointer_direct",
+          "examples": [
+            "/document_metadata",
+            "/executive_summary",
+            "/architecture/system_layers/layer_1_planning/name"
+          ]
+        },
+        "array_sections": {
+          "method": "semantic_id_to_pointer_map_when_index_eligible_or_structural_if_whole_list",
+          "notes": [
+            "Arrays such as gate_registry and components require identity remediation before indexing.",
+            "execution_phases requires explicit classification before implementation."
+          ]
+        }
+      },
+      "known_index_targets": [
+        {
+          "path": "/section_purpose_map/sections",
+          "classification": "index_eligible",
+          "identity_field": "section",
+          "index_output": "by_section"
+        }
+      ],
+      "candidate_index_targets_pending_remediation": [
+        {
+          "path": "/gate_registry",
+          "required_identity_field": "id",
+          "blocker_id": "BLK-001"
+        },
+        {
+          "path": "/architecture/system_layers/*/components",
+          "required_identity_field": "component_id",
+          "blocker_id": "BLK-004"
+        }
+      ],
+      "classification_pending": [
+        {
+          "path": "/execution_phases",
+          "blocker_id": "BLK-003"
+        }
+      ],
+      "special_handling": [
+        "Normalize and parse section_purpose_map.sections[].template_path as template-facing JSON Pointer fragment references.",
+        "Validate consistency between any referenced template path and actual template structure."
+      ]
+    },
+    "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json": {
+      "current_addressing_strategy": {
+        "method": "coarse_grained_json_pointer_only",
+        "examples": [
+          "/document_metadata",
+          "/content"
+        ]
+      },
+      "current_limitation": "Single markdown content blob blocks reliable subsection-level machine addressing.",
+      "required_decision": {
+        "selected_option": "refactor_to_structured_json_sections",
+        "reason": "Fine-grained machine indexing is required for robust CLI-targeted section updates."
+      },
+      "interim_policy": [
+        "Until structural refactor is complete, permit only coarse-grained addressing of /document_metadata and /content.",
+        "Do not generate fine-grained section index entries from markdown heading parsing heuristics."
+      ]
+    }
+  },
+  "generated_index_specification": {
+    "artifact_schema_path": "schemas/navigation_index.schema.json",
+    "artifact_shape": {
+      "required_top_level_fields": [
+        "index_version",
+        "source_file",
+        "source_sha256",
+        "canonical_locator_type",
+        "maps"
+      ],
+      "canonical_locator_type": "json_pointer",
+      "maps_description": [
+        "by_section for named top-level or section identities",
+        "by_phase_id for keyed phase objects",
+        "by_step_id for composite step identities",
+        "by_gate_id for validation gate identities",
+        "additional maps only when backed by declared array-classification metadata"
+      ]
+    },
+    "determinism_rules": [
+      "Stable key ordering in emitted JSON.",
+      "No timestamps in artifact body.",
+      "No nondeterministic UUIDs in artifact body.",
+      "Identical source content must produce identical artifact bytes.",
+      "source_sha256 must reflect canonicalized source bytes used by generator."
+    ],
+    "sample_output_model": {
+      "index_version": "1.0.0",
+      "source_file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+      "source_sha256": "<sha256>",
+      "canonical_locator_type": "json_pointer",
+      "maps": {
+        "by_section": {
+          "phase_plan": "/phase_plan",
+          "step_contracts": "/step_contracts",
+          "validation_gates": "/validation_gates"
+        },
+        "by_phase_id": {
+          "PH-02": "/phase_contracts/PH-02"
+        },
+        "by_step_id": {
+          "PH-02/STEP-001": "/step_contracts/PH-02/STEP-001"
+        },
+        "by_gate_id": {
+          "GATE-003": "/validation_gates/2"
+        }
+      }
+    }
+  },
+  "implementation_phases": [
+    {
+      "phase_id": "PH-01",
+      "title": "Define indexing contract",
+      "depends_on": [],
+      "inputs": [
+        "three source JSON files",
+        "this execution plan"
+      ],
+      "tasks": [
+        "Create schemas/navigation_index.schema.json.",
+        "Create machine-readable array classification registry for all arrays in scope.",
+        "Record canonical locator policy, JSONPath secondary policy, and fail-closed rules.",
+        "Record prohibition on raw array-position patching for index-eligible collections."
+      ],
+      "outputs": [
+        "schemas/navigation_index.schema.json",
+        "indexes/indexing_contract.json",
+        "evidence/PH-01/indexing_contract_validation.json"
+      ],
+      "acceptance_checks": [
+        "Every array in scope has explicit classification.",
+        "Contract schema validates.",
+        "Canonical locator and derived-artifact rules present."
+      ]
+    },
+    {
+      "phase_id": "PH-02",
+      "title": "Resolve prerequisite blockers",
+      "depends_on": [
+        "PH-01"
+      ],
+      "inputs": [
+        "source JSON files",
+        "array classification registry"
+      ],
+      "tasks": [
+        "Resolve BLK-001 duplicate gate ids.",
+        "Resolve BLK-002 ordinal enhancement ids.",
+        "Resolve BLK-003 execution_phases classification and schema.",
+        "Resolve BLK-004 component_id gaps."
+      ],
+      "outputs": [
+        "patched source JSON files",
+        "evidence/PH-02/blocker_resolution_report.json",
+        "evidence/PH-02/reference_consistency_report.json"
+      ],
+      "acceptance_checks": [
+        "All blockers closed.",
+        "No duplicate semantic ids remain in index-eligible arrays.",
+        "All candidate index arrays have valid identity schema or are explicitly structural."
+      ]
+    },
+    {
+      "phase_id": "PH-03",
+      "title": "Inventory addressable structures",
+      "depends_on": [
+        "PH-02"
+      ],
+      "inputs": [
+        "remediated source JSON files",
+        "indexing contract"
+      ],
+      "tasks": [
+        "Enumerate direct-pointer-safe nodes.",
+        "Enumerate index-eligible arrays and their identity fields.",
+        "Enumerate structural arrays and their replace-whole-array semantics.",
+        "Enumerate instruction-document coarse-only paths until refactor is complete.",
+        "Persist machine-readable inventory."
+      ],
+      "outputs": [
+        "indexes/addressable_structure_inventory.json",
+        "evidence/PH-03/inventory_validation.json"
+      ],
+      "acceptance_checks": [
+        "Inventory covers all target files.",
+        "Inventory entries align with contract registry.",
+        "No unclassified array remains."
+      ]
+    },
+    {
+      "phase_id": "PH-04",
+      "title": "Refactor instruction document for fine-grained indexing",
+      "depends_on": [
+        "PH-02"
+      ],
+      "conditional": true,
+      "condition": "required_if_fine_grained_instruction_document_indexing_is_needed",
+      "inputs": [
+        "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json"
+      ],
+      "tasks": [
+        "Replace monolithic markdown content blob with structured JSON sections.",
+        "Assign stable section keys.",
+        "Update schema and any consumers.",
+        "Backfill migration logic if legacy content must be preserved."
+      ],
+      "outputs": [
+        "refactored instruction document JSON",
+        "instruction document schema update",
+        "evidence/PH-04/instruction_refactor_report.json"
+      ],
+      "acceptance_checks": [
+        "Instruction subsections addressable by stable JSON Pointer paths.",
+        "No reliance on markdown heading parsing heuristics for authoritative addressing."
+      ]
+    },
+    {
+      "phase_id": "PH-05",
+      "title": "Implement index generator",
+      "depends_on": [
+        "PH-03"
+      ],
+      "inputs": [
+        "remediated source JSON files",
+        "addressable structure inventory",
+        "navigation index schema"
+      ],
+      "tasks": [
+        "Create scripts/build_json_navigation_index.py.",
+        "Parse source JSON deterministically.",
+        "Compute direct pointers for object-keyed nodes.",
+        "Scan index-eligible arrays and emit semantic-id to pointer maps.",
+        "Reject missing or duplicate semantic ids.",
+        "Emit deterministic sorted JSON output."
+      ],
+      "outputs": [
+        "scripts/build_json_navigation_index.py",
+        "indexes/*.index.json",
+        "tests/test_build_json_navigation_index.py",
+        "evidence/PH-05/index_build_report.json"
+      ],
+      "acceptance_checks": [
+        "Generator output validates against navigation index schema.",
+        "Repeated runs on unchanged input yield identical bytes.",
+        "Generator fails closed on duplicate or missing identities."
+      ]
+    },
+    {
+      "phase_id": "PH-06",
+      "title": "Implement locator resolver",
+      "depends_on": [
+        "PH-05"
+      ],
+      "inputs": [
+        "generated index artifacts"
+      ],
+      "tasks": [
+        "Create scripts/resolve_json_locator.py.",
+        "Resolve semantic ids to current JSON Pointer paths.",
+        "Support file-scoped queries such as gate id, step id, phase id, and section.",
+        "Return machine-readable success or fail-closed errors."
+      ],
+      "outputs": [
+        "scripts/resolve_json_locator.py",
+        "tests/test_resolve_json_locator.py",
+        "evidence/PH-06/resolver_report.json"
+      ],
+      "acceptance_checks": [
+        "Resolver returns exact current pointer for every valid indexed identity.",
+        "Resolver rejects unknown identities.",
+        "Resolver never fabricates fallback positions."
+      ]
+    },
+    {
+      "phase_id": "PH-07",
+      "title": "Integrate into Plan CLI",
+      "depends_on": [
+        "PH-05",
+        "PH-06"
+      ],
+      "inputs": [
+        "Plan CLI source"
+      ],
+      "tasks": [
+        "Integrate prerequisite checks into normalize command.",
+        "Integrate index regeneration into compile command.",
+        "Optionally add resolve command for explicit identity-to-pointer lookup.",
+        "Ensure CLI output is machine-readable JSON."
+      ],
+      "outputs": [
+        "updated Plan CLI",
+        "evidence/PH-07/cli_integration_report.json"
+      ],
+      "acceptance_checks": [
+        "normalize verifies index prerequisites and classification contract.",
+        "compile regenerates current index artifacts.",
+        "resolve returns machine-readable pointer results when implemented."
+      ]
+    },
+    {
+      "phase_id": "PH-08",
+      "title": "Add validation gates",
+      "depends_on": [
+        "PH-05",
+        "PH-07"
+      ],
+      "inputs": [
+        "generator",
+        "resolver",
+        "source files",
+        "index artifacts"
+      ],
+      "tasks": [
+        "Validate unique stable identities in every index-eligible array.",
+        "Validate every emitted pointer resolves against current source JSON.",
+        "Validate source hash matches index artifact.",
+        "Detect forbidden raw array-position patches for index-eligible arrays.",
+        "Detect classification drift or stale artifacts."
+      ],
+      "outputs": [
+        "validators/validate_navigation_index.py",
+        "tests/test_validate_navigation_index.py",
+        "evidence/PH-08/validation_gate_report.json"
+      ],
+      "acceptance_checks": [
+        "Validation gate catches duplicate identities.",
+        "Validation gate catches stale index artifacts.",
+        "Validation gate catches unresolved pointers.",
+        "Validation gate catches raw positional patch usage on indexed arrays."
+      ]
+    },
+    {
+      "phase_id": "PH-09",
+      "title": "Seal evidence and declare readiness",
+      "depends_on": [
+        "PH-08"
+      ],
+      "inputs": [
+        "all prior evidence outputs"
+      ],
+      "tasks": [
+        "Assemble final readiness report.",
+        "Hash emitted artifacts.",
+        "Record exact output paths and pass/fail status."
+      ],
+      "outputs": [
+        "evidence/PH-09/final_readiness_report.json"
+      ],
+      "acceptance_checks": [
+        "All prior phases passed.",
+        "All required artifacts exist.",
+        "Final readiness report status equals PASS."
+      ]
+    }
+  ],
+  "cli_integration_contract": {
+    "normalize_command_requirements": [
+      "Canonicalize source JSON as required by current Plan CLI policy.",
+      "Verify array classification coverage.",
+      "Verify blocker resolution for any array declared index-eligible.",
+      "Build or verify prerequisite ID maps before compile."
+    ],
+    "compile_command_requirements": [
+      "Regenerate external deterministic index artifacts.",
+      "Recompute source hashes.",
+      "Refuse success if generated artifact fails schema validation."
+    ],
+    "resolve_command_requirements": [
+      "Accept file selector and semantic identity selector.",
+      "Return current JSON Pointer path.",
+      "Return fail-closed error for unknown identity, ambiguous identity, or stale artifact."
+    ],
+    "output_format": "json_only"
+  },
+  "validation_and_gate_policy": {
+    "required_validators": [
+      {
+        "validator_id": "VAL-INDEX-001",
+        "name": "validate_identity_uniqueness",
+        "failure_conditions": [
+          "duplicate identity in index-eligible array",
+          "missing identity in index-eligible array",
+          "identity not matching declared pattern"
+        ]
+      },
+      {
+        "validator_id": "VAL-INDEX-002",
+        "name": "validate_pointer_resolution",
+        "failure_conditions": [
+          "generated pointer does not resolve",
+          "pointer resolves to unexpected node type"
+        ]
+      },
+      {
+        "validator_id": "VAL-INDEX-003",
+        "name": "validate_source_hash_freshness",
+        "failure_conditions": [
+          "source_sha256 mismatch between artifact and current source",
+          "artifact generated from noncanonical source serialization"
+        ]
+      },
+      {
+        "validator_id": "VAL-INDEX-004",
+        "name": "validate_patch_mode_compliance",
+        "failure_conditions": [
+          "raw numeric position patch against index-eligible array",
+          "consumer bypasses resolver or compiled index"
+        ]
+      },
+      {
+        "validator_id": "VAL-INDEX-005",
+        "name": "validate_classification_completeness",
+        "failure_conditions": [
+          "unclassified array found in scope",
+          "classification conflicts with schema or observed structure"
+        ]
+      }
+    ],
+    "gate_behavior": {
+      "mode": "binary_fail_closed",
+      "retry_policy": "none_for_structural_identity_errors",
+      "required_evidence": [
+        "validation report JSON",
+        "input file hashes",
+        "artifact file hashes",
+        "failure fingerprint when applicable"
+      ]
+    }
+  },
+  "deliverables": {
+    "schemas": [
+      "schemas/navigation_index.schema.json"
+    ],
+    "scripts": [
+      "scripts/build_json_navigation_index.py",
+      "scripts/resolve_json_locator.py",
+      "validators/validate_navigation_index.py"
+    ],
+    "artifacts": [
+      "indexes/NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.index.json",
+      "indexes/NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.index.json",
+      "indexes/NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.index.json"
+    ],
+    "tests": [
+      "tests/test_build_json_navigation_index.py",
+      "tests/test_resolve_json_locator.py",
+      "tests/test_validate_navigation_index.py"
+    ],
+    "evidence": [
+      "evidence/PH-01/indexing_contract_validation.json",
+      "evidence/PH-02/blocker_resolution_report.json",
+      "evidence/PH-02/reference_consistency_report.json",
+      "evidence/PH-03/inventory_validation.json",
+      "evidence/PH-04/instruction_refactor_report.json",
+      "evidence/PH-05/index_build_report.json",
+      "evidence/PH-06/resolver_report.json",
+      "evidence/PH-07/cli_integration_report.json",
+      "evidence/PH-08/validation_gate_report.json",
+      "evidence/PH-09/final_readiness_report.json"
+    ]
+  },
+  "acceptance_criteria": [
+    "JSON Pointer is the only authoritative exact locator in the implemented system.",
+    "Every mutable index-eligible array is accessed through semantic-id-to-pointer resolution.",
+    "No source file contains a hand-maintained inline navigation index as SSOT.",
+    "Every array in scope is explicitly classified.",
+    "All prerequisite blockers are resolved before generator implementation proceeds.",
+    "Every generated pointer resolves successfully.",
+    "Generated artifacts are deterministic across repeated runs with unchanged input.",
+    "Plan CLI normalize and compile behaviors own verification and regeneration responsibilities.",
+    "Instruction document is either coarse-only by explicit policy or structurally refactored before fine-grained indexing.",
+    "All validation gates pass."
+  ],
+  "explicit_non_goals": [
+    "Do not use JSONPath as the main runtime patch locator.",
+    "Do not use byte offsets or byte-level indexing for this plan.",
+    "Do not accept array element addressing by unstable numeric position in index-eligible arrays.",
+    "Do not infer array classifications without explicit registry entries.",
+    "Do not parse markdown headings heuristically to create authoritative instruction-document index entries."
+  ],
+  "execution_order": [
+    "PH-01",
+    "PH-02",
+    "PH-03",
+    "PH-04_if_needed",
+    "PH-05",
+    "PH-06",
+    "PH-07",
+    "PH-08",
+    "PH-09"
+  ]
+}
