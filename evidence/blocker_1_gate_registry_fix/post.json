@@ -1,0 +1,20 @@
+{
+  "blocker": "BLK-001",
+  "canonical_gate_007": {
+    "id": "GATE-007",
+    "name": "Automation Spec",
+    "script": "validate_automation_spec.py",
+    "purpose": "Validate automation configuration"
+  },
+  "canonical_gate_008": {
+    "id": "GATE-008",
+    "name": "Automation Index",
+    "script": "build_automation_index.py",
+    "purpose": "Build searchable index of automation elements"
+  },
+  "removed_entry": {
+    "id": "GATE-008",
+    "name": "Automation Spec",
+    "script": "validate_automation_spec.py"
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "blocker": "BLK-002",
+  "enhancement_ids": [
+    "ENH-001",
+    "ENH-002",
+    "ENH-003",
+    "ENH-004",
+    "ENH-005",
+    "ENH-006",
+    "ENH-007",
+    "ENH-008",
+    "ENH-009",
+    "ENH-010"
+  ],
+  "migration_map": [
+    {
+      "old_id": 1,
+      "new_id": "ENH-001",
+      "name": "Step-level contracts (machine-checkable)"
+    },
+    {
+      "old_id": 2,
+      "new_id": "ENH-002",
+      "name": "Step evidence chain (cryptographic linking)"
+    },
+    {
+      "old_id": 3,
+      "new_id": "ENH-003",
+      "name": "Self-healing rules (bounded + auditable)"
+    },
+    {
+      "old_id": 4,
+      "new_id": "ENH-004",
+      "name": "Worktree isolation (merge-safe)"
+    },
+    {
+      "old_id": 5,
+      "new_id": "ENH-005",
+      "name": "Ground truth validation levels (explicit)"
+    },
+    {
+      "old_id": 6,
+      "new_id": "ENH-006",
+      "name": "Phase contracts (machine-checkable)"
+    },
+    {
+      "old_id": 7,
+      "new_id": "ENH-007",
+      "name": "Enhanced validation gates (regex patterns)"
+    },
+    {
+      "old_id": 8,
+      "new_id": "ENH-008",
+      "name": "Metrics tracking (measurable progress)"
+    },
+    {
+      "old_id": 9,
+      "new_id": "ENH-009",
+      "name": "Infrastructure requirements (reproducible env)"
+    },
+    {
+      "old_id": 10,
+      "new_id": "ENH-010",
+      "name": "NO IMPLIED BEHAVIOR constraint enforced"
+    }
+  ]
+}

@@ -64,6 +64,7 @@
         "purpose": "Transform user requirements into validated, executable plans",
         "components": [
           {
+            "component_id": "COMP-L1-01",
             "name": "Plan Template v3.2.0",
             "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
             "role": "Master template defining complete plan structure",
@@ -78,6 +79,7 @@
             ]
           },
           {
+            "component_id": "COMP-L1-02",
             "name": "Plan Schema v3.0.0",
             "file": "schemas/NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json",
             "role": "JSON Schema defining validation rules for plans",
@@ -90,6 +92,7 @@
             ]
           },
           {
+            "component_id": "COMP-L1-03",
             "name": "AI Agent Instructions",
             "file": "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json",
             "role": "Complete guide for AI agents to generate valid plans",
@@ -121,6 +124,7 @@
         "purpose": "Mechanically verify plan correctness and completeness",
         "components": [
           {
+            "component_id": "COMP-L2-01",
             "name": "Plan CLI",
             "file": "scripts/NEWPHASEPLANPROCESS_plan_cli.py",
             "role": "Command-line interface for plan operations",
@@ -140,6 +144,7 @@
             ]
           },
           {
+            "component_id": "COMP-L2-02",
             "name": "Validation Gate System",
             "total_gates": 19,
             "mandatory_gates": 17,
@@ -247,12 +252,6 @@
               },
               {
                 "id": "GATE-008",
-                "name": "Automation Spec",
-                "script": "validate_automation_spec.py",
-                "purpose": "Validate automation configuration"
-              },
-              {
-                "id": "GATE-008",
                 "name": "Automation Index",
                 "script": "build_automation_index.py",
                 "purpose": "Build searchable index of automation elements"
@@ -344,6 +343,7 @@
             ]
           },
           {
+            "component_id": "COMP-L2-03",
             "name": "Failure Mode Checker",
             "total_checks": 14,
             "template_inclusion": "Not included in base template v3.0.0; add via extension points as needed",
@@ -382,6 +382,7 @@
         "purpose": "Execute validated plans with evidence collection and self-healing",
         "components": [
           {
+            "component_id": "COMP-L3-01",
             "name": "Execution Engine",
             "file": "scripts/NEWPHASEPLANPROCESS_plan_cli.py (execute command)",
             "execution_model": "sequential_phases_with_parallel_steps",
@@ -396,6 +397,7 @@
             ]
           },
           {
+            "component_id": "COMP-L3-02",
             "name": "Worktree Isolation System",
             "purpose": "Enable parallel execution with conflict prevention",
             "base_concept": "Each parallel phase executes in isolated git worktree",
@@ -454,6 +456,7 @@
             ]
           },
           {
+            "component_id": "COMP-L3-03",
             "name": "Self-Healing System",
             "purpose": "Automatically recover from common failure types",
             "configuration": {
@@ -559,6 +562,7 @@
             }
           },
           {
+            "component_id": "COMP-L3-04",
             "name": "Evidence Chain System",
             "purpose": "Cryptographic proof of execution integrity",
             "chain_structure": {
@@ -590,6 +594,7 @@
         "purpose": "Track execution progress and collect metrics",
         "components": [
           {
+            "component_id": "COMP-L4-01",
             "name": "Metrics System",
             "configuration": {
               "enabled": true,

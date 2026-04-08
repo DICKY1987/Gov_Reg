@@ -1,0 +1,25 @@
+{
+  "blocker": "BLK-001",
+  "description": "Duplicate GATE-008 in technical spec gate registry",
+  "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+  "duplicate_gate_ids": [
+    {
+      "id": "GATE-008",
+      "count": 2,
+      "entries": [
+        {
+          "id": "GATE-008",
+          "name": "Automation Spec",
+          "script": "validate_automation_spec.py",
+          "purpose": "Validate automation configuration"
+        },
+        {
+          "id": "GATE-008",
+          "name": "Automation Index",
+          "script": "build_automation_index.py",
+          "purpose": "Build searchable index of automation elements"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "blocker": "BLK-004",
+  "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+  "missing_component_id_count": 11,
+  "missing_components": [
+    {
+      "layer": "layer_1_planning",
+      "name": "Plan Template v3.2.0"
+    },
+    {
+      "layer": "layer_1_planning",
+      "name": "Plan Schema v3.0.0"
+    },
+    {
+      "layer": "layer_1_planning",
+      "name": "AI Agent Instructions"
+    },
+    {
+      "layer": "layer_2_validation",
+      "name": "Plan CLI"
+    },
+    {
+      "layer": "layer_2_validation",
+      "name": "Validation Gate System"
+    },
+    {
+      "layer": "layer_2_validation",
+      "name": "Failure Mode Checker"
+    },
+    {
+      "layer": "layer_3_execution",
+      "name": "Execution Engine"
+    },
+    {
+      "layer": "layer_3_execution",
+      "name": "Worktree Isolation System"
+    },
+    {
+      "layer": "layer_3_execution",
+      "name": "Self-Healing System"
+    },
+    {
+      "layer": "layer_3_execution",
+      "name": "Evidence Chain System"
+    },
+    {
+      "layer": "layer_4_observability",
+      "name": "Metrics System"
+    }
+  ]
+}
