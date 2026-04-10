@@ -1,0 +1,102 @@
+{
+  "version": "3.2",
+  "description": "Updated planning template aligned with SYSTEM_INVARIANTS and guardrails requirements. All tasks must reference a registered execution pattern via a non‑null pattern_id and store artifacts within an isolated run directory.",
+  "fields": {
+    "task_id": {
+      "type": "string",
+      "description": "Unique identifier for the task."
+    },
+    "task_kind": {
+      "type": "string",
+      "description": "Type of task such as gap_resolution, maintenance or feature_work."
+    },
+    "pattern_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "ID of the execution pattern used for this task. Must refer to an entry in PATTERN_INDEX. Patternless work is forbidden."
+    },
+    "gap_id": {
+      "type": ["string", "null"],
+      "description": "Identifier of the gap being resolved, if any. Gaps must be explicitly tracked."
+    },
+    "description": {
+      "type": "string",
+      "description": "Human‑readable description of the task."
+    },
+    "path_scope": {
+      "type": "string",
+      "description": "Repository subdirectory that the task is allowed to modify. Must not include protected paths such as .git/objects/, .git/refs/heads/main, PATTERN_INDEX.yaml, schemas/*.schema.json or SYSTEM_INVARIANTS.md."
+    },
+    "run_artifact_policy": {
+      "type": "object",
+      "description": "Where run artifacts are stored during execution and whether they are cleaned up afterwards.",
+      "properties": {
+        "default_directory": {
+          "type": "string",
+          "default": ".acms_runs/{run_id}/",
+          "description": "Location relative to repository root where all artifacts produced by this run must be stored. The invariants require isolation inside .acms_runs/{run_id}/."
+        },
+        "cleanup_after_run": {
+          "type": "boolean",
+          "default": true,
+          "description": "If true, artifacts are removed once the task has completed successfully."
+        }
+      },
+      "required": ["default_directory"]
+    },
+    "limits": {
+      "type": "object",
+      "description": "Runtime and resource limits for this task, enforcing RL‑1 and RL‑2 invariants.",
+      "properties": {
+        "max_task_duration_minutes": {
+          "type": "integer",
+          "default": 30,
+          "description": "Maximum allowed running time for the task in minutes."
+        },
+        "max_file_size_mb": {
+          "type": "integer",
+          "default": 10,
+          "description": "Maximum size in megabytes of any single file that can be modified or created."
+        },
+        "max_changed_files": {
+          "type": "integer",
+          "default": 50,
+          "description": "Maximum number of files that can be changed by this task."
+        },
+        "max_changed_lines": {
+          "type": "integer",
+          "default": 1000,
+          "description": "Maximum number of lines of code that can be changed by this task across all files."
+        }
+      },
+      "required": ["max_task_duration_minutes", "max_file_size_mb"]
+    },
+    "pre_validation_pattern": {
+      "type": ["string", "null"],
+      "description": "ID of the pattern used to validate preconditions before execution. Allows enforcement of guardrails PG‑3 and V‑2."
+    },
+    "post_validation_pattern": {
+      "type": ["string", "null"],
+      "description": "ID of the pattern used to verify outputs and evidence after execution."
+    },
+    "success_criteria": {
+      "type": "string",
+      "description": "Description of what constitutes successful completion for this task, including required outputs and pass conditions."
+    },
+    "failure_criteria": {
+      "type": "string",
+      "description": "Description of the conditions that constitute failure for this task."
+    }
+  },
+  "required": [
+    "task_id",
+    "task_kind",
+    "pattern_id",
+    "description",
+    "path_scope",
+    "run_artifact_policy",
+    "limits",
+    "success_criteria",
+    "failure_criteria"
+  ]
+}

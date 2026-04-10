@@ -1,0 +1,1308 @@
+{
+  "search_objective": "Find and verify whether candidate files close the remaining Gov_Reg runtime gaps",
+  "gaps": [
+    {
+      "gap_id": "G1",
+      "gap_name": "Canonical End-to-End Orchestrator",
+      "status": "partial",
+      "candidates": [
+        {
+          "filename": "P_01999000042260126000__idpkg_runtime.py",
+          "path": "01260207201000001250_REGISTRY\\ID\\1_runtime\\watchers\\P_01999000042260126000__idpkg_runtime.py",
+          "classification": "implementation_current",
+          "readable_source": true,
+          "why_considered": "Strongest readable ingest/runtime implementation found. It is an active watcher/runtime module with an end-to-end ingest path, gate execution, registry writing, and evidence output.",
+          "behavior_summary": "Implements a real IDPKG ingest engine: resolves file and directory identity, builds registry patch operations, applies registry writes with atomic helpers, runs gates, and emits evidence. It stops at ID/runtime scope and does not invoke analyzers, SHA256 promotion, lookup joins, or post-write generators.",
+          "implementation_signals": {
+            "functions": [
+              "main"
+            ],
+            "classes": [
+              "IdpkgConfig",
+              "IdpkgContracts",
+              "EvidenceWriter",
+              "FileIdentityResolver",
+              "RegistryWriter",
+              "GateRunner",
+              "IdpkgEngine"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "incoming file and directory paths",
+              "runtime registry JSON via atomic_json_read()",
+              "runtime config and write-policy inputs",
+              "optional gate catalog/config"
+            ],
+            "writes": [
+              "registry JSON via atomic_json_write()",
+              "patch artifact JSON",
+              ".state evidence JSON"
+            ],
+            "mutates_registry": true,
+            "builds_patch": true,
+            "applies_patch": true,
+            "emits_evidence": true,
+            "atomic_write": true,
+            "lock_usage": true,
+            "dry_run": true,
+            "rollback_or_backup": false,
+            "fail_closed": true
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "yes",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "files[], entries[], entities[]",
+            "conflicts_detected": [
+              "Broader registry shape than current files[]-centric automation",
+              "No SHA256 to file_id promotion path",
+              "No unified column runtime or analyzer dispatch stage"
+            ]
+          },
+          "risks": [
+            "Scope is narrower than the unresolved Gov_Reg automation pipeline",
+            "Does not run post-write generators",
+            "Does not close the analyzer-to-patch-to-generator chain"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01999000042260305014_intake_orchestrator.py",
+          "path": "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305014_intake_orchestrator.py",
+          "classification": "implementation_transitional",
+          "readable_source": true,
+          "why_considered": "Name and behavior match the expected ingest/orchestrator role, and it is imported by the current pipeline runner.",
+          "behavior_summary": "Runs Phase A and Phase B analyzer subprocesses and writes analysis outputs, but it does not resolve canonical IDs, mutate the registry, apply patches, run gates, or execute post-write generators. Phase C is explicitly skipped.",
+          "implementation_signals": {
+            "functions": [
+              "main"
+            ],
+            "classes": [
+              "FileIntakeOrchestrator"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "input file path",
+              "phase analyzer scripts in the scripts directory",
+              "prior phase outputs"
+            ],
+            "writes": [
+              "phase analysis JSON outputs",
+              "orchestration summary JSON"
+            ],
+            "mutates_registry": false,
+            "builds_patch": false,
+            "applies_patch": false,
+            "emits_evidence": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run": false,
+            "rollback_or_backup": false,
+            "fail_closed": false
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "unknown",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "none; analysis artifacts only",
+            "conflicts_detected": [
+              "Identical duplicate exists under capability_mapping_system\\01260207220000001318_mapp_py",
+              "No registry contract enforcement"
+            ]
+          },
+          "risks": [
+            "Analyzer-only orchestration",
+            "Default scripts-dir behavior is not a canonical analyzer contract",
+            "No mutation safety discipline because it never reaches write authority"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01999000042260305017_pipeline_runner.py",
+          "path": "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305017_pipeline_runner.py",
+          "classification": "implementation_transitional",
+          "readable_source": true,
+          "why_considered": "Closest readable automation-level runner that chains orchestrator, transform, metadata, and patch generation steps.",
+          "behavior_summary": "Builds a file_id index from registry files[], stages transformed outputs, collects run metadata, and can invoke the patch generator. It does not itself apply the patch or serve as single canonical runtime authority. REG_AUTO_PLAN.txt still treats it as incomplete.",
+          "implementation_signals": {
+            "functions": [
+              "main"
+            ],
+            "classes": [
+              "PipelineRunner"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "registry JSON",
+              "input files to process",
+              "transformer/orchestrator support modules"
+            ],
+            "writes": [
+              "transformed output files",
+              "run metadata artifacts",
+              "optional patch file"
+            ],
+            "mutates_registry": false,
+            "builds_patch": true,
+            "applies_patch": false,
+            "emits_evidence": true,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run": false,
+            "rollback_or_backup": false,
+            "fail_closed": false
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "yes",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "files[]",
+            "conflicts_detected": [
+              "Depends on separate patch generator for actual mutation",
+              "No post-write generator stage",
+              "REG_AUTO_PLAN.txt explicitly marks the current runner as incomplete"
+            ]
+          },
+          "risks": [
+            "Not the final authority for write or validation",
+            "Silent-fail and incompleteness are called out in planning docs"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01999000042260305020_file_intake_orchestrator.py",
+          "path": "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305020_file_intake_orchestrator.py",
+          "classification": "referenced_not_readable",
+          "readable_source": false,
+          "why_considered": "ARCHITECTURE_RUNTIME_ENGINE.md names this as the intended missing canonical file-added orchestrator.",
+          "behavior_summary": "Referenced in architecture only. No readable source file exists in the repo.",
+          "implementation_signals": {
+            "functions": [],
+            "classes": [],
+            "has_cli_entrypoint": false,
+            "reads": [],
+            "writes": [],
+            "mutates_registry": false,
+            "builds_patch": false,
+            "applies_patch": false,
+            "emits_evidence": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run": false,
+            "rollback_or_backup": false,
+            "fail_closed": false
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "unknown",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "",
+            "conflicts_detected": [
+              "Documentation reference only"
+            ]
+          },
+          "risks": [
+            "Cannot verify implementation",
+            "May never have been checked in"
+          ],
+          "confidence": "high"
+        }
+      ],
+      "best_candidate": {
+        "filename": "P_01999000042260126000__idpkg_runtime.py",
+        "path": "01260207201000001250_REGISTRY\\ID\\1_runtime\\watchers\\P_01999000042260126000__idpkg_runtime.py",
+        "reason": "Best readable real orchestrator, but its authority is limited to ID/runtime ingest and does not close the full Gov_Reg analyzer-to-write-to-generator pipeline."
+      },
+      "closure_assessment": {
+        "does_close_gap": false,
+        "reason": "A real orchestrator exists for ID/runtime scope, and transitional automation runners exist, but there is no single canonical end-to-end Gov_Reg orchestrator that handles file-added intake through analyzers, patch application, post-write generators, evidence, and completion validation.",
+        "missing_behaviors": [
+          "single file-added canonical runtime entrypoint",
+          "canonical analyzer dispatch integrated with registry mutation",
+          "SHA256 to file_id promotion before dependent writes",
+          "lookup/join resolution during derivation",
+          "post-write generator execution",
+          "final completion validation over the whole flow"
+        ]
+      }
+    },
+    {
+      "gap_id": "G2",
+      "gap_name": "Single Canonical Gate Runner",
+      "status": "partial",
+      "candidates": [
+        {
+          "filename": "P_01999000042260126000__idpkg_runtime.py",
+          "path": "01260207201000001250_REGISTRY\\ID\\1_runtime\\watchers\\P_01999000042260126000__idpkg_runtime.py",
+          "classification": "implementation_current",
+          "readable_source": true,
+          "why_considered": "Contains the only strong readable GateRunner implementation found in-repo.",
+          "behavior_summary": "Runs gates in deterministic catalog order inside the IDPKG runtime and fails the overall status when BLOCK-severity failures occur. This is real enforcement logic, but it is embedded inside the ID runtime rather than serving as one shared gate authority for all registry automation.",
+          "implementation_signals": {
+            "functions": [
+              "main"
+            ],
+            "classes": [
+              "GateRunner",
+              "IdpkgEngine"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "gate catalog/config",
+              "event envelope and runtime registry state"
+            ],
+            "writes": [
+              "gate result objects",
+              "evidence JSON via the enclosing runtime"
+            ],
+            "mutates_registry": true,
+            "builds_patch": true,
+            "applies_patch": true,
+            "emits_evidence": true,
+            "atomic_write": true,
+            "lock_usage": true,
+            "dry_run": true,
+            "rollback_or_backup": false,
+            "fail_closed": true
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "yes",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "files[], entries[], entities[]",
+            "conflicts_detected": [
+              "Not used as the shared gate runner for REGISTRY_AUTOMATION scripts",
+              "Gate enforcement is scoped to the ID runtime branch"
+            ]
+          },
+          "risks": [
+            "Embedded subsystem runner, not a shared repo-level enforcement bridge"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01260207233100000322_gates.py",
+          "path": "01260207201000001250_REGISTRY\\src_modules\\01260207201000001296_registry_transition\\P_01260207233100000322_gates.py",
+          "classification": "implementation_transitional",
+          "readable_source": true,
+          "why_considered": "Closest readable non-IDPKG gate bundle; defines multiple gates and writes gate evidence.",
+          "behavior_summary": "Implements CompletenessGate and ValidityGate, but not a single deterministic gate runner. It assumes transition-style registry parts instead of the current files[] automation shape and leaves deeper validation TODOs.",
+          "implementation_signals": {
+            "functions": [],
+            "classes": [
+              "CompletenessGate",
+              "ValidityGate"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [
+              "transition-style registry records or parts"
+            ],
+            "writes": [
+              ".state\\evidence\\gates artifacts"
+            ],
+            "mutates_registry": false,
+            "builds_patch": false,
+            "applies_patch": false,
+            "emits_evidence": true,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run": false,
+            "rollback_or_backup": false,
+            "fail_closed": false
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "unknown",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "iterable transition records, not files[]",
+            "conflicts_detected": [
+              "Registry shape conflicts with current automation files[] model"
+            ]
+          },
+          "risks": [
+            "No aggregator/runner entrypoint",
+            "Transition branch imports in __init__.py point to other missing files"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01999000042260305000_enum_drift_gate.py",
+          "path": "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305000_enum_drift_gate.py",
+          "classification": "implementation_transitional",
+          "readable_source": true,
+          "why_considered": "Real runnable validation gate in the active automation area.",
+          "behavior_summary": "Validates enum drift over registry files[] and edges[], can back up and optionally rewrite the registry, and exits as a single gate CLI. It is not a shared runner and does not aggregate other gates.",
+          "implementation_signals": {
+            "functions": [
+              "main"
+            ],
+            "classes": [
+              "EnumDriftGate"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "registry JSON",
+              "enum reference values"
+            ],
+            "writes": [
+              "optional fixed registry JSON",
+              "backup registry JSON",
+              "gate result artifact"
+            ],
+            "mutates_registry": true,
+            "builds_patch": false,
+            "applies_patch": false,
+            "emits_evidence": true,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run": false,
+            "rollback_or_backup": true,
+            "fail_closed": true
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "yes",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "files[], edges[]",
+            "conflicts_detected": [
+              "Single gate only; not a canonical runner",
+              "Optional mutation path lacks lock discipline"
+            ]
+          },
+          "risks": [
+            "Registry mutation from a gate script without single-writer coordination"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "gate_runner.py",
+          "path": "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\gates\\gate_runner.py",
+          "classification": "referenced_not_readable",
+          "readable_source": false,
+          "why_considered": "Referenced repeatedly in python_scripts_paths.md, manifests, and planning artifacts as the expected shared runner.",
+          "behavior_summary": "Strong external reference, but the source is outside this repo and was not readable here.",
+          "implementation_signals": {
+            "functions": [],
+            "classes": [],
+            "has_cli_entrypoint": false,
+            "reads": [],
+            "writes": [],
+            "mutates_registry": false,
+            "builds_patch": false,
+            "applies_patch": false,
+            "emits_evidence": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run": false,
+            "rollback_or_backup": false,
+            "fail_closed": false
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "unknown",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "",
+            "conflicts_detected": [
+              "Outside repo; cannot verify active behavior"
+            ]
+          },
+          "risks": [
+            "Could be stale or divergent from current repo reality"
+          ],
+          "confidence": "high"
+        }
+      ],
+      "best_candidate": {
+        "filename": "P_01999000042260126000__idpkg_runtime.py",
+        "path": "01260207201000001250_REGISTRY\\ID\\1_runtime\\watchers\\P_01999000042260126000__idpkg_runtime.py",
+        "reason": "Only strong readable deterministic GateRunner found, but it is not the one shared enforcement entrypoint for the broader Gov_Reg runtime."
+      },
+      "closure_assessment": {
+        "does_close_gap": false,
+        "reason": "Gate logic exists, but it is fragmented across the ID runtime, transition gates, and standalone gate CLIs. The planned shared gate_runner and enforcement_bridge are not readable in this repo.",
+        "missing_behaviors": [
+          "single repo-local runner that aggregates all active gates",
+          "one canonical enforcement entrypoint for REGISTRY_AUTOMATION and ID runtime",
+          "shared evidence format and ordering contract across all gates",
+          "single fail/block policy wired into the write path"
+        ]
+      }
+    },
+    {
+      "gap_id": "G3",
+      "gap_name": "Single-Writer Registry Mutation Authority",
+      "status": "partial",
+      "candidates": [
+        {
+          "filename": "P_01999000042260126000__idpkg_runtime.py",
+          "path": "01260207201000001250_REGISTRY\\ID\\1_runtime\\watchers\\P_01999000042260126000__idpkg_runtime.py",
+          "classification": "implementation_current",
+          "readable_source": true,
+          "why_considered": "Contains the strongest readable RegistryWriter implementation found in-repo.",
+          "behavior_summary": "RegistryWriter performs controlled upserts and patch recording, reads and writes registry JSON through atomic helpers, and uses lock-backed shared utilities. It is the safest real writer found, but it is embedded in the ID runtime and is not the one accepted mutation path for all registry automation.",
+          "implementation_signals": {
+            "functions": [
+              "main"
+            ],
+            "classes": [
+              "RegistryPatchResult",
+              "RegistryWriter"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "registry JSON via atomic_json_read()",
+              "write-policy configuration",
+              "event-derived identity records"
+            ],
+            "writes": [
+              "registry JSON via atomic_json_write()",
+              "patch artifacts",
+              "mutation evidence JSON"
+            ],
+            "mutates_registry": true,
+            "builds_patch": true,
+            "applies_patch": true,
+            "emits_evidence": true,
+            "atomic_write": true,
+            "lock_usage": true,
+            "dry_run": true,
+            "rollback_or_backup": false,
+            "fail_closed": true
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "yes",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "files[], entries[], entities[]",
+            "conflicts_detected": [
+              "Not the shared writer for patch_generator/apply_patch/promotion flows",
+              "No global compare-and-swap authority across every mutation caller"
+            ]
+          },
+          "risks": [
+            "Safe writer exists only inside one subsystem",
+            "No evidence that other mutation callers are forced through it"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01260207201000000834_apply_patch.py",
+          "path": "01260207201000001250_REGISTRY\\01260207201000001270_scripts\\P_01260207201000000834_apply_patch.py",
+          "classification": "implementation_transitional",
+          "readable_source": true,
+          "why_considered": "Direct patch-application CLI whose name and behavior match a mutation-authority candidate.",
+          "behavior_summary": "Applies RFC-6902 patches with a dry-run option and backup creation, but writes directly after patching and does not use lock or atomic replace discipline. It is a mutation tool, not a single-writer authority.",
+          "implementation_signals": {
+            "functions": [
+              "main"
+            ],
+            "classes": [],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "target registry JSON",
+              "patch JSON"
+            ],
+            "writes": [
+              "updated target JSON",
+              "backup JSON",
+              "patch result artifact"
+            ],
+            "mutates_registry": true,
+            "builds_patch": false,
+            "applies_patch": true,
+            "emits_evidence": true,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run": true,
+            "rollback_or_backup": true,
+            "fail_closed": true
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "unknown",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "generic JSON document chosen by caller",
+            "conflicts_detected": [
+              "No single-writer lock discipline",
+              "No built-in identity-contract enforcement"
+            ]
+          },
+          "risks": [
+            "Any caller can bypass stronger writer patterns",
+            "Backup is present but there is no coordinated multi-writer protection"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01999000042260305004_patch_generator.py",
+          "path": "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305004_patch_generator.py",
+          "classification": "implementation_transitional",
+          "readable_source": true,
+          "why_considered": "Closest readable patch builder/applier in the active automation path.",
+          "behavior_summary": "Builds patches against registry files[] and can apply them with backup creation. It writes directly, uses no lock, and REG_AUTO_PLAN.txt explicitly says write-policy wiring is still missing.",
+          "implementation_signals": {
+            "functions": [
+              "main"
+            ],
+            "classes": [
+              "PatchGenerator"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "registry JSON",
+              "transformed record inputs",
+              "patch input payloads"
+            ],
+            "writes": [
+              "patch JSON",
+              "backup registry JSON",
+              "updated registry JSON"
+            ],
+            "mutates_registry": true,
+            "builds_patch": true,
+            "applies_patch": true,
+            "emits_evidence": true,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run": false,
+            "rollback_or_backup": true,
+            "fail_closed": false
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "yes",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "files[]",
+            "conflicts_detected": [
+              "Hash-identical duplicate exists under capability_mapping_system\\01260207220000001318_mapp_py",
+              "Planning docs state write-policy support is incomplete"
+            ]
+          },
+          "risks": [
+            "No lock or atomic replace",
+            "Not established as the only accepted mutation path"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01260207233100000329_01999000042260125036_promotion_patch.py",
+          "path": "01260207201000001250_REGISTRY\\src_modules\\01260207201000001297_registry_writer\\P_01260207233100000329_01999000042260125036_promotion_patch.py",
+          "classification": "stub_placeholder",
+          "readable_source": true,
+          "why_considered": "Promising registry_writer module with patch and precondition data structures.",
+          "behavior_summary": "Defines patch operation types, patch/result dataclasses, and a registry_hash precondition field, but it does not implement a writer or apply path.",
+          "implementation_signals": {
+            "functions": [],
+            "classes": [
+              "PatchOperationType",
+              "PatchOperation",
+              "PromotionPatch",
+              "PatchResult"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [],
+            "writes": [],
+            "mutates_registry": false,
+            "builds_patch": false,
+            "applies_patch": false,
+            "emits_evidence": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run": false,
+            "rollback_or_backup": false,
+            "fail_closed": false
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "unknown",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "records[] patch paths",
+            "conflicts_detected": [
+              "Data model only",
+              "records[] assumption conflicts with active files[] automation"
+            ]
+          },
+          "risks": [
+            "Looks like authority scaffolding but is not executable authority"
+          ],
+          "confidence": "high"
+        }
+      ],
+      "best_candidate": {
+        "filename": "P_01999000042260126000__idpkg_runtime.py",
+        "path": "01260207201000001250_REGISTRY\\ID\\1_runtime\\watchers\\P_01999000042260126000__idpkg_runtime.py",
+        "reason": "Safest readable writer found because it uses atomic helpers and lock-backed shared utilities, but it is not the one canonical writer for all registry mutations."
+      },
+      "closure_assessment": {
+        "does_close_gap": false,
+        "reason": "There are several mutation-capable files, but they are competing paths. Only the ID runtime writer shows strong safety discipline, and it is not established as the single accepted writer for the whole system.",
+        "missing_behaviors": [
+          "one accepted repo-local mutation authority for every registry write",
+          "shared lock and atomic discipline across all writers",
+          "write-policy validation wired into the active mutation path",
+          "global compare-and-swap or registry hash precondition enforcement",
+          "coordinated rollback and post-write hook execution"
+        ]
+      }
+    },
+    {
+      "gap_id": "G4",
+      "gap_name": "Post-Write Generator Pipeline",
+      "status": "missing",
+      "candidates": [
+        {
+          "filename": "P_01260207233100000312_generator_runner.py",
+          "path": "01260207201000001276_scripts\\01260207201000001285_utilities\\P_01260207233100000312_generator_runner.py",
+          "classification": "implementation_legacy",
+          "readable_source": true,
+          "why_considered": "Strong filename match and explicit generator-runner role.",
+          "behavior_summary": "Intended generator runner with a CLI entrypoint, but the file does not compile because Windows paths in the docstring trigger a unicodeescape error. It also assumes a records[] generator registry model rather than the current files[] automation shape.",
+          "implementation_signals": {
+            "functions": [
+              "main"
+            ],
+            "classes": [
+              "GeneratorRunner"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "generator registry records[]",
+              "generator input files"
+            ],
+            "writes": [
+              "derived artifact files"
+            ],
+            "mutates_registry": false,
+            "builds_patch": false,
+            "applies_patch": false,
+            "emits_evidence": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run": false,
+            "rollback_or_backup": false,
+            "fail_closed": false
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "unknown",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "records[] with generator records",
+            "conflicts_detected": [
+              "Compile-broken",
+              "Registry shape conflicts with active files[] automation"
+            ]
+          },
+          "risks": [
+            "Not runnable in current state",
+            "Legacy registry assumptions"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01260207233100000318_generator_orchestrator.py",
+          "path": "01260207201000001289_src\\01260207201000001291_generators\\P_01260207233100000318_generator_orchestrator.py",
+          "classification": "implementation_legacy",
+          "readable_source": true,
+          "why_considered": "Closest readable orchestrator-style generator file in the source tree.",
+          "behavior_summary": "Computes stale input hashes and would orchestrate generator rebuilds, but it is compile-broken, assumes records[] and record_kind=generator, and comments indicate actual registry updates must go through a RegistryWriter that is not present as a canonical authority.",
+          "implementation_signals": {
+            "functions": [],
+            "classes": [
+              "GeneratorOrchestrator"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [
+              "registry records[]",
+              "generator input dependencies"
+            ],
+            "writes": [
+              "in-memory rebuild metadata only"
+            ],
+            "mutates_registry": false,
+            "builds_patch": false,
+            "applies_patch": false,
+            "emits_evidence": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run": false,
+            "rollback_or_backup": false,
+            "fail_closed": false
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "unknown",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "records[]",
+            "conflicts_detected": [
+              "Compile-broken",
+              "Depends on a missing or non-canonical RegistryWriter",
+              "records[] assumption conflicts with active files[] automation"
+            ]
+          },
+          "risks": [
+            "Not runnable",
+            "Not wired to a successful write path"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01260207233100000320_01999000042260125047_generator_orchestrator.py",
+          "path": "01260207201000001289_src\\01260207201000001291_generators\\P_01260207233100000320_01999000042260125047_generator_orchestrator.py",
+          "classification": "duplicate_variant",
+          "readable_source": true,
+          "why_considered": "Near-duplicate generator orchestrator in the same source area.",
+          "behavior_summary": "Same generator-orchestrator branch pattern as the sibling file, with the same compile problem and the same records[] assumptions.",
+          "implementation_signals": {
+            "functions": [],
+            "classes": [
+              "GeneratorOrchestrator"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [
+              "registry records[]",
+              "generator input dependencies"
+            ],
+            "writes": [
+              "in-memory rebuild metadata only"
+            ],
+            "mutates_registry": false,
+            "builds_patch": false,
+            "applies_patch": false,
+            "emits_evidence": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run": false,
+            "rollback_or_backup": false,
+            "fail_closed": false
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "unknown",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "records[]",
+            "conflicts_detected": [
+              "Shadow copy of another broken generator orchestrator"
+            ]
+          },
+          "risks": [
+            "Duplicate shadow copy increases ambiguity"
+          ],
+          "confidence": "high"
+        }
+      ],
+      "best_candidate": {
+        "filename": "P_01260207233100000318_generator_orchestrator.py",
+        "path": "01260207201000001289_src\\01260207201000001291_generators\\P_01260207233100000318_generator_orchestrator.py",
+        "reason": "Closest conceptual fit, but it is compile-broken, uses the wrong registry shape, and is not wired to a canonical writer."
+      },
+      "closure_assessment": {
+        "does_close_gap": false,
+        "reason": "Generator-related files exist, but they are legacy/conflicting artifacts rather than a working deterministic post-write pipeline. The historical ingest spec still points to a required S32 post-write stage that is not realized here.",
+        "missing_behaviors": [
+          "runnable post-write generator pipeline triggered after successful registry mutation",
+          "canonical integration with the actual registry writer",
+          "files[]-aligned generator discovery and dependency tracking",
+          "deterministic evidence emission for post-write generation"
+        ]
+      }
+    },
+    {
+      "gap_id": "G5",
+      "gap_name": "SHA256 to file_id Promotion Bridge",
+      "status": "conflicting",
+      "candidates": [
+        {
+          "filename": "file_id_resolver.py",
+          "path": "01260207201000001250_REGISTRY\\src\\identity\\file_id_resolver.py",
+          "classification": "implementation_transitional",
+          "readable_source": true,
+          "why_considered": "Direct semantic match for SHA256-to-file_id resolution.",
+          "behavior_summary": "Implements strict/fallback file_id resolution using sidecar metadata and a local cache, but the authoritative registry lookup is still a TODO that returns None. It can fail closed in strict mode, yet it is not the canonical promotion bridge.",
+          "implementation_signals": {
+            "functions": [],
+            "classes": [
+              "FileIDResolutionError",
+              "FileIDResolver"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [
+              "sidecar .meta.json files",
+              ".state\\identity\\file_id_cache.json",
+              "placeholder authoritative registry lookup"
+            ],
+            "writes": [
+              ".state\\identity\\file_id_cache.json"
+            ],
+            "mutates_registry": false,
+            "builds_patch": false,
+            "applies_patch": false,
+            "emits_evidence": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run": false,
+            "rollback_or_backup": false,
+            "fail_closed": true
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "yes",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "authoritative registry query is TODO; current fallback uses sidecar metadata plus local cache",
+            "conflicts_detected": [
+              "Authoritative registry lookup is stubbed",
+              "allow_generation can synthesize a 20-digit ID from SHA256 without a proven canonical allocator"
+            ]
+          },
+          "risks": [
+            "No verified source of truth",
+            "Strict mode can block correctly, but normal operation can still drift from canonical allocation"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01999000042260305001_file_id_reconciler.py",
+          "path": "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305001_file_id_reconciler.py",
+          "classification": "conflicting_branch",
+          "readable_source": true,
+          "why_considered": "Strong name and behavior match for SHA256 mapping and promotion work.",
+          "behavior_summary": "Contains a FileIDReconciler and intended SHA256 mapping/promotion logic over registry files[], but the current copy has a syntax error and cannot be imported. The integration test for SHA256 promotion skips because of this failure.",
+          "implementation_signals": {
+            "functions": [
+              "main"
+            ],
+            "classes": [
+              "FileIDReconciler"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "registry files[] with sha256 and file_id",
+              "SHA256_TO_FILE_ID mapping input"
+            ],
+            "writes": [
+              "SHA256_TO_FILE_ID.json"
+            ],
+            "mutates_registry": false,
+            "builds_patch": false,
+            "applies_patch": false,
+            "emits_evidence": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run": false,
+            "rollback_or_backup": false,
+            "fail_closed": false
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "yes",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "files[] with sha256 and file_id",
+            "conflicts_detected": [
+              "Syntax-broken active branch",
+              "Competing duplicate copy differs in behavior"
+            ]
+          },
+          "risks": [
+            "Not importable",
+            "Promotion tests do not run"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01999000042260305001_file_id_reconciler.py",
+          "path": "01260207201000001250_REGISTRY\\01260207201000001313_capability_mapping_system\\01260207220000001318_mapp_py\\P_01999000042260305001_file_id_reconciler.py",
+          "classification": "duplicate_variant",
+          "readable_source": true,
+          "why_considered": "Competing shadow copy of the same reconciler in the capability mapping subsystem.",
+          "behavior_summary": "This copy compiles and builds SHA256-to-file_id mapping from registry files[], but it lacks the promotion method present in the broken sibling. It is a duplicate branch, not a settled canonical bridge.",
+          "implementation_signals": {
+            "functions": [
+              "main"
+            ],
+            "classes": [
+              "FileIDReconciler"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "registry files[] with sha256 and file_id"
+            ],
+            "writes": [
+              "SHA256_TO_FILE_ID.json"
+            ],
+            "mutates_registry": false,
+            "builds_patch": false,
+            "applies_patch": false,
+            "emits_evidence": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run": false,
+            "rollback_or_backup": false,
+            "fail_closed": false
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "yes",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "files[] with sha256 and file_id",
+            "conflicts_detected": [
+              "Shadow copy lacks the intended promotion behavior from the broken sibling"
+            ]
+          },
+          "risks": [
+            "Duplicate branch ambiguity",
+            "No canonical promotion API"
+          ],
+          "confidence": "high"
+        }
+      ],
+      "best_candidate": {
+        "filename": "file_id_resolver.py",
+        "path": "01260207201000001250_REGISTRY\\src\\identity\\file_id_resolver.py",
+        "reason": "Most stable readable resolver, but it is still missing authoritative registry lookup and does not implement the full analyzer-output promotion bridge."
+      },
+      "closure_assessment": {
+        "does_close_gap": false,
+        "reason": "The repo has partial resolvers and broken/duplicated reconciler branches, but no verified canonical SHA256-to-file_id bridge that promotes analyzer outputs into file_id-keyed registry records. ARCHITECTURE_RUNTIME_ENGINE.md still lists this mismatch as an unresolved blocker.",
+        "missing_behaviors": [
+          "authoritative SHA256 to file_id lookup against the active registry",
+          "single promotion API for analyzer outputs keyed by SHA256",
+          "fail-closed blocking when mapping is unresolved across all callers",
+          "working integration tests for promotion behavior"
+        ]
+      }
+    },
+    {
+      "gap_id": "G6",
+      "gap_name": "Lookup / Join Resolver",
+      "status": "missing",
+      "candidates": [
+        {
+          "filename": "P_01999000042260305014_lookup_resolver.py",
+          "path": "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305014_lookup_resolver.py",
+          "classification": "referenced_not_readable",
+          "readable_source": false,
+          "why_considered": "ARCHITECTURE_RUNTIME_ENGINE.md explicitly names this as the intended canonical lookup layer.",
+          "behavior_summary": "Documented target only. No readable source file was found in the repo.",
+          "implementation_signals": {
+            "functions": [],
+            "classes": [],
+            "has_cli_entrypoint": false,
+            "reads": [],
+            "writes": [],
+            "mutates_registry": false,
+            "builds_patch": false,
+            "applies_patch": false,
+            "emits_evidence": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run": false,
+            "rollback_or_backup": false,
+            "fail_closed": false
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "unknown",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "",
+            "conflicts_detected": [
+              "Architecture names it, but source is absent"
+            ]
+          },
+          "risks": [
+            "Cannot verify behavior",
+            "May never have been checked in"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01260207233100000332_derivation_engine.py",
+          "path": "01260207201000001250_REGISTRY\\src_modules\\01260207201000001297_registry_writer\\P_01260207233100000332_derivation_engine.py",
+          "classification": "implementation_transitional",
+          "readable_source": true,
+          "why_considered": "Closest readable derivation/runtime helper that could have hosted lookup behavior.",
+          "behavior_summary": "Provides a small DSL evaluator and derivation engine over supplied record values, but it does not perform registry-to-registry joins, external lookup resolution, or deterministic dependency scheduling.",
+          "implementation_signals": {
+            "functions": [],
+            "classes": [
+              "DSLEvaluator",
+              "DerivationEngine"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [
+              "caller-supplied derivation rules",
+              "caller-supplied record dictionaries"
+            ],
+            "writes": [],
+            "mutates_registry": false,
+            "builds_patch": false,
+            "applies_patch": false,
+            "emits_evidence": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run": false,
+            "rollback_or_backup": false,
+            "fail_closed": false
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "unknown",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "single-record dict inputs; no explicit registry join model",
+            "conflicts_detected": [
+              "No lookup or join semantics",
+              "No dependency graph orchestration"
+            ]
+          },
+          "risks": [
+            "Helper engine only",
+            "Not sufficient to resolve external registry-derived fields"
+          ],
+          "confidence": "high"
+        }
+      ],
+      "best_candidate": {
+        "filename": "P_01999000042260305014_lookup_resolver.py",
+        "path": "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305014_lookup_resolver.py",
+        "reason": "Architecture points to this as the intended canonical module, but no readable source exists; the best readable helper found does not implement joins."
+      },
+      "closure_assessment": {
+        "does_close_gap": false,
+        "reason": "No readable in-repo lookup/join resolver was found. The architecture doc still points to a missing lookup_resolver module, and the closest readable derivation helper does not perform joins.",
+        "missing_behaviors": [
+          "registry-to-registry lookup resolution",
+          "join support for derived fields depending on external registry artifacts",
+          "deterministic lookup execution integrated with the runtime"
+        ]
+      }
+    },
+    {
+      "gap_id": "G7",
+      "gap_name": "Unified Column Runtime Engine",
+      "status": "missing",
+      "candidates": [
+        {
+          "filename": "P_01999000042260305005_column_loader.py",
+          "path": "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305005_column_loader.py",
+          "classification": "implementation_transitional",
+          "readable_source": true,
+          "why_considered": "Closest readable current file to a column runtime loader.",
+          "behavior_summary": "Loads the column dictionary and assigns a coarse phase tag, but does not load write policy, derivation dependencies, triggers, or mapping inputs. REG_AUTO_PLAN.txt explicitly says it is incomplete.",
+          "implementation_signals": {
+            "functions": [
+              "main"
+            ],
+            "classes": [
+              "ColumnLoader"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "COLUMN_DICTIONARY.json"
+            ],
+            "writes": [],
+            "mutates_registry": false,
+            "builds_patch": false,
+            "applies_patch": false,
+            "emits_evidence": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run": false,
+            "rollback_or_backup": false,
+            "fail_closed": false
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "unknown",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "column dictionary only",
+            "conflicts_detected": [
+              "No write-policy access",
+              "No dependency scheduler",
+              "No trigger dispatcher"
+            ]
+          },
+          "risks": [
+            "Only a loader stub for a larger runtime"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01260207233100000332_derivation_engine.py",
+          "path": "01260207201000001250_REGISTRY\\src_modules\\01260207201000001297_registry_writer\\P_01260207233100000332_derivation_engine.py",
+          "classification": "implementation_transitional",
+          "readable_source": true,
+          "why_considered": "Closest readable derivation execution helper that could participate in a runtime engine.",
+          "behavior_summary": "Executes simple derivation formulas over provided records, but it is not a unified runtime: no topological dependency ordering, no trigger dispatch, no lookup resolver, and no patch/evidence orchestration.",
+          "implementation_signals": {
+            "functions": [],
+            "classes": [
+              "DSLEvaluator",
+              "DerivationEngine"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [
+              "caller-supplied derivation rules",
+              "caller-supplied record dictionaries"
+            ],
+            "writes": [],
+            "mutates_registry": false,
+            "builds_patch": false,
+            "applies_patch": false,
+            "emits_evidence": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run": false,
+            "rollback_or_backup": false,
+            "fail_closed": false
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "unknown",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "record-local derivation inputs only",
+            "conflicts_detected": [
+              "Not a scheduler or runtime authority"
+            ]
+          },
+          "risks": [
+            "Partial helper only"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01999000042260305010_column_runtime_loader.py",
+          "path": "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305010_column_runtime_loader.py",
+          "classification": "referenced_not_readable",
+          "readable_source": false,
+          "why_considered": "Named explicitly in ARCHITECTURE_RUNTIME_ENGINE.md as a missing core runtime module.",
+          "behavior_summary": "Documented target only. No readable source file was found in the repo.",
+          "implementation_signals": {
+            "functions": [],
+            "classes": [],
+            "has_cli_entrypoint": false,
+            "reads": [],
+            "writes": [],
+            "mutates_registry": false,
+            "builds_patch": false,
+            "applies_patch": false,
+            "emits_evidence": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run": false,
+            "rollback_or_backup": false,
+            "fail_closed": false
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "unknown",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "",
+            "conflicts_detected": [
+              "Architecture reference only"
+            ]
+          },
+          "risks": [
+            "Cannot verify implementation"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01999000042260305011_dependency_scheduler.py",
+          "path": "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305011_dependency_scheduler.py",
+          "classification": "referenced_not_readable",
+          "readable_source": false,
+          "why_considered": "Named explicitly in ARCHITECTURE_RUNTIME_ENGINE.md as a missing core runtime module.",
+          "behavior_summary": "Documented target only. No readable source file was found in the repo.",
+          "implementation_signals": {
+            "functions": [],
+            "classes": [],
+            "has_cli_entrypoint": false,
+            "reads": [],
+            "writes": [],
+            "mutates_registry": false,
+            "builds_patch": false,
+            "applies_patch": false,
+            "emits_evidence": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run": false,
+            "rollback_or_backup": false,
+            "fail_closed": false
+          },
+          "contract_alignment": {
+            "uses_20_digit_file_id": "unknown",
+            "uses_correct_doc_id_semantics": "unknown",
+            "registry_shape_assumed": "",
+            "conflicts_detected": [
+              "Architecture reference only"
+            ]
+          },
+          "risks": [
+            "Cannot verify implementation"
+          ],
+          "confidence": "high"
+        }
+      ],
+      "best_candidate": {
+        "filename": "P_01999000042260305005_column_loader.py",
+        "path": "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305005_column_loader.py",
+        "reason": "Best readable current starting point, but it only loads the column dictionary and does not implement the runtime behaviors the architecture still marks as missing."
+      },
+      "closure_assessment": {
+        "does_close_gap": false,
+        "reason": "The readable code stops at helpers such as column loading and simple derivation execution. The architecture still names the real runtime loader, dependency scheduler, trigger dispatcher, and lookup resolver as missing modules.",
+        "missing_behaviors": [
+          "load column dictionary plus write policy plus derivation metadata as one runtime model",
+          "topological dependency ordering",
+          "trigger dispatch for analyzers and formulas",
+          "lookup resolution within derivations",
+          "patch and evidence construction from runtime execution"
+        ]
+      }
+    }
+  ],
+  "cross_cutting_findings": {
+    "most_likely_real_but_unsurfaced_files": [
+      "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\gates\\gate_runner.py - repeatedly referenced in python_scripts_paths.md and manifests, but outside this repo",
+      "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\gates\\enforcement_bridge.py - repeatedly referenced in inventories, but outside this repo",
+      "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305010_column_runtime_loader.py - named in ARCHITECTURE_RUNTIME_ENGINE.md but absent on disk",
+      "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305011_dependency_scheduler.py - named in ARCHITECTURE_RUNTIME_ENGINE.md but absent on disk",
+      "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305012_trigger_dispatcher.py - named in ARCHITECTURE_RUNTIME_ENGINE.md but absent on disk",
+      "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305014_lookup_resolver.py - named in ARCHITECTURE_RUNTIME_ENGINE.md but absent on disk",
+      "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305020_file_intake_orchestrator.py - named in ARCHITECTURE_RUNTIME_ENGINE.md but absent on disk",
+      "runners\\mutation_runner.py - planned in REG_AUTO_PLAN.txt, not present in the repo"
+    ],
+    "likely_stub_or_decoy_files": [
+      "01260207201000001250_REGISTRY\\src\\identity\\file_id_resolver.py - real code, but authoritative registry lookup is still a TODO",
+      "01260207201000001250_REGISTRY\\src_modules\\01260207201000001297_registry_writer\\P_01260207233100000329_01999000042260125036_promotion_patch.py - patch data model only, no writer",
+      "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305016_e2e_validator.py - shallow validator and currently syntax-broken"
+    ],
+    "duplicate_or_shadow_files": [
+      "Hash-identical duplicate of P_01999000042260305014_intake_orchestrator.py exists under capability_mapping_system\\01260207220000001318_mapp_py",
+      "Hash-identical duplicate of P_01999000042260305004_patch_generator.py exists under capability_mapping_system\\01260207220000001318_mapp_py",
+      "Conflicting duplicate branches of P_01999000042260305001_file_id_reconciler.py exist in REGISTRY_AUTOMATION\\scripts and capability_mapping_system\\01260207220000001318_mapp_py",
+      "Two generator_orchestrator variants exist under 01260207201000001289_src\\01260207201000001291_generators with the same legacy branch pattern"
+    ],
+    "registry_shape_conflicts": [
+      "Active automation files mostly assume files[]; generator and registry_writer transition artifacts often assume records[]",
+      "ID runtime uses files[], entries[], and entities[], which does not match the narrower REGISTRY_AUTOMATION files[] and files[]+edges[] assumptions",
+      "Current registry JSON still references old src\\registry_transition artifact paths that are missing or moved on disk"
+    ],
+    "identity_contract_conflicts": [
+      "id_contract.yaml and 01260207201000000174_ID_IDENTITY_CONTRACT.md require file_id to be a 20-digit string and doc_id to be P_ plus that file_id",
+      "END_TO_END_REGISTRY_PROCESS.md describes doc_id as DOC-{last4(file_id)}, which conflicts with the active contract",
+      "src\\metadata\\metadata_backfiller.py computes DOC_{file_id} or DOC_{sha256prefix}, which conflicts with the active contract",
+      "file_id_resolver.py can synthesize a 20-digit ID from SHA256 when allow_generation is enabled, which is not proven to match the canonical allocator/single-writer authority"
+    ],
+    "missing_dependencies": [
+      "01260207201000001250_REGISTRY\\src_modules\\01260207201000001296_registry_transition\\P_01260207201000000986___init__.py imports missing P_01260207233100000323_identity_resolver.py",
+      "01260207201000001250_REGISTRY\\src_modules\\01260207201000001296_registry_transition\\P_01260207201000000986___init__.py imports missing P_01260207233100000325_registry_writer.py",
+      "Generator orchestrator comments expect a RegistryWriter that is not present as a canonical writer in that branch",
+      "Pipeline runner still depends on a separate patch generator instead of a shared mutation runner",
+      "SHA256 promotion integration tests depend on the syntax-broken REGISTRY_AUTOMATION copy of P_01999000042260305001_file_id_reconciler.py"
+    ]
+  },
+  "final_assessment": {
+    "gaps_truly_closed": [],
+    "gaps_still_open": [
+      "G1",
+      "G2",
+      "G3",
+      "G4",
+      "G5",
+      "G6",
+      "G7"
+    ],
+    "gaps_blocked_by_conflict": [
+      "G1",
+      "G3",
+      "G5"
+    ],
+    "best_next_files_to_search": [
+      "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\gates\\gate_runner.py",
+      "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\gates\\enforcement_bridge.py",
+      "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305010_column_runtime_loader.py",
+      "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305011_dependency_scheduler.py",
+      "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305012_trigger_dispatcher.py",
+      "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305014_lookup_resolver.py",
+      "01260207201000001250_REGISTRY\\REGISTRY_AUTOMATION\\scripts\\P_01999000042260305020_file_intake_orchestrator.py",
+      "01260207201000001250_REGISTRY\\src_modules\\01260207201000001296_registry_transition\\P_01260207233100000323_identity_resolver.py",
+      "01260207201000001250_REGISTRY\\src_modules\\01260207201000001296_registry_transition\\P_01260207233100000325_registry_writer.py"
+    ]
+  }
+}

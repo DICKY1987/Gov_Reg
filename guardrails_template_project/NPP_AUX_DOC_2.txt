@@ -1,0 +1,116 @@
+
+● Here's a description of each folder and what its files do:
+
+  ---
+  01260207201000001223_schemas (11 files)
+
+  Purpose: Formal JSON Schema definitions that define the structure and
+  validation rules for all plan documents in this system.
+
+  - plan.schema.v2.4.0.json / v3.0.0.json — Versioned schemas for the
+  "Autonomous Delivery Plan" document format. Enforce required fields
+  (meta, plan, navigation), data types, ID patterns, and determinism
+  guarantees.
+  - FILE_INVENTORY.record.schema.v1.json — Schema for file
+  inventory/registry records.
+  - coverage_v1.json, defect_log.schema.json, parquet_schema_v1.json —
+  Schemas for coverage reports, defect tracking, and Parquet data
+  exports.
+  - etl/ subfolder — Three schemas for ETL pipeline stages: raw_data,
+  clean_data, and load_receipt.
+
+  ---
+  01260207201000001225_scripts (57 files)
+
+  Purpose: Python automation scripts that validate, transform, and audit
+   the plan system. Split into two layers:
+
+  Top-level scripts — Broad plan-level operations:
+  - Converters (ccis_to_phase_plan.py, phase_plan_converter.py,
+  phase_plan_to_workstream_converter.py) — Transform plan documents
+  between formats.
+  - Validators (~20 scripts) — Each validates one specific contract:
+  file manifest, plan structure, step contracts, gates, assumptions,
+  metrics, rollback completeness, SSOT, wiring proofs, etc.
+  - Generators (generate_dag.py, generate_metrics_report.py,
+  generate_automation_diagrams.py) — Produce DAGs, diagrams, and reports
+   from plan data.
+  - Utilities (apply_patch.py, check_secrets.py, check_permissions.py,
+  build_automation_index.py, NEWPHASEPLANPROCESS_plan_cli.py) — Patch
+  application, security checks, and a CLI entry point.
+
+  wiring/ subfolder — Integration/E2E proof scripts:
+  - Detect cycles, write conflicts, orphans, dead artifacts, dormant
+  flows, missing producers.
+  - Run all E2E proofs, test idempotency, validate evidence bundles,
+  handoffs, and recovery policies.
+
+  gate_dependencies.json (×2) — Declares ordering and dependency
+  relationships between gates.
+
+  ---
+  01260207201000001288_sections (62 files)
+
+  Purpose: The modular content library for plan templates. Each plan
+  section exists in three forms:
+
+  ┌──────────────┬───────────────┬──────────────────────────────────┐
+  │     Form     │     Files     │             Purpose              │
+  ├──────────────┼───────────────┼──────────────────────────────────┤
+  │              │ 22 files      │ Human-readable instructions      │
+  │ .inst.md     │ (sec_000 –    │ telling an AI/author how to      │
+  │              │ sec_021)      │ populate each section            │
+  ├──────────────┼───────────────┼──────────────────────────────────┤
+  │              │ 22 files      │ Machine-readable structured data │
+  │ .json        │ (sec_000 –    │  — the actual section            │
+  │              │ sec_021)      │ content/schema instances         │
+  ├──────────────┼───────────────┼──────────────────────────────────┤
+  │ .json.backup │ 10 files      │ Backups of previously edited     │
+  │              │               │ section JSON files               │
+  └──────────────┴───────────────┴──────────────────────────────────┘
+
+  Section coverage (sec_000–021): critical constraints, plan identity,
+  task analysis, executive summary, assumptions/scope, phase DAG, ground
+   truth levels, self-healing, worktree isolation, environment/tools,
+  phase contracts, artifact manifest, validation gates, risk management,
+   decision ledger, metrics/observability, testing strategy, governance,
+   GitHub integration, runbooks, final summary, quality controls
+  catalog.
+
+  Supporting files:
+  - UNIFIED_ALL_INSTRUCTIONS.md — Concatenated master of all .inst.md
+  files.
+  - UNIFIED_ALL_SECTIONS.json — Combined JSON of all section data.
+  - UNIFIED_MASTER_*.md — Template evaluation summaries and feature
+  analysis.
+  - UNIFIED_MASTER_TEMPLATE_V1_PART2.yml — YAML form of the master
+  template.
+  - combine_sections.ps1 — PowerShell script that assembles the unified
+  files from the individual sections.
+
+  ---
+  .state (93 files)
+
+  Purpose: Runtime evidence store — persists proof that each validation
+  gate actually passed. Acts as a tamper-evident audit log.
+
+  Structure:
+  - evidence/GATE-000 through GATE-999 — One subfolder per gate, each
+  containing a JSON file with the validation result (pass/fail,
+  timestamp, details) for that specific gate check (structure, step
+  contracts, assumptions, planning artifacts, automation spec, wiring
+  proof, artifact closure, rollback completeness, SSOT, etc.).
+  - evidence/mcp/RUN-CAPMAP02 through RUN-CAPMAP11 — Per-run evidence
+  from MCP (Model Control Plane) executions, capturing both the command
+  input and the validation output for each run.
+  - evidence/registry_integration/purpose_mapping/ — stdout/stderr logs
+  from a dry-run and actual apply of a registry step (step 4).
+  - evidence/PRE/, evidence/test/ — Pre-execution and test-run
+  validation snapshots.
+  - evidence/VAL-FILE-MANIFEST/ — File manifest validation result.
+  - evidence/gate_alignment/ — Markdown summaries: execution summary,
+  remediation completion record, and a SSOT decision record for phase 1.
+
+  In short: .state is the evidence vault — every gate that was checked
+  leaves a JSON receipt here, making the entire validation history
+  auditable and reproducible.

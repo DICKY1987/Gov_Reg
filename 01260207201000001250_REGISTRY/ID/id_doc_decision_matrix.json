@@ -1,0 +1,564 @@
+{
+  "schema_version": "1.0.0",
+  "purpose": "Machine-readable triage matrix for uploaded ID-system documentation and related files.",
+  "decision_basis": {
+    "current_contract_model": {
+      "file_id": "20-digit numeric string",
+      "doc_id": "P_ + 20-digit file_id",
+      "dir_id": "20-digit numeric string in .dir_id JSON",
+      "note": "Python filenames use P_ only as filename/doc representation because Python modules cannot begin with digits."
+    },
+    "decision_categories": [
+      "load_first",
+      "load_for_operations",
+      "load_for_semantic_comparison",
+      "reference_only",
+      "legacy_design_only",
+      "conflict_evidence_only",
+      "block_as_current_authority"
+    ]
+  },
+  "files": [
+    {
+      "file": "ID_FILE_CLASSIFICATION.md",
+      "status": "current_meta_classifier",
+      "relevance": "high",
+      "decision": "load_first",
+      "fills_gaps": [
+        "Current vs supporting vs legacy vs reference split",
+        "Supersession mapping",
+        "Legacy design identification"
+      ],
+      "use_for": [
+        "Initial triage",
+        "Current/legacy routing",
+        "Determining whether a file should be loaded or blocked"
+      ],
+      "cautions": [
+        "Classification aid, not semantic contract"
+      ]
+    },
+    {
+      "file": "ID_SCRIPT_INVENTORY.jsonl",
+      "status": "current_script_inventory",
+      "relevance": "high",
+      "decision": "load_first",
+      "fills_gaps": [
+        "Canonicality status",
+        "Role classification",
+        "Importability",
+        "Superseded-by relationships"
+      ],
+      "use_for": [
+        "Tool routing",
+        "Operational entrypoint selection",
+        "Supersession checks"
+      ],
+      "cautions": [
+        "Operational inventory, not terminology authority"
+      ]
+    },
+    {
+      "file": "01260207201000000174_ID_IDENTITY_CONTRACT.md",
+      "status": "older_but_relevant_contract",
+      "relevance": "high",
+      "decision": "load_for_semantic_comparison",
+      "fills_gaps": [
+        "Clean 20-digit file_id definition",
+        "P_ + 20-digit doc_id definition",
+        "Filename boundary rules",
+        "Separation from 22-digit enhanced_id"
+      ],
+      "use_for": [
+        "Semantic comparison",
+        "Conflict detection",
+        "Understanding canonical vocabulary"
+      ],
+      "cautions": [
+        "Superseded by newer identity contract per classification"
+      ]
+    },
+    {
+      "file": "id_contract.yaml",
+      "status": "current_ai_facing_contract",
+      "relevance": "high",
+      "decision": "load_first",
+      "fills_gaps": [
+        "Machine-readable terminology SSOT",
+        "Validation rules",
+        "file_id/doc_id/dir_id definitions"
+      ],
+      "use_for": [
+        "AI runtime loading",
+        "Validation rule interpretation",
+        "Terminology baseline"
+      ],
+      "cautions": [
+        "Contains enhanced_id section that must not override 20-digit file_id semantics"
+      ]
+    },
+    {
+      "file": "AI_CLI_ID_ASSIGNMENT_COMPLETE_GUIDE.md",
+      "status": "current_operational_guide_transitional",
+      "relevance": "high",
+      "decision": "load_for_operations",
+      "fills_gaps": [
+        "Operational workflows",
+        "20-digit file and directory ID procedures",
+        "Registry update and validation flow"
+      ],
+      "use_for": [
+        "Workflow execution",
+        "AI CLI behavior",
+        "User-facing operational instructions"
+      ],
+      "cautions": [
+        "Verify module paths/entrypoints against classification and script inventory before acting"
+      ]
+    },
+    {
+      "file": "01_CONTEXT_PRIMER.md",
+      "status": "current_load_order_primer",
+      "relevance": "high",
+      "decision": "load_first",
+      "fills_gaps": [
+        "AI load order",
+        "Minimal context bootstrap",
+        "System overview"
+      ],
+      "use_for": [
+        "Fast AI bootstrap",
+        "Prioritizing which docs to read next"
+      ],
+      "cautions": [
+        "Primer only; defer to contract files for precise semantics"
+      ]
+    },
+    {
+      "file": "00_MANIFEST.json",
+      "status": "machine_readable_doc_catalog",
+      "relevance": "high",
+      "decision": "load_first",
+      "fills_gaps": [
+        "Machine-readable documentation index",
+        "Load order",
+        "Required docs by task"
+      ],
+      "use_for": [
+        "AI document loading plan",
+        "Task-based context selection"
+      ],
+      "cautions": [
+        "Catalog, not implementation proof"
+      ]
+    },
+    {
+      "file": "allocators.yaml",
+      "status": "runtime_module_doc",
+      "relevance": "high",
+      "decision": "load_for_operations",
+      "fills_gaps": [
+        "Allocator API surface",
+        "Counter store behavior",
+        "Facade/runtime module roles"
+      ],
+      "use_for": [
+        "Allocation behavior",
+        "Operational reasoning",
+        "Dependency mapping"
+      ],
+      "cautions": [
+        "Must be reconciled with contract on 20-digit canonical file identity"
+      ]
+    },
+    {
+      "file": "handlers.yaml",
+      "status": "runtime_module_doc",
+      "relevance": "high",
+      "decision": "load_for_operations",
+      "fills_gaps": [
+        ".dir_id JSON structure",
+        "Read/write handler behavior",
+        "Directory identity resolution context"
+      ],
+      "use_for": [
+        "Handler behavior",
+        ".dir_id semantics",
+        "Directory operations"
+      ],
+      "cautions": []
+    },
+    {
+      "file": "validators.yaml",
+      "status": "runtime_module_doc",
+      "relevance": "high",
+      "decision": "load_for_operations",
+      "fills_gaps": [
+        "Filename validation rules",
+        "Canonicality checks",
+        "Gate behavior"
+      ],
+      "use_for": [
+        "Pre-commit enforcement reasoning",
+        "Format validation expectations"
+      ],
+      "cautions": []
+    },
+    {
+      "file": "watchers.yaml",
+      "status": "runtime_module_doc",
+      "relevance": "medium_high",
+      "decision": "load_for_operations",
+      "fills_gaps": [
+        "Auto-repair behavior",
+        "Watcher workflows",
+        "Maintenance flow"
+      ],
+      "use_for": [
+        "Monitoring",
+        "Repair",
+        "Directory event handling"
+      ],
+      "cautions": []
+    },
+    {
+      "file": "workflows.yaml",
+      "status": "operations_doc",
+      "relevance": "medium_high",
+      "decision": "load_for_operations",
+      "fills_gaps": [
+        "Stepwise workflows",
+        "Generate dir IDs",
+        "Add file IDs recursively"
+      ],
+      "use_for": [
+        "Operational sequencing",
+        "Workflow orchestration"
+      ],
+      "cautions": []
+    },
+    {
+      "file": "health_checks.yaml",
+      "status": "operations_doc",
+      "relevance": "medium_high",
+      "decision": "load_for_operations",
+      "fills_gaps": [
+        "Validation procedures",
+        "Health thresholds",
+        "Monitoring outputs"
+      ],
+      "use_for": [
+        "System validation",
+        "Health monitoring"
+      ],
+      "cautions": []
+    },
+    {
+      "file": "troubleshooting.yaml",
+      "status": "operations_doc",
+      "relevance": "medium_high",
+      "decision": "load_for_operations",
+      "fills_gaps": [
+        "Failure modes",
+        "Counter lock remediation",
+        "Malformed .dir_id handling"
+      ],
+      "use_for": [
+        "Error diagnosis",
+        "Recovery steps"
+      ],
+      "cautions": []
+    },
+    {
+      "file": "01260207201000000122_DIR_ID_SYSTEM_DOCUMENTATION.md",
+      "status": "current_dir_id_reference",
+      "relevance": "high",
+      "decision": "load_for_semantic_comparison",
+      "fills_gaps": [
+        "DIR_ID two-layer model",
+        ".dir_id JSON anchor format",
+        "Semantic key layer"
+      ],
+      "use_for": [
+        "Directory identity semantics",
+        "Two-layer identity design"
+      ],
+      "cautions": [
+        "Contains environment-specific example paths"
+      ]
+    },
+    {
+      "file": "DUPLICATE_ID_PREVENTION.md",
+      "status": "current_supporting_reference",
+      "relevance": "medium_high",
+      "decision": "load_for_operations",
+      "fills_gaps": [
+        "Defense layers",
+        "Counter + reservation + pre-commit + reconciliation overview"
+      ],
+      "use_for": [
+        "Duplicate prevention model",
+        "Operational safeguards"
+      ],
+      "cautions": [
+        "Do not let summary claims outrank actual allocator/runtime contract"
+      ]
+    },
+    {
+      "file": "P_01999000042260125105_README_ENHANCED_SCANNER.md",
+      "status": "operational_doc_with_maturity_drift",
+      "relevance": "medium_high",
+      "decision": "reference_only",
+      "fills_gaps": [
+        "Enhanced scanner intent",
+        "Metrics/reporting surface"
+      ],
+      "use_for": [
+        "Scanner feature understanding",
+        "Dashboard/reporting context"
+      ],
+      "cautions": [
+        "Claims production-ready status while also noting import-fix dependency"
+      ]
+    },
+    {
+      "file": "ARCHITECTURE_RUNTIME_ENGINE.md",
+      "status": "current_architecture_reference",
+      "relevance": "high",
+      "decision": "load_for_semantic_comparison",
+      "fills_gaps": [
+        "Why unified runtime is needed",
+        "Known missing orchestrator/runtime gaps",
+        "Column/runtime engine architecture"
+      ],
+      "use_for": [
+        "Architecture reasoning",
+        "Gap analysis",
+        "Planning"
+      ],
+      "cautions": [
+        "Architecture appendix; not proof of implemented runtime"
+      ]
+    },
+    {
+      "file": "01260202173939000111_INGEST_SPEC_UNIFIED_REGISTRY.txt",
+      "status": "active_ingest_spec",
+      "relevance": "high",
+      "decision": "load_for_semantic_comparison",
+      "fills_gaps": [
+        "Deterministic ingest flow",
+        "Identity resolution ordering",
+        "Single-writer mutation path"
+      ],
+      "use_for": [
+        "Ingest contract reasoning",
+        "Patch/evidence sequencing"
+      ],
+      "cautions": [
+        "Needs reconciliation with current canonical file_id/doc_id contract"
+      ]
+    },
+    {
+      "file": "END_TO_END_REGISTRY_PROCESS.md",
+      "status": "mixed_current_conflict_source",
+      "relevance": "high",
+      "decision": "conflict_evidence_only",
+      "fills_gaps": [
+        "Detailed lifecycle steps",
+        "Registry population flow"
+      ],
+      "use_for": [
+        "Conflict detection",
+        "Old ingest derivation identification"
+      ],
+      "cautions": [
+        "Conflicts with canonical P_{file_id} model by defining doc_id as DOC-{last4(file_id)}"
+      ]
+    },
+    {
+      "file": "01260207201000000195_VERIFIED_ARTIFACT_BUNDLE.md",
+      "status": "conflict_source_allocator_branch",
+      "relevance": "high",
+      "decision": "conflict_evidence_only",
+      "fills_gaps": [
+        "Proof of 22-digit allocator branch",
+        "Why 20-vs-22 conflict exists"
+      ],
+      "use_for": [
+        "Conflict evidence",
+        "Migration-branch archaeology"
+      ],
+      "cautions": [
+        "Must not override canonical rule that file_id remains 20-digit"
+      ]
+    },
+    {
+      "file": "repo_audit.json",
+      "status": "derived_analysis_artifact",
+      "relevance": "high",
+      "decision": "reference_only",
+      "fills_gaps": [
+        "Direct evidence of regex drift",
+        "Scanner observations",
+        "Validator assumptions"
+      ],
+      "use_for": [
+        "Finding likely implementation conflicts quickly",
+        "Cross-checking source assumptions"
+      ],
+      "cautions": [
+        "Audit artifact, not primary contract"
+      ]
+    },
+    {
+      "file": "deep-research-report (3).md",
+      "status": "analysis_report",
+      "relevance": "medium_high",
+      "decision": "reference_only",
+      "fills_gaps": [
+        "Consolidation findings",
+        "Registry-shape conflict analysis",
+        "Duplication summary"
+      ],
+      "use_for": [
+        "Landscape overview",
+        "Conflict inventory"
+      ],
+      "cautions": [
+        "Secondary analysis; verify against source where possible"
+      ]
+    },
+    {
+      "file": "id_process_coverage_inventory.docx",
+      "status": "coverage_inventory",
+      "relevance": "medium_high",
+      "decision": "reference_only",
+      "fills_gaps": [
+        "Process-part coverage map",
+        "What appears present vs missing"
+      ],
+      "use_for": [
+        "Coverage review",
+        "Gap inventory"
+      ],
+      "cautions": [
+        "Inventory summary, not canonical source"
+      ]
+    },
+    {
+      "file": "ChatGPT-ID System Sources.md",
+      "status": "source_map_analysis_memo",
+      "relevance": "medium_low",
+      "decision": "reference_only",
+      "fills_gaps": [
+        "Source discovery",
+        "Earlier conflict notes"
+      ],
+      "use_for": [
+        "Archaeology",
+        "Locating prior source branches"
+      ],
+      "cautions": [
+        "Not authoritative"
+      ]
+    },
+    {
+      "file": "01260207201000000144_ID_CANONICALITY_CORRECTIONS_V2.1.1.md",
+      "status": "transition_hardening_doc",
+      "relevance": "medium_high",
+      "decision": "reference_only",
+      "fills_gaps": [
+        "Facade rationale",
+        "Why inventory/import_module fields matter",
+        "Canonicality hardening intent"
+      ],
+      "use_for": [
+        "Understanding transition rationale"
+      ],
+      "cautions": [
+        "Corrections plan, not final runtime truth"
+      ]
+    },
+    {
+      "file": "01260207201000000166_ID_CANONICALITY_INDEX.md",
+      "status": "navigation_execution_index",
+      "relevance": "medium",
+      "decision": "reference_only",
+      "fills_gaps": [
+        "Document-set navigation",
+        "Execution-order context"
+      ],
+      "use_for": [
+        "Archaeology",
+        "Navigating the canonicality hardening branch"
+      ],
+      "cautions": [
+        "Transitional; not current truth"
+      ]
+    },
+    {
+      "file": "Unified File+Directory ID Package v1.0",
+      "status": "legacy_design_spec",
+      "relevance": "medium",
+      "decision": "legacy_design_only",
+      "fills_gaps": [
+        "Architecture intent",
+        "Unified package ancestry"
+      ],
+      "use_for": [
+        "Historical design understanding"
+      ],
+      "cautions": [
+        "Legacy only; do not use as current authority"
+      ]
+    },
+    {
+      "file": "DOC-ID-GOVERNANCE-REQ-001__ID_SYSTEM_GOVERNANCE_REQUIREMENTS.md",
+      "status": "conflicting_old_branch",
+      "relevance": "high_conflict_evidence",
+      "decision": "block_as_current_authority",
+      "fills_gaps": [
+        "Shows alternate DOC-* identity branch"
+      ],
+      "use_for": [
+        "Conflict history only"
+      ],
+      "cautions": [
+        "Defines doc_id as primary DOC-<SYSTEM>-<DOMAIN>-<KIND>-<SEQ> identity, which conflicts with current 20-digit file_id model"
+      ]
+    },
+    {
+      "file": "DOC_ID_SYSTEM_AI_REFERENCE_README.md",
+      "status": "conflicting_old_ai_reference_branch",
+      "relevance": "medium_conflict_evidence",
+      "decision": "block_as_current_authority",
+      "fills_gaps": [
+        "Shows older doc_id-centric AI loading strategy"
+      ],
+      "use_for": [
+        "Legacy-branch evidence only"
+      ],
+      "cautions": [
+        "Should not be loaded for current IDPKG-centric reasoning"
+      ]
+    }
+  ],
+  "recommended_ai_load_order": [
+    "ID_FILE_CLASSIFICATION.md",
+    "ID_SCRIPT_INVENTORY.jsonl",
+    "01_CONTEXT_PRIMER.md",
+    "00_MANIFEST.json",
+    "id_contract.yaml",
+    "AI_CLI_ID_ASSIGNMENT_COMPLETE_GUIDE.md",
+    "allocators.yaml",
+    "handlers.yaml",
+    "validators.yaml",
+    "workflows.yaml",
+    "health_checks.yaml",
+    "troubleshooting.yaml"
+  ],
+  "blocked_for_current_authority": [
+    "DOC-ID-GOVERNANCE-REQ-001__ID_SYSTEM_GOVERNANCE_REQUIREMENTS.md",
+    "DOC_ID_SYSTEM_AI_REFERENCE_README.md"
+  ]
+}

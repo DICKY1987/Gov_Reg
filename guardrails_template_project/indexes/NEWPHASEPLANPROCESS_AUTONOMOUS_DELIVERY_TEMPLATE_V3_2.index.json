@@ -1,0 +1,47 @@
+{
+  "canonical_locator_type": "json_pointer",
+  "index_version": "1.1.0",
+  "maps": {
+    "by_enhancement_id": {
+      "ENH-001": "/final_summary/what_was_delivered/enhancements/0",
+      "ENH-002": "/final_summary/what_was_delivered/enhancements/1",
+      "ENH-003": "/final_summary/what_was_delivered/enhancements/2",
+      "ENH-004": "/final_summary/what_was_delivered/enhancements/3",
+      "ENH-005": "/final_summary/what_was_delivered/enhancements/4",
+      "ENH-006": "/final_summary/what_was_delivered/enhancements/5",
+      "ENH-007": "/final_summary/what_was_delivered/enhancements/6",
+      "ENH-008": "/final_summary/what_was_delivered/enhancements/7",
+      "ENH-009": "/final_summary/what_was_delivered/enhancements/8",
+      "ENH-010": "/final_summary/what_was_delivered/enhancements/9"
+    },
+    "by_executor_id": {
+      "EXEC-GATE-EXTRACTOR": "/executor_registry/registered_executors/1",
+      "EXEC-PLAN-DOC-WRITER": "/executor_registry/registered_executors/0"
+    },
+    "by_gate_id": {
+      "GATE-001": "/validation_gates/0",
+      "GATE-002": "/validation_gates/1",
+      "GATE-003": "/validation_gates/2",
+      "GATE-004": "/validation_gates/3",
+      "GATE-005": "/validation_gates/4",
+      "GATE-006": "/validation_gates/5",
+      "GATE-CFG-001": "/validation_gates/7",
+      "GATE-CFG-002": "/validation_gates/8",
+      "GATE-CFG-003": "/validation_gates/9",
+      "GATE-CFG-004": "/validation_gates/10",
+      "GATE-CFG-005": "/validation_gates/11",
+      "GATE-CFG-006": "/validation_gates/12",
+      "GATE-FILE-MUTATIONS": "/validation_gates/6"
+    },
+    "by_pattern_id": {
+      "PAT-EXAMPLE-GATE-EXTRACTION": "/execution_patterns/task_pattern_mappings/1",
+      "PAT-EXAMPLE-PLAN-DOC": "/execution_patterns/task_pattern_mappings/0"
+    },
+    "by_step_id": {
+      "PH-00/STEP-001": "/step_contracts/PH-00/STEP-001",
+      "PH-02/STEP-001": "/step_contracts/PH-02/STEP-001"
+    }
+  },
+  "source_file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+  "source_sha256": "bbfc466b1aa68a19cfe65458d0f563f41ac0f77144fb01c3d23d033d9301e7c3"
+}

@@ -1,0 +1,155 @@
+These six files are a **contract bundle for an ID governance package**. They do not implement the runtime themselves. They define the rules, schemas, configuration, and enforcement checks that a runtime must follow to assign and maintain file and directory identity inside `C:\Users\richg\Gov_Reg`.  
+
+## What each file is
+
+**`config.json`**
+This is the **active environment/config instance** for the package. It pins the project root ID and path, defines the governance boundary (`staging_depth: 0`, `governed_min_depth: 1`), lists excluded patterns like `.git`, `.venv`, `__pycache__`, `.state`, and `.idpkg`, sets naming behavior (`separator: "__"`, `python_prefix: "P_"`), points to the registry file, and points to the allocator counter store outside the repo with a 5000 ms lock timeout. In plain English: this file tells the system **where it runs, what is governed, what is ignored, where IDs come from, and where registry patches go**. 
+
+**`IDPKG_CONFIG.schema.json`**
+This is the **validation schema for the config**. It says a valid config must contain `project_root_id`, `project_root_path`, `governance`, `naming`, `registry`, and `allocator`, and it constrains the shape of each section. In plain English: this file makes sure the config is structurally valid before the package runs. 
+
+**`PREFIX_POLICY.json`**
+This is the **file naming/prefix rulebook** for governed files. It says Python files in the governed zone must use `P_` before the numeric file ID, while all other file types use no letter prefix and just carry the numeric ID. In plain English: this file defines the **canonical filename prefix policy**. 
+
+**`UNIFIED_INGEST_ENVELOPE.schema.json`**
+This is the **event payload schema** for filesystem ingestion. It defines the required fields for an ingest event: trigger type, entity kind, observed time, project root, relative path, depth, and zone. It also allows a high-level `desired_action` such as `register`, `ignore`, `promote`, `update`, or `tombstone`. In plain English: this file defines **what a valid “something changed in the filesystem” event looks like** before the engine decides what to do. 
+
+**`WRITE_POLICY_IDPKG.yaml`**
+This is the **mutation policy** for identities and registry writes. It says:
+
+* `.dir_id` anchor files may be created by the resolver but not modified or deleted except by explicit migration tooling,
+* governed filenames must follow the prefix policy and users must not manually remove ID prefixes,
+* registry writes must be **patch-only** via RFC-6902 rather than direct rewrites,
+* key identity fields like `dir_id`, `file_id`, `project_root_id`, `allocated_at_utc`, and `allocator_version` are immutable,
+* file IDs and dir IDs are permanent once issued,
+* excluded paths must not receive IDs or registry records.
+  In plain English: this file defines **who is allowed to change identity state, how they may change it, and what must never change**. 
+
+**`GATE_CATALOG.json`**
+This is the **enforcement catalog**. It lists the blocking checks the system should run. Cross-cutting gates include requiring the allocator store to live outside the project root, requiring it to be reachable/lockable, requiring patch-only registry mutations, and preventing auto-registration of staging by default. Directory gates require `.dir_id`, valid 20-digit `dir_id`, uniqueness, registry presence, and correct parent linkage. File gates require valid ID prefixes, mandatory `P_` for Python, unique `file_id`, registry presence, and matching `owning_dir_id`. In plain English: this file defines **what conditions must pass for the system to accept identity state as valid**.  
+
+## What they deliver as a group
+
+As a group, these files deliver a **governed identity control plane specification** for files and directories.
+
+More concretely, together they provide:
+
+**1. Environment definition**
+The config and its schema define the package’s runtime boundaries, exclusions, naming settings, registry target, and allocator source.  
+
+**2. Intake contract**
+The ingest envelope schema defines the standard shape for filesystem events entering the package. 
+
+**3. Naming contract**
+The prefix policy defines how governed filenames must represent identity, especially the Python `P_` rule. 
+
+**4. Mutation contract**
+The write policy defines immutability, patch-only registry mutation, anchor handling, restore behavior, and exclusion behavior. 
+
+**5. Enforcement contract**
+The gate catalog defines the blocking validation checks for files, directories, the allocator, staging behavior, and registry coherence.  
+
+Put bluntly: this bundle delivers **the rules for a deterministic file/directory ID system**, not the full engine. It is the package you hand to an implementation and validation layer so they all behave the same way.
+
+## The lifecycle they imply
+
+These files together imply this flow:
+
+1. Load and validate package config.  
+2. Receive a filesystem event in the standard ingest envelope. 
+3. Classify the path into staging, governed, or excluded using config depth and exclusions. 
+4. If governed, enforce naming and identity policies:
+
+   * Python files need `P_` prefix,
+   * directories need `.dir_id`,
+   * identities become immutable once assigned.  
+5. Write registry changes only through patches, not direct edits. 
+6. Run blocking gates to confirm the result is valid.  
+
+## Best single-sentence description
+
+These files are a **schema + policy + gate package for deterministic identity governance of files and directories** in Gov_Reg.
+
+## What is notably *not* in this bundle
+
+What’s missing is the actual runtime implementation that:
+
+* watches the filesystem,
+* allocates IDs,
+* writes `.dir_id`,
+* renames files,
+* builds RFC-6902 patches,
+* applies the gate checks.
+
+So this bundle is **the contract/spec side**, not the full operational system. The implementation has to exist elsewhere.
+
+---
+
+The attached files identify candidate implementation files for **all six areas**, but with one caveat: for **gate checks**, the attachments point to **several validators/scanners/gates**, not one obvious universal gate-runner. One newly attached file also gives you an **actual RFC-6902 patch applier**, which was not in your original gap list but is directly adjacent.  
+
+Here is the clean mapping.
+
+**Watches the filesystem**
+Identified files:
+
+* `P_01999000042260125105_dir_id_watcher.py` in `watchers.yaml` as the continuous watcher for directory creation/deletion and auto-allocation of `.dir_id` in governed zones. 
+* `P_01260207233100000008_watcher_daemon.py` in the combined file descriptions as the watchdog-based queueing watcher for file events. 
+* `P_01260207233100000071_scanner_service.py` as the enforcement scanner, which is not the same thing as the watcher daemon but is part of the continuous detection/enforcement layer.  
+
+**Allocates IDs**
+Identified files:
+
+* `P_01999000042260124031_unified_id_allocator.py` in `allocators.yaml` as the core allocator. 
+* `P_01999000042260125006_id_allocator_facade.py` in the combined descriptions as the canonical wrapper entrypoint around the allocator. 
+* `P_01999000042260124032_reservation_ledger.py` as the reservation/batch planning companion. 
+
+**Writes `.dir_id`**
+Identified files:
+
+* `P_01999000042260125068_dir_id_handler.py` in `handlers.yaml` as the direct read/write/validate handler for `.dir_id` anchor files. 
+* `P_01260207233100000070_dir_identity_resolver.py` in the combined descriptions as the resolver that detects/validates/allocates/writes anchors in the directory pipeline. 
+* `P_01999000042260125100_generate_dir_ids_gov_reg.py` as the CLI workflow that creates missing `.dir_id` anchors.  
+
+**Renames files**
+Identified files:
+
+* `P_RENAME_REMOVE_DOC_TOKEN.py` is explicitly described as a deterministic staged renamer for removing legacy `DOC-*` tokens while preserving canonical IDs. 
+* `2099900001260118_apply_ids_to_filenames.py` is identified in the combined descriptions as the tool that renames files to apply allocated IDs to filenames. 
+* `P_01260207201000000198_add_ids_recursive.py` is named in the operational docs as the recursive file-ID workflow, which strongly implies renaming/applying IDs at scale.  
+
+**Builds RFC-6902 patches**
+Identified files:
+
+* `P_01999000042260125102_populate_registry_dir_ids.py` is described as writing RFC-6902-style patch ops to populate registry `dir_id` fields. 
+* `P_01999000042260125110_populate_registry_dir_ids_enhanced.py` is the enhanced version of that same patch-building job. 
+* `P_01260202173939000084_registry_integration_pipeline.py` is described as generating RFC-6902 patches for registry promotion. 
+* The ingest/process specs also explicitly define patch-building stages (`S30_BUILD_PROMOTION_PATCH`).  
+
+**Applies gate checks**
+Identified files:
+
+* `P_01999000042260125000_gate_id_canonicality.py` in `validators.yaml` is the pre-commit gate for canonicality enforcement. 
+* `P_01999000042260125101_validate_dir_ids.py` is the directory-ID validation CLI. 
+* `P_01260207233100000071_scanner_service.py` acts as an enforcement scanner with fix mode.  
+* `P_01999000042260125113_healthcheck.py` is the broader health/gate runner for multiple validation checks. 
+* `GATE_CATALOG.json` defines the actual gate set being enforced. 
+
+**Applies RFC-6902 patches**
+Not in your original gap list, but now directly filled by the new attachment:
+
+* `P_01260207201000000834_apply_patch.py` is an actual implementation that loads a JSON patch array, applies it with `jsonpatch`, writes backups, and emits evidence. 
+
+## Bottom line
+
+**Yes, the attached files do identify the missing implementation files.**
+The strongest gap coverage is:
+
+* watcher layer: **identified**
+* allocator layer: **identified**
+* `.dir_id` writer layer: **identified**
+* file renaming layer: **identified**
+* patch builder layer: **identified**
+* gate enforcement layer: **identified, but split across multiple validators/scanners**
+* patch applier layer: **now directly present** via `P_01260207201000000834_apply_patch.py` 
+
+The only part I would still call **not fully settled** is the **single canonical gate-execution path**. The attachments show several enforcers, but not one clearly dominant universal gate-runner.

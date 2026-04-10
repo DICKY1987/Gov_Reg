@@ -1,0 +1,520 @@
+{
+  "registry_type": "required_files_gates_evidence_map",
+  "feature": "parallel_workstream_execution_git_worktrees",
+  "version": "1.0.0",
+  "template_section_id": "parallel_workstream_execution",
+  "records": [
+    {
+      "file_path": "schemas/parallel_workstreams.schema.json",
+      "type": "schema",
+      "purpose": "Validates the plan/template section defining workstreams, scope declarations, isolation strategy, eligibility, and required gates/artifacts.",
+      "required_by_template_section": true,
+      "producing_gates": [],
+      "consuming_gates": ["GATE_PLAN_SCHEMA_VALIDATE", "GATE_WORKSTREAM_SCOPE_VALIDATE"],
+      "schema": null,
+      "evidence_outputs": ["evidence/schema_validation/parallel_workstreams.schema_validation.json"]
+    },
+    {
+      "file_path": "schemas/write_manifest.schema.json",
+      "type": "schema",
+      "purpose": "Validates per-workstream declared write sets (file_ids/semantic_keys/directories/registries) used for conflict analysis and enforcement.",
+      "required_by_template_section": true,
+      "producing_gates": [],
+      "consuming_gates": ["GATE_WRITE_MANIFEST_VALIDATE", "GATE_CONFLICT_GRAPH_BUILD", "GATE_DECLARED_WRITES_ENFORCEMENT"],
+      "schema": null,
+      "evidence_outputs": ["evidence/schema_validation/write_manifest.schema_validation.json"]
+    },
+    {
+      "file_path": "schemas/conflict_graph.schema.json",
+      "type": "schema",
+      "purpose": "Validates the computed conflict graph/DAG output used to authorize parallel execution groups deterministically.",
+      "required_by_template_section": true,
+      "producing_gates": [],
+      "consuming_gates": ["GATE_CONFLICT_GRAPH_BUILD", "GATE_PARALLEL_GROUP_AUTHZ"],
+      "schema": null,
+      "evidence_outputs": ["evidence/schema_validation/conflict_graph.schema_validation.json"]
+    },
+    {
+      "file_path": "schemas/worktree_execution_report.schema.json",
+      "type": "schema",
+      "purpose": "Validates each workstream's execution report (run_id, worktree_id, status, produced artifacts, touched files).",
+      "required_by_template_section": true,
+      "producing_gates": [],
+      "consuming_gates": ["GATE_WORKSTREAM_EXECUTE", "GATE_EVIDENCE_BUNDLE_VALIDATE"],
+      "schema": null,
+      "evidence_outputs": ["evidence/schema_validation/worktree_execution_report.schema_validation.json"]
+    },
+    {
+      "file_path": "schemas/integration_report.schema.json",
+      "type": "schema",
+      "purpose": "Validates control-checkout integration report (patch apply order, merge results, conflicts, rollback actions).",
+      "required_by_template_section": true,
+      "producing_gates": [],
+      "consuming_gates": ["GATE_INTEGRATION_APPLY_DELTAS", "GATE_FINAL_DETERMINISM_VALIDATE"],
+      "schema": null,
+      "evidence_outputs": ["evidence/schema_validation/integration_report.schema_validation.json"]
+    },
+    {
+      "file_path": "schemas/evidence_bundle.schema.json",
+      "type": "schema",
+      "purpose": "Validates evidence bundle structure (paths, hashes, timestamps, tool versions, exit codes) for both workstreams and integration.",
+      "required_by_template_section": true,
+      "producing_gates": [],
+      "consuming_gates": ["GATE_EVIDENCE_BUNDLE_VALIDATE", "GATE_FINAL_DETERMINISM_VALIDATE"],
+      "schema": null,
+      "evidence_outputs": ["evidence/schema_validation/evidence_bundle.schema_validation.json"]
+    },
+    {
+      "file_path": "policies/determinism_policy.yaml",
+      "type": "policy",
+      "purpose": "Defines determinism rules: canonicalization, stable ordering, locale/timezone, seed control, output normalization requirements.",
+      "required_by_template_section": true,
+      "producing_gates": [],
+      "consuming_gates": ["GATE_FINAL_DETERMINISM_VALIDATE", "GATE_WORKSTREAM_EXECUTE", "GATE_INTEGRATION_APPLY_DELTAS"],
+      "schema": null,
+      "evidence_outputs": ["evidence/policy_snapshot/determinism_policy.snapshot.json"]
+    },
+    {
+      "file_path": "policies/toolchain_lock.json",
+      "type": "policy",
+      "purpose": "Pins exact toolchain versions (git, runtimes, linters, schema validators) to eliminate environment drift.",
+      "required_by_template_section": true,
+      "producing_gates": [],
+      "consuming_gates": ["GATE_PLAN_SCHEMA_VALIDATE", "GATE_WORKSTREAM_EXECUTE", "GATE_FINAL_DETERMINISM_VALIDATE"],
+      "schema": null,
+      "evidence_outputs": ["evidence/policy_snapshot/toolchain_lock.snapshot.json", "evidence/tool_versions/tool_versions.json"]
+    },
+    {
+      "file_path": "policies/identity_policy.yaml",
+      "type": "policy",
+      "purpose": "Defines ID formats and generation rules for run_id, workstream_id, worktree_id, patch_id, artifact_id.",
+      "required_by_template_section": true,
+      "producing_gates": [],
+      "consuming_gates": ["GATE_WORKTREE_PROVISION", "GATE_WORKSTREAM_EXECUTE", "GATE_EVIDENCE_BUNDLE_VALIDATE"],
+      "schema": null,
+      "evidence_outputs": ["evidence/policy_snapshot/identity_policy.snapshot.json"]
+    },
+    {
+      "file_path": "policies/single_writer_policy.yaml",
+      "type": "policy",
+      "purpose": "Enforces the single-writer invariant: only control checkout may write global state/registries; workers must emit deltas only.",
+      "required_by_template_section": true,
+      "producing_gates": [],
+      "consuming_gates": ["GATE_WORKSTREAM_SCOPE_VALIDATE", "GATE_DECLARED_WRITES_ENFORCEMENT", "GATE_INTEGRATION_APPLY_DELTAS"],
+      "schema": null,
+      "evidence_outputs": ["evidence/policy_snapshot/single_writer_policy.snapshot.json"]
+    },
+    {
+      "file_path": "policies/write_policy_registry.yaml",
+      "type": "policy",
+      "purpose": "Maps resource/file groups to authorized writers (worker vs control), phases, and enforcing gates.",
+      "required_by_template_section": true,
+      "producing_gates": [],
+      "consuming_gates": ["GATE_WORKSTREAM_SCOPE_VALIDATE", "GATE_DECLARED_WRITES_ENFORCEMENT", "GATE_INTEGRATION_APPLY_DELTAS"],
+      "schema": null,
+      "evidence_outputs": ["evidence/policy_snapshot/write_policy_registry.snapshot.json"]
+    },
+    {
+      "file_path": "policies/path_resolver_policy.yaml",
+      "type": "policy",
+      "purpose": "Defines resolver-only access rules (if used): semantic keys, resolver mappings, and prohibited direct-path patterns.",
+      "required_by_template_section": false,
+      "producing_gates": [],
+      "consuming_gates": ["GATE_WORKSTREAM_SCOPE_VALIDATE", "GATE_WORKSTREAM_EXECUTE"],
+      "schema": null,
+      "evidence_outputs": ["evidence/policy_snapshot/path_resolver_policy.snapshot.json"]
+    },
+    {
+      "file_path": "template_extensions/parallel_workstreams.section.json",
+      "type": "template_extension",
+      "purpose": "Defines the template section fields, required-by-condition triggers, and required artifacts/gates for parallel workstreams.",
+      "required_by_template_section": true,
+      "producing_gates": [],
+      "consuming_gates": ["GATE_PLAN_SCHEMA_VALIDATE"],
+      "schema": "schemas/parallel_workstreams.schema.json",
+      "evidence_outputs": ["evidence/template_snapshot/parallel_workstreams.section.snapshot.json"]
+    },
+    {
+      "file_path": "template_extensions/parallel_workstreams.gates.json",
+      "type": "template_extension",
+      "purpose": "Gate catalog entries for parallel execution: gate_id, command, inputs, outputs, pass/fail logic, evidence paths.",
+      "required_by_template_section": true,
+      "producing_gates": [],
+      "consuming_gates": ["GATE_PLAN_SCHEMA_VALIDATE"],
+      "schema": null,
+      "evidence_outputs": ["evidence/template_snapshot/parallel_workstreams.gates.snapshot.json"]
+    },
+    {
+      "file_path": "template_extensions/parallel_workstreams.artifacts.json",
+      "type": "template_extension",
+      "purpose": "Artifact catalog entries: artifact identifiers, schema bindings, retention, and evidence linkage.",
+      "required_by_template_section": true,
+      "producing_gates": [],
+      "consuming_gates": ["GATE_PLAN_SCHEMA_VALIDATE", "GATE_EVIDENCE_BUNDLE_VALIDATE"],
+      "schema": null,
+      "evidence_outputs": ["evidence/template_snapshot/parallel_workstreams.artifacts.snapshot.json"]
+    },
+    {
+      "file_path": "tools/validate_parallel_workstreams.py",
+      "type": "executable",
+      "purpose": "Validates workstream section: required fields, scope completeness, policy compliance, schema validation orchestration.",
+      "required_by_template_section": true,
+      "producing_gates": ["GATE_WORKSTREAM_SCOPE_VALIDATE"],
+      "consuming_gates": [],
+      "schema": "schemas/parallel_workstreams.schema.json",
+      "evidence_outputs": [
+        "evidence/gates/GATE_WORKSTREAM_SCOPE_VALIDATE.result.json",
+        "evidence/gates/GATE_WORKSTREAM_SCOPE_VALIDATE.stdout.log",
+        "evidence/gates/GATE_WORKSTREAM_SCOPE_VALIDATE.stderr.log"
+      ]
+    },
+    {
+      "file_path": "tools/compute_conflict_graph.py",
+      "type": "executable",
+      "purpose": "Computes write-set overlaps, exclusive resource overlaps, and dependencies; emits conflict graph/DAG and proposed parallel groups.",
+      "required_by_template_section": true,
+      "producing_gates": ["GATE_CONFLICT_GRAPH_BUILD"],
+      "consuming_gates": ["GATE_PARALLEL_GROUP_AUTHZ"],
+      "schema": "schemas/conflict_graph.schema.json",
+      "evidence_outputs": [
+        "artifacts/conflict_graph/conflict_graph.json",
+        "evidence/gates/GATE_CONFLICT_GRAPH_BUILD.result.json",
+        "evidence/gates/GATE_CONFLICT_GRAPH_BUILD.stdout.log",
+        "evidence/gates/GATE_CONFLICT_GRAPH_BUILD.stderr.log"
+      ]
+    },
+    {
+      "file_path": "tools/provision_worktrees.py",
+      "type": "executable",
+      "purpose": "Creates deterministic git worktrees per workstream; emits a worktree map and validates cleanliness/base commit.",
+      "required_by_template_section": true,
+      "producing_gates": ["GATE_WORKTREE_PROVISION"],
+      "consuming_gates": ["GATE_WORKSTREAM_EXECUTE"],
+      "schema": null,
+      "evidence_outputs": [
+        "artifacts/worktrees/worktree_map.json",
+        "evidence/gates/GATE_WORKTREE_PROVISION.result.json",
+        "evidence/gates/GATE_WORKTREE_PROVISION.stdout.log",
+        "evidence/gates/GATE_WORKTREE_PROVISION.stderr.log"
+      ]
+    },
+    {
+      "file_path": "tools/enforce_declared_writes.py",
+      "type": "executable",
+      "purpose": "Compares actual touched files in each worktree against declared write manifest; fails if exceeded; emits touched-files report.",
+      "required_by_template_section": true,
+      "producing_gates": ["GATE_DECLARED_WRITES_ENFORCEMENT"],
+      "consuming_gates": ["GATE_EVIDENCE_BUNDLE_VALIDATE", "GATE_FINAL_DETERMINISM_VALIDATE"],
+      "schema": "schemas/write_manifest.schema.json",
+      "evidence_outputs": [
+        "artifacts/workstreams/{workstream_id}/touched_files.json",
+        "evidence/gates/GATE_DECLARED_WRITES_ENFORCEMENT.result.json",
+        "evidence/gates/GATE_DECLARED_WRITES_ENFORCEMENT.stdout.log",
+        "evidence/gates/GATE_DECLARED_WRITES_ENFORCEMENT.stderr.log"
+      ]
+    },
+    {
+      "file_path": "tools/collect_workstream_evidence.py",
+      "type": "executable",
+      "purpose": "Packages per-workstream evidence bundle: logs, tool versions, patches, touched files, validation results, hashes.",
+      "required_by_template_section": true,
+      "producing_gates": ["GATE_EVIDENCE_BUNDLE_VALIDATE"],
+      "consuming_gates": ["GATE_FINAL_DETERMINISM_VALIDATE", "GATE_INTEGRATION_APPLY_DELTAS"],
+      "schema": "schemas/evidence_bundle.schema.json",
+      "evidence_outputs": [
+        "artifacts/workstreams/{workstream_id}/evidence_bundle.json",
+        "evidence/gates/GATE_EVIDENCE_BUNDLE_VALIDATE.result.json",
+        "evidence/gates/GATE_EVIDENCE_BUNDLE_VALIDATE.stdout.log",
+        "evidence/gates/GATE_EVIDENCE_BUNDLE_VALIDATE.stderr.log"
+      ]
+    },
+    {
+      "file_path": "tools/integrate_patches.py",
+      "type": "executable",
+      "purpose": "Applies worker deltas/patches in control checkout with strict ordering and rollback point; emits integration report.",
+      "required_by_template_section": true,
+      "producing_gates": ["GATE_INTEGRATION_APPLY_DELTAS", "GATE_ROLLBACK_ON_FAILURE"],
+      "consuming_gates": ["GATE_FINAL_DETERMINISM_VALIDATE", "GATE_REGISTRY_REBUILD_AND_RECONCILE"],
+      "schema": "schemas/integration_report.schema.json",
+      "evidence_outputs": [
+        "artifacts/integration/integration_report.json",
+        "evidence/gates/GATE_INTEGRATION_APPLY_DELTAS.result.json",
+        "evidence/gates/GATE_INTEGRATION_APPLY_DELTAS.stdout.log",
+        "evidence/gates/GATE_INTEGRATION_APPLY_DELTAS.stderr.log",
+        "evidence/gates/GATE_ROLLBACK_ON_FAILURE.result.json"
+      ]
+    },
+    {
+      "file_path": "tools/validate_determinism.py",
+      "type": "executable",
+      "purpose": "Validates determinism guarantees: canonicalization, stable ordering, pinned toolchain, optional rerun/rehash checks; emits determinism report.",
+      "required_by_template_section": true,
+      "producing_gates": ["GATE_FINAL_DETERMINISM_VALIDATE"],
+      "consuming_gates": [],
+      "schema": null,
+      "evidence_outputs": [
+        "artifacts/determinism/determinism_report.json",
+        "evidence/gates/GATE_FINAL_DETERMINISM_VALIDATE.result.json",
+        "evidence/gates/GATE_FINAL_DETERMINISM_VALIDATE.stdout.log",
+        "evidence/gates/GATE_FINAL_DETERMINISM_VALIDATE.stderr.log"
+      ]
+    },
+    {
+      "file_path": "tools/rebuild_registries.py",
+      "type": "executable",
+      "purpose": "Rebuilds authoritative registries/indexes from inventory and validates invariants; required if global registries exist in system state.",
+      "required_by_template_section": true,
+      "producing_gates": ["GATE_REGISTRY_REBUILD_AND_RECONCILE"],
+      "consuming_gates": ["GATE_FINAL_DETERMINISM_VALIDATE"],
+      "schema": null,
+      "evidence_outputs": [
+        "artifacts/registries/rebuild_report.json",
+        "evidence/gates/GATE_REGISTRY_REBUILD_AND_RECONCILE.result.json",
+        "evidence/gates/GATE_REGISTRY_REBUILD_AND_RECONCILE.stdout.log",
+        "evidence/gates/GATE_REGISTRY_REBUILD_AND_RECONCILE.stderr.log"
+      ]
+    },
+    {
+      "file_path": "tests/fixtures/parallel_workstreams_minimal_case/",
+      "type": "test_fixture",
+      "purpose": "Golden success fixture: 2–3 disjoint workstreams run concurrently, integrate cleanly, and pass gates deterministically.",
+      "required_by_template_section": true,
+      "producing_gates": [],
+      "consuming_gates": ["GATE_FINAL_DETERMINISM_VALIDATE"],
+      "schema": null,
+      "evidence_outputs": ["evidence/tests/parallel_workstreams_minimal_case.test_report.json"]
+    },
+    {
+      "file_path": "tests/fixtures/conflict_case_overlap_writes/",
+      "type": "test_fixture",
+      "purpose": "Golden conflict fixture: overlapping declared writes must force serialization or fail parallel authorization gate.",
+      "required_by_template_section": true,
+      "producing_gates": [],
+      "consuming_gates": ["GATE_CONFLICT_GRAPH_BUILD", "GATE_PARALLEL_GROUP_AUTHZ"],
+      "schema": null,
+      "evidence_outputs": ["evidence/tests/conflict_case_overlap_writes.test_report.json"]
+    },
+    {
+      "file_path": "tests/fixtures/undeclared_write_case/",
+      "type": "test_fixture",
+      "purpose": "Golden enforcement fixture: worker touches an undeclared file; declared-write enforcement must fail deterministically.",
+      "required_by_template_section": true,
+      "producing_gates": [],
+      "consuming_gates": ["GATE_DECLARED_WRITES_ENFORCEMENT"],
+      "schema": null,
+      "evidence_outputs": ["evidence/tests/undeclared_write_case.test_report.json"]
+    },
+    {
+      "file_path": "tests/golden/expected_conflict_graph.json",
+      "type": "golden_artifact",
+      "purpose": "Expected conflict graph output for a known fixture input; used to prove deterministic conflict analysis.",
+      "required_by_template_section": true,
+      "producing_gates": [],
+      "consuming_gates": ["GATE_CONFLICT_GRAPH_BUILD"],
+      "schema": "schemas/conflict_graph.schema.json",
+      "evidence_outputs": ["evidence/tests/expected_conflict_graph.diff.json"]
+    },
+    {
+      "file_path": "tests/golden/expected_evidence_bundle.json",
+      "type": "golden_artifact",
+      "purpose": "Expected evidence bundle structure for a known fixture run; used to prove evidence determinism and completeness.",
+      "required_by_template_section": true,
+      "producing_gates": [],
+      "consuming_gates": ["GATE_EVIDENCE_BUNDLE_VALIDATE"],
+      "schema": "schemas/evidence_bundle.schema.json",
+      "evidence_outputs": ["evidence/tests/expected_evidence_bundle.diff.json"]
+    },
+    {
+      "file_path": "registries/worktree_run_registry.json",
+      "type": "registry",
+      "purpose": "Append-only run tracking: run_id -> workstreams -> worktree_id -> status -> evidence paths; supports audit and replay.",
+      "required_by_template_section": true,
+      "producing_gates": ["GATE_WORKSTREAM_EXECUTE", "GATE_INTEGRATION_APPLY_DELTAS"],
+      "consuming_gates": ["GATE_FINAL_DETERMINISM_VALIDATE"],
+      "schema": null,
+      "evidence_outputs": ["evidence/registry_updates/worktree_run_registry.delta.json"]
+    },
+    {
+      "file_path": "registries/artifact_inventory.json",
+      "type": "registry",
+      "purpose": "Inventory of artifacts with hashes and provenance (which workstream/run produced them); supports determinism and traceability.",
+      "required_by_template_section": true,
+      "producing_gates": ["GATE_EVIDENCE_BUNDLE_VALIDATE", "GATE_INTEGRATION_APPLY_DELTAS"],
+      "consuming_gates": ["GATE_FINAL_DETERMINISM_VALIDATE", "GATE_REGISTRY_REBUILD_AND_RECONCILE"],
+      "schema": null,
+      "evidence_outputs": ["evidence/registry_updates/artifact_inventory.delta.json"]
+    },
+    {
+      "file_path": "registries/policy_registry.json",
+      "type": "registry",
+      "purpose": "SSOT list of active policies (determinism/toolchain/write policy) with versions/hashes to prove policy inputs to runs.",
+      "required_by_template_section": true,
+      "producing_gates": ["GATE_PLAN_SCHEMA_VALIDATE"],
+      "consuming_gates": ["GATE_FINAL_DETERMINISM_VALIDATE"],
+      "schema": null,
+      "evidence_outputs": ["evidence/registry_updates/policy_registry.delta.json"]
+    }
+  ],
+  "gate_catalog": [
+    {
+      "gate_id": "GATE_PLAN_SCHEMA_VALIDATE",
+      "purpose": "Validate that the plan/template includes the parallel workstreams section, required fields, and required artifacts/gates.",
+      "primary_inputs": [
+        "template_extensions/parallel_workstreams.section.json",
+        "template_extensions/parallel_workstreams.gates.json",
+        "template_extensions/parallel_workstreams.artifacts.json",
+        "schemas/parallel_workstreams.schema.json"
+      ],
+      "primary_outputs": [
+        "evidence/gates/GATE_PLAN_SCHEMA_VALIDATE.result.json"
+      ]
+    },
+    {
+      "gate_id": "GATE_WORKSTREAM_SCOPE_VALIDATE",
+      "purpose": "Validate each workstream declares complete scope and complies with single-writer and write policy rules.",
+      "primary_inputs": [
+        "tools/validate_parallel_workstreams.py",
+        "policies/single_writer_policy.yaml",
+        "policies/write_policy_registry.yaml",
+        "schemas/parallel_workstreams.schema.json"
+      ],
+      "primary_outputs": [
+        "evidence/gates/GATE_WORKSTREAM_SCOPE_VALIDATE.result.json"
+      ]
+    },
+    {
+      "gate_id": "GATE_WRITE_MANIFEST_VALIDATE",
+      "purpose": "Validate all declared write manifests are schema-valid and complete.",
+      "primary_inputs": [
+        "schemas/write_manifest.schema.json"
+      ],
+      "primary_outputs": [
+        "evidence/gates/GATE_WRITE_MANIFEST_VALIDATE.result.json"
+      ]
+    },
+    {
+      "gate_id": "GATE_CONFLICT_GRAPH_BUILD",
+      "purpose": "Compute deterministic conflict graph and proposed parallel execution groups.",
+      "primary_inputs": [
+        "tools/compute_conflict_graph.py",
+        "schemas/conflict_graph.schema.json",
+        "schemas/write_manifest.schema.json"
+      ],
+      "primary_outputs": [
+        "artifacts/conflict_graph/conflict_graph.json",
+        "evidence/gates/GATE_CONFLICT_GRAPH_BUILD.result.json"
+      ]
+    },
+    {
+      "gate_id": "GATE_PARALLEL_GROUP_AUTHZ",
+      "purpose": "Authorize which workstreams may run concurrently (disjoint writes/resources and DAG-valid ordering).",
+      "primary_inputs": [
+        "artifacts/conflict_graph/conflict_graph.json"
+      ],
+      "primary_outputs": [
+        "artifacts/conflict_graph/parallel_groups.json",
+        "evidence/gates/GATE_PARALLEL_GROUP_AUTHZ.result.json"
+      ]
+    },
+    {
+      "gate_id": "GATE_WORKTREE_PROVISION",
+      "purpose": "Provision isolated worktrees deterministically and emit a worktree map.",
+      "primary_inputs": [
+        "tools/provision_worktrees.py",
+        "policies/identity_policy.yaml",
+        "policies/toolchain_lock.json"
+      ],
+      "primary_outputs": [
+        "artifacts/worktrees/worktree_map.json",
+        "evidence/gates/GATE_WORKTREE_PROVISION.result.json"
+      ]
+    },
+    {
+      "gate_id": "GATE_WORKSTREAM_EXECUTE",
+      "purpose": "Execute each workstream inside its worktree and emit execution report and raw logs.",
+      "primary_inputs": [
+        "artifacts/worktrees/worktree_map.json",
+        "policies/determinism_policy.yaml",
+        "policies/toolchain_lock.json"
+      ],
+      "primary_outputs": [
+        "artifacts/workstreams/{workstream_id}/execution_report.json",
+        "evidence/gates/GATE_WORKSTREAM_EXECUTE.{workstream_id}.stdout.log",
+        "evidence/gates/GATE_WORKSTREAM_EXECUTE.{workstream_id}.stderr.log"
+      ]
+    },
+    {
+      "gate_id": "GATE_DECLARED_WRITES_ENFORCEMENT",
+      "purpose": "Fail if actual touched files exceed declared write set; emit touched-files report.",
+      "primary_inputs": [
+        "tools/enforce_declared_writes.py",
+        "schemas/write_manifest.schema.json"
+      ],
+      "primary_outputs": [
+        "artifacts/workstreams/{workstream_id}/touched_files.json",
+        "evidence/gates/GATE_DECLARED_WRITES_ENFORCEMENT.result.json"
+      ]
+    },
+    {
+      "gate_id": "GATE_EVIDENCE_BUNDLE_VALIDATE",
+      "purpose": "Build and validate per-workstream evidence bundle for auditing and determinism checks.",
+      "primary_inputs": [
+        "tools/collect_workstream_evidence.py",
+        "schemas/evidence_bundle.schema.json"
+      ],
+      "primary_outputs": [
+        "artifacts/workstreams/{workstream_id}/evidence_bundle.json",
+        "evidence/gates/GATE_EVIDENCE_BUNDLE_VALIDATE.result.json"
+      ]
+    },
+    {
+      "gate_id": "GATE_INTEGRATION_APPLY_DELTAS",
+      "purpose": "Apply all workstream deltas in control checkout with strict ordering and rollback point; emit integration report.",
+      "primary_inputs": [
+        "tools/integrate_patches.py",
+        "artifacts/workstreams/{workstream_id}/evidence_bundle.json",
+        "schemas/integration_report.schema.json"
+      ],
+      "primary_outputs": [
+        "artifacts/integration/integration_report.json",
+        "evidence/gates/GATE_INTEGRATION_APPLY_DELTAS.result.json"
+      ]
+    },
+    {
+      "gate_id": "GATE_ROLLBACK_ON_FAILURE",
+      "purpose": "Rollback control checkout to the pre-integration snapshot/tag if any integration step fails.",
+      "primary_inputs": [
+        "artifacts/integration/integration_report.json"
+      ],
+      "primary_outputs": [
+        "evidence/gates/GATE_ROLLBACK_ON_FAILURE.result.json"
+      ]
+    },
+    {
+      "gate_id": "GATE_REGISTRY_REBUILD_AND_RECONCILE",
+      "purpose": "Rebuild authoritative registries/indexes from inventory and validate invariants.",
+      "primary_inputs": [
+        "tools/rebuild_registries.py"
+      ],
+      "primary_outputs": [
+        "artifacts/registries/rebuild_report.json",
+        "evidence/gates/GATE_REGISTRY_REBUILD_AND_RECONCILE.result.json"
+      ]
+    },
+    {
+      "gate_id": "GATE_FINAL_DETERMINISM_VALIDATE",
+      "purpose": "Validate determinism end-to-end using pinned toolchain, canonicalization rules, stable ordering, and optional rerun/rehash checks.",
+      "primary_inputs": [
+        "tools/validate_determinism.py",
+        "policies/determinism_policy.yaml",
+        "policies/toolchain_lock.json",
+        "artifacts/integration/integration_report.json",
+        "artifacts/workstreams/{workstream_id}/evidence_bundle.json"
+      ],
+      "primary_outputs": [
+        "artifacts/determinism/determinism_report.json",
+        "evidence/gates/GATE_FINAL_DETERMINISM_VALIDATE.result.json"
+      ]
+    }
+  ]
+}

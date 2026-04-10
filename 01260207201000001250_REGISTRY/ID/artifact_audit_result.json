@@ -1,0 +1,1624 @@
+{
+  "search_objective": "Locate system-relevant implementation artifacts for the Gov_Reg ID / registry / remediation system",
+  "artifact_groups": [
+    {
+      "system_part": "ID allocator code",
+      "status": "found",
+      "best_candidates": [
+        {
+          "filename": "P_01999000042260125006_id_allocator_facade.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/1_runtime/allocators/P_01999000042260125006_id_allocator_facade.py",
+          "role": "implementation",
+          "relevance_reason": "Explicitly the ONLY module allowed for import for ID allocation per its own docstring. Wraps UnifiedIDAllocator. Provides allocate_id, allocate_file_id, allocate_enhanced_id, allocate_dir_id, validate_id.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "allocate_id",
+              "allocate_file_id",
+              "allocate_enhanced_id",
+              "allocate_dir_id",
+              "validate_id",
+              "_get_default_facade",
+              "_load_allocator_config"
+            ],
+            "classes": [
+              "IDAllocatorFacade"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [
+              "APPDATA/GovReg/IdAllocator/COUNTER_STORE.json",
+              ".idpkg/config.json"
+            ],
+            "writes": [
+              "COUNTER_STORE.json (via UnifiedIDAllocator)"
+            ],
+            "mutates_registry": false,
+            "atomic_write": true,
+            "lock_usage": true,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [
+            "Loads default facade lazily via module global; concurrent initializations not guarded at facade layer"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01999000042260124031_unified_id_allocator.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/1_runtime/allocators/P_01999000042260124031_unified_id_allocator.py",
+          "role": "implementation",
+          "relevance_reason": "Backend allocator. Generates 20-digit IDs: BASE_ID_PREFIX (01260207201, 11 digits) + 9-digit counter. Uses atomic_json_write for counter persistence. Marked INTERNAL by facade contract.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "allocate_single_id",
+              "reserve_id_range",
+              "get_counter_value",
+              "get_allocation_history",
+              "allocate_with_metadata"
+            ],
+            "classes": [
+              "UnifiedIDAllocator",
+              "AllocationRecord"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [
+              "COUNTER_STORE.json"
+            ],
+            "writes": [
+              "COUNTER_STORE.json"
+            ],
+            "mutates_registry": false,
+            "atomic_write": true,
+            "lock_usage": true,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [
+            "Imports shared_utils from a hardcoded relative path '01260207201000001276_scripts' which may fail if instantiated from a different working directory",
+            "Comment says 22-digit but code produces 20-digit; minor docstring inconsistency"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01999000042260124489_id_scheme.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/1_runtime/allocators/P_01999000042260124489_id_scheme.py",
+          "role": "implementation",
+          "relevance_reason": "GEU (Governance Entity Unit) ID generation scheme using CRC32-based anchor hashing. Separate from primary 20-digit allocator.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "make_geu_id",
+              "_anchor_hash8"
+            ],
+            "classes": [],
+            "has_cli_entrypoint": false,
+            "reads": [],
+            "writes": [],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [
+            "Produces IDs with prefix '99' which does not match the standard 01260207201 prefix schema"
+          ],
+          "confidence": "medium"
+        }
+      ],
+      "supporting_files": [
+        "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/01260207201000001162_GEU/01260207201000001165_ID/01260207201000000116_COUNTER_STORE.json",
+        "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/01260207201000000116_COUNTER_STORE.json"
+      ],
+      "conflicts_or_gaps": [
+        "add_ids_recursive.py (cli tool) directly imports UnifiedIDAllocator bypassing the facade, violating the stated contract",
+        "P_01999000042260124489_id_scheme.py uses a completely different ID format (CRC32-based GEU IDs vs counter-based 20-digit IDs)"
+      ],
+      "recommended_authority": {
+        "filename": "P_01999000042260125006_id_allocator_facade.py",
+        "reason": "Explicitly declared as the ONLY allowed allocation entrypoint; enforced by pre-commit gate"
+      }
+    },
+    {
+      "system_part": "Reservation / allocation ledger",
+      "status": "found",
+      "best_candidates": [
+        {
+          "filename": "P_01999000042260124032_reservation_ledger.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/1_runtime/allocators/P_01999000042260124032_reservation_ledger.py",
+          "role": "implementation",
+          "relevance_reason": "Full reservation lifecycle: RESERVED \u2192 COMMITTED \u2192 CANCELLED \u2192 EXPIRED state machine. Per-plan ledger files stored as RES-{plan_id}.json. Atomic reads/writes.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "create_reservation",
+              "get_reservation",
+              "commit_reservation",
+              "cancel_reservation",
+              "expire_uncommitted",
+              "validate_all_committed",
+              "generate_audit_report"
+            ],
+            "classes": [
+              "ReservationLedger",
+              "ReservationEntry"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [
+              "REGISTRY/reservations/RES-{plan_id}.json"
+            ],
+            "writes": [
+              "REGISTRY/reservations/RES-{plan_id}.json"
+            ],
+            "mutates_registry": false,
+            "atomic_write": true,
+            "lock_usage": true,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [
+            "imports shared_utils from 'parent/scripts' relative path that may resolve differently from allocators directory"
+          ],
+          "confidence": "high"
+        }
+      ],
+      "supporting_files": [],
+      "conflicts_or_gaps": [
+        "No caller of ReservationLedger found within the main REGISTRY runtime; IdpkgEngine does not appear to use it directly"
+      ],
+      "recommended_authority": {
+        "filename": "P_01999000042260124032_reservation_ledger.py",
+        "reason": "Only reservation ledger implementation found; fully self-contained"
+      }
+    },
+    {
+      "system_part": "Locking / atomic write utilities",
+      "status": "found",
+      "best_candidates": [
+        {
+          "filename": "P_01999000042260124030_shared_utils.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001276_scripts/P_01999000042260124030_shared_utils.py",
+          "role": "implementation",
+          "relevance_reason": "Provides atomic_json_write (lock file + temp file + atomic rename), atomic_json_read, acquire_file_lock, release_file_lock with Windows (msvcrt) and Unix (fcntl) support. Used by UnifiedIDAllocator, ReservationLedger, and IdpkgRuntime.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "atomic_json_write",
+              "atomic_json_read",
+              "acquire_file_lock",
+              "release_file_lock",
+              "utc_timestamp"
+            ],
+            "classes": [],
+            "has_cli_entrypoint": false,
+            "reads": [],
+            "writes": [],
+            "mutates_registry": false,
+            "atomic_write": true,
+            "lock_usage": true,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [
+            "Located in 01260207201000001276_scripts outside REGISTRY/ID tree; path resolution is fragile (each importer uses a different relative path to find it)"
+          ],
+          "confidence": "high"
+        }
+      ],
+      "supporting_files": [],
+      "conflicts_or_gaps": [
+        "DirIdManager.write_dir_id in dir_id_handler.py implements its own independent atomic write via temp file + replace without using shared_utils"
+      ],
+      "recommended_authority": {
+        "filename": "P_01999000042260124030_shared_utils.py",
+        "reason": "Only canonical atomic write implementation; used by counter store and reservation ledger"
+      }
+    },
+    {
+      "system_part": "Filesystem watcher implementation",
+      "status": "found",
+      "best_candidates": [
+        {
+          "filename": "P_01999000042260125105_dir_id_watcher.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/1_runtime/watchers/P_01999000042260125105_dir_id_watcher.py",
+          "role": "implementation",
+          "relevance_reason": "watchdog-based DirIdWatcher (FileSystemEventHandler subclass) for .dir_id enforcement on directory create/delete/modify. Emits JSON evidence. Also exports watch_governed_zones() CLI entry.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "watch_governed_zones",
+              "on_created",
+              "on_deleted",
+              "on_modified",
+              "_emit_evidence"
+            ],
+            "classes": [
+              "DirIdWatcher",
+              "WatcherHandle"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "config.json",
+              ".dir_id files"
+            ],
+            "writes": [
+              ".state/evidence/watcher_events/*.json"
+            ],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": true
+          },
+          "risks": [
+            "Delegates to ZoneClassifier that imports from P_01260207233100000068_zone_classifier but the file under handlers imports P_01260207233100000069_dir_id_handler; the filename mismatch indicates a possible import confusion"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01260207233100000008_watcher_daemon.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/7_automation/P_01260207233100000008_watcher_daemon.py",
+          "role": "implementation",
+          "relevance_reason": "Alternative WatcherDaemon implementation using watchdog + WorkQueue + SuppressionManager from repo_autoops module. Different architecture from dir_id_watcher.",
+          "currentness": "unknown",
+          "implementation_signals": {
+            "functions": [
+              "on_created",
+              "on_modified"
+            ],
+            "classes": [
+              "WatcherDaemon",
+              "RegistryEventHandler"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [],
+            "writes": [],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [
+            "Imports from repo_autoops.automation_descriptor which was NOT found on disk in the REGISTRY tree - likely a broken import",
+            "Enqueues to WorkQueue but no consumer of that queue was found"
+          ],
+          "confidence": "low"
+        }
+      ],
+      "supporting_files": [],
+      "conflicts_or_gaps": [
+        "Two separate watcher implementations with incompatible designs; watcher_daemon.py depends on repo_autoops module not present"
+      ],
+      "recommended_authority": {
+        "filename": "P_01999000042260125105_dir_id_watcher.py",
+        "reason": "Self-contained, uses standard watchdog, integrates with live DirectoryIdentityResolver"
+      }
+    },
+    {
+      "system_part": "Directory identity resolver",
+      "status": "found",
+      "best_candidates": [
+        {
+          "filename": "P_01260207233100000070_dir_identity_resolver.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/1_runtime/handlers/P_01260207233100000070_dir_identity_resolver.py",
+          "role": "implementation",
+          "relevance_reason": "Implements S10D-S12D pipeline: detect anchor, validate anchor, allocate dir_id if missing in governed zone. Returns IdentityResolutionResult dataclass. Calls allocate_dir_id from facade.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "resolve_identity",
+              "_find_parent_dir_id",
+              "allocate_new_id"
+            ],
+            "classes": [
+              "DirectoryIdentityResolver",
+              "IdentityResolutionResult"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              ".dir_id files"
+            ],
+            "writes": [
+              ".dir_id files (via DirIdManager)"
+            ],
+            "mutates_registry": false,
+            "atomic_write": true,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [
+            "Imports P_01260207233100000069_dir_id_handler but the main handler file is P_01999000042260125068_dir_id_handler.py - two different handler implementations may exist"
+          ],
+          "confidence": "high"
+        }
+      ],
+      "supporting_files": [],
+      "conflicts_or_gaps": [
+        "Import references P_01260207233100000069 (a separate version of dir_id_handler) while the main dir_id_handler found is P_01999000042260125068"
+      ],
+      "recommended_authority": {
+        "filename": "P_01260207233100000070_dir_identity_resolver.py",
+        "reason": "Central S10D-S12D pipeline implementation; imported by all key automation scripts"
+      }
+    },
+    {
+      "system_part": "Directory ID handler",
+      "status": "found",
+      "best_candidates": [
+        {
+          "filename": "P_01999000042260125068_dir_id_handler.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/1_runtime/handlers/P_01999000042260125068_dir_id_handler.py",
+          "role": "implementation",
+          "relevance_reason": "DirIdManager: read, write (atomic temp+rename), validate .dir_id files. DirIdAnchor dataclass with JSON (de)serialization and validation. Also contains create_anchor factory.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "read_dir_id",
+              "write_dir_id",
+              "validate_dir_id",
+              "create_anchor",
+              "exists",
+              "get_dir_id_path"
+            ],
+            "classes": [
+              "DirIdManager",
+              "DirIdAnchor"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              ".dir_id files"
+            ],
+            "writes": [
+              ".dir_id files"
+            ],
+            "mutates_registry": false,
+            "atomic_write": true,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [],
+          "confidence": "high"
+        }
+      ],
+      "supporting_files": [
+        "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/3_schemas/.dir_id.schema.json",
+        "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/dir_id/.dir_id.schema.json"
+      ],
+      "conflicts_or_gaps": [
+        "A second handler P_01260207233100000069_dir_id_handler.py is imported by dir_identity_resolver.py but was not found as a standalone file in the handlers directory - possibly inside idpkg_runtime or another location"
+      ],
+      "recommended_authority": {
+        "filename": "P_01999000042260125068_dir_id_handler.py",
+        "reason": "Most complete implementation with full read/write/validate cycle"
+      }
+    },
+    {
+      "system_part": "File ID assignment / renaming engine",
+      "status": "found",
+      "best_candidates": [
+        {
+          "filename": "P_01260207201000000198_add_ids_recursive.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/2_cli_tools/file_id/P_01260207201000000198_add_ids_recursive.py",
+          "role": "implementation",
+          "relevance_reason": "Recursively scans for files needing IDs, allocates IDs via UnifiedIDAllocator (not facade), renames files. Interactive confirmation prompt.",
+          "currentness": "transitional",
+          "implementation_signals": {
+            "functions": [
+              "get_file_id_from_name",
+              "main"
+            ],
+            "classes": [],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "COUNTER_STORE.json"
+            ],
+            "writes": [
+              "renamed files"
+            ],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [
+            "Bypasses IDAllocatorFacade by directly importing UnifiedIDAllocator - violates stated contract",
+            "No dry-run mode",
+            "No rollback capability"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01999000042260126000__idpkg_runtime.py (FileIdentityResolver class)",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/1_runtime/watchers/P_01999000042260126000__idpkg_runtime.py",
+          "role": "implementation",
+          "relevance_reason": "FileIdentityResolver embedded in idpkg_runtime: parses filenames, detects ID presence/prefix type (python P_ vs plain), allocates via facade, renames file in-place during ingest_event.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "resolve",
+              "_parse_filename"
+            ],
+            "classes": [
+              "FileIdentityResolver",
+              "FileIdentityResult"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [],
+            "writes": [
+              "renamed files on disk"
+            ],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": true,
+            "rollback_or_backup": false,
+            "evidence_output": true
+          },
+          "risks": [],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01999000042260125103_rename_dirs_with_id.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/7_automation/P_01999000042260125103_rename_dirs_with_id.py",
+          "role": "implementation",
+          "relevance_reason": "Directory renaming engine: get_dir_rename_plan, validate_rename_plan, execute_rename with dry_run support.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "get_dir_rename_plan",
+              "validate_rename_plan",
+              "execute_rename",
+              "main"
+            ],
+            "classes": [],
+            "has_cli_entrypoint": true,
+            "reads": [
+              ".dir_id files"
+            ],
+            "writes": [
+              "renamed directories"
+            ],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": true,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [],
+          "confidence": "medium"
+        }
+      ],
+      "supporting_files": [],
+      "conflicts_or_gaps": [
+        "add_ids_recursive.py bypasses facade; FileIdentityResolver inside idpkg_runtime is the canonical path but is not independently importable"
+      ],
+      "recommended_authority": {
+        "filename": "P_01999000042260126000__idpkg_runtime.py",
+        "reason": "FileIdentityResolver inside IdpkgEngine is the current enforced path (uses facade, emits evidence, supports dry-run)"
+      }
+    },
+    {
+      "system_part": "Registry schema files",
+      "status": "found",
+      "best_candidates": [
+        {
+          "filename": "01999000042260124012_governance_registry_schema.v3.json",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/01999000042260124012_governance_registry_schema.v3.json",
+          "role": "contract",
+          "relevance_reason": "JSON Schema (draft-07) for governance registry. Defines FileRecord (file_id pattern ^[0-9]{20}$, sha256, dir_id, governance_domain enum), EdgeRecord, and top-level files+edges arrays.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [],
+            "classes": [],
+            "has_cli_entrypoint": false,
+            "reads": [],
+            "writes": [],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [],
+          "confidence": "high"
+        },
+        {
+          "filename": ".dir_id.schema.json",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/3_schemas/.dir_id.schema.json",
+          "role": "contract",
+          "relevance_reason": "Schema for .dir_id anchor files used by DirIdManager.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [],
+            "classes": [],
+            "has_cli_entrypoint": false,
+            "reads": [],
+            "writes": [],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [
+            "Duplicate: also present at ID/dir_id/.dir_id.schema.json"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "UNIFIED_INGEST_ENVELOPE.schema.json",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/3_schemas/UNIFIED_INGEST_ENVELOPE.schema.json",
+          "role": "contract",
+          "relevance_reason": "Schema for the ingest envelope used during file/directory intake events.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [],
+            "classes": [],
+            "has_cli_entrypoint": false,
+            "reads": [],
+            "writes": [],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [],
+          "confidence": "high"
+        }
+      ],
+      "supporting_files": [
+        "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/3_schemas/PREFIX_POLICY.json",
+        "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/3_schemas/GATE_CATALOG.json",
+        "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/COLUMN_HEADERS/01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+        "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/COLUMN_HEADERS/01260207201000000193_UNIFIED_SSOT_REGISTRY_WRITE_POLICY.yaml"
+      ],
+      "conflicts_or_gaps": [
+        ".dir_id.schema.json is duplicated in two locations (ID/3_schemas and ID/dir_id)"
+      ],
+      "recommended_authority": {
+        "filename": "01999000042260124012_governance_registry_schema.v3.json",
+        "reason": "Top-level schema governing the REGISTRY_file.json SSOT; explicitly versioned v3"
+      }
+    },
+    {
+      "system_part": "Registry patch generator",
+      "status": "found",
+      "best_candidates": [
+        {
+          "filename": "P_01999000042260305004_patch_generator.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305004_patch_generator.py",
+          "role": "implementation",
+          "relevance_reason": "Generates RFC-6902 JSON Patches (add/replace operations) from analysis results keyed by file_id. PatchGenerator class with generate_patches_from_analysis, find_file_by_id.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "generate_add_column_patch",
+              "generate_replace_column_patch",
+              "find_file_by_id",
+              "generate_patches_from_analysis",
+              "load_registry"
+            ],
+            "classes": [
+              "PatchGenerator"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "registry JSON"
+            ],
+            "writes": [
+              "patch JSON files"
+            ],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": true,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01999000042260126000__idpkg_runtime.py (RegistryWriter._write_patch)",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/1_runtime/watchers/P_01999000042260126000__idpkg_runtime.py",
+          "role": "implementation",
+          "relevance_reason": "RegistryWriter._write_patch generates idpkg_patch_{event_id}.json files containing RFC-6902 operations as part of every upsert_file/upsert_directory call.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "_write_patch",
+              "upsert_file",
+              "upsert_directory"
+            ],
+            "classes": [
+              "RegistryWriter"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [],
+            "writes": [
+              "patch_output_dir/idpkg_patch_*.json"
+            ],
+            "mutates_registry": true,
+            "atomic_write": true,
+            "lock_usage": true,
+            "dry_run_support": true,
+            "rollback_or_backup": false,
+            "evidence_output": true
+          },
+          "risks": [],
+          "confidence": "high"
+        }
+      ],
+      "supporting_files": [],
+      "conflicts_or_gaps": [
+        "Two independent patch generators exist: one in REGISTRY_AUTOMATION/scripts for column analysis, one inside idpkg_runtime for live ingest events"
+      ],
+      "recommended_authority": {
+        "filename": "P_01999000042260126000__idpkg_runtime.py (RegistryWriter)",
+        "reason": "Live ingest patch generator integrated with the authoritative engine"
+      }
+    },
+    {
+      "system_part": "Registry patch applier",
+      "status": "found",
+      "best_candidates": [
+        {
+          "filename": "P_01260207201000000834_apply_patch.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/01260207201000001270_scripts/P_01260207201000000834_apply_patch.py",
+          "role": "implementation",
+          "relevance_reason": "Applies RFC-6902 JSON Patches via jsonpatch library. Creates backup before application, writes evidence artifacts (pre/post SHA256, patch metadata). Supports dry_run.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "apply_patch"
+            ],
+            "classes": [],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "target registry JSON",
+              "patch JSON"
+            ],
+            "writes": [
+              "patched registry JSON",
+              "backup .json.backup",
+              "evidence artifacts"
+            ],
+            "mutates_registry": true,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": true,
+            "rollback_or_backup": true,
+            "evidence_output": true
+          },
+          "risks": [
+            "Uses shutil.copy2 backup (not atomic); if crash between backup and write, partial state possible",
+            "Requires jsonpatch library as external dependency"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01999000042260126000__idpkg_runtime.py (RegistryWriter._apply_patch)",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/1_runtime/watchers/P_01999000042260126000__idpkg_runtime.py",
+          "role": "implementation",
+          "relevance_reason": "Internal _apply_patch in RegistryWriter: custom RFC-6902 interpreter (add/replace/remove) without external dependency. Used by upsert_file and upsert_directory.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "_apply_patch"
+            ],
+            "classes": [
+              "RegistryWriter"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [],
+            "writes": [],
+            "mutates_registry": true,
+            "atomic_write": true,
+            "lock_usage": true,
+            "dry_run_support": true,
+            "rollback_or_backup": false,
+            "evidence_output": true
+          },
+          "risks": [
+            "Custom JSON Patch interpreter may not handle all RFC-6902 edge cases (e.g., move, copy, test operations not supported)"
+          ],
+          "confidence": "high"
+        }
+      ],
+      "supporting_files": [],
+      "conflicts_or_gaps": [
+        "Two independent applier implementations: external jsonpatch library vs custom interpreter in idpkg_runtime"
+      ],
+      "recommended_authority": {
+        "filename": "P_01260207201000000834_apply_patch.py",
+        "reason": "More complete RFC-6902 support via jsonpatch library; supports backup and evidence"
+      }
+    },
+    {
+      "system_part": "Single-writer registry mutation engine",
+      "status": "partial",
+      "best_candidates": [
+        {
+          "filename": "P_01999000042260126000__idpkg_runtime.py (RegistryWriter class)",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/1_runtime/watchers/P_01999000042260126000__idpkg_runtime.py",
+          "role": "implementation",
+          "relevance_reason": "RegistryWriter performs all registry mutations: load_registry (atomic_json_read), upsert_file, upsert_directory with patch generation and atomic_json_write. Enforces immutable_fields from write policy. This is the closest thing to a single-writer engine.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "load_registry",
+              "upsert_file",
+              "upsert_directory",
+              "_apply_patch",
+              "_write_patch",
+              "_ensure_registry_shape"
+            ],
+            "classes": [
+              "RegistryWriter"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [
+              "REGISTRY_file.json"
+            ],
+            "writes": [
+              "REGISTRY_file.json",
+              "patch output files"
+            ],
+            "mutates_registry": true,
+            "atomic_write": true,
+            "lock_usage": true,
+            "dry_run_support": true,
+            "rollback_or_backup": false,
+            "evidence_output": true
+          },
+          "risks": [
+            "No explicit single-writer lock at the engine level beyond atomic_json_write; concurrent IdpkgEngine instances could race"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "filename": "P_01260207233100000329_01999000042260125036_promotion_patch.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/src_modules/01260207201000001297_registry_writer/P_01260207233100000329_01999000042260125036_promotion_patch.py",
+          "role": "implementation",
+          "relevance_reason": "PromotionPatch dataclass: CAS (Compare-And-Swap) via registry_hash precondition. Supports both simple changes dict and complex operation arrays. Includes normalization and policy validation flags.",
+          "currentness": "transitional",
+          "implementation_signals": {
+            "functions": [],
+            "classes": [
+              "PromotionPatch",
+              "PatchOperation",
+              "PatchOperationType"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [],
+            "writes": [],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [
+            "CAS precondition design not wired into any visible executor in the current repo"
+          ],
+          "confidence": "low"
+        }
+      ],
+      "supporting_files": [
+        "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/src_modules/01260207201000001297_registry_writer/P_01260207233100000337_write_policy_validator.py",
+        "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/src_modules/01260207201000001297_registry_writer/P_01260207233100000331_backup_manager.py"
+      ],
+      "conflicts_or_gaps": [
+        "No dedicated single-writer process/lock exists; mutation is guarded only by atomic_json_write file lock",
+        "PromotionPatch CAS design in src_modules does not appear connected to RegistryWriter in idpkg_runtime"
+      ],
+      "recommended_authority": {
+        "filename": "P_01999000042260126000__idpkg_runtime.py (RegistryWriter)",
+        "reason": "Only active registry mutation path found in the current runtime"
+      }
+    },
+    {
+      "system_part": "Registry reconciliation engine",
+      "status": "found",
+      "best_candidates": [
+        {
+          "filename": "P_01999000042260125106_registry_filesystem_reconciler.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/7_automation/P_01999000042260125106_registry_filesystem_reconciler.py",
+          "role": "implementation",
+          "relevance_reason": "Bidirectional reconciliation: REGISTRY_ORPHAN, DISK_UNREGISTERED, ID_MISMATCH, DUPLICATE_FILE_ID, DUPLICATE_PATH, MISSING_DIR_ID. Produces ReconciliationResult with severity-tagged issues.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [],
+            "classes": [
+              "RegistryFilesystemReconciler",
+              "ReconciliationIssue",
+              "ReconciliationResult"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [
+              "registry JSON",
+              "filesystem"
+            ],
+            "writes": [],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": true
+          },
+          "risks": [],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01999000042260305001_file_id_reconciler.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305001_file_id_reconciler.py",
+          "role": "implementation",
+          "relevance_reason": "Builds bidirectional sha256 \u2192 file_id and file_id \u2192 sha256 mappings, validates formats, generates SHA256_TO_FILE_ID.json for downstream use.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "validate_file_id",
+              "validate_sha256",
+              "build_mappings",
+              "load_registry"
+            ],
+            "classes": [
+              "FileIDReconciler"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "registry JSON"
+            ],
+            "writes": [
+              "SHA256_TO_FILE_ID.json"
+            ],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [],
+          "confidence": "high"
+        }
+      ],
+      "supporting_files": [],
+      "conflicts_or_gaps": [
+        "Two reconcilers with different scopes: one does filesystem-registry bidirectional sync, the other is sha256/file_id mapping validation"
+      ],
+      "recommended_authority": {
+        "filename": "P_01999000042260125106_registry_filesystem_reconciler.py",
+        "reason": "Broader scope covering all reconciliation issue types; used by healthcheck"
+      }
+    },
+    {
+      "system_part": "Gate runner / canonical validation entrypoint",
+      "status": "found",
+      "best_candidates": [
+        {
+          "filename": "P_01999000042260126000__idpkg_runtime.py (GateRunner class)",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/1_runtime/watchers/P_01999000042260126000__idpkg_runtime.py",
+          "role": "implementation",
+          "relevance_reason": "GateRunner runs 14 named gates (X-G1 through X-G4, DIR-G1 through DIR-G5, FILE-G1 through FILE-G5) from GATE_CATALOG.json against every ingest envelope. Returns per-gate PASS/FAIL/SKIP results.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "run",
+              "_gate_allocator_outside_root",
+              "_gate_allocator_reachable",
+              "_gate_patch_only",
+              "_gate_staging_no_register",
+              "_gate_dir_anchor_present",
+              "_gate_dir_anchor_valid",
+              "_gate_dir_unique",
+              "_gate_dir_registry_entry",
+              "_gate_dir_parent_match",
+              "_gate_file_prefix",
+              "_gate_file_python_prefix",
+              "_gate_file_unique",
+              "_gate_file_registry_entry",
+              "_gate_file_owning_dir"
+            ],
+            "classes": [
+              "GateRunner"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [
+              "GATE_CATALOG.json",
+              "registry snapshot"
+            ],
+            "writes": [],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": true
+          },
+          "risks": [],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01999000042260125000_gate_id_canonicality.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/1_runtime/validators/P_01999000042260125000_gate_id_canonicality.py",
+          "role": "implementation",
+          "relevance_reason": "Pre-commit gate: enforces no imports of DEPRECATED/INTERNAL ID modules, no bespoke ID regex, no ad-hoc allocators, new ID scripts must be in ID_SCRIPT_INVENTORY.jsonl. AST-based.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [],
+            "classes": [
+              "IDCanonicalityGate"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "ID_SCRIPT_INVENTORY.jsonl",
+              "staged Python files"
+            ],
+            "writes": [],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [
+            "Requires ID_SCRIPT_INVENTORY.jsonl at repo root with schema_version 2.1.4; that file was found ONLY in backups, not in current repo root - gate will sys.exit(1) on every commit"
+          ],
+          "confidence": "high"
+        }
+      ],
+      "supporting_files": [
+        "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/3_schemas/GATE_CATALOG.json"
+      ],
+      "conflicts_or_gaps": [
+        "ID_SCRIPT_INVENTORY.jsonl required by IDCanonicalityGate exists only in backups directory, not in current repo root - this gate is broken in its current state"
+      ],
+      "recommended_authority": {
+        "filename": "P_01999000042260126000__idpkg_runtime.py (GateRunner)",
+        "reason": "Live runtime gate runner integrated with ingest pipeline"
+      }
+    },
+    {
+      "system_part": "Healthcheck / monitoring entrypoint",
+      "status": "found",
+      "best_candidates": [
+        {
+          "filename": "P_01999000042260125113_healthcheck.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/2_cli_tools/maintenance/P_01999000042260125113_healthcheck.py",
+          "role": "implementation",
+          "relevance_reason": "Comprehensive nightly health check: uses ScannerService, RegistryFilesystemReconciler, OrphanPurger. Produces HealthCheckReport with violation counts by severity (CRITICAL/ERROR/WARNING). Outputs evidence artifacts.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [],
+            "classes": [
+              "HealthChecker",
+              "HealthCheckReport",
+              "HealthCheckViolation"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "project filesystem",
+              "registry"
+            ],
+            "writes": [
+              ".state/evidence/ health check reports"
+            ],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": true
+          },
+          "risks": [
+            "Imports P_01999000042260125108_registry_fs_reconciler (different file_id than the 125106 version found) - possible stale import reference"
+          ],
+          "confidence": "medium"
+        }
+      ],
+      "supporting_files": [],
+      "conflicts_or_gaps": [
+        "healthcheck.py imports P_01999000042260125108_registry_fs_reconciler but the reconciler found on disk is P_01999000042260125106 - import will fail unless 125108 exists elsewhere"
+      ],
+      "recommended_authority": {
+        "filename": "P_01999000042260125113_healthcheck.py",
+        "reason": "Only dedicated healthcheck implementation found"
+      }
+    },
+    {
+      "system_part": "Ingest / file-intake orchestrator",
+      "status": "found",
+      "best_candidates": [
+        {
+          "filename": "P_01999000042260126000__idpkg_runtime.py (IdpkgEngine.ingest_event)",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/1_runtime/watchers/P_01999000042260126000__idpkg_runtime.py",
+          "role": "implementation",
+          "relevance_reason": "Primary ingest orchestrator. ingest_event handles FILE_CREATED, FILE_MODIFIED, FILE_MOVED, DIR_CREATED, DIR_MOVED, PROMOTE_REQUESTED events. Resolves identity, runs gates, writes registry, emits evidence. Fully integrated pipeline.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "ingest_event",
+              "promote",
+              "scan",
+              "watch"
+            ],
+            "classes": [
+              "IdpkgEngine"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "filesystem",
+              "registry",
+              "config",
+              "GATE_CATALOG.json"
+            ],
+            "writes": [
+              "registry",
+              "patch files",
+              "evidence artifacts",
+              ".dir_id files"
+            ],
+            "mutates_registry": true,
+            "atomic_write": true,
+            "lock_usage": true,
+            "dry_run_support": true,
+            "rollback_or_backup": false,
+            "evidence_output": true
+          },
+          "risks": [],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01999000042260305014_intake_orchestrator.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305014_intake_orchestrator.py",
+          "role": "implementation",
+          "relevance_reason": "FileIntakeOrchestrator for the REGISTRY_AUTOMATION pipeline: calls Phase A/B/C analyzers via subprocess, collects JSON outputs, used by PipelineRunner.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "run_analyzer",
+              "run_phase_a",
+              "orchestrate"
+            ],
+            "classes": [
+              "FileIntakeOrchestrator"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "files for analysis"
+            ],
+            "writes": [
+              "analysis JSON output"
+            ],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [
+            "Calls analyzers via subprocess which may not exist (e.g., P_01260202173939000060_text_normalizer.py referenced but not confirmed to exist)"
+          ],
+          "confidence": "medium"
+        }
+      ],
+      "supporting_files": [],
+      "conflicts_or_gaps": [
+        "Two different ingest orchestrators for different subsystems: IdpkgEngine for ID/dir governance, FileIntakeOrchestrator for column analysis pipeline"
+      ],
+      "recommended_authority": {
+        "filename": "P_01999000042260126000__idpkg_runtime.py (IdpkgEngine)",
+        "reason": "Authoritative ingest orchestrator for ID governance; fully integrated with gates and registry writer"
+      }
+    },
+    {
+      "system_part": "Post-write generator pipeline",
+      "status": "partial",
+      "best_candidates": [
+        {
+          "filename": "P_01999000042260305017_pipeline_runner.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305017_pipeline_runner.py",
+          "role": "implementation",
+          "relevance_reason": "PipelineRunner orchestrates the full post-analysis pipeline: intake \u2192 Phase A transform \u2192 patch staging. Imports FileIntakeOrchestrator, PhaseATransformer, RunMetadataCollector, PatchGenerator. Has run_pipeline method.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "process_file",
+              "run_pipeline",
+              "_build_file_id_index"
+            ],
+            "classes": [
+              "PipelineRunner"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "registry JSON",
+              "input files"
+            ],
+            "writes": [
+              "staging directory JSON",
+              "patched registry"
+            ],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [
+            "src/pipeline_runner.py is a second PipelineRunner with different design (envelope normalization focus); naming collision"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "filename": "pipeline_runner.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/src/pipeline_runner.py",
+          "role": "implementation",
+          "relevance_reason": "PipelineRunner focused on FCA-001 envelope contract enforcement: validate/normalize transformer outputs before staging. Different from REGISTRY_AUTOMATION version.",
+          "currentness": "transitional",
+          "implementation_signals": {
+            "functions": [
+              "execute_transform",
+              "run_pipeline"
+            ],
+            "classes": [
+              "PipelineRunner"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [],
+            "writes": [
+              ".state/evidence/phase1 artifacts"
+            ],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": true
+          },
+          "risks": [
+            "Class name collision with REGISTRY_AUTOMATION version"
+          ],
+          "confidence": "medium"
+        }
+      ],
+      "supporting_files": [
+        "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305002_phase_a_transformer.py",
+        "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305003_run_metadata_collector.py"
+      ],
+      "conflicts_or_gaps": [
+        "Two PipelineRunner classes with different purposes and no shared interface",
+        "No identified post-write trigger mechanism connecting IdpkgEngine writes to the REGISTRY_AUTOMATION pipeline"
+      ],
+      "recommended_authority": {
+        "filename": "P_01999000042260305017_pipeline_runner.py",
+        "reason": "More complete implementation covering full Phase A-C pipeline"
+      }
+    },
+    {
+      "system_part": "SHA256 \u2192 file_id promotion bridge",
+      "status": "found",
+      "best_candidates": [
+        {
+          "filename": "P_01999000042260305001_file_id_reconciler.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305001_file_id_reconciler.py",
+          "role": "implementation",
+          "relevance_reason": "Builds sha256\u2192file_id and file_id\u2192sha256 mappings from registry. Generates SHA256_TO_FILE_ID.json used as lookup cache by FileIDResolver.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "validate_file_id",
+              "validate_sha256",
+              "build_mappings",
+              "save_mappings"
+            ],
+            "classes": [
+              "FileIDReconciler"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "registry JSON"
+            ],
+            "writes": [
+              "SHA256_TO_FILE_ID.json"
+            ],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [],
+          "confidence": "high"
+        },
+        {
+          "filename": "file_id_resolver.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/src/identity/file_id_resolver.py",
+          "role": "implementation",
+          "relevance_reason": "FileIDResolver: resolves SHA256\u2192file_id with cache lookup, authoritative source query, and optional generation. Implements FCA-005 fix. strict_mode fails closed on unresolvable IDs.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "resolve",
+              "resolve_from_cache",
+              "resolve_from_registry"
+            ],
+            "classes": [
+              "FileIDResolver",
+              "FileIDResolutionError"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [
+              "SHA256_TO_FILE_ID.json cache",
+              "registry JSON"
+            ],
+            "writes": [],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01999000042260305018_sha256_backfill.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305018_sha256_backfill.py",
+          "role": "implementation",
+          "relevance_reason": "SHA256Backfiller: computes SHA256 for all registry files missing it, updates registry in-place with backup. Dry-run supported.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "compute_sha256",
+              "backfill"
+            ],
+            "classes": [
+              "SHA256Backfiller"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "registry JSON",
+              "governed files"
+            ],
+            "writes": [
+              "registry JSON (in-place)",
+              "backup"
+            ],
+            "mutates_registry": true,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": true,
+            "rollback_or_backup": true,
+            "evidence_output": false
+          },
+          "risks": [
+            "No atomic write on registry update; crash between backup and write loses data"
+          ],
+          "confidence": "high"
+        }
+      ],
+      "supporting_files": [
+        "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/test_output/.state/purpose_mapping/SHA256_TO_FILE_ID.json"
+      ],
+      "conflicts_or_gaps": [],
+      "recommended_authority": {
+        "filename": "P_01999000042260305001_file_id_reconciler.py",
+        "reason": "Generates the canonical SHA256_TO_FILE_ID.json lookup used by FileIDResolver"
+      }
+    },
+    {
+      "system_part": "Lookup / join resolver",
+      "status": "missing",
+      "best_candidates": [
+        {
+          "filename": "file_id_resolver.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/src/identity/file_id_resolver.py",
+          "role": "implementation",
+          "relevance_reason": "Closest match: resolves SHA256 \u2192 file_id via cache + registry lookup. Not a general join resolver but serves the identity lookup role.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "resolve"
+            ],
+            "classes": [
+              "FileIDResolver"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [
+              "SHA256_TO_FILE_ID.json"
+            ],
+            "writes": [],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [
+            "This is an identity resolver, not a general-purpose lookup/join engine for registry queries"
+          ],
+          "confidence": "low"
+        }
+      ],
+      "supporting_files": [],
+      "conflicts_or_gaps": [
+        "No dedicated lookup_resolver or join_resolver file found anywhere in the codebase; no class named LookupResolver or JoinResolver exists"
+      ],
+      "recommended_authority": {
+        "filename": "",
+        "reason": "No canonical lookup/join resolver found; this component appears to be missing or embedded implicitly in other tools"
+      }
+    },
+    {
+      "system_part": "Column runtime engine",
+      "status": "partial",
+      "best_candidates": [
+        {
+          "filename": "P_01999000042260305005_column_loader.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305005_column_loader.py",
+          "role": "implementation",
+          "relevance_reason": "ColumnLoader: loads COLUMN_DICTIONARY.json at runtime, parses column definitions (name, type, nullable, default), caches, provides accessor methods. Used by EndToEndValidator and ColumnValidator.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "load_columns",
+              "get_column"
+            ],
+            "classes": [
+              "ColumnLoader"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [
+              "COLUMN_HEADERS/01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json"
+            ],
+            "writes": [],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [
+            "Hardcoded path to column dictionary two levels up from scripts/"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01999000042260305011_column_introspector.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305011_column_introspector.py",
+          "role": "implementation",
+          "relevance_reason": "ColumnIntrospector: analyzes actual column usage in registry (presence, coverage %, type inference, sample values). Runtime introspection not schema-based.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "introspect_registry"
+            ],
+            "classes": [
+              "ColumnIntrospector"
+            ],
+            "has_cli_entrypoint": false,
+            "reads": [
+              "registry JSON"
+            ],
+            "writes": [],
+            "mutates_registry": false,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [],
+          "confidence": "medium"
+        }
+      ],
+      "supporting_files": [
+        "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305006_column_validator.py",
+        "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/COLUMN_HEADERS/01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+        "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/COLUMN_HEADERS/COLUMN_DICTIONARY_184_COLUMNS.csv"
+      ],
+      "conflicts_or_gaps": [
+        "No single 'ColumnRuntimeEngine' class found; column runtime capability is split across ColumnLoader + ColumnValidator + ColumnIntrospector"
+      ],
+      "recommended_authority": {
+        "filename": "P_01999000042260305005_column_loader.py",
+        "reason": "Foundation of the column runtime; used by all other column-related scripts"
+      }
+    },
+    {
+      "system_part": "Any file that appears to be the canonical end-to-end orchestrator",
+      "status": "found",
+      "best_candidates": [
+        {
+          "filename": "P_01999000042260126000__idpkg_runtime.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/1_runtime/watchers/P_01999000042260126000__idpkg_runtime.py",
+          "role": "implementation",
+          "relevance_reason": "IdpkgEngine is the canonical end-to-end orchestrator: loads config+contracts, orchestrates IdpkgConfig, ZoneClassifier, DirIdManager, DirectoryIdentityResolver, FileIdentityResolver, GateRunner, RegistryWriter, EvidenceWriter. CLI commands: init, scan, watch, promote, verify. 1209 lines.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "ingest_event",
+              "promote",
+              "scan",
+              "watch",
+              "verify",
+              "main"
+            ],
+            "classes": [
+              "IdpkgEngine",
+              "IdpkgConfig",
+              "IdpkgContracts",
+              "GateRunner",
+              "RegistryWriter",
+              "FileIdentityResolver",
+              "EvidenceWriter"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              ".idpkg/config.json",
+              "GATE_CATALOG.json",
+              ".dir_id.schema.json",
+              "UNIFIED_INGEST_ENVELOPE.schema.json",
+              "PREFIX_POLICY.json",
+              "WRITE_POLICY_IDPKG.yaml",
+              "registry JSON",
+              "filesystem"
+            ],
+            "writes": [
+              "registry JSON",
+              "patch files",
+              ".dir_id files",
+              "renamed files",
+              ".state/idpkg/evidence/*"
+            ],
+            "mutates_registry": true,
+            "atomic_write": true,
+            "lock_usage": true,
+            "dry_run_support": true,
+            "rollback_or_backup": false,
+            "evidence_output": true
+          },
+          "risks": [
+            "WRITE_POLICY_IDPKG.yaml referenced but only UNIFIED_SSOT_REGISTRY_WRITE_POLICY.yaml was found in COLUMN_HEADERS; filename mismatch may cause load failure"
+          ],
+          "confidence": "high"
+        },
+        {
+          "filename": "P_01999000042260305017_pipeline_runner.py",
+          "path": "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305017_pipeline_runner.py",
+          "role": "implementation",
+          "relevance_reason": "PipelineRunner is the end-to-end orchestrator for the REGISTRY_AUTOMATION remediation pipeline: intake \u2192 analyze \u2192 transform \u2192 patch \u2192 apply.",
+          "currentness": "current",
+          "implementation_signals": {
+            "functions": [
+              "run_pipeline",
+              "process_file"
+            ],
+            "classes": [
+              "PipelineRunner"
+            ],
+            "has_cli_entrypoint": true,
+            "reads": [
+              "registry JSON",
+              "input files",
+              "column dictionary"
+            ],
+            "writes": [
+              "patched registry",
+              "staging artifacts"
+            ],
+            "mutates_registry": true,
+            "atomic_write": false,
+            "lock_usage": false,
+            "dry_run_support": false,
+            "rollback_or_backup": false,
+            "evidence_output": false
+          },
+          "risks": [],
+          "confidence": "medium"
+        }
+      ],
+      "supporting_files": [
+        "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/7_automation/P_01260207233100000074_cli.py"
+      ],
+      "conflicts_or_gaps": [
+        "Two independent end-to-end orchestrators: IdpkgEngine (ID/dir governance) and PipelineRunner (column analysis remediation) with no visible integration point between them"
+      ],
+      "recommended_authority": {
+        "filename": "P_01999000042260126000__idpkg_runtime.py",
+        "reason": "Comprehensive 1209-line orchestrator covering config loading, contract validation, zone classification, identity resolution, gate running, registry mutation, and evidence emission with full CLI"
+      }
+    }
+  ],
+  "cross_cutting_findings": {
+    "authoritative_contracts_found": [
+      "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/01999000042260124012_governance_registry_schema.v3.json",
+      "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/3_schemas/UNIFIED_INGEST_ENVELOPE.schema.json",
+      "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/3_schemas/GATE_CATALOG.json",
+      "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/3_schemas/PREFIX_POLICY.json",
+      "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/COLUMN_HEADERS/01260207233100000463_2026012816000001_COLUMN_DICTIONARY.json",
+      "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/COLUMN_HEADERS/01260207201000000193_UNIFIED_SSOT_REGISTRY_WRITE_POLICY.yaml"
+    ],
+    "registry_shape_conflicts": [
+      "REGISTRY_file.json (01999000042260124503) has schema_version 4.0 with files+edges+entities; governance_registry_schema.v3.json only defines files+edges (no entities array)",
+      "RegistryWriter._ensure_registry_shape initializes files, entries, entities - three top-level arrays; schema only requires files and edges"
+    ],
+    "id_semantic_conflicts": [
+      "P_01999000042260124489_id_scheme.py generates GEU IDs with prefix '99' incompatible with the standard 01260207201-prefix 20-digit schema",
+      "add_ids_recursive.py bypasses IDAllocatorFacade and directly calls UnifiedIDAllocator, violating stated contract",
+      "healthcheck.py imports P_01999000042260125108_registry_fs_reconciler but the file on disk is P_01999000042260125106 (different file_id)"
+    ],
+    "duplicate_or_variant_files": [
+      "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/3_schemas/.dir_id.schema.json duplicated at ID/dir_id/.dir_id.schema.json",
+      "Two PipelineRunner classes: REGISTRY_AUTOMATION/scripts/P_01999000042260305017 and src/pipeline_runner.py",
+      "REGISTRY_file.json has copies in archive/pre_cleanup_20260225_173348/ and archive/pre_prune_20260306_210353/ and AUTHORITATIVE_TOP_10_20260320/",
+      "P_01999000042260305004_patch_generator.py duplicated in REGISTRY_AUTOMATION/scripts and 01260207201000001313_capability_mapping_system/mapp_py",
+      "P_01999000042260305001_file_id_reconciler.py duplicated in REGISTRY_AUTOMATION/scripts and 01260207201000001313_capability_mapping_system/mapp_py"
+    ],
+    "stub_or_placeholder_files": [
+      "P_01260207233100000008_watcher_daemon.py is effectively a stub: imports from repo_autoops module not present on disk, enqueues to WorkQueue with no visible consumer"
+    ],
+    "missing_critical_components": [
+      "ID_SCRIPT_INVENTORY.jsonl at repo root (required by IDCanonicalityGate for pre-commit enforcement; only found in backups/ID_docs_outdated_20260222/)",
+      "WRITE_POLICY_IDPKG.yaml (referenced by IdpkgContracts.load but only UNIFIED_SSOT_REGISTRY_WRITE_POLICY.yaml found in COLUMN_HEADERS - filename mismatch)",
+      "P_01260207233100000069_dir_id_handler.py (imported by dir_identity_resolver.py and idpkg_runtime.py but only 01999000042260125068 version found in handlers directory)",
+      "Dedicated lookup/join resolver (no LookupResolver or JoinResolver class found anywhere)",
+      "Dedicated column runtime engine (capability split across loader + validator + introspector with no unified runtime class)"
+    ]
+  },
+  "final_assessment": {
+    "has_single_canonical_runtime": true,
+    "has_single_canonical_registry_mutation_engine": false,
+    "has_single_canonical_orchestrator": false,
+    "biggest_blockers": [
+      "ID_SCRIPT_INVENTORY.jsonl missing from repo root - IDCanonicalityGate (pre-commit gate) will sys.exit(1) on every commit, blocking all development",
+      "WRITE_POLICY_IDPKG.yaml filename mismatch causes IdpkgContracts.load to fail, which prevents IdpkgEngine from initializing",
+      "healthcheck.py has a broken import (P_01999000042260125108 vs P_01999000042260125106) preventing health checks from running",
+      "watcher_daemon.py depends on repo_autoops module not present - duplicate/conflicting watcher architecture with dir_id_watcher.py",
+      "Two independent end-to-end orchestrators (IdpkgEngine and PipelineRunner/REGISTRY_AUTOMATION) with no integration: ID governance and column analysis pipelines are siloed"
+    ],
+    "most_likely_current_runtime_files": [
+      "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/1_runtime/watchers/P_01999000042260126000__idpkg_runtime.py",
+      "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/1_runtime/allocators/P_01999000042260125006_id_allocator_facade.py",
+      "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/1_runtime/allocators/P_01999000042260124031_unified_id_allocator.py",
+      "C:/Users/richg/Gov_Reg/01260207201000001276_scripts/P_01999000042260124030_shared_utils.py",
+      "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/1_runtime/handlers/P_01260207233100000070_dir_identity_resolver.py",
+      "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/1_runtime/handlers/P_01999000042260125068_dir_id_handler.py",
+      "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/1_runtime/validators/P_01999000042260125000_gate_id_canonicality.py",
+      "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/REGISTRY_AUTOMATION/scripts/P_01999000042260305017_pipeline_runner.py",
+      "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/01260207201000001270_scripts/P_01260207201000000834_apply_patch.py",
+      "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/01999000042260124503_REGISTRY_file.json"
+    ]
+  }
+}

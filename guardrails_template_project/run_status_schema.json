@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Run Status Schema",
+  "description": "Schema for tracking the lifecycle and state machine of an ACMS run. Enforces invariant C‑3 by constraining allowed states and capturing atomic mutation ledger updates.",
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "Unique identifier for the run."
+    },
+    "state": {
+      "type": "string",
+      "description": "Current state in the run lifecycle.",
+      "enum": [
+        "created",
+        "validated",
+        "queued",
+        "applied",
+        "verified",
+        "committed"
+      ]
+    },
+    "current_task_id": {
+      "type": ["string", "null"],
+      "description": "ID of the task currently being executed, if any."
+    },
+    "start_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the run was created."
+    },
+    "end_time": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Timestamp when the run finished successfully or failed."
+    },
+    "task_counters": {
+      "type": "object",
+      "description": "Counts of tasks by status within the run.",
+      "properties": {
+        "queued": {"type": "integer", "minimum": 0},
+        "in_progress": {"type": "integer", "minimum": 0},
+        "succeeded": {"type": "integer", "minimum": 0},
+        "failed": {"type": "integer", "minimum": 0}
+      },
+      "required": ["queued", "in_progress", "succeeded", "failed"]
+    },
+    "lock": {
+      "type": "boolean",
+      "description": "Indicates whether a mutation is currently being applied. The ledger must not be mutated when the lock is false."
+    }
+  },
+  "required": [
+    "run_id",
+    "state",
+    "start_time",
+    "task_counters",
+    "lock"
+  ]
+}

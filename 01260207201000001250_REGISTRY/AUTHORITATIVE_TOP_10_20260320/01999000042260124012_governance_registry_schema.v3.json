@@ -1,0 +1,2880 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Governance Registry Schema (Data + Edges)",
+  "type": "object",
+  "properties": {
+    "files": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/FileRecord"
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/EdgeRecord"
+      }
+    },
+    "schema_version": {
+      "type": "string",
+      "description": "Schema version for tooling compatibility"
+    }
+  },
+  "required": [
+    "files",
+    "edges"
+  ],
+  "definitions": {
+    "FileRecord": {
+      "type": "object",
+      "properties": {
+        "file_id": {
+          "type": "string",
+          "pattern": "^[0-9]{20}$",
+          "description": "Stable 20-digit numeric ID - canonical file identifier"
+        },
+        "relative_path": {
+          "type": "string",
+          "description": "Path relative to repository root"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{64}$",
+          "description": "SHA256 of file contents"
+        },
+        "dir_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9]{20}$",
+          "description": "Directory ID - 20-digit ID of the parent directory from .dir_id file"
+        },
+        "governance_domain": {
+          "type": "string",
+          "enum": [
+            "ROOT",
+            "CONFIGS",
+            "SCHEMAS",
+            "REGISTRY",
+            "TASKS",
+            "REMEDIES",
+            "SRC",
+            "TESTS",
+            "EVIDENCE",
+            "REPORTS",
+            "ARTIFACTS",
+            "EXTERNAL"
+          ],
+          "description": "Subsystem or top-level domain"
+        },
+        "artifact_kind": {
+          "type": "string",
+          "enum": [
+            "CONFIG",
+            "SCHEMA",
+            "REGISTRY",
+            "WORK_UNIT",
+            "WORK_UNIT_TEMPLATE",
+            "REMEDY",
+            "PYTHON_MODULE",
+            "SCRIPT",
+            "JSON_DATA",
+            "YAML_DATA",
+            "MARKDOWN_DOC",
+            "TEST",
+            "EVIDENCE",
+            "REPORT",
+            "ARTIFACT",
+            "OTHER",
+            "DIRECTORY"
+          ],
+          "description": "Type of artifact"
+        },
+        "layer": {
+          "type": "string",
+          "enum": [
+            "CONFIGURATION",
+            "DEFINITION",
+            "TEMPLATE",
+            "EXAMPLE",
+            "EXECUTION",
+            "VALIDATION",
+            "CORE",
+            "TRACE",
+            "DAG",
+            "UTIL",
+            "ERROR_HANDLING",
+            "REPORTING",
+            "TESTING",
+            "EVIDENCE",
+            "PERSISTENCE",
+            "GOVERNANCE",
+            "SSOT",
+            "GATES",
+            "EVENTS",
+            "PACKAGE_MARKER",
+            "DOCUMENTATION",
+            "DERIVED"
+          ],
+          "description": "Logical layer"
+        },
+        "required_suite_key": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Suite slot key"
+        },
+        "bundle_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9]{16}$",
+          "description": "16-digit ID for bundle grouping (separate namespace from file_id)"
+        },
+        "bundle_key": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Human-readable stable bundle name (e.g., GATE_AGGREGATE, ID_REGISTRY)"
+        },
+        "bundle_role": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "SCHEMA",
+            "VALIDATOR",
+            "EXECUTOR",
+            "RUNNER",
+            "BRIDGE",
+            "TEST",
+            "DOC",
+            "REPORT",
+            "TOOL",
+            "FAILURE_MODE",
+            "EVIDENCE_SCHEMA",
+            null
+          ],
+          "description": "Role within bundle"
+        },
+        "bundle_version": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Optional bundle version string (e.g., v2.5.3)"
+        },
+        "anchor_file_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9]{20}$",
+          "description": "file_id of the bundle anchor (schema/SSOT)"
+        },
+        "canonicality": {
+          "type": "string",
+          "enum": [
+            "CANONICAL",
+            "LEGACY",
+            "ALTERNATE",
+            "EXPERIMENTAL"
+          ],
+          "description": "Canonical status"
+        },
+        "enforced_by": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "IDs that enforce this file"
+        },
+        "enforced_by_file_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]{20}$"
+          },
+          "description": "List of file_ids that enforce this file"
+        },
+        "enforces": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Rules or controls enforced"
+        },
+        "enforces_rule_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of rule IDs this file enforces"
+        },
+        "depends_on_file_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]{20}$"
+          },
+          "description": "Explicit dependency list"
+        },
+        "test_file_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]{20}$"
+          },
+          "description": "List of test file_ids for this file"
+        },
+        "has_tests": {
+          "type": "boolean",
+          "description": "Whether tests exist"
+        },
+        "one_line_purpose": {
+          "type": "string",
+          "description": "Brief description"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description"
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Inputs consumed"
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Outputs produced"
+        },
+        "evidence_outputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of evidence outputs"
+        },
+        "report_outputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of report outputs"
+        },
+        "deliverables": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Deliverables produced"
+        },
+        "coverage_status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "PRESENT",
+            "MISSING",
+            "DUPLICATE",
+            "CONFLICT",
+            null
+          ],
+          "description": "Bundle completeness status"
+        },
+        "superseded_by": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9]{20}$",
+          "description": "file_id of replacement (for duplicates)"
+        },
+        "repo_root_id": {
+          "type": "string",
+          "enum": [
+            "AI_PROD_PIPELINE",
+            "ALL_AI"
+          ],
+          "description": "Logical root identifier for resolving relative_path"
+        },
+        "first_seen_utc": {
+          "type": "string",
+          "format": "date-time",
+          "description": "UTC timestamp when this record was first added to registry"
+        },
+        "created_by": {
+          "type": "string",
+          "description": "Tool/user/process that created the registry record"
+        },
+        "is_generated": {
+          "type": "boolean",
+          "description": "True if file is generated/derived artifact"
+        },
+        "generated_by_file_id": {
+          "type": "string",
+          "pattern": "^[0-9]{20}$",
+          "description": "file_id of generator source (if is_generated=true)"
+        },
+        "path_aliases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Alternate paths or aliases for this file record"
+        },
+        "is_directory": {
+          "type": "boolean",
+          "description": "True if this record represents a directory"
+        },
+        "geu_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of Governance Enforcement Unit IDs associated with this file"
+        },
+        "is_shared": {
+          "type": "boolean",
+          "description": "Whether file is shared across multiple GEUs"
+        },
+        "owner_geu_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "GEU ID of the owner if file is shared, otherwise null"
+        },
+        "primary_geu_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Primary GEU ID responsible for this file, or null if not assigned"
+        },
+        "absolute_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "artifact_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "created_time": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "created_utc": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "entity_kind": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "file",
+            "directory",
+            null
+          ]
+        },
+        "extension": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "file_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "filename": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "modified_time": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "module_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "py_capability_facts_hash": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}\\$"
+        },
+        "py_capability_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "record_kind": {
+          "type": "string",
+          "enum": [
+            "entity",
+            "edge",
+            "metadata",
+            "generator"
+          ]
+        },
+        "registered_by": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "registration_time": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "size_bytes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "active",
+            "archived",
+            "deprecated",
+            "legacy_read_only",
+            null
+          ]
+        },
+        "updated_utc": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "file_id",
+        "relative_path",
+        "repo_root_id",
+        "governance_domain",
+        "artifact_kind",
+        "layer",
+        "canonicality",
+        "has_tests"
+      ],
+      "additionalProperties": false
+    },
+    "EdgeRecord": {
+      "type": "object",
+      "properties": {
+        "source_file_id": {
+          "type": "string",
+          "pattern": "^[0-9]{20}$"
+        },
+        "edge_type": {
+          "type": "string",
+          "enum": [
+            "VALIDATES",
+            "EXECUTES",
+            "ENFORCES",
+            "USES_SCHEMA",
+            "GENERATES",
+            "DEPENDS_ON",
+            "TESTS",
+            "DOCUMENTS",
+            "EMITS_EVENT",
+            "COLLECTS_EVIDENCE",
+            "PRODUCES_REPORT",
+            "DERIVES",
+            "PATCHES",
+            "ATTESTS",
+            "EMITS_EVIDENCE_FOR"
+          ]
+        },
+        "target_file_id": {
+          "type": "string",
+          "pattern": "^[0-9]{20}$"
+        },
+        "target_schema_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{16}$"
+        },
+        "evidence": {
+          "$ref": "#/definitions/EvidenceRecord"
+        }
+      },
+      "required": [
+        "source_file_id",
+        "edge_type",
+        "evidence"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "required": [
+            "source_file_id",
+            "edge_type",
+            "evidence"
+          ]
+        },
+        {
+          "oneOf": [
+            {
+              "required": [
+                "target_file_id"
+              ]
+            },
+            {
+              "required": [
+                "target_schema_id"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "EvidenceRecord": {
+      "type": "object",
+      "properties": {
+        "evidence_type": {
+          "type": "string",
+          "enum": [
+            "PY_IMPORT",
+            "CLI_INVOCATION",
+            "CI_STEP",
+            "SCHEMA_REF",
+            "CONFIG_REFERENCE",
+            "RUNTIME_OUTPUT",
+            "DOC_CLAIM"
+          ],
+          "description": "Kind of evidence used to substantiate the edge"
+        },
+        "evidence_locator": {
+          "type": "string",
+          "description": "Pointer to evidence (file path + selector, command, workflow step id, etc.)"
+        },
+        "extract": {
+          "type": "string",
+          "description": "Optional short extracted snippet or selector"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "PROVEN",
+            "UNVERIFIED"
+          ],
+          "description": "Whether evidence was mechanically verified or is only claimed"
+        },
+        "collected_by": {
+          "type": "string",
+          "description": "Tool/version that collected the evidence"
+        }
+      },
+      "required": [
+        "evidence_type",
+        "evidence_locator",
+        "status"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "examples": [
+    {
+      "files": [
+        {
+          "file_id": "0000000000000001",
+          "doc_id": "DOC-001",
+          "relative_path": "README.md",
+          "governance_domain": "ROOT",
+          "artifact_kind": "MARKDOWN_DOC",
+          "layer": "DOCUMENTATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000002",
+          "doc_id": "DOC-002",
+          "relative_path": "pyproject.toml",
+          "governance_domain": "ROOT",
+          "artifact_kind": "CONFIG",
+          "layer": "CONFIGURATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000003",
+          "doc_id": "DOC-003",
+          "relative_path": "requirements.txt",
+          "governance_domain": "ROOT",
+          "artifact_kind": "CONFIG",
+          "layer": "CONFIGURATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000004",
+          "doc_id": "DOC-004",
+          "relative_path": ".gitignore",
+          "governance_domain": "ROOT",
+          "artifact_kind": "CONFIG",
+          "layer": "CONFIGURATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000005",
+          "doc_id": "DOC-005",
+          "relative_path": ".env.example",
+          "governance_domain": "ROOT",
+          "artifact_kind": "CONFIG",
+          "layer": "CONFIGURATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000006",
+          "doc_id": "DOC-006",
+          "relative_path": "configs/pipeline.yaml",
+          "governance_domain": "CONFIGS",
+          "artifact_kind": "CONFIG",
+          "layer": "CONFIGURATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000007",
+          "doc_id": "DOC-007",
+          "relative_path": "configs/workflow.yaml",
+          "governance_domain": "CONFIGS",
+          "artifact_kind": "CONFIG",
+          "layer": "CONFIGURATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000008",
+          "doc_id": "DOC-008",
+          "relative_path": "configs/runner.yaml",
+          "governance_domain": "CONFIGS",
+          "artifact_kind": "CONFIG",
+          "layer": "CONFIGURATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000009",
+          "doc_id": "DOC-009",
+          "relative_path": "configs/determinism.yaml",
+          "governance_domain": "CONFIGS",
+          "artifact_kind": "CONFIG",
+          "layer": "CONFIGURATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000000a",
+          "doc_id": "DOC-010",
+          "relative_path": "schemas/work_unit_schema.json",
+          "governance_domain": "SCHEMAS",
+          "artifact_kind": "SCHEMA",
+          "layer": "VALIDATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000000b",
+          "doc_id": "DOC-011",
+          "relative_path": "schemas/work_unit.schema.json",
+          "governance_domain": "SCHEMAS",
+          "artifact_kind": "SCHEMA",
+          "layer": "VALIDATION",
+          "required_suite_key": "",
+          "canonicality": "ALTERNATE",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000000c",
+          "doc_id": "DOC-012",
+          "relative_path": "schemas/registry_schema.json",
+          "governance_domain": "SCHEMAS",
+          "artifact_kind": "SCHEMA",
+          "layer": "VALIDATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000000d",
+          "doc_id": "DOC-013",
+          "relative_path": "schemas/evidence_manifest_schema.json",
+          "governance_domain": "SCHEMAS",
+          "artifact_kind": "SCHEMA",
+          "layer": "VALIDATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000000e",
+          "doc_id": "DOC-014",
+          "relative_path": "registry/UNIFIED_SSOT_REGISTRY.json",
+          "governance_domain": "REGISTRY",
+          "artifact_kind": "REGISTRY",
+          "layer": "DEFINITION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000000f",
+          "doc_id": "DOC-015",
+          "relative_path": "registry/registry.json",
+          "governance_domain": "REGISTRY",
+          "artifact_kind": "REGISTRY",
+          "layer": "DEFINITION",
+          "required_suite_key": "",
+          "canonicality": "ALTERNATE",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000010",
+          "doc_id": "DOC-016",
+          "relative_path": "registry/unified_registry.json",
+          "governance_domain": "REGISTRY",
+          "artifact_kind": "REGISTRY",
+          "layer": "DEFINITION",
+          "required_suite_key": "",
+          "canonicality": "LEGACY",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000011",
+          "doc_id": "DOC-017",
+          "relative_path": "registry/REGISTRY_REPORT.md",
+          "governance_domain": "REGISTRY",
+          "artifact_kind": "MARKDOWN_DOC",
+          "layer": "REPORTING",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000012",
+          "doc_id": "DOC-018",
+          "relative_path": "registry/registry_loader.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "UTIL",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000013",
+          "doc_id": "DOC-019",
+          "relative_path": "registry/registry_updater.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "UTIL",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000014",
+          "doc_id": "DOC-020",
+          "relative_path": "registry/registry_validator.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "VALIDATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000015",
+          "doc_id": "DOC-021",
+          "relative_path": "registry/path_resolver.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "UTIL",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000016",
+          "doc_id": "DOC-022",
+          "relative_path": "tasks/README.md",
+          "governance_domain": "TASKS",
+          "artifact_kind": "MARKDOWN_DOC",
+          "layer": "DOCUMENTATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000017",
+          "doc_id": "DOC-023",
+          "relative_path": "tasks/PH-001.work_unit.json",
+          "governance_domain": "TASKS",
+          "artifact_kind": "WORK_UNIT",
+          "layer": "DEFINITION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000018",
+          "doc_id": "DOC-024",
+          "relative_path": "tasks/PH-002.work_unit.json",
+          "governance_domain": "TASKS",
+          "artifact_kind": "WORK_UNIT",
+          "layer": "DEFINITION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000019",
+          "doc_id": "DOC-025",
+          "relative_path": "tasks/.work_unit.json",
+          "governance_domain": "TASKS",
+          "artifact_kind": "WORK_UNIT_TEMPLATE",
+          "layer": "TEMPLATE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000001a",
+          "doc_id": "DOC-026",
+          "relative_path": "tasks/PH-###.work_unit.json",
+          "governance_domain": "TASKS",
+          "artifact_kind": "WORK_UNIT_TEMPLATE",
+          "layer": "TEMPLATE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000001b",
+          "doc_id": "DOC-027",
+          "relative_path": "tasks/TASK-####.json",
+          "governance_domain": "TASKS",
+          "artifact_kind": "WORK_UNIT_TEMPLATE",
+          "layer": "TEMPLATE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000001c",
+          "doc_id": "DOC-028",
+          "relative_path": "tasks/work_unit.json",
+          "governance_domain": "TASKS",
+          "artifact_kind": "WORK_UNIT",
+          "layer": "EXAMPLE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000001d",
+          "doc_id": "DOC-029",
+          "relative_path": "tasks/TASK-0001.json",
+          "governance_domain": "TASKS",
+          "artifact_kind": "WORK_UNIT",
+          "layer": "DEFINITION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000001e",
+          "doc_id": "DOC-030",
+          "relative_path": "remedies/README.md",
+          "governance_domain": "REMEDIES",
+          "artifact_kind": "MARKDOWN_DOC",
+          "layer": "DOCUMENTATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000001f",
+          "doc_id": "DOC-031",
+          "relative_path": "remedies/remedy_schema_drift.json",
+          "governance_domain": "REMEDIES",
+          "artifact_kind": "REMEDY",
+          "layer": "DEFINITION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000020",
+          "doc_id": "DOC-032",
+          "relative_path": "remedies/remedy_import_wiring.json",
+          "governance_domain": "REMEDIES",
+          "artifact_kind": "REMEDY",
+          "layer": "DEFINITION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000021",
+          "doc_id": "DOC-033",
+          "relative_path": "remedies/remedy_generate_tests.json",
+          "governance_domain": "REMEDIES",
+          "artifact_kind": "REMEDY",
+          "layer": "DEFINITION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000022",
+          "doc_id": "DOC-034",
+          "relative_path": "remedies/remedy_naming.json",
+          "governance_domain": "REMEDIES",
+          "artifact_kind": "REMEDY",
+          "layer": "DEFINITION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000023",
+          "doc_id": "DOC-035",
+          "relative_path": "remedies/remedy_registry_conflict.json",
+          "governance_domain": "REMEDIES",
+          "artifact_kind": "REMEDY",
+          "layer": "DEFINITION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000024",
+          "doc_id": "DOC-036",
+          "relative_path": "remedies/fix_schema_drift.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "EXECUTION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000025",
+          "doc_id": "DOC-037",
+          "relative_path": "remedies/fix_import_wiring.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "EXECUTION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000026",
+          "doc_id": "DOC-038",
+          "relative_path": "remedies/generate_missing_tests.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "EXECUTION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000027",
+          "doc_id": "DOC-039",
+          "relative_path": "remedies/repair_registry_conflict.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "EXECUTION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000028",
+          "doc_id": "DOC-040",
+          "relative_path": "src/cli/execute_work_unit.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "SCRIPT",
+          "layer": "EXECUTION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000029",
+          "doc_id": "DOC-041",
+          "relative_path": "src/cli/validate_work_unit.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "SCRIPT",
+          "layer": "VALIDATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000002a",
+          "doc_id": "DOC-042",
+          "relative_path": "src/cli/pre_validate.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "SCRIPT",
+          "layer": "VALIDATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000002b",
+          "doc_id": "DOC-043",
+          "relative_path": "src/cli/post_validate.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "SCRIPT",
+          "layer": "VALIDATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000002c",
+          "doc_id": "DOC-044",
+          "relative_path": "src/cli/replay.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "SCRIPT",
+          "layer": "EXECUTION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000002d",
+          "doc_id": "DOC-045",
+          "relative_path": "src/cli/replay_runner.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "SCRIPT",
+          "layer": "EXECUTION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000002e",
+          "doc_id": "DOC-046",
+          "relative_path": "src/cli/pipeline_runner.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "SCRIPT",
+          "layer": "EXECUTION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000002f",
+          "doc_id": "DOC-047",
+          "relative_path": "src/cli/__init__.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "PACKAGE_MARKER",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000030",
+          "doc_id": "DOC-048",
+          "relative_path": "src/core/work_unit.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "CORE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000031",
+          "doc_id": "DOC-049",
+          "relative_path": "src/core/work_unit_model.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "CORE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000032",
+          "doc_id": "DOC-050",
+          "relative_path": "src/core/runner.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "CORE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000033",
+          "doc_id": "DOC-051",
+          "relative_path": "src/core/work_unit_runner.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "CORE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000034",
+          "doc_id": "DOC-052",
+          "relative_path": "src/core/command_executor.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "CORE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000035",
+          "doc_id": "DOC-053",
+          "relative_path": "src/core/repo_ops.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "CORE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000036",
+          "doc_id": "DOC-054",
+          "relative_path": "src/core/git_ops.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "CORE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000037",
+          "doc_id": "DOC-055",
+          "relative_path": "src/core/lock_manager.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "CORE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000038",
+          "doc_id": "DOC-056",
+          "relative_path": "src/core/repo_lock.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "CORE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000039",
+          "doc_id": "DOC-057",
+          "relative_path": "src/core/evidence_collector.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "CORE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000003a",
+          "doc_id": "DOC-058",
+          "relative_path": "src/core/evidence_bundle.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "CORE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000003b",
+          "doc_id": "DOC-059",
+          "relative_path": "src/core/run_id.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "CORE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000003c",
+          "doc_id": "DOC-060",
+          "relative_path": "src/core/ulid.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "CORE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000003d",
+          "doc_id": "DOC-061",
+          "relative_path": "src/trace/trace_storage.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "TRACE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000003e",
+          "doc_id": "DOC-062",
+          "relative_path": "src/trace/trace_models.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "TRACE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000003f",
+          "doc_id": "DOC-063",
+          "relative_path": "src/trace/trace_writer.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "TRACE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000040",
+          "doc_id": "DOC-064",
+          "relative_path": "src/trace/determinism_checker.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "TRACE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000041",
+          "doc_id": "DOC-065",
+          "relative_path": "src/trace/validate_determinism.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "SCRIPT",
+          "layer": "TRACE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000042",
+          "doc_id": "DOC-066",
+          "relative_path": "src/trace/__init__.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "PACKAGE_MARKER",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000043",
+          "doc_id": "DOC-067",
+          "relative_path": "src/dag/dag.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "DAG",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000044",
+          "doc_id": "DOC-068",
+          "relative_path": "src/dag/task_graph.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "DAG",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000045",
+          "doc_id": "DOC-069",
+          "relative_path": "src/dag/scheduler.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "DAG",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000046",
+          "doc_id": "DOC-070",
+          "relative_path": "src/dag/dependency_checker.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "DAG",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000047",
+          "doc_id": "DOC-071",
+          "relative_path": "src/dag/__init__.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "PACKAGE_MARKER",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000048",
+          "doc_id": "DOC-072",
+          "relative_path": "src/validation/validate_repo_state.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "VALIDATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000049",
+          "doc_id": "DOC-073",
+          "relative_path": "src/validation/validate_work_unit.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "VALIDATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000004a",
+          "doc_id": "DOC-074",
+          "relative_path": "src/validation/validate_registry.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "VALIDATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000004b",
+          "doc_id": "DOC-075",
+          "relative_path": "src/validation/enforce_naming_rules.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "VALIDATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000004c",
+          "doc_id": "DOC-076",
+          "relative_path": "src/validation/__init__.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "PACKAGE_MARKER",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000004d",
+          "doc_id": "DOC-077",
+          "relative_path": "src/errors/error_classifier.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "ERROR_HANDLING",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000004e",
+          "doc_id": "DOC-078",
+          "relative_path": "src/errors/failure_codes.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "ERROR_HANDLING",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000004f",
+          "doc_id": "DOC-079",
+          "relative_path": "src/errors/error_classification.json",
+          "governance_domain": "SRC",
+          "artifact_kind": "JSON_DATA",
+          "layer": "ERROR_HANDLING",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000050",
+          "doc_id": "DOC-080",
+          "relative_path": "src/errors/__init__.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "PACKAGE_MARKER",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000051",
+          "doc_id": "DOC-081",
+          "relative_path": "src/reporting/render_registry_report.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "REPORTING",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000052",
+          "doc_id": "DOC-082",
+          "relative_path": "src/reporting/run_report.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "REPORTING",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000053",
+          "doc_id": "DOC-083",
+          "relative_path": "src/reporting/markdown_report.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "REPORTING",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000054",
+          "doc_id": "DOC-084",
+          "relative_path": "src/reporting/__init__.py",
+          "governance_domain": "SRC",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "PACKAGE_MARKER",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000055",
+          "doc_id": "DOC-085",
+          "relative_path": "tests/test_work_unit_schema.py",
+          "governance_domain": "TESTS",
+          "artifact_kind": "TEST",
+          "layer": "TESTING",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": true,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000056",
+          "doc_id": "DOC-086",
+          "relative_path": "tests/test_runner_evidence_gate.py",
+          "governance_domain": "TESTS",
+          "artifact_kind": "TEST",
+          "layer": "TESTING",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": true,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000057",
+          "doc_id": "DOC-087",
+          "relative_path": "tests/test_registry_validator.py",
+          "governance_domain": "TESTS",
+          "artifact_kind": "TEST",
+          "layer": "TESTING",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": true,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000058",
+          "doc_id": "DOC-088",
+          "relative_path": "tests/test_dag_scheduler.py",
+          "governance_domain": "TESTS",
+          "artifact_kind": "TEST",
+          "layer": "TESTING",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": true,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000059",
+          "doc_id": "DOC-089",
+          "relative_path": "tests/test_determinism_replay.py",
+          "governance_domain": "TESTS",
+          "artifact_kind": "TEST",
+          "layer": "TESTING",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": true,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000005a",
+          "doc_id": "DOC-090",
+          "relative_path": "evidence/manifest.json",
+          "governance_domain": "EVIDENCE",
+          "artifact_kind": "EVIDENCE",
+          "layer": "EVIDENCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000005b",
+          "doc_id": "DOC-091",
+          "relative_path": "evidence/stdout.log",
+          "governance_domain": "EVIDENCE",
+          "artifact_kind": "EVIDENCE",
+          "layer": "EVIDENCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000005c",
+          "doc_id": "DOC-092",
+          "relative_path": "evidence/stderr.log",
+          "governance_domain": "EVIDENCE",
+          "artifact_kind": "EVIDENCE",
+          "layer": "EVIDENCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000005d",
+          "doc_id": "DOC-093",
+          "relative_path": "evidence/evidence.json",
+          "governance_domain": "EVIDENCE",
+          "artifact_kind": "EVIDENCE",
+          "layer": "EVIDENCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000005e",
+          "doc_id": "DOC-094",
+          "relative_path": "evidence/diff.patch",
+          "governance_domain": "EVIDENCE",
+          "artifact_kind": "EVIDENCE",
+          "layer": "EVIDENCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000005f",
+          "doc_id": "DOC-095",
+          "relative_path": "evidence/evidence_manifest.json",
+          "governance_domain": "EVIDENCE",
+          "artifact_kind": "EVIDENCE",
+          "layer": "EVIDENCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000060",
+          "doc_id": "DOC-096",
+          "relative_path": "evidence/changes.patch",
+          "governance_domain": "EVIDENCE",
+          "artifact_kind": "EVIDENCE",
+          "layer": "EVIDENCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000061",
+          "doc_id": "DOC-097",
+          "relative_path": "evidence/artifacts/precheck.json",
+          "governance_domain": "EVIDENCE",
+          "artifact_kind": "EVIDENCE",
+          "layer": "EVIDENCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000062",
+          "doc_id": "DOC-098",
+          "relative_path": "evidence/artifacts/postcheck.json",
+          "governance_domain": "EVIDENCE",
+          "artifact_kind": "EVIDENCE",
+          "layer": "EVIDENCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000063",
+          "doc_id": "DOC-099",
+          "relative_path": "evidence/artifacts/run_report.json",
+          "governance_domain": "EVIDENCE",
+          "artifact_kind": "EVIDENCE",
+          "layer": "EVIDENCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000064",
+          "doc_id": "DOC-100",
+          "relative_path": "evidence/artifacts/replay_report.json",
+          "governance_domain": "EVIDENCE",
+          "artifact_kind": "EVIDENCE",
+          "layer": "EVIDENCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000065",
+          "doc_id": "DOC-101",
+          "relative_path": "reports/latest_run_report.md",
+          "governance_domain": "REPORTS",
+          "artifact_kind": "MARKDOWN_DOC",
+          "layer": "REPORTING",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000066",
+          "doc_id": "DOC-102",
+          "relative_path": "reports/latest_run_report.json",
+          "governance_domain": "REPORTS",
+          "artifact_kind": "JSON_DATA",
+          "layer": "REPORTING",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000067",
+          "doc_id": "DOC-103",
+          "relative_path": "reports/run_report.md",
+          "governance_domain": "REPORTS",
+          "artifact_kind": "MARKDOWN_DOC",
+          "layer": "REPORTING",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000068",
+          "doc_id": "DOC-104",
+          "relative_path": "artifacts/trace.db",
+          "governance_domain": "ARTIFACTS",
+          "artifact_kind": "ARTIFACT",
+          "layer": "PERSISTENCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000069",
+          "doc_id": "DOC-105",
+          "relative_path": "artifacts/changes.patch",
+          "governance_domain": "ARTIFACTS",
+          "artifact_kind": "EVIDENCE",
+          "layer": "PERSISTENCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "AI_PROD_PIPELINE",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000006a",
+          "doc_id": "DOC-106",
+          "relative_path": "ssot/__main__.py",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "SSOT",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000006b",
+          "doc_id": "DOC-107",
+          "relative_path": "GOVERNANCE/gates/gate_runner.py",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "GATES",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000006c",
+          "doc_id": "DOC-108",
+          "relative_path": "scripts/DOC-SCRIPT-RUN-ALL-GATES-001__run_all_gates.py",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "SCRIPT",
+          "layer": "GATES",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000006d",
+          "doc_id": "DOC-109",
+          "relative_path": "GOVERNANCE/ssot/SSOT_System/SSOT_SYS_ci/DOC-CORE-SSOT-SYS-CI-CI-GATE-1095__ci_gate.py",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "GATES",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000006e",
+          "doc_id": "DOC-110",
+          "relative_path": "enforcement_bridge.py",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "GOVERNANCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000006f",
+          "doc_id": "DOC-111",
+          "relative_path": "event_emitter.py",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "EVENTS",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000070",
+          "doc_id": "DOC-112",
+          "relative_path": "event_router.py",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "EVENTS",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000071",
+          "doc_id": "DOC-113",
+          "relative_path": "event_sinks.py",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "EVENTS",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000072",
+          "doc_id": "DOC-114",
+          "relative_path": "id_registry.json",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "JSON_DATA",
+          "layer": "GOVERNANCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000073",
+          "doc_id": "DOC-115",
+          "relative_path": "SSOT_RULESET.yaml",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "YAML_DATA",
+          "layer": "SSOT",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000074",
+          "doc_id": "DOC-116",
+          "relative_path": "ssot_rules.schema.json",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "SCHEMA",
+          "layer": "SSOT",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000075",
+          "doc_id": "DOC-117",
+          "relative_path": "archetype_registry.yaml",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "YAML_DATA",
+          "layer": "SSOT",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000076",
+          "doc_id": "DOC-118",
+          "relative_path": "governance_derivation_spec.yaml",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "YAML_DATA",
+          "layer": "GOVERNANCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000077",
+          "doc_id": "DOC-119",
+          "relative_path": "governance_renderer.py",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "GOVERNANCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000078",
+          "doc_id": "DOC-120",
+          "relative_path": "enforcement_manifest.json",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "JSON_DATA",
+          "layer": "GOVERNANCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000079",
+          "doc_id": "DOC-121",
+          "relative_path": "manifest_checksums.json",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "JSON_DATA",
+          "layer": "GOVERNANCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000007a",
+          "doc_id": "DOC-122",
+          "relative_path": "control_catalog.schema.json",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "SCHEMA",
+          "layer": "GOVERNANCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000007b",
+          "doc_id": "DOC-123",
+          "relative_path": "trigger_matrix.yaml",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "YAML_DATA",
+          "layer": "GOVERNANCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000007c",
+          "doc_id": "DOC-124",
+          "relative_path": "generate_ci_gates.py",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "GOVERNANCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000007d",
+          "doc_id": "DOC-125",
+          "relative_path": "install_hooks.py",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "GOVERNANCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000007e",
+          "doc_id": "DOC-126",
+          "relative_path": "governance_watcher.py",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "GOVERNANCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "000000000000007f",
+          "doc_id": "DOC-127",
+          "relative_path": "compliance_scanner.py",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "GOVERNANCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000080",
+          "doc_id": "DOC-128",
+          "relative_path": "drift_detector.py",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "GOVERNANCE",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000081",
+          "doc_id": "DOC-129",
+          "relative_path": "audit_event.schema.json",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "SCHEMA",
+          "layer": "EVENTS",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000082",
+          "doc_id": "DOC-130",
+          "relative_path": "validate_ssot.py",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "VALIDATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000083",
+          "doc_id": "DOC-131",
+          "relative_path": "validate_exceptions.py",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "VALIDATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        },
+        {
+          "file_id": "0000000000000084",
+          "doc_id": "DOC-132",
+          "relative_path": "validate_manifest.py",
+          "governance_domain": "EXTERNAL",
+          "artifact_kind": "PYTHON_MODULE",
+          "layer": "VALIDATION",
+          "required_suite_key": "",
+          "canonicality": "CANONICAL",
+          "enforced_by": [],
+          "enforces": [],
+          "has_tests": false,
+          "repo_root_id": "ALL_AI",
+          "first_seen_utc": "2026-01-24T00:00:00Z",
+          "created_by": "migration_from_txt_docs_2026-01-24",
+          "is_generated": false
+        }
+      ],
+      "edges": []
+    }
+  ]
+}

@@ -1,0 +1,258 @@
+While the previous list covers the "bones" of the script, it isn't exhaustive. To truly eliminate AI guesswork and ensure your CLI app behaves like a cohesive ecosystem, you need to define the **"Rules of Engagement"**—the subtle habits that make code feel like it was written by the same person.
+
+It sounds like you are trying to build a **Style Guide** or a **Schema** for your CLI app. When you don't provide a "source of truth," the AI falls back on its training data, which might favor one style (like functional programming) while your existing scripts favor another (like object-oriented).
+
+To stop the AI from guessing, you need to define **Constraints** and **Conventions**. Here are the primary categories you should define to ensure all generated code aligns perfectly with your existing ecosystem:
+
+---
+
+## 1. Programming Paradigm
+This is the "soul" of your code. If you don't pick one, the AI will mix them, creating a "Frankenstein" codebase.
+* **Procedural:** Linear, function-based scripts (Best for simple automation).
+* **Object-Oriented (OOP):** Class-based, using inheritance and encapsulation (Best for complex tools).
+* **Functional:** Emphasizes immutability and pure functions (Best for data processing).
+
+## 2. Error Handling Philosophy
+How should the app fail?
+* **Look Before You Leap (LBYL):** Checking if a file exists before opening it (`if os.path.exists...`).
+* **Easier to Ask Forgiveness (EAFP):** The standard Pythonic way. Using `try/except` blocks to catch errors as they happen.
+* **Silent vs. Verbose:** Should the app log the error to a file, or print a full Traceback to the user?
+
+## 3. Dependency Preferences
+AI often suggests heavy libraries when a built-in one would work.
+* **Standard Library Only:** Forces the AI to use `json`, `urllib`, and `pathlib` (No `pip install` required).
+* **Third-Party Specifics:** Explicitly tell it: *"Use `rich` for CLI formatting and `httpx` instead of `requests`."*
+
+## 4. Documentation & Type Hinting
+This ensures the code is maintainable.
+* **Type Hinting:** Will you use PEP 484 type hints (e.g., `def name(id: int) -> str:`)?
+* **Docstring Format:** Google Style, NumPy Style, or Sphinx?
+* **Comment Density:** Should it explain "what" the code does or "why" it does it?
+
+## 5. Interface & User Experience (CLI Specific)
+* **Argument Parsing:** Will you use `argparse` (built-in), `Click` (polished), or `Typer` (modern/type-hint based)?
+* **Output Format:** Should the script output plain text, JSON (for piping to other tools), or "Pretty" tables?
+
+---
+
+### Comparison of Alignment Strategies
+
+| Category | Option A (The "Quick" Way) | Option B (The "Scale" Way) |
+| :--- | :--- | :--- |
+| **Logic** | Nested `if/else` | Dictionary Mapping / Match-Case |
+| **State** | Global variables | Class-based `self` state |
+| **IO** | `open()` and `os.path` | `pathlib.Path` |
+| **Formatting** | f-strings | Templating engines (Jinja2) |
+
+---
+
+### How to use this for your AI
+The best way to "remove the guess" is to create a **System Prompt** or a **Configuration File** (`.cliconfig`) that contains these choices. 
+
+> **Example Directive:** *"Generate all Python scripts using OOP, utilize `pathlib` for file paths, implement EAFP error handling with `try/except`, and strictly use `Typer` for the CLI interface."*
+
+---
+
+Here are the remaining categories to complete your configuration:
+
+---
+
+## 1. Naming Conventions (Casing)
+AI often flips between styles based on the libraries it sees. You must lock this down.
+* **Variable/Function Names:** `snake_case` (Python standard) vs. `camelCase`.
+* **Constants:** `UPPER_SNAKE_CASE` for hardcoded values.
+* **Private Members:** Should internal functions start with an underscore (`_internal_func`) to signal they shouldn't be called externally?
+
+## 2. File & Path Handling
+This is a major source of "clash" between Windows and Mac/Linux users, or older vs. newer Python versions.
+* **Pathlib vs. Os:** Explicitly require `from pathlib import Path`. This treats paths as objects rather than strings, preventing slash errors (`/` vs `\`).
+* **Relative vs. Absolute:** Define if the app should always look for config files relative to the **user's Home directory**, the **Current Working Directory (CWD)**, or the **Script Location**.
+
+## 3. Data Serialization Preference
+When your app saves or moves data, how does it do it?
+* **Format:** `JSON` (standard), `YAML` (human-readable config), or `TOML` (the new Python standard for configuration).
+* **Schema Validation:** Do you want the AI to use `Pydantic` to enforce data types, or just raw dictionaries?
+
+## 4. Logging vs. Printing
+In a CLI app, "Printing" is for the user; "Logging" is for the developer.
+* **The UI:** Should the app use `print()` for everything, or a library like `Rich` to create beautiful layouts and progress bars?
+* **The Audit Trail:** Should the app create a `.log` file? If so, what level of detail? (`DEBUG`, `INFO`, `ERROR`).
+
+## 5. Concurrency Model
+If your app needs to do two things at once (like downloading a file while showing a spinner):
+* **Synchronous:** One task at a time (e.g., `requests`).
+* **Asynchronous:** Non-blocking tasks (e.g., `asyncio` and `httpx`).
+* **Multiprocessing:** Using multiple CPU cores for heavy math/data processing.
+
+---
+
+### The "Master Checklist" for your AI Prompt
+If you want to be truly exhaustive, your "Constraint Block" should look like this:
+
+| Category | Your Specific Choice |
+| :--- | :--- |
+| **Paradigm** | (e.g., Functional with Type Hints) |
+| **CLI Library** | (e.g., Click) |
+| **Pathing** | (e.g., Pathlib / Absolute Paths) |
+| **Error Handling** | (e.g., EAFP with custom Exception classes) |
+| **Output** | (e.g., JSON for machines, Rich for humans) |
+| **Dependencies** | (e.g., Standard library + Pydantic) |
+| **Linting** | (e.g., PEP8 strict) |
+
+---
+
+### Why this works
+By providing these categories, you are essentially creating a **"Logic Sandbox."** 
+
+Without these, the AI sees a "blank canvas" and chooses the most statistically probable path, which changes every time you send a new prompt. With them, you are providing the **blueprints**, and the AI becomes a high-speed builder rather than an architect.
+
+
+---
+
+# 📜 CLI App Development: Master Style & Logic Schema
+
+> **Purpose:** To eliminate architectural drift and ensure all generated Python scripts maintain a unified structure, logic, and user experience.
+
+## 1. Core Architecture & Paradigm
+* **Primary Paradigm:** (e.g., Object-Oriented, Procedural, or Functional)
+* **State Management:** (e.g., Class-based `self` attributes vs. Global variables vs. Passing state via function arguments)
+* **Concurrency Model:** (e.g., Synchronous/Blocking vs. `asyncio` Non-blocking)
+
+## 2. Interface & User Experience (CLI)
+* **Library Preference:** (e.g., `argparse`, `Click`, or `Typer`)
+* **Output Style:** * **Human-Facing:** (e.g., `Rich` for tables/colors, plain `print`, or progress bars)
+    * **Machine-Facing:** (e.g., Support for `--json` flag to allow piping data)
+* **Command Structure:** (e.g., Subcommands like `app.py install` vs. single-purpose flags)
+
+## 3. Logic & Error Handling
+* **Error Philosophy:** * **EAFP:** (Easier to Ask Forgiveness) Use `try/except` blocks.
+    * **LBYL:** (Look Before You Leap) Use `if os.path.exists()` checks.
+* **Branching Logic:** (e.g., Strict `if/elif/else` vs. Dictionary Mapping/Dispatch tables)
+* **Validation:** (e.g., Manual input cleaning vs. `Pydantic` schema enforcement)
+
+## 4. File & Data Handling
+* **Pathing Engine:** (e.g., `pathlib.Path` is required over `os.path`)
+* **Directory Context:** (e.g., Paths should be relative to: Script location, User Home, or Current Working Directory)
+* **Data Serialization:** (e.g., JSON, YAML, or TOML)
+* **Encoding:** (e.g., Force `UTF-8` for all file operations)
+
+## 5. Development Standards (The "Look")
+* **Naming Conventions:**
+    * **Variables/Functions:** `snake_case`
+    * **Classes:** `PascalCase`
+    * **Constants:** `UPPER_SNAKE_CASE`
+    * **Private Members:** Prefix with `_single_underscore`
+* **Type Hinting:** (e.g., PEP 484 required for all function signatures)
+* **Documentation:** (e.g., Google Style docstrings, NumPy style, or inline comments only)
+* **Dependency Policy:** (e.g., Standard Library only vs. Specific allowed third-party packages)
+
+## 6. Logging & Debugging
+* **Audit Trail:** (e.g., No log file vs. Rotating `.log` file in `/logs` folder)
+* **Verbosity:** (e.g., Support for `--verbose` or `--debug` flags)
+* **Logging Level:** (e.g., Default to `INFO`, switch to `DEBUG` on error)
+
+---
+
+### 🛠 How to Use This Checklist with an AI
+To get the best results, copy the following "Implementation Directive" and fill in your choices from the categories above:
+
+> **AI Directive:**
+> "I am building a CLI application. Use the following standards for all code generation to ensure alignment with my existing codebase:
+> * **Paradigm:** [Insert Choice]
+> * **CLI Library:** [Insert Choice]
+> * **Pathing:** Always use `pathlib`.
+> * **Error Handling:** Use [EAFP/LBYL] style.
+> * **Casing:** `snake_case` for functions, `PascalCase` for classes.
+> * **Constraints:** [e.g., No third party libraries except 'Rich']
+> 
+> Do not deviate from these standards or guess alternatives."
+
+Would you like me to help you fill in the "Recommended" settings for a modern, professional-grade CLI app based on current industry best practices?
+
+Here is the expanded, robust **V2 Master Checklist**.
+
+---
+
+# 📜 CLI App Development: Exhaustive Style & Logic Schema
+
+> **Purpose:** To serve as the definitive "Source of Truth" for AI code generation, eliminating architectural drift, securing data handling, and enforcing strict development lifecycles.
+
+## 1. Core Architecture & Paradigm
+* **Primary Paradigm:** (e.g., Object-Oriented, Procedural, Functional)
+* **State Management:** (e.g., Class instances, Context Managers, Global configuration objects)
+* **Concurrency Model:** (e.g., Synchronous, `asyncio`/`aiohttp`, Threading, or Multiprocessing)
+* **Cross-Platform Compatibility:** (e.g., Strict agnostic code, or OS-specific branching using `sys.platform`)
+
+## 2. Interface & User Experience (CLI)
+* **Library Preference:** (e.g., `Typer` [Modern/Type-driven], `Click` [Robust], `argparse` [Built-in])
+* **Command Structure:** (e.g., Nested subcommands vs. Flat flags)
+* **Output Standards:**
+    * **Human-Facing:** (e.g., `Rich` for tables, colors, and progress spinners)
+    * **Machine-Facing:** (e.g., Require a `--json` or `--quiet` flag that suppresses all formatting for pipeline compatibility)
+* **Help Text:** (e.g., Require descriptive `help=` arguments for every CLI parameter)
+
+## 3. Logic & Error Handling
+* **Error Philosophy:** EAFP (`try/except`) vs. LBYL (`if/else` checks)
+* **Exception Hierarchy:** (e.g., Require custom exception classes inheriting from a base `MyAppError` rather than raising generic `Exceptions`)
+* **Graceful Exits:** (e.g., Always use `sys.exit(0)` for success and `sys.exit(1)` for failures, capturing `KeyboardInterrupt` to avoid ugly stack traces)
+
+## 4. File, Data & Memory Handling
+* **Pathing Engine:** Strict use of `pathlib.Path` (Ban `os.path`).
+* **Directory Context:** Standardized resolution for config files (e.g., `~/.config/myapp/` vs. `./.env`).
+* **Data Serialization:** (e.g., `JSON`, `YAML`, `TOML`)
+* **Atomic Operations:** (e.g., Require writing to temporary files before replacing the target file to prevent data corruption during crashes)
+* **Resource Cleanup:** (e.g., Mandatory use of `with` context managers for files and network sessions)
+
+## 5. Security & Credential Management *(NEW)*
+* **Secrets Handling:** (e.g., Read from environment variables using `os.getenv`, NEVER hardcode APIs)
+* **Environment Loader:** (e.g., Use `python-dotenv` or `pydantic-settings` to load `.env` files)
+* **Subprocess Execution:** (e.g., Strict use of `subprocess.run` with `shell=False` to prevent shell injection attacks)
+
+## 6. Environment & Package Management *(NEW)*
+* **Package Manager:** (e.g., `Poetry`, `uv`, `Pipenv`, or standard `pip`)
+* **Dependency File:** (e.g., `pyproject.toml`, `requirements.txt`)
+* **Third-Party Policy:** (e.g., "Use standard library where possible; Pydantic and Rich are the only approved external libraries")
+
+## 7. Development Standards & Linting
+* **Type Hinting:** Strict PEP 484 compliance. (e.g., No `Any` types allowed, require `Optional` or `|` unions).
+* **Formatter/Linter:** (e.g., Code must conform to `Black` formatting and `Ruff` or `Flake8` linting rules).
+* **Naming Conventions:**
+    * Variables/Functions: `snake_case`
+    * Classes: `PascalCase`
+    * Constants: `UPPER_SNAKE_CASE`
+    * Private Members: `_single_leading_underscore`
+* **Docstrings:** (e.g., Google Style, Sphinx, NumPy)
+
+## 8. Testing Strategy *(NEW)*
+* **Test Framework:** (e.g., `pytest` vs `unittest`)
+* **Mocking:** (e.g., Use `pytest-mock` or `unittest.mock` for all network calls and file I/O)
+* **Test Location:** (e.g., Sibling `tests/` directory vs. inline)
+
+## 9. Logging, Auditing & Telemetry
+* **Logging Library:** Built-in `logging` or third-party like `Loguru`.
+* **Audit Trail Strategy:**
+    * **Format:** Plain text for console, JSON Lines (`.jsonl`) for file logs.
+    * **Rotation:** (e.g., Rotate logs daily or at 5MB limits using `RotatingFileHandler`).
+* **Verbosity:** Default to `INFO`. Implement `-v` (DEBUG) and `-q` (WARNING/ERROR only) flags.
+
+---
+
+### 🛠 The "AI Configuration Block"
+
+To actually use this, passing the massive list above to an AI every time will eat up your context window. Instead, you fill out this compressed block once, save it as a text snippet, and paste it at the top of every prompt you write.
+
+> **System Directive: CLI App Constraints**
+> Generate all Python code adhering strictly to the following constraints. Do not deviate, guess, or use unapproved libraries.
+> 
+> * **Architecture:** Object-Oriented, `asyncio` for network calls.
+> * **CLI Engine:** `Typer` (require `--json` output flag on all commands).
+> * **Environment:** `pyproject.toml` (Poetry). Approved third-party libs: `Typer`, `Rich`, `Pydantic`.
+> * **Typing & Linting:** Strict PEP 484 (No `Any`). Conform to `Ruff` and `Black`.
+> * **Error Handling:** EAFP. Catch `KeyboardInterrupt` silently. Use custom exception classes. 
+> * **Security:** Load secrets via `python-dotenv`. `shell=False` for all subprocesses.
+> * **File I/O:** `pathlib.Path` ONLY. Use `with` context managers.
+> * **Testing:** Write corresponding `pytest` functions using `pytest-mock` for side effects.
+> * **Logging:** Use `Loguru`, default `INFO` level, output JSON to `~/.config/myapp/logs/`.
+
+---
+

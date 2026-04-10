@@ -1,0 +1,1111 @@
+enums:
+  null_policy:
+  - allow_null
+  - forbid_null
+  - conditional
+  update_policy:
+  - immutable
+  - recompute_on_scan
+  - recompute_on_build
+  - manual_patch_only
+  - manual_or_automated
+  - normalize_on_ingest
+  writable_by:
+  - tool_only
+  - user_only
+  - both
+  - never
+  merge_strategy:
+  - replace
+  - set_union
+  - append_unique
+  - object_merge
+policy_id: UNIFIED_SSOT_REGISTRY_WRITE_POLICY
+validation:
+  consistency:
+    filesystem_primitives:
+    - size_bytes
+    - mtime_utc
+    - sha256
+    rule: Columns with recompute_on_* must have derivation entry OR be filesystem
+      primitive
+    on_violation: fail
+  completeness:
+    rule: Every column in registry schema must have exactly one entry
+    on_violation: fail
+  alignment:
+    rule: 'Derived columns must be writable_by: tool_only'
+    exceptions:
+    - entity_kind
+    - layer
+    - bundle_role
+    - bundle_key
+    - artifact_kind
+    - canonicality
+    - status
+    on_violation: warn
+version: 1.0.0
+status: authoritative
+applies_to_registry: UNIFIED_SSOT_REGISTRY.json
+generated_utc: 2026-01-29 00:00:00+00:00
+promotion_blockers:
+  - blocker_id: FILE_ID_MISMATCH
+    affects: all py_* columns
+    description: >
+      Pipeline sets file_id = content_sha256 (64-char hex).
+      Registry expects 20-digit numeric ID from ALLOCATE_FILE_ID().
+      A mapping/lookup layer is required before any py_* values
+      can be promoted to registry records.
+    status: open
+    cross_ref: PY_COLUMN_PIPELINE_MAPPING.md § Critical Integration Gap
+columns:
+  dir_id:
+    rationale: 20-digit unique directory identifier, null for files
+    null_policy: conditional
+    update_policy: immutable
+    writable_by: tool_only
+  depth:
+    rationale: Directory depth in tree (0=root)
+    null_policy: forbid_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  zone:
+    rationale: Governance zone (staging/governed/excluded)
+    null_policy: forbid_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  parent_dir_id:
+    rationale: Parent directory's dir_id
+    null_policy: conditional
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  owning_dir_id:
+    rationale: Directory that owns this entity
+    null_policy: conditional
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  validation_rules:
+    rationale: Manual patching required for complex field
+    merge_strategy: set_union
+    writable_by: both
+    null_policy: allow_null
+    update_policy: manual_patch_only
+  last_seen_utc:
+    rationale: Most recent scan timestamp
+    null_policy: forbid_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  target_file_id:
+    rationale: Target of relationship
+    null_policy: conditional
+    update_policy: immutable
+    writable_by: tool_only
+  bundle_role_inferred:
+    rationale: Shadow column computed from derivation
+    update_policy: recompute_on_scan
+  primary_geu_id:
+    rationale: Primary GEU assignment
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  coverage_status:
+    rationale: Test coverage status
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  description:
+    rationale: Full description
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  source_registry_scan_id:
+    rationale: Source scan for derived artifacts
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+  ns_code:
+    rationale: Manual patching required for complex field
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  rule_based:
+    rationale: True if governed by rule-based inference
+    null_policy: forbid_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  process_id:
+    rationale: Associated process ID
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  record_id:
+    rationale: Universal record identifier across all record kinds
+    null_policy: forbid_null
+    update_policy: immutable
+    writable_by: tool_only
+  one_line_purpose:
+    rationale: Single-line purpose statement
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  superseded_by:
+    rationale: Superseding entity reference
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  bundle_role_source:
+    rationale: Shadow column computed from derivation
+    update_policy: recompute_on_scan
+  edge_type:
+    rationale: Edge classification
+    null_policy: conditional
+    update_policy: immutable
+    writable_by: tool_only
+  ttl_seconds:
+    rationale: Manual patching required for complex field
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  inputs:
+    rationale: Manual patching required for complex field
+    merge_strategy: set_union
+    writable_by: both
+    null_policy: allow_null
+    update_policy: manual_patch_only
+  module_id_override:
+    rationale: User override for module assignment
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: user_only
+  path_aliases:
+    rationale: Manual patching required for complex field
+    merge_strategy: set_union
+    writable_by: both
+    null_policy: allow_null
+    update_policy: manual_patch_only
+  artifact_kind_source:
+    rationale: Shadow column computed from derivation
+    update_policy: recompute_on_scan
+  entity_kind:
+    rationale: Entity subtype classification
+    null_policy: conditional
+    update_policy: manual_or_automated
+    writable_by: both
+  function_code_1:
+    rationale: Manual patching required for complex field
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  is_generated:
+    rationale: True if file is a generated artifact
+    null_policy: forbid_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  size_bytes:
+    rationale: File size in bytes, null for directories
+    null_policy: conditional
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  deliverables:
+    rationale: Manual patching required for complex field
+    merge_strategy: set_union
+    writable_by: both
+    null_policy: allow_null
+    update_policy: manual_patch_only
+  directionality:
+    rationale: Relationship direction
+    null_policy: conditional
+    update_policy: immutable
+    writable_by: tool_only
+  observed_utc:
+    rationale: Event observation timestamp
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  sort_rule_id:
+    rationale: Sorting rule assignment
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  report_outputs:
+    rationale: Report output references
+    merge_strategy: set_union
+    writable_by: tool_only
+    null_policy: allow_null
+    update_policy: recompute_on_build
+  schema_version:
+    rationale: Schema version for this record
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  depends_on_file_ids:
+    rationale: File dependencies
+    merge_strategy: set_union
+    writable_by: tool_only
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+  canonicality_source:
+    rationale: Shadow column computed from derivation
+    update_policy: recompute_on_scan
+  asset_family:
+    rationale: Manual patching required for complex field
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  geu_type_slot_matrix:
+    rationale: GEU type-slot matrix
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+  column_headers:
+    rationale: Column header list
+    merge_strategy: set_union
+    writable_by: tool_only
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+  validator_id:
+    rationale: Associated validator
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  rel_type:
+    rationale: Relationship type
+    null_policy: conditional
+    update_policy: immutable
+    writable_by: tool_only
+  target_entity_id:
+    rationale: Target entity
+    null_policy: conditional
+    update_policy: immutable
+    writable_by: tool_only
+  scope:
+    rationale: Manual patching required for complex field
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  bundle_version:
+    rationale: Bundle version
+    null_policy: conditional
+    update_policy: manual_patch_only
+    writable_by: both
+  file_id:
+    rationale: 20-digit unique file identifier, allocated once at discovery
+    null_policy: forbid_null
+    update_policy: immutable
+    writable_by: tool_only
+  relative_path:
+    rationale: Path relative to repo root
+    null_policy: forbid_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  updated_by:
+    rationale: Last updater
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  declared_dependencies:
+    rationale: Manual patching required for complex field
+    merge_strategy: set_union
+    writable_by: both
+    null_policy: allow_null
+    update_policy: manual_patch_only
+  layer:
+    rationale: Architecture layer assignment
+    null_policy: allow_null
+    update_policy: manual_or_automated
+    writable_by: both
+  output_path_pattern:
+    rationale: Manual patching required for complex field
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  extension:
+    rationale: File extension extracted from filename
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  output_kind:
+    rationale: Type of generated output
+    null_policy: conditional
+    update_policy: recompute_on_build
+    writable_by: tool_only
+  canonicality_inferred:
+    rationale: Shadow column computed from derivation
+    update_policy: recompute_on_scan
+  edge_flags:
+    rationale: Manual patching required for complex field
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  updated_utc:
+    rationale: Last modification timestamp
+    null_policy: forbid_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  entity_id:
+    rationale: Unique entity identifier for non-file records
+    null_policy: forbid_null
+    update_policy: immutable
+    writable_by: tool_only
+  contracts_produced:
+    rationale: Contracts this file produces
+    merge_strategy: set_union
+    writable_by: tool_only
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+  bundle_role:
+    rationale: Role within bundle
+    null_policy: conditional
+    update_policy: manual_or_automated
+    writable_by: both
+  created_utc:
+    rationale: Record creation timestamp
+    null_policy: forbid_null
+    update_policy: immutable
+    writable_by: tool_only
+  function_code_3:
+    rationale: Manual patching required for complex field
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  transient_type:
+    rationale: Transient record type
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  sha256:
+    rationale: Content hash, null for directories
+    null_policy: conditional
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  supersedes_entity_id:
+    rationale: Entity this supersedes
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: tool_only
+  step_refs:
+    rationale: Manual patching required for complex field
+    merge_strategy: set_union
+    writable_by: both
+    null_policy: allow_null
+    update_policy: manual_patch_only
+  source_registry_hash:
+    rationale: Registry hash at generation time
+    null_policy: conditional
+    update_policy: recompute_on_build
+    writable_by: tool_only
+  function_code_2:
+    rationale: Manual patching required for complex field
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  notes:
+    rationale: User notes and comments
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: user_only
+  template_ref_entity_id:
+    rationale: Template reference
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  bundle_id:
+    rationale: Unique bundle identifier
+    null_policy: conditional
+    update_policy: immutable
+    writable_by: tool_only
+  schema_based:
+    rationale: True if file has schema-based validation
+    null_policy: forbid_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  canonical_path:
+    rationale: Normalized path for cross-platform consistency
+    null_policy: forbid_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  layer_inferred:
+    rationale: Shadow column computed from derivation
+    update_policy: recompute_on_scan
+  geu_role:
+    rationale: GEU role assignment
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  artifact_kind:
+    rationale: Artifact classification (source, config, doc, etc.)
+    null_policy: allow_null
+    update_policy: manual_or_automated
+    writable_by: both
+  absolute_path:
+    rationale: Full filesystem path, updated on move/rename
+    null_policy: forbid_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  filename:
+    rationale: Basename derived from path
+    null_policy: forbid_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  files:
+    rationale: Manual patching required for complex field
+    merge_strategy: set_union
+    writable_by: both
+    null_policy: allow_null
+    update_policy: manual_patch_only
+  tags:
+    rationale: Manual patching required for complex field
+    merge_strategy: set_union
+    writable_by: both
+    null_policy: allow_null
+    update_policy: manual_patch_only
+  optional_roles:
+    rationale: Manual patching required for complex field
+    merge_strategy: set_union
+    writable_by: both
+    null_policy: allow_null
+    update_policy: manual_patch_only
+  evidence:
+    rationale: Evidence object
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  first_seen_utc:
+    rationale: Discovery timestamp, never changes
+    null_policy: forbid_null
+    update_policy: immutable
+    writable_by: tool_only
+  geu_role_definitions:
+    rationale: GEU role definition lookup
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+  entries:
+    rationale: Manual patching required for complex field
+    merge_strategy: set_union
+    writable_by: both
+    null_policy: allow_null
+    update_policy: manual_patch_only
+  module_id_source:
+    rationale: Source of module_id (inferred vs override)
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  enforced_by_file_ids:
+    rationale: Enforcement sources
+    merge_strategy: set_union
+    writable_by: tool_only
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+  generated_by_file_id:
+    rationale: Source file that generated this
+    null_policy: conditional
+    update_policy: recompute_on_build
+    writable_by: tool_only
+  edges:
+    rationale: Edge collection
+    merge_strategy: set_union
+    writable_by: tool_only
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+  required_roles:
+    rationale: Manual patching required for complex field
+    merge_strategy: set_union
+    writable_by: both
+    null_policy: allow_null
+    update_policy: manual_patch_only
+  layer_source:
+    rationale: Shadow column computed from derivation
+    update_policy: recompute_on_scan
+  expires_utc:
+    rationale: Manual patching required for complex field
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  entrypoint_flag:
+    rationale: True if file is an entrypoint
+    null_policy: forbid_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  evidence_outputs:
+    rationale: Evidence output references
+    merge_strategy: set_union
+    writable_by: tool_only
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+  generated:
+    rationale: True if artifact was generated by a tool
+    null_policy: forbid_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+  process_step_role:
+    rationale: Role in process step
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  entity_kind_inferred:
+    rationale: Shadow column computed from derivation
+    update_policy: recompute_on_scan
+  anchor_file_id:
+    rationale: Anchor file reference
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  evidence_method:
+    rationale: How evidence was collected
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  enforced_by:
+    rationale: Enforcement mechanism
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  collected_by:
+    rationale: Collection source
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  bundle_key:
+    rationale: Bundle grouping key
+    null_policy: conditional
+    update_policy: manual_or_automated
+    writable_by: both
+  generated_at:
+    rationale: Generation timestamp for derived artifacts
+    null_policy: conditional
+    update_policy: recompute_on_build
+    writable_by: tool_only
+  status:
+    rationale: Lifecycle status
+    null_policy: forbid_null
+    update_policy: manual_or_automated
+    writable_by: both
+  sort_keys:
+    rationale: Sort key values
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  created_by:
+    rationale: Creator identifier
+    null_policy: allow_null
+    update_policy: immutable
+    writable_by: tool_only
+  required_suite_key:
+    rationale: Required test suite
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  mtime_utc:
+    rationale: Filesystem mtime
+    null_policy: conditional
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  generator_id:
+    rationale: Generator that produced this artifact
+    null_policy: conditional
+    update_policy: recompute_on_build
+    writable_by: tool_only
+  allocated_at:
+    rationale: Timestamp when ID was allocated
+    null_policy: forbid_null
+    update_policy: immutable
+    writable_by: tool_only
+  status_source:
+    rationale: Shadow column computed from derivation
+    update_policy: recompute_on_scan
+  is_shared:
+    rationale: True if file is shared across modules
+    null_policy: forbid_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  resolver_hint:
+    rationale: Manual patching required for complex field
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  repo_root_id:
+    rationale: Looked up from repo roots config
+    null_policy: forbid_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  status_inferred:
+    rationale: Shadow column computed from derivation
+    update_policy: recompute_on_scan
+  entity_kind_source:
+    rationale: Shadow column computed from derivation
+    update_policy: recompute_on_scan
+  source_file_id:
+    rationale: Source of relationship
+    null_policy: conditional
+    update_policy: immutable
+    writable_by: tool_only
+  enforces:
+    rationale: What this enforces
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  asset_id:
+    rationale: Asset registry lookup
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  metadata:
+    rationale: Manual patching required for complex field
+    merge_strategy: object_merge
+    writable_by: both
+    null_policy: allow_null
+    update_policy: manual_patch_only
+  directory_path:
+    rationale: Parent directory path
+    null_policy: forbid_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  enforces_rule_ids:
+    rationale: Rules this file enforces
+    merge_strategy: set_union
+    writable_by: tool_only
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+  extract:
+    rationale: Extracted content
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  has_tests:
+    rationale: True if file has associated test coverage
+    null_policy: forbid_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  evidence_type:
+    rationale: Evidence classification
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  generator_name:
+    rationale: Generator tool name
+    null_policy: conditional
+    update_policy: recompute_on_build
+    writable_by: tool_only
+  evidence_snippet:
+    rationale: Evidence excerpt
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  contracts_consumed:
+    rationale: Contracts this file consumes
+    merge_strategy: set_union
+    writable_by: tool_only
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+  type_code:
+    rationale: Manual patching required for complex field
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  data_transformation:
+    rationale: Transformation metadata if applicable
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  runner_based:
+    rationale: True if file is a test runner
+    null_policy: forbid_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  geu_ids:
+    rationale: All associated GEU IDs
+    merge_strategy: set_union
+    writable_by: tool_only
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+  last_build_utc:
+    rationale: Last build timestamp
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+  governance_domain:
+    rationale: Looked up from governance rules
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  bundle_key_inferred:
+    rationale: Shadow column computed from derivation
+    update_policy: recompute_on_scan
+  bundle_key_source:
+    rationale: Shadow column computed from derivation
+    update_policy: recompute_on_scan
+  external_ref:
+    rationale: Manual patching required for complex field
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  edge_id:
+    rationale: Unique edge identifier for relationship records
+    null_policy: conditional
+    update_policy: immutable
+    writable_by: tool_only
+  asset_version:
+    rationale: Manual patching required for complex field
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  generator_version:
+    rationale: Generator version
+    null_policy: conditional
+    update_policy: recompute_on_build
+    writable_by: tool_only
+  module_id:
+    rationale: Inferred module membership
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  source_entity_id:
+    rationale: Source entity
+    null_policy: conditional
+    update_policy: immutable
+    writable_by: tool_only
+  evidence_only:
+    rationale: True if record exists only as evidence
+    null_policy: forbid_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  output_path:
+    rationale: Path to generated output
+    null_policy: conditional
+    update_policy: recompute_on_build
+    writable_by: tool_only
+  confidence:
+    rationale: Confidence score for inferred values
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  scan_id:
+    rationale: Current scan identifier
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  outputs:
+    rationale: Manual patching required for complex field
+    merge_strategy: set_union
+    writable_by: both
+    null_policy: allow_null
+    update_policy: manual_patch_only
+  role_code:
+    rationale: Manual patching required for complex field
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  content_type:
+    rationale: MIME type detection
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  test_file_ids:
+    rationale: Associated test files
+    merge_strategy: set_union
+    writable_by: tool_only
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+  output_hash:
+    rationale: Hash of generated output
+    null_policy: conditional
+    update_policy: recompute_on_build
+    writable_by: tool_only
+  input_filters:
+    rationale: Manual patching required for complex field
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  short_description:
+    rationale: Brief description
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  evidence_locator:
+    rationale: Evidence location reference
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  target_schema_id:
+    rationale: Target schema reference
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  build_report_entity_id:
+    rationale: Build report reference
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+  is_directory:
+    rationale: Boolean flag from filesystem stat
+    null_policy: forbid_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  record_kind:
+    rationale: 'Record type: file, entity, relationship, metadata'
+    null_policy: forbid_null
+    update_policy: immutable
+    writable_by: tool_only
+  tool_version:
+    rationale: Tool version that processed this
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  external_system:
+    rationale: Manual patching required for complex field
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  owner_geu_id:
+    rationale: Owning GEU
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  role:
+    rationale: Manual patching required for complex field
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+  transient_id:
+    rationale: Transient operation ID
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  process_step_id:
+    rationale: Associated process step
+    null_policy: allow_null
+    update_policy: recompute_on_scan
+    writable_by: tool_only
+  artifact_kind_inferred:
+    rationale: Shadow column computed from derivation
+    update_policy: recompute_on_scan
+  canonicality:
+    rationale: Canonical vs derived/copy status
+    null_policy: allow_null
+    update_policy: manual_patch_only
+    writable_by: both
+
+  py_capability_facts_hash:
+    rationale: SHA-256 hash of capability facts extracted from Python file
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_capability_tags:
+    rationale: Capability tags derived from Python code analysis
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+    merge_strategy: set_union
+
+  py_imports_hash:
+    rationale: SHA-256 hash of import dependency list from pipeline
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_complexity_cyclomatic:
+    rationale: Cyclomatic complexity value from ComplexityAnalyzerAdapter
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_deliverable_kinds:
+    rationale: Array of deliverable kind classifications
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_deliverable_signature_hash:
+    rationale: Hash of deliverable interface signature
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_ast_dump_hash:
+    rationale: SHA-256 hash of AST dump for structural comparison
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_ast_parse_ok:
+    rationale: Boolean indicating whether AST parsed successfully
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_component_count:
+    rationale: Count of classes + functions in file
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_defs_classes_count:
+    rationale: Count of class definitions in file
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_defs_functions_count:
+    rationale: Count of function definitions in file
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_deliverable_interfaces:
+    rationale: Flattened array of interface descriptors (classes + functions)
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_imports_local:
+    rationale: List of local/relative import module names
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_imports_stdlib:
+    rationale: List of standard library import module names
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_imports_third_party:
+    rationale: List of third-party/external import module names
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_io_surface_flags:
+    rationale: Derived flag array from io_surface analysis (HAS_NETWORK, etc.)
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_security_risk_flags:
+    rationale: Security risk flag array derived from security_calls analysis
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_analysis_run_id:
+    rationale: Run-level identifier for the analysis batch
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_analysis_success:
+    rationale: Per-file analysis success flag
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_analyzed_at_utc:
+    rationale: UTC timestamp of per-file analysis
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_canonical_candidate_score:
+    rationale: Batch-computed canonical ranking score
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_canonical_text_hash:
+    rationale: Hash of normalized text for deduplication
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_component_artifact_path:
+    rationale: Path to evidence artifact from component extraction
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_component_ids:
+    rationale: Stable component identifiers from component_extractor
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_coverage_percent:
+    rationale: Test coverage percentage from pytest+coverage
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_defs_public_api_hash:
+    rationale: Hash of public API surface for change detection
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_deliverable_inputs:
+    rationale: Input dependency patterns from deliverable analysis
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_deliverable_outputs:
+    rationale: Output patterns from deliverable analysis
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_overlap_best_match_file_id:
+    rationale: File ID of best pairwise similarity match
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_overlap_group_id:
+    rationale: Cluster group ID from similarity analysis
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_overlap_similarity_max:
+    rationale: Maximum pairwise similarity score
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_pytest_exit_code:
+    rationale: Exit code from pytest execution
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_quality_score:
+    rationale: Composite quality score from multiple inputs
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_static_issues_count:
+    rationale: Count of static analysis issues from linter
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_tests_executed:
+    rationale: Count of tests executed by pytest
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+
+  py_tool_versions:
+    rationale: Toolchain version metadata object (Python, pytest, ruff, etc.)
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only
+    merge_strategy: object_merge
+
+  py_toolchain_id:
+    rationale: Toolchain identifier for reproducibility
+    null_policy: allow_null
+    update_policy: recompute_on_build
+    writable_by: tool_only

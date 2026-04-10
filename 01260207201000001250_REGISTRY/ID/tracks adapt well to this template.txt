@@ -1,0 +1,638 @@
+ Yes — both tracks adapt well to this template. Here's a precise assessment of fit, what maps cleanly, what requires
+  work, and what must be marked NOT_AUTOMATABLE.
+
+  ---
+  Template Classification: Enterprise
+
+  The template's own classification rules put this at enterprise:
+  - file_count > 30 (163 files in scope for Track A alone)
+  - requires_contracts (both tracks are contract-driven)
+  - verification_level: 3, test_coverage_min: 95
+
+  Enterprise phases: bootstrap → architecture → contracts → implement_parallel → integration → hardening → package
+
+  ---
+  Two Tracks Map to Different Phase Groups
+
+  The work has two independent tracks that must be declared in the template's phase_dag section with an explicit
+  dependency:
+
+  ┌────────────────────┬─────────────────────────────────────┬──────────────────────────────────────────────────────┐
+  │   Template Phase   │  Track A (govreg-remediate naming)  │             Track B (runtime authority)              │
+  ├────────────────────┼─────────────────────────────────────┼──────────────────────────────────────────────────────┤
+  │ bootstrap          │ Answer DQ-1 through DQ-7, lock      │ Decide unified vs two-orchestrator model             │
+  │                    │ contract                            │                                                      │
+  ├────────────────────┼─────────────────────────────────────┼──────────────────────────────────────────────────────┤
+  │ architecture       │ govreg-remediate phase plan +       │ Produce CANONICAL_AUTHORITY_MAP.json                 │
+  │                    │ dry-run                             │                                                      │
+  ├────────────────────┼─────────────────────────────────────┼──────────────────────────────────────────────────────┤
+  │ contracts          │ Collision resolution rules          │ execution_verification baseline for each role        │
+  ├────────────────────┼─────────────────────────────────────┼──────────────────────────────────────────────────────┤
+  │ implement_parallel │ phases 1-6 of govreg-remediate      │ Blocker remediation, broken imports, duplicate       │
+  │                    │                                     │ analysis                                             │
+  ├────────────────────┼─────────────────────────────────────┼──────────────────────────────────────────────────────┤
+  │ integration        │ Registry shape reconciliation       │ Orchestrator boundary resolution                     │
+  ├────────────────────┼─────────────────────────────────────┼──────────────────────────────────────────────────────┤
+  │ hardening          │ Gate wiring + pre-commit            │ AUTHORITY_ENFORCEMENT_TEST_PLAN.json                 │
+  │                    │ enforcement                         │                                                      │
+  ├────────────────────┼─────────────────────────────────────┼──────────────────────────────────────────────────────┤
+  │ package            │ Evidence bundle, rollback           │ AUDIT_V2_RESULT.json, final gap-closure report       │
+  │                    │ verification                        │                                                      │
+  └────────────────────┴─────────────────────────────────────┴──────────────────────────────────────────────────────┘
+
+  ---
+  What Maps Cleanly
+
+  govreg-remediate phases (Track A) fit step contracts almost exactly as-is:
+
+  - inputs: registry JSON, collision pair list, allocator counter store path
+  - outputs: renamed files, updated registry entries, rollback_manifest.json, phase1_reference_scan.json, evidence
+  - preconditions: test -f REGISTRY_file.json, allocator reachable, evidence dir writable
+  - postconditions: python scripts/check_no_duplicate_ids.py, grep -rn OLD_ID . | wc -l = 0
+  - failure_modes: already specified per phase (COLLISION_ALREADY_RESOLVED → exit 0, ALLOCATION_FAILED, etc.)
+  - rollback: per-phase rollback_manifest.json matches GATE-015 (Rollback Completeness)
+  - ground_truth_level: L2 for phases 1-4 (identity-critical), L1 for phases 5-6 (archival)
+
+  DQ-1 through DQ-7 map directly to the template's decision_ledger section — each design question becomes one
+  decision_id with options, selected_option, rationale, and timestamp.
+
+  The 9 required output files from the solution doc (CANONICAL_AUTHORITY_MAP.json, EXECUTION_VERIFICATION_REPORT.json,
+  etc.) map to the artifact_manifest section. Each is an artifact with an explicit producer step and consumer step,
+  which satisfies GATE-010 (Wiring Proof) and GATE-014 (Artifact Closure).
+
+  execution_verification fields from the solution doc (imports_resolve, runtime_exec_verified,
+  used_by_dominant_orchestrator, etc.) become step postconditions in Track B phases, expressed as executable shell
+  checks:
+
+  "postconditions": [
+    "python scripts/check_imports.py ID/1_runtime/watchers/P_01999000042260126000__idpkg_runtime.py",
+    "python scripts/check_used_by_orchestrator.py P_01999000042260126000__idpkg_runtime.py"
+  ]
+
+  ---
+  What Requires Explicit Adaptation
+
+  1. Self-healing failure types
+
+  The template's five defaults (DEP_INSTALL_FAIL, TEST_FAIL, LINT_FAIL, TYPE_CHECK_FAIL, INTEGRATION_TEST_FAIL) don't
+  match this domain. You need custom failure types added to self_healing.failure_types:
+
+  - REGISTRY_LOCK_FAIL — counter store locked or unreachable
+  - ALLOCATOR_UNAVAILABLE — unified allocator cannot be imported
+  - COLLISION_UNRESOLVED — phase 1 pre-check finds collision still exists after fix attempt
+  - IMPORT_BROKEN — broken import found during execution verification
+  - AUTHORITY_CONFLICT — two files found for same role after duplicate analysis
+
+  2. External file scope
+
+  gate_runner.py and enforcement_bridge.py are at C:\Users\richg\ALL_AI\GOVERNANCE\gates\ — outside this repo. The
+  template's file_scope.allowed_paths is repo-relative. The step that investigates those files needs either:
+  - an explicit allowed_paths entry with the absolute path, or
+  - a NOT_AUTOMATABLE marker with manual escalation
+
+  3. ID naming
+
+  The template enforces PLAN-*, PH-*, STEP-*, ART-* patterns via GATE-017 (Single Source of Truth). govreg-remediate's
+  phase names (phase1-collisions, phase2-identical, etc.) must be renamed to PH-A1, PH-A2, etc. in the plan JSON. The
+  human-readable labels can live in description fields.
+
+  4. Registry mutation in worktrees
+
+  The template isolates writes to worktrees. Phases that mutate REGISTRY_file.json (Track A phases 1-6, Track B's
+  registry shape reconciliation) need the registry file in the worktree's allowed_paths with an explicit merge strategy
+  — the template's default squash-merge must be verified safe for registry JSON.
+
+  ---
+  What Must Be Marked NOT_AUTOMATABLE
+
+  The template's critical_constraint.NO_IMPLIED_BEHAVIOR rule requires these items be explicitly flagged and escalated
+  to manual steps. They cannot be left as implied decisions:
+
+  ┌───────────────────────────────────────────────────┬─────────────────────────────────────────────────────────────┐
+  │                       Item                        │                     Why NOT_AUTOMATABLE                     │
+  ├───────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────┤
+  │ DQ-1: Which ID survives dual-ID filenames         │ Requires registry lookup result plus maintainer sign-off    │
+  │                                                   │ per file                                                    │
+  ├───────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────┤
+  │ DQ-3: Which file keeps P_01999000042260125106     │ Policy decision — git hook config must be checked first     │
+  ├───────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────┤
+  │ DQ-4: DOC-SCRIPT collision winners                │ Requires external evidence (commit history, allocation      │
+  │                                                   │ logs)                                                       │
+  ├───────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────┤
+  │ Orchestrator model choice (unified vs formal      │ Architectural decision, not resolvable by file inspection   │
+  │ handoff)                                          │                                                             │
+  ├───────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────┤
+  │ Whether DOC-* namespace is being retired          │ Affects Track A Phase 1 ID minting direction                │
+  ├───────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────┤
+  │ G5 SHA256 promotion authority                     │ Two conflicting implementations; resolution is a policy     │
+  │                                                   │ call                                                        │
+  └───────────────────────────────────────────────────┴─────────────────────────────────────────────────────────────┘
+
+  Each of these becomes a manual step in bootstrap with a decision_ledger entry required before the dependent phases can
+   run.
+
+  ---
+  Net Assessment
+
+  The adaptation is feasible and the template adds real value here:
+
+  - GATE-015 (Rollback Completeness) enforces the rollback_manifest requirement already planned
+  - GATE-010 (Wiring Proof) forces the 9 solution-doc output files to have declared producers and consumers — this
+  closes the "outputs exist as aspirations but not as artifacts" gap identified earlier
+  - The phase_dag enforces the dependency: Track B's DQ answers must be recorded before Track A Phase 1 can execute
+  - Step-level contracts force vague remediation steps ("verify imports resolve") into actual executable postconditions
+
+  The main effort is the custom failure types and translating the Track B verification steps (which are currently
+  described in prose in the solution doc) into executable shell commands for step preconditions/postconditions. That
+  translation is the hardest part — it requires knowing what scripts actually exist to run those checks.
+
+✻ Crunched for 1m 48s
+
+> generate an actual newPhasePlan JSON for this work
+
+● Let me read the remaining template sections I haven't seen yet before generating the plan.
+
+  Read 2 files (ctrl+o to expand)
+
+● Let me check for any existing plan JSON files in the project to use as structural reference.
+
+  Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+● Let me look at an existing plan to understand the actual output format used in this project.
+
+  Read 1 file (ctrl+o to expand)
+
+● Now I have everything I need. Let me generate the plan.
+
+● Agent(Generate Gov_Reg authority remediation plan JSON)
+  ⎿  Read(01260207201000001250_REGISTRY\ID\gap_closure_verification_report.json)
+     Read(01260207201000001250_REGISTRY\ID\GOV_REG_REMEDIATION_CLI_INSTRUCTION.md)
+     Bash(ls "C:/Users/richg/Gov_Reg/01260207201000001250_REGISTRY/ID/")
+     Running…
+     +8 more tool uses (ctrl+o to expand)
+     (ctrl+b to run in background)
+
+· Misting… (11m 50s · ↓ 3.0k tokens · thinking)
+  ⎿  Tip: Use /btw to ask a quick side question without interrupting Claude's current work
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+> 
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  ⏵⏵ bypass permissions on (shift+tab to cycle) · esc to interrupt
+ ▐▛███▜▌   Claude Code v2.1.88
+▝▜█████▛▘  Sonnet 4.6 · Claude Pro
+  ▘▘ ▝▝    ~\Gov_Reg
+
+✻ Conversation compacted (ctrl+o for history)
+
+
+> /compact
+  ⎿  Compacted (ctrl+o to see full summary)
+  ⎿  Referenced file
+     01260207201000001250_REGISTRY\ID\artifact_audit_result.json
+  ⎿  Referenced file 01260207201000001250_REGISTRY\ID\idproblems.md
+  ⎿  Referenced file 01260207201000001250_REGISTRY\ID\GOV_REG_REMEDIATIO
+     N_CLI_INSTRUCTION.md
+  ⎿  Read 01260207201000001250_REGISTRY\ID\id_doc_decision_matrix.json
+     (564 lines)
+  ⎿  Read 01260207201000001250_REGISTRY\ID\id_files_concept_parts.txt
+     (102 lines)
+
+> review these files and provide feedback: "C:\Users\richg\Gov_Reg\0126
+0207201000001250_REGISTRY\ID\GOV_REG_REMEDIATION_CLI_INSTRUCTION.md"
+"C:\Users\richg\Gov_Reg\01260207201000001250_REGISTRY\ID\gap_closure_ve
+rification_report.json"
+"C:\Users\richg\Gov_Reg\01260207201000001250_REGISTRY\ID\# Detailed
+Solution Document for CL.txt"
+"C:\Users\richg\Gov_Reg\01260207201000001250_REGISTRY\ID\This audit is
+useful, but it overst.txt"
+"C:\Users\richg\Gov_Reg\01260207201000001250_REGISTRY\ID\artifact_audit
+_result.json"
+"C:\Users\richg\Gov_Reg\01260207201000001250_REGISTRY\ID\idproblems.md"
+. these two files are the most recent problems  and soultions:
+"C:\Users\richg\Gov_Reg\01260207201000001250_REGISTRY\ID\# Detailed
+Solution Document for CL.txt"
+"C:\Users\richg\Gov_Reg\01260207201000001250_REGISTRY\ID\gap_closure_ve
+rification_report.json"
+
+● Let me read all 6 files, starting with the two most important ones in
+  parallel with the others.
+
+  Read 2 files (ctrl+o to expand)
+
+● Let me read the gap report in chunks and the other files in parallel.
+
+  Read 3 files (ctrl+o to expand)
+
+● Let me read the remaining portion of the gap report and the other
+  files.
+
+  Read 2 files (ctrl+o to expand)
+
+● Let me read the end of the gap_closure report to see the full
+  structure and final findings.
+
+  Read 1 file (ctrl+o to expand)
+
+● Let me check the final sections of the gap report.
+
+● Bash(python -c "
+      import json…)
+  ⎿  Top-level keys: ['search_objective', 'gaps', 'cross_cutting_fi
+     ndings', 'final_assessment']
+     Number of gaps: 7
+     … +99 lines (ctrl+o to expand)
+
+● I have a complete picture now. Here's my assessment.
+
+  ---
+  Overall Characterization
+
+  The six documents represent three layers of work: an original audit
+  (artifact_audit_result.json), a critique of that audit (This audit is
+  useful...), a solution specification (# Detailed Solution Document for
+   CL.txt), a gap verification attempt
+  (gap_closure_verification_report.json), and two operational
+  remediation specs (GOV_REG_REMEDIATION_CLI_INSTRUCTION.md,
+  idproblems.md).
+
+  The problem is that these layers aren't in sync with each other.
+
+  ---
+  What the Gap Closure Report Gets Right
+
+  gap_closure_verification_report.json is a meaningful improvement over
+  artifact_audit_result.json:
+
+  - gaps_truly_closed: [] — zero gaps are claimed closed. That is honest
+   and correct.
+  - Every closure_assessment.does_close_gap is false. No false optimism.
+  - G5 is classified conflicting rather than partial — that's a real
+  distinction and it's right.
+  - The cross_cutting_findings section correctly captures:
+  duplicate/shadow files, registry shape conflicts, identity contract
+  conflicts, and missing dependencies.
+  - The best_next_files_to_search list is specific and actionable.
+
+  ---
+  What the Gap Closure Report Misses
+
+  Problem 1: The gap report doesn't implement the solution document's
+  schema.
+
+  The solution doc (section 5.1–5.3) defined new vocabulary:
+  - candidate_found / implementation_verified / dominant_but_contested /
+   closure_not_proven / missing
+  - Split discovery_confidence vs canonicality_confidence
+  - Per-candidate execution_verification sub-object: imports_resolve,
+  runtime_exec_verified, used_by_dominant_orchestrator,
+  test_reference_found, contract_aligned, duplicate_shadow_absent
+
+  The gap report still uses: partial, missing, conflicting and a single
+  confidence field. None of the execution_verification sub-fields exist.
+   The solution document was written, but its schema wasn't applied to
+  the next output.
+
+  Problem 2: The final assessment doesn't use the hardened structure.
+
+  The solution doc's section 5.4 defined:
+  {
+    "has_dominant_runtime_nucleus": ...,
+    "has_uncontested_canonical_runtime": ...,
+    "has_multiple_competing_orchestrators": ...,
+    "orchestrator_integration_verified": ...,
+    "has_single_proven_registry_mutation_authority": ...
+  }
+
+  The gap report's final_assessment instead has: gaps_truly_closed,
+  gaps_still_open, gaps_blocked_by_conflict, best_next_files_to_search.
+  That's useful, but it's a different schema — the original
+  contradiction (has_single_canonical_runtime: true with
+  has_single_canonical_orchestrator: false) is not explicitly resolved
+  or replaced.
+
+  Problem 3: The two "CLI" documents solve different problems.
+
+  This is easy to miss and important:
+
+  Document: GOV_REG_REMEDIATION_CLI_INSTRUCTION.md
+  Track: A — File Identity
+  Problem solved: Naming collisions, duplicate files, dual-ID filenames,
+
+    ungoverned files
+  ────────────────────────────────────────
+  Document: # Detailed Solution Document for CL.txt
+  Track: B — Runtime Authority
+  Problem solved: Broken imports, competing implementations, missing
+    components, single-writer proof
+
+  Both are real and both are needed, but they are independent. Track A
+  (govreg-remediate) is about cleaning up file naming across 163 Python
+  files. Track B is about proving which runtime files are actually
+  authoritative. Nothing in the gap report or solution doc acknowledges
+  this distinction explicitly, which risks someone implementing Track A
+  and thinking they've addressed Track B.
+
+  Problem 4: Key output files from the solution doc still don't exist.
+
+  Section 14 of the solution doc lists 9 required outputs. None of them
+  have been produced:
+  - CANONICAL_AUTHORITY_MAP.json — most important, still absent
+  - EXECUTION_VERIFICATION_REPORT.json — absent
+  - BLOCKER_REMEDIATION_REPORT.json — absent
+  - DUPLICATE_ROLE_ANALYSIS.json — absent
+  - etc.
+
+  The gap report is a useful intermediate artifact, but it isn't one of
+  those 9 outputs, and the 9 outputs aren't acknowledged as the
+  deliverables yet.
+
+  Problem 5: External files are in the search list but not investigated.
+
+  gap_closure_verification_report.json lists
+  C:\Users\richg\ALL_AI\GOVERNANCE\gates\gate_runner.py and
+  enforcement_bridge.py as most_likely_real_but_unsurfaced_files. These
+  are outside this repo entirely. G2 (Single Canonical Gate Runner) and
+  G1 (Orchestrator) both depend on whether those files exist and whether
+   they can serve as the shared enforcement layer. The gap report
+  doesn't resolve this — it defers it.
+
+  ---
+  What the Solution Document Gets Right
+
+  # Detailed Solution Document for CL.txt is the strongest document in
+  this set. It:
+
+  - Correctly diagnoses all the audit's failure modes (sections 2.1–2.4)
+  - Provides a complete hardened schema (section 15) with all the
+  improvements the critique asked for
+  - Defines a clear 9-phase execution order
+  - Lists 17 non-negotiable rules that would prevent the original
+  audit's errors from recurring
+  - Defines the CANONICAL_AUTHORITY_MAP.json structure with worked
+  example
+
+  The gap is that it's a specification, not an implementation. It
+  describes what the CLI must do, but nothing in the folder shows the
+  CLI exists yet.
+
+  ---
+  What the Remediation CLI Instruction Gets Right
+
+  GOV_REG_REMEDIATION_CLI_INSTRUCTION.md is well-scoped and concrete:
+
+  - DQ-1 through DQ-7 are clearly defined with options and recommended
+  defaults
+  - The 6-phase structure is idempotent and sequenced correctly
+  (collisions first, then identical duplicates, then diverged forks,
+  etc.)
+  - The dry-run output format is specified precisely
+  - Rollback semantics are per-phase, which is the right granularity
+  (DQ-7 answer is baked in)
+
+  One concern: it references doc_id_registry_cli.py mint in Phase 1 step
+   2 as the DOC-SCRIPT minting mechanism. The gap report and audit both
+  flag DOC-* as a competing/conflicting branch. If the solution is to
+  converge on 20-digit file_id as canonical, then minting new DOC-SCRIPT
+   IDs for the reassigned collision files may be moving the wrong
+  direction. This deserves explicit acknowledgment.
+
+  ---
+  Priority Order for Next Steps
+
+  Given the current state, the highest-value actions in order:
+
+  1. Check the external files now:
+  C:\Users\richg\ALL_AI\GOVERNANCE\gates\gate_runner.py and
+  enforcement_bridge.py. G2 cannot be assessed until those are read. If
+  they exist and are functional, several gaps change status immediately.
+  2. Apply the solution doc's schema to produce
+  CANONICAL_AUTHORITY_MAP.json: This is the single most decision-useful
+  artifact that doesn't exist yet. It forces every role to have exactly
+  one file assigned and makes all contested/partial findings explicit.
+  3. Decide whether Track A (govreg-remediate) depends on Track B
+  decisions: Specifically, Phase 1 of Track A mints new DOC-SCRIPT IDs.
+  If the runtime authority decision (Track B) concludes that the DOC-*
+  namespace is being retired, Phase 1 should allocate P_ IDs for the
+  collision reassignments instead. These two tracks need an explicit
+  dependency statement.
+  4. Answer DQ-1 through DQ-7 before any Track A execution:
+  idproblems.md correctly identifies this as the prerequisite. Nothing
+  in the gap report changes this.
+
+✻ Worked for 1m 44s
+
+> › can the modifications this plan proposes and your recommendations
+be adapted to be expressed in this planning template: "C:
+  \Users\richg\Gov_Reg\newPhasePlanProcess\01260207201000000510_NEWPHAS
+EPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3.json"
+  "C:\Users\richg\Gov_Reg\newPhasePlanProcess\01260207201000000180_NEWP
+HASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3.json"
+
+  Read 2 files (ctrl+o to expand)
+
+● Let me read the actual phase/step structure examples from the
+  template.
+
+  Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+● Yes — both tracks adapt well to this template. Here's a precise
+  assessment of fit, what maps cleanly, what requires work, and what
+  must be marked NOT_AUTOMATABLE.
+
+  ---
+  Template Classification: Enterprise
+
+  The template's own classification rules put this at enterprise:
+  - file_count > 30 (163 files in scope for Track A alone)
+  - requires_contracts (both tracks are contract-driven)
+  - verification_level: 3, test_coverage_min: 95
+
+  Enterprise phases: bootstrap → architecture → contracts →
+  implement_parallel → integration → hardening → package
+
+  ---
+  Two Tracks Map to Different Phase Groups
+
+  The work has two independent tracks that must be declared in the
+  template's phase_dag section with an explicit dependency:
+
+  ┌────────────────┬───────────────┬───────────────────────────────┐
+  │                │ Track A (govr │                               │
+  │ Template Phase │ eg-remediate  │  Track B (runtime authority)  │
+  │                │    naming)    │                               │
+  ├────────────────┼───────────────┼───────────────────────────────┤
+  │                │ Answer DQ-1   │                               │
+  │ bootstrap      │ through DQ-7, │ Decide unified vs             │
+  │                │  lock         │ two-orchestrator model        │
+  │                │ contract      │                               │
+  ├────────────────┼───────────────┼───────────────────────────────┤
+  │                │ govreg-remedi │                               │
+  │ architecture   │ ate phase     │ Produce                       │
+  │                │ plan +        │ CANONICAL_AUTHORITY_MAP.json  │
+  │                │ dry-run       │                               │
+  ├────────────────┼───────────────┼───────────────────────────────┤
+  │                │ Collision     │ execution_verification        │
+  │ contracts      │ resolution    │ baseline for each role        │
+  │                │ rules         │                               │
+  ├────────────────┼───────────────┼───────────────────────────────┤
+  │ implement_para │ phases 1-6 of │ Blocker remediation, broken   │
+  │ llel           │  govreg-remed │ imports, duplicate analysis   │
+  │                │ iate          │                               │
+  ├────────────────┼───────────────┼───────────────────────────────┤
+  │                │ Registry      │ Orchestrator boundary         │
+  │ integration    │ shape reconci │ resolution                    │
+  │                │ liation       │                               │
+  ├────────────────┼───────────────┼───────────────────────────────┤
+  │                │ Gate wiring + │ AUTHORITY_ENFORCEMENT_TEST_PL │
+  │ hardening      │  pre-commit   │ AN.json                       │
+  │                │ enforcement   │                               │
+  ├────────────────┼───────────────┼───────────────────────────────┤
+  │                │ Evidence      │                               │
+  │ package        │ bundle,       │ AUDIT_V2_RESULT.json, final   │
+  │                │ rollback      │ gap-closure report            │
+  │                │ verification  │                               │
+  └────────────────┴───────────────┴───────────────────────────────┘
+
+  ---
+  What Maps Cleanly
+
+  govreg-remediate phases (Track A) fit step contracts almost exactly
+  as-is:
+
+  - inputs: registry JSON, collision pair list, allocator counter store
+  path
+  - outputs: renamed files, updated registry entries,
+  rollback_manifest.json, phase1_reference_scan.json, evidence
+  - preconditions: test -f REGISTRY_file.json, allocator reachable,
+  evidence dir writable
+  - postconditions: python scripts/check_no_duplicate_ids.py, grep -rn
+  OLD_ID . | wc -l = 0
+  - failure_modes: already specified per phase
+  (COLLISION_ALREADY_RESOLVED → exit 0, ALLOCATION_FAILED, etc.)
+  - rollback: per-phase rollback_manifest.json matches GATE-015
+  (Rollback Completeness)
+  - ground_truth_level: L2 for phases 1-4 (identity-critical), L1 for
+  phases 5-6 (archival)
+
+  DQ-1 through DQ-7 map directly to the template's decision_ledger
+  section — each design question becomes one decision_id with options,
+  selected_option, rationale, and timestamp.
+
+  The 9 required output files from the solution doc
+  (CANONICAL_AUTHORITY_MAP.json, EXECUTION_VERIFICATION_REPORT.json,
+  etc.) map to the artifact_manifest section. Each is an artifact with
+  an explicit producer step and consumer step, which satisfies GATE-010
+  (Wiring Proof) and GATE-014 (Artifact Closure).
+
+  execution_verification fields from the solution doc (imports_resolve,
+  runtime_exec_verified, used_by_dominant_orchestrator, etc.) become
+  step postconditions in Track B phases, expressed as executable shell
+  checks:
+
+  "postconditions": [
+    "python scripts/check_imports.py
+  ID/1_runtime/watchers/P_01999000042260126000__idpkg_runtime.py",
+    "python scripts/check_used_by_orchestrator.py
+  P_01999000042260126000__idpkg_runtime.py"
+  ]
+
+  ---
+  What Requires Explicit Adaptation
+
+  1. Self-healing failure types
+
+  The template's five defaults (DEP_INSTALL_FAIL, TEST_FAIL, LINT_FAIL,
+  TYPE_CHECK_FAIL, INTEGRATION_TEST_FAIL) don't match this domain. You
+  need custom failure types added to self_healing.failure_types:
+
+  - REGISTRY_LOCK_FAIL — counter store locked or unreachable
+  - ALLOCATOR_UNAVAILABLE — unified allocator cannot be imported
+  - COLLISION_UNRESOLVED — phase 1 pre-check finds collision still
+  exists after fix attempt
+  - IMPORT_BROKEN — broken import found during execution verification
+  - AUTHORITY_CONFLICT — two files found for same role after duplicate
+  analysis
+
+  2. External file scope
+
+  gate_runner.py and enforcement_bridge.py are at
+  C:\Users\richg\ALL_AI\GOVERNANCE\gates\ — outside this repo. The
+  template's file_scope.allowed_paths is repo-relative. The step that
+  investigates those files needs either:
+  - an explicit allowed_paths entry with the absolute path, or
+  - a NOT_AUTOMATABLE marker with manual escalation
+
+  3. ID naming
+
+  The template enforces PLAN-*, PH-*, STEP-*, ART-* patterns via
+  GATE-017 (Single Source of Truth). govreg-remediate's phase names
+  (phase1-collisions, phase2-identical, etc.) must be renamed to PH-A1,
+  PH-A2, etc. in the plan JSON. The human-readable labels can live in
+  description fields.
+
+  4. Registry mutation in worktrees
+
+  The template isolates writes to worktrees. Phases that mutate
+  REGISTRY_file.json (Track A phases 1-6, Track B's registry shape
+  reconciliation) need the registry file in the worktree's allowed_paths
+   with an explicit merge strategy — the template's default squash-merge
+   must be verified safe for registry JSON.
+
+  ---
+  What Must Be Marked NOT_AUTOMATABLE
+
+  The template's critical_constraint.NO_IMPLIED_BEHAVIOR rule requires
+  these items be explicitly flagged and escalated to manual steps. They
+  cannot be left as implied decisions:
+
+  ┌────────────────────────────────┬────────────────────────────────┐
+  │              Item              │      Why NOT_AUTOMATABLE       │
+  ├────────────────────────────────┼────────────────────────────────┤
+  │ DQ-1: Which ID survives        │ Requires registry lookup       │
+  │ dual-ID filenames              │ result plus maintainer         │
+  │                                │ sign-off per file              │
+  ├────────────────────────────────┼────────────────────────────────┤
+  │ DQ-3: Which file keeps         │ Policy decision — git hook     │
+  │ P_01999000042260125106         │ config must be checked first   │
+  ├────────────────────────────────┼────────────────────────────────┤
+  │ DQ-4: DOC-SCRIPT collision     │ Requires external evidence     │
+  │ winners                        │ (commit history, allocation    │
+  │                                │ logs)                          │
+  ├────────────────────────────────┼────────────────────────────────┤
+  │ Orchestrator model choice      │ Architectural decision, not    │
+  │ (unified vs formal handoff)    │ resolvable by file inspection  │
+  ├────────────────────────────────┼────────────────────────────────┤
+  │ Whether DOC-* namespace is     │ Affects Track A Phase 1 ID     │
+  │ being retired                  │ minting direction              │
+  ├────────────────────────────────┼────────────────────────────────┤
+  │                                │ Two conflicting                │
+  │ G5 SHA256 promotion authority  │ implementations; resolution is │
+  │                                │  a policy call                 │
+  └────────────────────────────────┴────────────────────────────────┘
+
+  Each of these becomes a manual step in bootstrap with a
+  decision_ledger entry required before the dependent phases can run.
+
+  ---
+  Net Assessment
+
+  The adaptation is feasible and the template adds real value here:
+
+  - GATE-015 (Rollback Completeness) enforces the rollback_manifest
+  requirement already planned
+  - GATE-010 (Wiring Proof) forces the 9 solution-doc output files to
+  have declared producers and consumers — this closes the "outputs exist
+   as aspirations but not as artifacts" gap identified earlier
+  - The phase_dag enforces the dependency: Track B's DQ answers must be
+  recorded before Track A Phase 1 can execute
+  - Step-level contracts force vague remediation steps ("verify imports
+  resolve") into actual executable postconditions
+
+  The main effort is the custom failure types and translating the Track
+  B verification steps (which are currently described in prose in the
+  solution doc) into executable shell commands for step
+  preconditions/postconditions. That translation is the hardest part —
+  it requires knowing what scripts actually exist to run those checks.
+
+✻ Crunched for 1m 48s

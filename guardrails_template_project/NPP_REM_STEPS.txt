@@ -1,0 +1,147 @@
+Status
+  The NPP planning subsystem is mostly complete as a v3.2 governance and
+  indexing framework, but it is not fully complete as a release-managed
+  migration package. The core triplet is live and coherent; the status/
+  evidence layer around it is only partially complete.
+
+  Main Findings
+
+  - /C:/Users/richg/Gov_Reg/guardrails_template_project/typed-questing-
+    balloon.md:53 is stale as a status dashboard. It marks PRE-B, B.1,
+    B.2, B.3, A.3, and CONSISTENCY as TODO, but the live source already
+    contains most of the governance surfaces those phases describe. At
+    the same time, it assumes a v3.3.0 bump, while /C:/Users/richg/
+    Gov_Reg/guardrails_template_project/phase_b_override_map.md:98 still
+    says no explicit v3.3.0 release bump has been selected.
+  - /C:/Users/richg/Gov_Reg/guardrails_template_project/
+    NPP_SESSION_FILE_PURPOSES.md:44 overclaims what exists in the repo
+    snapshot. It says the blocker evidence bundle and /C:/Users/richg/
+    Gov_Reg/guardrails_template_project/NPP_SESSION_FILE_PURPOSES.md:34
+    exist, but the blocker evidence files are absent and there is no
+    standalone resolver.py in this folder.
+  - The indexing layer is working. /C:/Users/richg/Gov_Reg/
+    guardrails_template_project/index_generator.py:265 already contains
+    resolver logic plus namespace and cross-file integrity checks at /
+    C:/Users/richg/Gov_Reg/guardrails_template_project/
+    index_generator.py:342 and /C:/Users/richg/Gov_Reg/
+    guardrails_template_project/index_generator.py:360. I ran python
+    index_generator.py; it exited 0 and regenerated PASS reports in /C:/
+    Users/richg/Gov_Reg/guardrails_template_project/evidence/PH-08/
+    validation_gate_report.json and /C:/Users/richg/Gov_Reg/
+    guardrails_template_project/evidence/PH-09/
+    final_readiness_report.json.
+  - The three authoritative JSONs are functionally ahead of the
+    migration notes. /C:/Users/richg/Gov_Reg/
+    guardrails_template_project/
+    NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json, /C:/Users/
+    richg/Gov_Reg/guardrails_template_project/
+    NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json, and /C:/
+    Users/richg/Gov_Reg/guardrails_template_project/
+    NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json already include
+    pattern-first/CDD surfaces, GATE-CFG-001..006, PAT-*/EXEC-*
+    examples, and fail-closed instructions.
+  - The template is complete as a framework, not as a filled plan
+    instance. /C:/Users/richg/Gov_Reg/guardrails_template_project/
+    NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json still has
+    many blank/null placeholders in task_analysis, assumptions_scope,
+    and final_summary.
+
+  Complete
+
+  - Source-state blocker fixes appear complete: single GATE-008, ENH-
+    001..010, component_id coverage, and execution_phases treated
+    structurally through /C:/Users/richg/Gov_Reg/
+    guardrails_template_project/inventory.json.
+  - A.2/A.3 indexing is complete enough to run now: /C:/Users/richg/
+    Gov_Reg/guardrails_template_project/inventory.json, /C:/Users/richg/
+    Gov_Reg/guardrails_template_project/index_generator.py, generated
+    indexes\, and PASS readiness evidence.
+  - B.0 is complete: /C:/Users/richg/Gov_Reg/
+    guardrails_template_project/reserved_id_namespaces.json exists and
+    the regenerated readiness report shows non-zero GATE-CFG, PAT, EXEC,
+    and COMP counts.
+  - The runbook path issue is effectively closed. /C:/Users/richg/
+    Gov_Reg/guardrails_template_project/
+    GREEDY_STIRRING_TOWER_EXECUTION_READINESS.md:12 already says the bad
+    support-plan paths were corrected, and there are no remaining
+    plansforthis references in /C:/Users/richg/Gov_Reg/
+    guardrails_template_project/greedy-stirring-tower.md.
+
+  Partial Or Undone
+
+  - PRE-B is not complete operationally. /C:/Users/richg/Gov_Reg/
+    guardrails_template_project/typed-questing-balloon.md:56 expects
+    evidence/PRE-B/readiness.json; it does not exist. The git worktree
+    is also still dirty; I verified that with git status --short.
+  - A.1 is complete in source outcome, but not complete in stored
+    evidence. /C:/Users/richg/Gov_Reg/guardrails_template_project/
+    cli_blocker_fix_guide.md:159 requires blocker evidence plus
+    final_blocker_resolution_report.json; those files are not in this
+    snapshot.
+  - The standalone resolver artifact is undone. The plan/docs expect
+    resolver.py, but only embedded resolver logic exists in /C:/Users/
+    richg/Gov_Reg/guardrails_template_project/index_generator.py:265.
+  - The v3.3.0 release bump is undone. All three source files still
+    report 3.2.0 at /C:/Users/richg/Gov_Reg/guardrails_template_project/
+    NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json:5, /C:/Users/
+    richg/Gov_Reg/guardrails_template_project/
+    NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json:3, and /
+    C:/Users/richg/Gov_Reg/guardrails_template_project/
+    NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json:4.
+  - Metadata cleanup is incomplete. The spec still carries older
+    appendix history only through v3.0.0 / v2.4.0 at /C:/Users/richg/
+    Gov_Reg/guardrails_template_project/
+    NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json:2920, and it
+    still says “5 default gates” at /C:/Users/richg/Gov_Reg/
+    guardrails_template_project/
+    NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json:24. The
+    template also contains a stale v3.0 title string at /C:/Users/richg/
+    Gov_Reg/guardrails_template_project/
+    NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json:1681.
+  - Runtime .state producers are still undone and explicitly deferred. /
+    C:/Users/richg/Gov_Reg/guardrails_template_project/typed-questing-
+    balloon.md:62 and /C:/Users/richg/Gov_Reg/
+    guardrails_template_project/typed-questing-balloon.md:266 call out
+    runtime wiring, run_status.json, mutation ledger writers, and
+    behavior-binding proof writers as not yet implemented.
+
+  File Triage
+
+  - Authoritative now: /C:/Users/richg/Gov_Reg/
+    guardrails_template_project/
+    NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json, /C:/Users/
+    richg/Gov_Reg/guardrails_template_project/
+    NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json, /C:/
+    Users/richg/Gov_Reg/guardrails_template_project/
+    NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json, /C:/Users/richg/
+    Gov_Reg/guardrails_template_project/inventory.json, /C:/Users/richg/
+    Gov_Reg/guardrails_template_project/index_generator.py, /C:/Users/
+    richg/Gov_Reg/guardrails_template_project/phase_b_override_map.md, /
+    C:/Users/richg/Gov_Reg/guardrails_template_project/
+    reserved_id_namespaces.json.
+  - Historical or stale context: /C:/Users/richg/Gov_Reg/
+    guardrails_template_project/typed-questing-balloon.md, /C:/Users/
+    richg/Gov_Reg/guardrails_template_project/
+    NPP_SESSION_FILE_PURPOSES.md, /C:/Users/richg/Gov_Reg/
+    guardrails_template_project/ChatGPT-
+    Branch%20%C2%B7%20V3_2%20Governance%20Overview.json, /C:/Users/
+    richg/Gov_Reg/guardrails_template_project/ChatGPT-
+    V3_2%20Governance%20Overview.json, /C:/Users/richg/Gov_Reg/
+    guardrails_template_project/npp_terminal.txt, /C:/Users/richg/
+    Gov_Reg/guardrails_template_project/Alignment-
+    style-%20Strategies.txt.
+  - Deferred by design: /C:/Users/richg/Gov_Reg/
+    guardrails_template_project/v3_3_patch_plan_machine_style.json, /C:/
+    Users/richg/Gov_Reg/guardrails_template_project/
+    v3_3_patch_plan_machine_layer2.json.
+  - Authored but not integrated into the core runtime: /C:/Users/richg/
+    Gov_Reg/guardrails_template_project/run_status_schema.json, /C:/
+    Users/richg/Gov_Reg/guardrails_template_project/
+    updated_planning_template.json.
+
+  Net: the NPP planning subsystem is functionally complete enough to use
+  as a v3.2 governance/indexing framework, but it is not fully closed
+  out. The main unfinished items are audit/evidence completeness, clean-
+  run operational readiness, standalone resolver/CLI packaging,
+  runtime .state producers, and any explicit v3.3.0 release
+  finalization.

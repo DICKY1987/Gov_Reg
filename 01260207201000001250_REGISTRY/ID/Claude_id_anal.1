@@ -1,0 +1,84 @@
+ Functional Overlap Summary
+
+  High overlap — validator sprawl (58 files)
+
+  The biggest redundancy. The DOC-SCRIPT-0989 through DOC-SCRIPT-1025
+  series are individually generated validators — one per ID type
+  (rule_id, run_id, schema_id, alert_id, etc.). They all do the same
+  thing for different ID types. The generator that made them
+  (DOC-SCRIPT-ID-GEN-VALIDATORS-992__generate_id_validators.py) still
+  exists alongside its outputs.
+
+  Candidates to consolidate: All validate_*_id.py scripts → one
+  parameterized validator.
+
+  ---
+  Duplicate pairs / near-dupes
+
+  ┌─────────────────┬─────────────────────────┬────────────────────┐
+  │      Group      │          Files          │       Issue        │
+  ├─────────────────┼─────────────────────────┼────────────────────┤
+  │ component ID    │ generate_component_sign │ Both define genera │
+  │ generation      │ ature.py + generate_com │ te_component_id +  │
+  │                 │ ponent_id.py            │ analyze_file       │
+  ├─────────────────┼─────────────────────────┼────────────────────┤
+  │ Jaccard         │ structural_feature_extr │ Both define        │
+  │ similarity      │ actor.py + extract_sema │ compute_jaccard_si │
+  │                 │ ntic_features.py        │ milarity           │
+  ├─────────────────┼─────────────────────────┼────────────────────┤
+  │                 │ patch_generator.py + pa │ Hash-suffix dupes  │
+  │ patch generator │ tch_generator_5460db.py │ — same file, two   │
+  │                 │                         │ versions           │
+  ├─────────────────┼─────────────────────────┼────────────────────┤
+  │ file_id_reconci │ file_id_reconciler.py + │                    │
+  │ ler             │  file_id_reconciler_2ef │ Same pattern       │
+  │                 │ b6c.py                  │                    │
+  ├─────────────────┼─────────────────────────┼────────────────────┤
+  │ doc_id_resolver │ doc_id_resolver.py + do │ Same               │
+  │                 │ c_id_resolver_21864a.py │                    │
+  ├─────────────────┼─────────────────────────┼────────────────────┤
+  │ module_dedup    │ module_dedup.py +       │ Same               │
+  │                 │ module_dedup_c3f244.py  │                    │
+  ├─────────────────┼─────────────────────────┼────────────────────┤
+  │ validate_identi │ validate_identity_sync. │                    │
+  │ ty_sync         │ py + validate_identity_ │ Same               │
+  │                 │ sync_278bdc.py          │                    │
+  ├─────────────────┼─────────────────────────┼────────────────────┤
+  │ validate_unique │ validate_uniqueness.py  │                    │
+  │ ness            │ + validate_uniqueness_c │ Same               │
+  │                 │ e13c4.py                │                    │
+  ├─────────────────┼─────────────────────────┼────────────────────┤
+  │ CLI entrypoint  │ doc_id_cli.py +         │ Same               │
+  │                 │ doc_id_cli_304439.py    │                    │
+  ├─────────────────┼─────────────────────────┼────────────────────┤
+  │ write_policy    │ 2026012100230004 +      │ Date-versioned     │
+  │ validators      │ 2026012120420006 (both  │ duplicates         │
+  │                 │ validate_write_policy)  │                    │
+  └─────────────────┴─────────────────────────┴────────────────────┘
+
+  ---
+  Reconciler overlap (4 files)
+
+  reconciliation_engine.py, registry_filesystem_reconciler.py,
+  file_id_reconciler.py, file_id_reconciler_2efb6c.py — all reconcile
+  registry vs. filesystem state. Likely doing the same core loop.
+
+  Watcher overlap (3 files)
+
+  filesystem_watcher.py, watcher_daemon.py, dir_id_watcher.py — all
+  monitor filesystem for ID drift.
+
+  load_id_type_spec (3 files)
+
+  generate_id_automation.py, generate_id_docs.py,
+  generate_id_validators.py — all load the same spec and differ only in
+  what they output. Could be one generator with a --target flag.
+
+  ---
+  Bottom line: The collection has ~3 categories of overlap:
+  1. Hash-suffix dupes (8 pairs) — versioning artifacts, one should be
+  deleted
+  2. Generated-but-kept generators — validators + the script that
+  generates them both exist
+  3. Semantic near-dupes — multiple files doing reconciliation,
+  watching, or component ID generation with slightly different scope

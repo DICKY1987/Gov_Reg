@@ -1,0 +1,142 @@
+This is a governance and constraint problem. The core issue is that CLI coding agents (Aider, Claude Code, Amp, etc.) operate statelessly per-session — they don't inherently "know" what conventions the rest of your codebase uses unless you force that context in. Here's the layered approach:
+
+---
+
+## 1. Canonical Context Injection (the foundation)
+
+Every agent invocation must receive the same ground-truth context. You do this through:
+
+**`CLAUDE.md` / `AGENTS.md` / `.aider.conf` files** — project-root files the CLI reads automatically. Put your:
+- Module interface contracts (what each module exports, what it expects)
+- Naming conventions (variables, functions, files, error codes)
+- Forbidden patterns (what NOT to do — often more important)
+- Import rules (how modules reference each other)
+
+The agent reads this before every session. It's your SSOT for behavioral constraints.
+
+---
+
+## 2. Interface Contracts as Machine-Readable Stubs
+
+Don't rely on prose to describe APIs. Give the agent **actual stubs**:
+
+```python
+# contracts/io_contract.py  ← agent always sees this
+def read_record(source: str, record_id: str) -> dict:
+    """Returns: {id, payload, ts_utc, schema_version}. Raises: RecordNotFound."""
+    ...
+```
+
+When the agent writes a new module that calls `read_record`, it has a binding contract — not a vague description. Drift happens when the contract lives only in someone's head.
+
+---
+
+## 3. Static Analysis as a Hard Gate
+
+Wire your linter/type-checker/import analyzer into a **pre-commit hook or CI step** the agent can't bypass:
+
+```bash
+# The agent runs this after every file it writes
+mypy --strict src/
+ruff check src/
+pydeps src/mymodule --max-bacon=2  # enforce import depth
+```
+
+Give the agent the gate command in your context file. Tell it: *"After writing any file, run `make lint`. Do not present code as done if this fails."* Claude Code and Aider both support this kind of post-write hook.
+
+---
+
+## 4. Schema/Type Enforcement at Module Boundaries
+
+Use **Pydantic models or TypedDicts** at every inter-module boundary. If module A passes data to module B, the type that crosses that boundary is defined in a shared `models/` or `schemas/` directory:
+
+```
+src/
+  schemas/         ← SSOT for all cross-module types
+    records.py
+    events.py
+  module_a/        ← imports from schemas/, never from module_b/
+  module_b/
+```
+
+The agent can't invent new fields when the schema is enforced at runtime (Pydantic validation) AND at analysis time (mypy).
+
+---
+
+## 5. Dependency Direction Rules (the drift killer)
+
+The most common drift in large codebases is **circular or unexpected imports**. Encode the allowed dependency graph explicitly:
+
+```
+# In CLAUDE.md:
+Import rules (enforced by pydeps/lint):
+  cli/ → services/ → core/ → schemas/
+  NO module may import from a layer above it.
+  NO cross-service imports (service_a cannot import service_b).
+```
+
+Then enforce with `pydeps` or `import-linter`:
+
+```ini
+# .importlinter
+[importlinter]
+root_package = myapp
+
+[importlinter:contract:layered]
+name = Layered architecture
+type = layers
+layers =
+    myapp.cli
+    myapp.services
+    myapp.core
+    myapp.schemas
+```
+
+---
+
+## 6. Prompt-Level Constraints in the CLI Context File
+
+Your `CLAUDE.md` should have a **mandatory section** the agent treats as hard rules:
+
+```markdown
+## Coding Rules — Non-Negotiable
+
+- All error returns use Result[T, AppError] — never raise raw exceptions across module boundaries
+- All timestamps are UTC ISO8601 strings — never datetime objects at boundaries  
+- New modules MUST be registered in src/registry.json before use
+- Run `make validate` before marking any task complete
+```
+
+Claude Code in particular treats `CLAUDE.md` as its behavioral constitution for the session.
+
+---
+
+## 7. The Drift Detection Loop
+
+Periodically run a **consistency audit** (automate this in CI):
+
+```python
+# tools/audit_contracts.py
+# Checks: 
+#   - every function signature matches its stub in contracts/
+#   - no module imports from a forbidden layer
+#   - all schemas referenced in code exist in schemas/
+#   - registry.json matches actual module files on disk
+```
+
+When drift is detected, the output becomes the input to the next agent session: *"Here are 3 violations found by the audit. Fix them without changing behavior."*
+
+---
+
+## Summary: The Compatibility Stack
+
+| Layer | Tool | What it prevents |
+|---|---|---|
+| Behavioral rules | `CLAUDE.md` | Style/pattern drift |
+| Type contracts | Pydantic + mypy | API signature drift |
+| Import rules | import-linter / pydeps | Dependency graph drift |
+| Lint gate | ruff / flake8 | Syntax/style drift |
+| Audit script | custom | Registry/schema drift |
+| CI enforcement | pre-commit / GitHub Actions | All of the above escaping |
+
+The key insight is: **the agent is a code generator, not a codebase guardian.** You have to build the guardian externally, then make the agent run it as part of its own definition of "done." Once the gate is wired, compatibility becomes structural rather than aspirational.

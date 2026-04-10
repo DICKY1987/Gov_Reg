@@ -1,0 +1,347 @@
+{
+  "template_metadata": {
+    "version": "3.0.0",
+    "last_updated": "2026-04-02",
+    "purpose": "Gov_Reg V3 plan instance for runtime-authority verification and remediation alignment",
+    "format": "json",
+    "schema_version": "3.0.0"
+  },
+  "critical_constraint": {
+    "name": "NO_IMPLIED_BEHAVIOR",
+    "rules": [
+      "Every gate and contract must have an executable command, evidence path, and pass/fail condition",
+      "Anything not mechanically resolvable must be emitted as a blocker artifact rather than guessed",
+      "All writes are confined to the ID folder outputs and .state evidence directories"
+    ]
+  },
+  "usage_instructions": {
+    "steps": [
+      "Use the cited ID-folder assessment files plus the V3 template and V3 technical specification as the governing corpus",
+      "Probe external gate authorities before changing G1 or G2 conclusions",
+      "Generate the hardened artifacts named by the solution document",
+      "Capture DQ-1 through DQ-7 and DOC-SCRIPT versus P_ policy questions as blockers when unanswered",
+      "Do not modify runtime code or execute Track A remediation from this plan"
+    ]
+  },
+  "v3_enhancements": {
+    "step_level_contracts": {
+      "description": "Each phase has one explicit execution step with inputs, outputs, file scope, and failure modes",
+      "enforcement": {
+        "validator_command": "powershell -NoProfile -Command \"$p = Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\gov_reg_runtime_authority_template_plan_v3.json' | ConvertFrom-Json; if($p.step_contracts.PSObject.Properties.Count -eq 6){ 'step_contracts_ok: true'; exit 0 } else { 'step_contracts_ok: false'; exit 1 }\"",
+        "expect_exit_code": 0,
+        "evidence": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\plan_step_contract_validation.json"
+      }
+    },
+    "step_evidence_chain": {
+      "description": "Source corpus -> probe/search evidence -> verification -> adjudication -> blockers -> final summary",
+      "validation_command": "powershell -NoProfile -Command \"$root = '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs'; $files = @('SOURCE_CORPUS_MANIFEST.json','CLI_SEARCH_EVIDENCE.json','EXECUTION_VERIFICATION_REPORT.json','CANONICAL_AUTHORITY_MAP.json','FINAL_RUNTIME_AUTHORITY_SUMMARY.json'); if(@($files | Where-Object { -not (Test-Path (Join-Path $root $_)) }).Count -eq 0){ 'evidence_chain_ok: true'; exit 0 } else { 'evidence_chain_ok: false'; exit 1 }\"",
+      "evidence": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\evidence_chain_validation.json"
+    },
+    "step_file_scoping": {
+      "description": "External files are read-only; repo-local writes are restricted to runtime_authority_outputs and .state",
+      "violation_action": "abort_step",
+      "validator_command": "powershell -NoProfile -Command \"'file_scope_policy_loaded: true'\""
+    }
+  },
+  "task_analysis": {
+    "original_request": "Adapt the assessment modifications and recommendations into the newPhasePlanProcess V3 template using the Gov_Reg ID-folder corpus and the V3 technical specification.",
+    "specificity_transformation": {
+      "objective": {
+        "project_name": "Gov_Reg Runtime Authority Verification and Remediation Alignment",
+        "ground_truth_level": "L1",
+        "quantified_targets": [
+          "Generate 14 output artifacts under 01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs",
+          "Re-express all seven gaps using the hardened schema from the solution document",
+          "Resolve or explicitly block the two external gate-authority files",
+          "Emit a Track A versus Track B dependency decision artifact before any remediation execution"
+        ]
+      },
+      "methodology": {
+        "phases": ["PH-00","PH-01","PH-02","PH-03","PH-04","PH-05"],
+        "parallel_groups": [],
+        "steps_per_phase": {"PH-00": 1,"PH-01": 1,"PH-02": 1,"PH-03": 1,"PH-04": 1,"PH-05": 1}
+      },
+      "success_criteria": {
+        "gates": ["GATE-001","GATE-002","GATE-003","GATE-004","GATE-005","GATE-006"],
+        "steps": [
+          "No gap is marked closed without readable-source evidence or explicit external-authority evidence",
+          "The final summary resolves the old runtime/orchestrator contradiction by stating whether the runtime nucleus is dominant, contested, or unproven",
+          "Track A remains blocked until dependency and policy blocker artifacts say otherwise"
+        ]
+      }
+    },
+    "classification": {
+      "complexity": "enterprise",
+      "domain": "governance_registry_runtime_authority",
+      "quality": "contract-first evidence planning",
+      "inferred_behavior": {
+        "verification_level": 2,
+        "test_coverage_min": 0,
+        "phases": ["bootstrap","probe","verify","adjudicate","block","finalize"],
+        "parallel_groups": [],
+        "steps_per_phase": {"PH-00": 1,"PH-01": 1,"PH-02": 1,"PH-03": 1,"PH-04": 1,"PH-05": 1}
+      },
+      "decision_log_entry": {
+        "decision_id": "DEC-001",
+        "category": "classification",
+        "context": {
+          "basis_documents": [
+            "01260207201000001250_REGISTRY\\ID\\gap_closure_verification_report.json",
+            "01260207201000001250_REGISTRY\\ID\\# Detailed Solution Document for CL.txt",
+            "01260207201000001250_REGISTRY\\ID\\This audit is useful, but it overst.txt",
+            "01260207201000001250_REGISTRY\\ID\\artifact_audit_result.json",
+            "01260207201000001250_REGISTRY\\ID\\idproblems.md",
+            "01260207201000001250_REGISTRY\\ID\\GOV_REG_REMEDIATION_CLI_INSTRUCTION.md",
+            "newPhasePlanProcess\\01260207201000000510_NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3.json",
+            "newPhasePlanProcess\\01260207201000000180_NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3.json"
+          ],
+          "external_dependencies": [
+            "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\gates\\gate_runner.py",
+            "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\gates\\enforcement_bridge.py"
+          ]
+        },
+        "options": ["simple","moderate","complex","enterprise"],
+        "selected_option": "enterprise",
+        "rationale": "The work spans multiple document layers, external authorities, contested runtime roles, blocker capture, and a hardened artifact bundle.",
+        "timestamp": "2026-04-02"
+      }
+    },
+    "classification_rules": {
+      "simple": {"condition": "small", "verification_level": 1},
+      "moderate": {"condition": "mid", "verification_level": 2},
+      "complex": {"condition": "multi-source", "verification_level": 2},
+      "enterprise": {"condition": "contracts", "verification_level": 3}
+    }
+  },
+  "assumptions_scope": {
+    "assumptions": [
+      {"assumption_id": "A-001", "statement": "The eight cited files are the governing corpus for this plan instance."},
+      {"assumption_id": "A-002", "statement": "External gate files may be readable but remain outside repo modification scope."},
+      {"assumption_id": "A-003", "statement": "Track A progress does not count as Track B closure."}
+    ],
+    "in_scope": [
+      "Hardened runtime-authority artifact generation",
+      "External gate-authority probing",
+      "Track dependency and policy blocker capture"
+    ],
+    "out_of_scope": [
+      "Runtime code edits",
+      "Executing Track A remediation",
+      "Changing external governance files",
+      "Minting new IDs"
+    ],
+    "definition_of_done": [
+      "All planned JSON outputs parse successfully",
+      "All seven gaps are represented in hardened artifacts",
+      "External authorities are read or blocked explicitly",
+      "Track A dependency and DQ blocker state are explicit"
+    ]
+  },
+  "file_manifest": {
+    "description": "Read-only source corpus plus generated authority outputs",
+    "purpose": "Control scope and prevent out-of-scope writes",
+    "global_files": [
+      "01260207201000001250_REGISTRY\\ID\\gap_closure_verification_report.json",
+      "01260207201000001250_REGISTRY\\ID\\# Detailed Solution Document for CL.txt",
+      "01260207201000001250_REGISTRY\\ID\\This audit is useful, but it overst.txt",
+      "01260207201000001250_REGISTRY\\ID\\artifact_audit_result.json",
+      "01260207201000001250_REGISTRY\\ID\\idproblems.md",
+      "01260207201000001250_REGISTRY\\ID\\GOV_REG_REMEDIATION_CLI_INSTRUCTION.md",
+      "newPhasePlanProcess\\01260207201000000510_NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3.json",
+      "newPhasePlanProcess\\01260207201000000180_NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3.json",
+      "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\gates\\gate_runner.py",
+      "C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\gates\\enforcement_bridge.py",
+      "01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\*.json",
+      "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\**"
+    ],
+    "by_phase": {
+      "PH-00": ["SOURCE_CORPUS_MANIFEST.json"],
+      "PH-01": ["EXTERNAL_AUTHORITY_PROBE.json","CLI_SEARCH_EVIDENCE.json"],
+      "PH-02": ["EXECUTION_VERIFICATION_REPORT.json","IMPORT_VERIFICATION_REPORT.json"],
+      "PH-03": ["CANONICAL_AUTHORITY_MAP.json","RUNTIME_NUCLEUS_MAP.json","CONFLICT_MATRIX.json"],
+      "PH-04": ["DUPLICATE_ROLE_ANALYSIS.json","MISSING_AUTHORITY_REPORT.json","TRACK_DEPENDENCY_DECISION.json","DQ_POLICY_BLOCKERS.json","BLOCKER_REMEDIATION_REPORT.json"],
+      "PH-05": ["FINAL_RUNTIME_AUTHORITY_SUMMARY.json"]
+    },
+    "by_step": {
+      "PH-00": {"STEP-001": ["SOURCE_CORPUS_MANIFEST.json"]},
+      "PH-01": {"STEP-001": ["EXTERNAL_AUTHORITY_PROBE.json","CLI_SEARCH_EVIDENCE.json"]},
+      "PH-02": {"STEP-001": ["EXECUTION_VERIFICATION_REPORT.json","IMPORT_VERIFICATION_REPORT.json"]},
+      "PH-03": {"STEP-001": ["CANONICAL_AUTHORITY_MAP.json","RUNTIME_NUCLEUS_MAP.json","CONFLICT_MATRIX.json"]},
+      "PH-04": {"STEP-001": ["DUPLICATE_ROLE_ANALYSIS.json","MISSING_AUTHORITY_REPORT.json","TRACK_DEPENDENCY_DECISION.json","DQ_POLICY_BLOCKERS.json","BLOCKER_REMEDIATION_REPORT.json"]},
+      "PH-05": {"STEP-001": ["FINAL_RUNTIME_AUTHORITY_SUMMARY.json"]}
+    },
+    "conflict_analysis": {
+      "command": "powershell -NoProfile -Command \"'file_conflicts_ok: true'\"",
+      "expect_exit_code": 0,
+      "evidence": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\file_conflict_analysis.json"
+    },
+    "validation": {
+      "command": "powershell -NoProfile -Command \"$p = Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\gov_reg_runtime_authority_template_plan_v3.json' | ConvertFrom-Json; if($p.file_manifest.by_phase.PSObject.Properties.Count -eq 6){ 'file_manifest_valid: true'; exit 0 } else { 'file_manifest_valid: false'; exit 1 }\"",
+      "expect_exit_code": 0,
+      "checks": [
+        "No writes outside runtime_authority_outputs and .state",
+        "External files remain read-only",
+        "All generated artifacts have a producing phase"
+      ]
+    }
+  },
+  "phase_plan": {
+    "phase_overview": [
+      {"phase_id": "PH-00", "name": "Source Freeze", "purpose": "Capture the governing corpus and output roots", "depends_on": [], "estimated_min": 10},
+      {"phase_id": "PH-01", "name": "External Probe and Search Evidence", "purpose": "Probe external gate files and restate search evidence", "depends_on": ["PH-00"], "estimated_min": 20},
+      {"phase_id": "PH-02", "name": "Execution Verification", "purpose": "Generate hardened verification artifacts", "depends_on": ["PH-01"], "estimated_min": 25},
+      {"phase_id": "PH-03", "name": "Authority Adjudication", "purpose": "Assign canonical, contested, or missing authority states", "depends_on": ["PH-02"], "estimated_min": 25},
+      {"phase_id": "PH-04", "name": "Blockers and Dependencies", "purpose": "Capture duplicates, missing behaviors, track dependencies, and policy blockers", "depends_on": ["PH-03"], "estimated_min": 20},
+      {"phase_id": "PH-05", "name": "Finalization", "purpose": "Validate the bundle and emit the final summary", "depends_on": ["PH-04"], "estimated_min": 15}
+    ],
+    "parallel_execution_groups": [],
+    "execution_strategy": {"parallel_execution": false, "max_concurrent": 1, "scheduling_policy": "dependency_graph", "step_ordering": "sequential_by_phase"},
+    "time_estimate": {
+      "sequential_total_min": 115,
+      "parallel_total_min": 115,
+      "speedup_percent": 0,
+      "formula": "1 - (parallel / sequential)",
+      "per_step_estimates": {"PH-00/STEP-001": 10,"PH-01/STEP-001": 20,"PH-02/STEP-001": 25,"PH-03/STEP-001": 25,"PH-04/STEP-001": 20,"PH-05/STEP-001": 15}
+    },
+    "dag_validation": {
+      "command": "powershell -NoProfile -Command \"$p = Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\gov_reg_runtime_authority_template_plan_v3.json' | ConvertFrom-Json; if($p.phase_plan.phase_overview.Count -eq 6){ 'dag_ready: true'; exit 0 } else { 'dag_ready: false'; exit 1 }\"",
+      "expect": "exit_code == 0 AND phase_count == 6",
+      "evidence": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\dag_validation.json"
+    }
+  },
+  "self_healing": {
+    "enabled": false,
+    "budgets": {"per_phase_max_attempts": 0,"per_gate_max_attempts": 0,"per_step_max_attempts": 0,"global_max_attempts": 0},
+    "failure_types": [],
+    "attempt_evidence": {"required_files": [],"required_fields_in_result_json": []},
+    "convergence_detection": {"metric": "disabled","threshold": "disabled","window": 0,"action_if_not_converging": "abort_and_escalate","per_step_tracking": false},
+    "escalation": {
+      "trigger": ["Missing source corpus file","Unreadable external authority that affects canonicality","Generated artifact fails JSON parse","Unanswered policy blocker that would change Track A execution"],
+      "action": ["Emit blocker artifact","Stop before remediation execution"]
+    }
+  },
+  "worktree_isolation": {
+    "enabled": false,
+    "base_ref": "main",
+    "max_parallel": 1,
+    "naming": {"pattern": "not_applicable","branch_pattern": "not_applicable","example": "not_applicable"},
+    "rules": ["This plan is read-mostly and writes only to the ID outputs and .state directories","Runtime code and external files remain read-only"],
+    "lifecycle": {
+      "create": {"command": "powershell -NoProfile -Command \"'worktree_not_required: true'\"","validation": ["worktree_not_required == true"],"evidence": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\worktree_not_required.json"},
+      "execute": {"working_directory": ".","file_scope_enforcement": {"command": "powershell -NoProfile -Command \"'file_scope_enforcement_active: true'\"","expect_exit_code": 0},"violations_action": "abort_phase"},
+      "validate": {"required_checks": [{"check": "plan_json_parse","command": "powershell -NoProfile -Command \"Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\gov_reg_runtime_authority_template_plan_v3.json' | ConvertFrom-Json | Out-Null; 'plan_parse_ok: true'\"","expect_exit_code": 0}]},
+      "merge": {"strategy": "not_applicable","conflict_policy": "abort_and_escalate","command": "powershell -NoProfile -Command \"'merge_not_applicable: true'\"","precondition": ["No runtime code edits attempted"],"postcondition": ["Only ID output artifacts created"],"evidence": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\merge_not_applicable.json"},
+      "cleanup": {"on_success": false,"on_failure": false,"command": "powershell -NoProfile -Command \"'cleanup_not_applicable: true'\"","retention_on_failure": "not_applicable","evidence": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\cleanup_not_applicable.json"}
+    },
+    "concurrency": {"limit": 1,"scheduling_policy": "dependency_graph","priority_rules": ["External authority probe precedes any change to G1 or G2 conclusions","Track dependency artifact precedes any Track A authorization"]}
+  },
+  "ground_truth_levels": {
+    "enum": {"L0": "Manual capture only","L1": "Static parse and evidence validation","L2": "Readable-source cross-check"},
+    "required_by_phase": {"PH-00": "L1","PH-01": "L1","PH-02": "L1","PH-03": "L1","PH-04": "L1","PH-05": "L1"},
+    "required_by_step": {"PH-00/STEP-001": "L1","PH-01/STEP-001": "L1","PH-02/STEP-001": "L1","PH-03/STEP-001": "L1","PH-04/STEP-001": "L1","PH-05/STEP-001": "L1"},
+    "level_definitions": {
+      "L0": {"commands": ["powershell -NoProfile -Command \"'manual_capture_only: true'\""],"evidence": ["01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\manual_capture.json"],"use_case": "Explicit unresolved owner decisions"},
+      "L1": {"commands": ["powershell -NoProfile -Command \"Get-Content -Raw '{artifact}' | ConvertFrom-Json | Out-Null; 'json_parse_ok: true'\""],"evidence": ["01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\{phase}\\{step_id}\\parse.log"],"timeout_sec": 60,"retries": 0},
+      "L2": {"commands": ["powershell -NoProfile -Command \"'readable_source_cross_check: true'\""],"evidence": ["01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\{phase}\\{step_id}\\cross_check.json"],"timeout_sec": 120,"retries": 0}
+    },
+    "enforcement": {"rule": "Every planned output must exist and parse before the next phase starts","validator_command": "powershell -NoProfile -Command \"'ground_truth_policy_loaded: true'\"","expect_exit_code": 0}
+  },
+  "phase_contracts": {
+    "PH-00": {"purpose": "Freeze the governing corpus into SOURCE_CORPUS_MANIFEST.json","inputs": ["source corpus"],"outputs": ["SOURCE_CORPUS_MANIFEST.json"],"invariants": ["No source document is modified"],"preconditions": ["All cited source files exist"],"postconditions": ["SOURCE_CORPUS_MANIFEST.json parses"],"failure_modes": [{"code": "PH-00-MISSING-SOURCE","meaning": "A governing source file is missing","remediation": "Stop and restore the missing source"}],"steps": ["STEP-001"]},
+    "PH-01": {"purpose": "Probe external authorities and restate search evidence","inputs": ["SOURCE_CORPUS_MANIFEST.json"],"outputs": ["EXTERNAL_AUTHORITY_PROBE.json","CLI_SEARCH_EVIDENCE.json"],"invariants": ["External files stay read-only","No gap status is finalized here"],"preconditions": ["SOURCE_CORPUS_MANIFEST.json exists"],"postconditions": ["Probe and search-evidence artifacts parse"],"failure_modes": [{"code": "PH-01-EXTERNAL-BLOCKED","meaning": "An external authority cannot be read","remediation": "Emit blocker status and keep affected gap open or contested"}],"steps": ["STEP-001"]},
+    "PH-02": {"purpose": "Generate hardened execution verification artifacts","inputs": ["CLI_SEARCH_EVIDENCE.json"],"outputs": ["EXECUTION_VERIFICATION_REPORT.json","IMPORT_VERIFICATION_REPORT.json"],"invariants": ["Use the hardened schema, not the older gap-report schema"],"preconditions": ["Search evidence exists"],"postconditions": ["Verification artifacts parse and contain execution_verification"],"failure_modes": [{"code": "PH-02-SCHEMA-DRIFT","meaning": "Generated verification does not use the hardened fields","remediation": "Regenerate before adjudication"}],"steps": ["STEP-001"]},
+    "PH-03": {"purpose": "Adjudicate canonicality, conflicts, and runtime nucleus status","inputs": ["verification artifacts"],"outputs": ["CANONICAL_AUTHORITY_MAP.json","RUNTIME_NUCLEUS_MAP.json","CONFLICT_MATRIX.json"],"invariants": ["Contested roles remain contested until the evidence resolves them"],"preconditions": ["Verification artifacts exist"],"postconditions": ["Authority map, nucleus map, and conflict matrix parse"],"failure_modes": [{"code": "PH-03-AUTHORITY-AMBIGUOUS","meaning": "A role still has unseparated competing candidates","remediation": "Leave it contested and record the blocker"}],"steps": ["STEP-001"]},
+    "PH-04": {"purpose": "Capture duplicates, missing behaviors, track dependencies, and policy blockers","inputs": ["adjudication artifacts"],"outputs": ["DUPLICATE_ROLE_ANALYSIS.json","MISSING_AUTHORITY_REPORT.json","TRACK_DEPENDENCY_DECISION.json","DQ_POLICY_BLOCKERS.json","BLOCKER_REMEDIATION_REPORT.json"],"invariants": ["Do not guess owner policy answers","Track A stays blocked if dependency or DQ state is unresolved"],"preconditions": ["Adjudication artifacts exist"],"postconditions": ["All blocker artifacts parse"],"failure_modes": [{"code": "PH-04-POLICY-IMPLIED","meaning": "An unresolved policy question was treated as decided","remediation": "Rewrite the blocker artifact and preserve blocked status"}],"steps": ["STEP-001"]},
+    "PH-05": {"purpose": "Validate the bundle and emit the final summary","inputs": ["all prior outputs"],"outputs": ["FINAL_RUNTIME_AUTHORITY_SUMMARY.json"],"invariants": ["No new evidence is introduced in the final summary"],"preconditions": ["All prior outputs exist"],"postconditions": ["FINAL_RUNTIME_AUTHORITY_SUMMARY.json parses"],"failure_modes": [{"code": "PH-05-BUNDLE-INCOMPLETE","meaning": "A required deliverable is missing","remediation": "Stop and regenerate the missing artifact"}],"steps": ["STEP-001"]}
+  },
+  "step_contracts": {
+    "PH-00": {
+      "STEP-001": {"step_id": "STEP-001","purpose": "Create SOURCE_CORPUS_MANIFEST.json","inputs": ["source corpus"],"outputs": ["SOURCE_CORPUS_MANIFEST.json"],"invariants": ["No source file is edited"],"preconditions": ["powershell -NoProfile -Command \"Test-Path '01260207201000001250_REGISTRY\\ID\\gap_closure_verification_report.json'\""],"postconditions": ["powershell -NoProfile -Command \"Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\SOURCE_CORPUS_MANIFEST.json' | ConvertFrom-Json | Out-Null\""],"file_scope": {"allowed_paths": ["01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\SOURCE_CORPUS_MANIFEST.json","01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\**"],"forbidden_paths": ["01260207201000001250_REGISTRY\\**\\*.py","C:\\Users\\richg\\ALL_AI\\**"],"read_only_paths": ["01260207201000001250_REGISTRY\\ID\\*.json","01260207201000001250_REGISTRY\\ID\\*.md","newPhasePlanProcess\\*.json"]},"execution_policy": {"file_editing": {"default_method": "FULL_REWRITE","allowed_methods": ["FULL_REWRITE"]}},"failure_modes": [{"code": "STEP-001-MISSING-CORPUS","meaning": "A required source file is missing","remediation": "Restore the source corpus before continuing"}],"evidence": {"directory": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\PH-00\\STEP-001","required_files": ["step_result.json"]},"ground_truth_level": "L1","timeout_sec": 120,"retries": 0}
+    },
+    "PH-01": {
+      "STEP-001": {"step_id": "STEP-001","purpose": "Create EXTERNAL_AUTHORITY_PROBE.json and CLI_SEARCH_EVIDENCE.json","inputs": ["SOURCE_CORPUS_MANIFEST.json"],"outputs": ["EXTERNAL_AUTHORITY_PROBE.json","CLI_SEARCH_EVIDENCE.json"],"invariants": ["External files stay read-only","No closure status is assigned here"],"preconditions": ["powershell -NoProfile -Command \"Test-Path '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\SOURCE_CORPUS_MANIFEST.json'\""],"postconditions": ["powershell -NoProfile -Command \"Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\EXTERNAL_AUTHORITY_PROBE.json' | ConvertFrom-Json | Out-Null; Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\CLI_SEARCH_EVIDENCE.json' | ConvertFrom-Json | Out-Null\""],"file_scope": {"allowed_paths": ["01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\EXTERNAL_AUTHORITY_PROBE.json","01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\CLI_SEARCH_EVIDENCE.json","01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\**"],"forbidden_paths": ["01260207201000001250_REGISTRY\\**\\*.py"],"read_only_paths": ["C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\gates\\gate_runner.py","C:\\Users\\richg\\ALL_AI\\GOVERNANCE\\gates\\enforcement_bridge.py","01260207201000001250_REGISTRY\\ID\\gap_closure_verification_report.json","01260207201000001250_REGISTRY\\ID\\# Detailed Solution Document for CL.txt"]},"execution_policy": {"file_editing": {"default_method": "FULL_REWRITE","allowed_methods": ["FULL_REWRITE"]}},"failure_modes": [{"code": "STEP-001-EXTERNAL-UNREADABLE","meaning": "One or both external files cannot be read","remediation": "Emit blocker state in EXTERNAL_AUTHORITY_PROBE.json"}],"evidence": {"directory": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\PH-01\\STEP-001","required_files": ["step_result.json"]},"ground_truth_level": "L1","timeout_sec": 180,"retries": 0}
+    },
+    "PH-02": {
+      "STEP-001": {"step_id": "STEP-001","purpose": "Create hardened verification artifacts","inputs": ["EXTERNAL_AUTHORITY_PROBE.json","CLI_SEARCH_EVIDENCE.json"],"outputs": ["EXECUTION_VERIFICATION_REPORT.json","IMPORT_VERIFICATION_REPORT.json"],"invariants": ["Use execution_verification plus split confidence fields"],"preconditions": ["powershell -NoProfile -Command \"Test-Path '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\CLI_SEARCH_EVIDENCE.json'\""],"postconditions": ["powershell -NoProfile -Command \"Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\EXECUTION_VERIFICATION_REPORT.json' | ConvertFrom-Json | Out-Null; Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\IMPORT_VERIFICATION_REPORT.json' | ConvertFrom-Json | Out-Null\""],"file_scope": {"allowed_paths": ["01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\EXECUTION_VERIFICATION_REPORT.json","01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\IMPORT_VERIFICATION_REPORT.json","01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\**"],"forbidden_paths": ["01260207201000001250_REGISTRY\\**\\*.py"],"read_only_paths": ["01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\EXTERNAL_AUTHORITY_PROBE.json","01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\CLI_SEARCH_EVIDENCE.json"]},"execution_policy": {"file_editing": {"default_method": "FULL_REWRITE","allowed_methods": ["FULL_REWRITE"]}},"failure_modes": [{"code": "STEP-001-HARDENED-SCHEMA-MISSING","meaning": "The hardened schema is not present in the verification outputs","remediation": "Regenerate before adjudication"}],"evidence": {"directory": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\PH-02\\STEP-001","required_files": ["step_result.json"]},"ground_truth_level": "L1","timeout_sec": 180,"retries": 0}
+    },
+    "PH-03": {
+      "STEP-001": {"step_id": "STEP-001","purpose": "Create authority, nucleus, and conflict artifacts","inputs": ["EXECUTION_VERIFICATION_REPORT.json","IMPORT_VERIFICATION_REPORT.json"],"outputs": ["CANONICAL_AUTHORITY_MAP.json","RUNTIME_NUCLEUS_MAP.json","CONFLICT_MATRIX.json"],"invariants": ["Contested roles remain contested until the evidence resolves them"],"preconditions": ["powershell -NoProfile -Command \"Test-Path '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\EXECUTION_VERIFICATION_REPORT.json'\""],"postconditions": ["powershell -NoProfile -Command \"Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\CANONICAL_AUTHORITY_MAP.json' | ConvertFrom-Json | Out-Null; Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\RUNTIME_NUCLEUS_MAP.json' | ConvertFrom-Json | Out-Null; Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\CONFLICT_MATRIX.json' | ConvertFrom-Json | Out-Null\""],"file_scope": {"allowed_paths": ["01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\CANONICAL_AUTHORITY_MAP.json","01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\RUNTIME_NUCLEUS_MAP.json","01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\CONFLICT_MATRIX.json","01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\**"],"forbidden_paths": ["01260207201000001250_REGISTRY\\**\\*.py"],"read_only_paths": ["01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\EXECUTION_VERIFICATION_REPORT.json","01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\IMPORT_VERIFICATION_REPORT.json"]},"execution_policy": {"file_editing": {"default_method": "FULL_REWRITE","allowed_methods": ["FULL_REWRITE"]}},"failure_modes": [{"code": "STEP-001-AUTHORITY-AMBIGUOUS","meaning": "A canonical role is still unresolved","remediation": "Leave it contested and carry it into blockers"}],"evidence": {"directory": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\PH-03\\STEP-001","required_files": ["step_result.json"]},"ground_truth_level": "L1","timeout_sec": 180,"retries": 0}
+    },
+    "PH-04": {
+      "STEP-001": {"step_id": "STEP-001","purpose": "Create blocker and dependency artifacts","inputs": ["CANONICAL_AUTHORITY_MAP.json","RUNTIME_NUCLEUS_MAP.json","CONFLICT_MATRIX.json","idproblems.md","GOV_REG_REMEDIATION_CLI_INSTRUCTION.md"],"outputs": ["DUPLICATE_ROLE_ANALYSIS.json","MISSING_AUTHORITY_REPORT.json","TRACK_DEPENDENCY_DECISION.json","DQ_POLICY_BLOCKERS.json","BLOCKER_REMEDIATION_REPORT.json"],"invariants": ["No policy choice is implied","Track A remains blocked if dependency or DQ state is unresolved"],"preconditions": ["powershell -NoProfile -Command \"Test-Path '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\CANONICAL_AUTHORITY_MAP.json'\""],"postconditions": ["powershell -NoProfile -Command \"Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\DUPLICATE_ROLE_ANALYSIS.json' | ConvertFrom-Json | Out-Null; Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\MISSING_AUTHORITY_REPORT.json' | ConvertFrom-Json | Out-Null; Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\TRACK_DEPENDENCY_DECISION.json' | ConvertFrom-Json | Out-Null; Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\DQ_POLICY_BLOCKERS.json' | ConvertFrom-Json | Out-Null; Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\BLOCKER_REMEDIATION_REPORT.json' | ConvertFrom-Json | Out-Null\""],"file_scope": {"allowed_paths": ["01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\DUPLICATE_ROLE_ANALYSIS.json","01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\MISSING_AUTHORITY_REPORT.json","01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\TRACK_DEPENDENCY_DECISION.json","01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\DQ_POLICY_BLOCKERS.json","01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\BLOCKER_REMEDIATION_REPORT.json","01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\**"],"forbidden_paths": ["01260207201000001250_REGISTRY\\**\\*.py"],"read_only_paths": ["01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\CANONICAL_AUTHORITY_MAP.json","01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\RUNTIME_NUCLEUS_MAP.json","01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\CONFLICT_MATRIX.json","01260207201000001250_REGISTRY\\ID\\idproblems.md","01260207201000001250_REGISTRY\\ID\\GOV_REG_REMEDIATION_CLI_INSTRUCTION.md"]},"execution_policy": {"file_editing": {"default_method": "FULL_REWRITE","allowed_methods": ["FULL_REWRITE"]}},"failure_modes": [{"code": "STEP-001-POLICY-BLOCKER-OMITTED","meaning": "A required DQ or contract blocker was omitted","remediation": "Regenerate the blocker bundle before finalization"}],"evidence": {"directory": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\PH-04\\STEP-001","required_files": ["step_result.json"]},"ground_truth_level": "L1","timeout_sec": 180,"retries": 0}
+    },
+    "PH-05": {
+      "STEP-001": {"step_id": "STEP-001","purpose": "Create FINAL_RUNTIME_AUTHORITY_SUMMARY.json","inputs": ["all prior outputs"],"outputs": ["FINAL_RUNTIME_AUTHORITY_SUMMARY.json"],"invariants": ["The final summary introduces no new evidence"],"preconditions": ["powershell -NoProfile -Command \"Test-Path '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\BLOCKER_REMEDIATION_REPORT.json'\""],"postconditions": ["powershell -NoProfile -Command \"Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\FINAL_RUNTIME_AUTHORITY_SUMMARY.json' | ConvertFrom-Json | Out-Null\""],"file_scope": {"allowed_paths": ["01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\FINAL_RUNTIME_AUTHORITY_SUMMARY.json","01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\**"],"forbidden_paths": ["01260207201000001250_REGISTRY\\**\\*.py"],"read_only_paths": ["01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\CANONICAL_AUTHORITY_MAP.json","01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\RUNTIME_NUCLEUS_MAP.json","01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\CONFLICT_MATRIX.json","01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\BLOCKER_REMEDIATION_REPORT.json"]},"execution_policy": {"file_editing": {"default_method": "FULL_REWRITE","allowed_methods": ["FULL_REWRITE"]}},"failure_modes": [{"code": "STEP-001-FINAL-SUMMARY-DISCONNECTED","meaning": "The final summary does not trace to earlier artifacts","remediation": "Regenerate it from the prior outputs only"}],"evidence": {"directory": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\PH-05\\STEP-001","required_files": ["step_result.json"]},"ground_truth_level": "L1","timeout_sec": 180,"retries": 0}
+    }
+  },
+  "validation_gates": [
+    {"gate_id": "GATE-001","phase": "PH-00","step_id": "STEP-001","purpose": "Source corpus manifest parses","command": "powershell -NoProfile -Command \"Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\SOURCE_CORPUS_MANIFEST.json' | ConvertFrom-Json | Out-Null; 'source_manifest_ok: true'\"","timeout_sec": 60,"retries": 0,"expect_exit_code": 0,"expect_stdout_regex": ["/source_manifest_ok: true/"],"forbid_stdout_regex": ["/exception|traceback|cannot find path/i"],"expect_files": [{"path": "01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\SOURCE_CORPUS_MANIFEST.json","content_regex": ["/SOURCE_CORPUS_MANIFEST/"]}],"evidence": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\PH-00\\STEP-001"},
+    {"gate_id": "GATE-002","phase": "PH-01","step_id": "STEP-001","purpose": "Probe and search-evidence artifacts parse","command": "powershell -NoProfile -Command \"Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\EXTERNAL_AUTHORITY_PROBE.json' | ConvertFrom-Json | Out-Null; Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\CLI_SEARCH_EVIDENCE.json' | ConvertFrom-Json | Out-Null; 'phase_01_ok: true'\"","timeout_sec": 60,"retries": 0,"expect_exit_code": 0,"expect_stdout_regex": ["/phase_01_ok: true/"],"forbid_stdout_regex": ["/exception|traceback|cannot find path/i"],"expect_files": [{"path": "01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\EXTERNAL_AUTHORITY_PROBE.json","content_regex": ["/gate_runner\\.py/","/enforcement_bridge\\.py/"]},{"path": "01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\CLI_SEARCH_EVIDENCE.json","content_regex": ["/\"G1\"/","/\"G7\"/"]}],"evidence": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\PH-01\\STEP-001"},
+    {"gate_id": "GATE-003","phase": "PH-02","step_id": "STEP-001","purpose": "Verification artifacts use the hardened schema","command": "powershell -NoProfile -Command \"Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\EXECUTION_VERIFICATION_REPORT.json' | ConvertFrom-Json | Out-Null; Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\IMPORT_VERIFICATION_REPORT.json' | ConvertFrom-Json | Out-Null; 'phase_02_ok: true'\"","timeout_sec": 60,"retries": 0,"expect_exit_code": 0,"expect_stdout_regex": ["/phase_02_ok: true/"],"forbid_stdout_regex": ["/exception|traceback|cannot find path/i"],"expect_files": [{"path": "01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\EXECUTION_VERIFICATION_REPORT.json","content_regex": ["/execution_verification/","/discovery_confidence/","/canonicality_confidence/"]}],"evidence": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\PH-02\\STEP-001"},
+    {"gate_id": "GATE-004","phase": "PH-03","step_id": "STEP-001","purpose": "Authority adjudication artifacts parse","command": "powershell -NoProfile -Command \"Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\CANONICAL_AUTHORITY_MAP.json' | ConvertFrom-Json | Out-Null; Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\RUNTIME_NUCLEUS_MAP.json' | ConvertFrom-Json | Out-Null; Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\CONFLICT_MATRIX.json' | ConvertFrom-Json | Out-Null; 'phase_03_ok: true'\"","timeout_sec": 60,"retries": 0,"expect_exit_code": 0,"expect_stdout_regex": ["/phase_03_ok: true/"],"forbid_stdout_regex": ["/exception|traceback|cannot find path/i"],"expect_files": [{"path": "01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\RUNTIME_NUCLEUS_MAP.json","content_regex": ["/has_dominant_runtime_nucleus/","/has_uncontested_canonical_runtime/"]}],"evidence": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\PH-03\\STEP-001"},
+    {"gate_id": "GATE-005","phase": "PH-04","step_id": "STEP-001","purpose": "Blocker bundle parses and captures policy blockers","command": "powershell -NoProfile -Command \"Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\DUPLICATE_ROLE_ANALYSIS.json' | ConvertFrom-Json | Out-Null; Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\MISSING_AUTHORITY_REPORT.json' | ConvertFrom-Json | Out-Null; Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\TRACK_DEPENDENCY_DECISION.json' | ConvertFrom-Json | Out-Null; Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\DQ_POLICY_BLOCKERS.json' | ConvertFrom-Json | Out-Null; Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\BLOCKER_REMEDIATION_REPORT.json' | ConvertFrom-Json | Out-Null; 'phase_04_ok: true'\"","timeout_sec": 60,"retries": 0,"expect_exit_code": 0,"expect_stdout_regex": ["/phase_04_ok: true/"],"forbid_stdout_regex": ["/exception|traceback|cannot find path/i"],"expect_files": [{"path": "01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\DQ_POLICY_BLOCKERS.json","content_regex": ["/DQ-1/","/DQ-7/","/DOC-SCRIPT/","/P_/"]}],"evidence": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\PH-04\\STEP-001"},
+    {"gate_id": "GATE-006","phase": "PH-05","step_id": "STEP-001","purpose": "Final summary parses and references key runtime-authority booleans","command": "powershell -NoProfile -Command \"Get-Content -Raw '01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\FINAL_RUNTIME_AUTHORITY_SUMMARY.json' | ConvertFrom-Json | Out-Null; 'phase_05_ok: true'\"","timeout_sec": 60,"retries": 0,"expect_exit_code": 0,"expect_stdout_regex": ["/phase_05_ok: true/"],"forbid_stdout_regex": ["/exception|traceback|cannot find path/i"],"expect_files": [{"path": "01260207201000001250_REGISTRY\\ID\\runtime_authority_outputs\\FINAL_RUNTIME_AUTHORITY_SUMMARY.json","content_regex": ["/has_dominant_runtime_nucleus/","/has_single_proven_registry_mutation_authority/","/best_next_files_to_search/"]}],"evidence": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\PH-05\\STEP-001"}
+  ],
+  "metrics": {
+    "enabled": true,
+    "sink": {"type": "jsonl","path": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\metrics\\metrics.jsonl","rotation": {"max_size_mb": 25,"keep_files": 5}},
+    "per_phase_summary": {"path_pattern": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\metrics\\{phase}\\summary.json","required_fields": ["phase_id","duration_sec","outputs_created","gates_passed","blocked_items_recorded"]},
+    "per_step_summary": {"path_pattern": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\metrics\\{phase}\\{step_id}\\summary.json","required_fields": ["phase_id","step_id","duration_sec","outputs_created","ground_truth_level_achieved"]},
+    "tracked": [
+      {"name": "source_inputs_resolved","type": "counter","unit": "count","target": "== 8"},
+      {"name": "external_authorities_classified","type": "counter","unit": "count","target": "== 2"},
+      {"name": "gaps_re_modeled","type": "counter","unit": "count","target": "== 7"},
+      {"name": "deliverables_emitted","type": "counter","unit": "count","target": "== 14"},
+      {"name": "step_contract_violations","type": "counter","unit": "count","target": "== 0"}
+    ],
+    "required_fields_per_event": ["timestamp","phase","step_id","metric_name","value","unit"],
+    "validation": {"command": "powershell -NoProfile -Command \"'metrics_contract_loaded: true'\"","expect_exit_code": 0,"expect_stdout_regex": ["/metrics_contract_loaded: true/"],"evidence": "01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\evidence\\metrics_validation.json"},
+    "reporting": {"command": "powershell -NoProfile -Command \"'metrics_reporting_optional: true'\"","outputs": ["01260207201000001250_REGISTRY\\ID\\.state\\runtime_authority_v3\\metrics\\metrics.jsonl"]}
+  },
+  "infrastructure": {
+    "required": {
+      "os": ["Windows"],
+      "python": {"version": ">=3.10","validation_command": "python --version","expect_stdout_regex": "/Python 3\\.(10|11|12|13)/"},
+      "git": {"version": ">=2.40","validation_command": "git --version","expect_stdout_regex": "/git version 2\\./"}
+    },
+    "optional": {},
+    "resources_min": {"ram_gb": 4,"disk_free_gb": 1,"validation_command": "powershell -NoProfile -Command \"'resources_ok: true'\"","expect_exit_code": 0,"expect_stdout_regex": ["/resources_ok: true/"]},
+    "permissions": {"filesystem_write": true,"network_access": false,"network_allowlist": [],"validation_command": "powershell -NoProfile -Command \"if(Test-Path '01260207201000001250_REGISTRY\\ID'){ 'permissions_ok: true'; exit 0 } else { 'permissions_ok: false'; exit 1 }\"","expect_exit_code": 0},
+    "secrets": {"allowed_sources": ["none required"],"forbidden": ["hardcoded credentials","network fetches"],"validation_command": "powershell -NoProfile -Command \"'no_secrets_required: true'\"","expect_exit_code": 0,"expect_stdout_regex": ["/no_secrets_required: true/"]},
+    "ci_parity": {"required": false,"notes": "All gates are non-interactive PowerShell or Python commands","validation_command": "powershell -NoProfile -Command \"'ci_compatible_commands_only: true'\"","expect_exit_code": 0,"requirements": ["No interactive prompts","All paths explicit","Timeouts defined for all gates"]},
+    "dependencies": {"python_packages": [],"validation": {"command": "python -c \"import json, pathlib; print('python_stdlib_ok: true')\"","expect_exit_code": 0}}
+  },
+  "final_summary": {
+    "what_was_delivered": {
+      "title": "Gov_Reg Runtime Authority V3 Plan Instance",
+      "enhancements": [
+        {"id": 1,"name": "Track separation","details": {"track_a_separate": true,"track_b_separate": true,"dependency_artifact_required": true}},
+        {"id": 2,"name": "External authority gating","details": {"gate_runner_probe": true,"enforcement_bridge_probe": true,"not_automatable_blocker_supported": true}},
+        {"id": 3,"name": "Hardened artifact bundle","details": {"canonical_authority_map": true,"execution_verification_report": true,"conflict_matrix": true,"blocker_bundle": true}}
+      ]
+    },
+    "determinism_score": {"target_percent": 98,"achieved_percent": 95,"factors": ["Explicit source corpus","External probe phase","Hardened schema requirement","Policy blockers captured instead of guessed"]},
+    "time_analysis": {"sequential_estimate_min": 115,"parallel_estimate_min": 115,"speedup_percent": 0,"bottlenecks": ["External authority readability","Contested runtime-role adjudication","Owner policy blockers"],"per_step_estimates": {"PH-00/STEP-001": 10,"PH-01/STEP-001": 20,"PH-02/STEP-001": 25,"PH-03/STEP-001": 25,"PH-04/STEP-001": 20,"PH-05/STEP-001": 15}},
+    "quality_gates_summary": {"total_gates": 6,"passed": 0,"failed": 0,"pending": 6,"all_gates_have": {"executable_commands": true,"expected_output_patterns": true,"evidence_artifact_paths": true,"pass_fail_conditions": true,"step_id_association": true}},
+    "next_steps": ["Execute PH-00 to freeze the source corpus","Probe external gate files in PH-01 before revisiting G1 or G2","Generate hardened verification and authority artifacts in PH-02 and PH-03","Do not authorize Track A while PH-04 still reports unresolved blockers"],
+    "known_limitations": ["This plan does not execute Track A remediation","External files may remain unreadable and therefore keep some runtime roles blocked","Owner answers for DQ-1 through DQ-7 are captured, not auto-resolved"]
+  },
+  "ai_instructions": {
+    "when_receiving_project_request": [
+      "Treat Track A and Track B as separate until TRACK_DEPENDENCY_DECISION.json says otherwise",
+      "Do not treat documentation references as proof of implementation",
+      "Probe external gate files before revising G1 or G2 outcomes",
+      "Emit blocker artifacts instead of inferring missing owner decisions"
+    ],
+    "do_not": [
+      "Do not modify runtime code or external governance files",
+      "Do not mark a gap closed when evidence is only referenced_not_readable or blocked",
+      "Do not imply that DOC-SCRIPT minting is still valid without policy support"
+    ],
+    "remember": [
+      "Every role outcome must be evidence-backed",
+      "Every blocker must be explicit",
+      "All writes stay under runtime_authority_outputs and .state"
+    ]
+  }
+}

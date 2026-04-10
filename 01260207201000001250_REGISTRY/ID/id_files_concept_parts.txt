@@ -1,0 +1,101 @@
+.
+
+**1) `ID_FILE_CLASSIFICATION.md`**
+Status: **current meta-classifier**
+Relevance: **high**
+Fills gaps: yes — best file for deciding what is current, supporting, legacy, and reference. It explicitly says it reflects the **current IDPKG runtime and governance tooling**, marks `01260207201000000174_ID_IDENTITY_CONTRACT.md` as superseded, and labels `Unified File+Directory ID Package v1.0` as a legacy design spec.
+AI handling: **load first for triage**, but not as the semantic contract itself.   
+
+**2) `ID_SCRIPT_INVENTORY.jsonl`**
+Status: **current script-state inventory**
+Relevance: **high**
+Fills gaps: yes — this is the best file for actual tool routing because it classifies scripts by canonicality, role, importability, and supersession. I checked it directly. It is more operationally useful than most prose docs.
+AI handling: **load for tooling decisions**; do not treat it as a semantic contract.
+
+**3) `01260207201000000174_ID_IDENTITY_CONTRACT.md`**
+Status: **relevant but older contract**
+Relevance: **high**
+Fills gaps: yes — it cleanly defines the model you said you want: `file_id` is 20 digits, `doc_id` is `P_` + 20 digits, filename prefixes are boundary markers only, and 22-digit `enhanced_id` is a separate type that must not be called `file_id`.
+Problem: it is not the newest contract version according to the classification file.
+AI handling: **load for semantic comparison**, but **not as the sole current authority**.  
+
+**4) `AI_CLI_ID_ASSIGNMENT_COMPLETE_GUIDE.md`**
+Status: **current operational guide, but transitional**
+Relevance: **high**
+Fills gaps: yes — good for how the system is supposed to be used by automation: 20-digit file and directory IDs, `P_` only for Python filenames, governance zones, registry update flow, validation steps.
+Problem: it still points at some runtime/module paths that the classification layer says are superseded or legacy.
+AI handling: **load for workflow/use**, but verify paths and entry points against the inventory/classification before acting.    
+
+**5) `01260207201000000144_ID_CANONICALITY_CORRECTIONS_V2.1.1.md`**
+Status: **transition/hardening doc**
+Relevance: **medium-high**
+Fills gaps: yes — it explains why the allocator facade exists, why backend allocators should be treated as internal, why inventory needs `import_module`, and how canonicality enforcement was supposed to be hardened.
+Problem: it is a corrections plan, not the final runtime truth.
+AI handling: **load when reasoning about why the current shape looks the way it does**, not as primary operating instructions. 
+
+**6) `Unified File+Directory ID Package v1.0`**
+Status: **legacy design spec**
+Relevance: **medium**
+Fills gaps: yes — it is useful for architecture intent. I checked it directly, and it clearly tries to unify files and directories under one subsystem while preserving 20-digit file-ID ingest behavior and extending directory handling through `.dir_id` plus a shared allocator.
+Problem: the classification file explicitly marks it as legacy.
+AI handling: **comparison/reference only**. Do not load it as current authority. 
+
+**7) `01260207201000000166_ID_CANONICALITY_INDEX.md`**
+Status: **navigation / execution-plan index**
+Relevance: **medium**
+Fills gaps: a little — mainly helps explain the canonicality-hardening document set and intended rollout order.
+Problem: it is still clearly transitional and still references a multi-allocator world that needed cleanup.
+AI handling: **reference only**. Useful for archaeology, not current truth. 
+
+**8) `ChatGPT-ID System Sources.md`**
+Status: **source map / analysis memo**
+Relevance: **medium-low**
+Fills gaps: a little — useful for locating prior conflict points and source files.
+Problem: it is not authoritative and includes older analysis statements that may now be outdated.
+AI handling: **reference only**; do not let it outrank actual contracts or inventories. 
+
+**9) `DOC-ID-GOVERNANCE-REQ-001__ID_SYSTEM_GOVERNANCE_REQUIREMENTS.md`**
+Status: **conflicting old branch**
+Relevance: **high as conflict evidence, low as current guidance**
+Fills gaps: only in showing a competing architecture. It defines `doc_id` as the primary file identity in `DOC-<SYSTEM>-<DOMAIN>-<KIND>-<SEQ>` form, uses a doc-id registry model, and builds governance around that system.
+Problem: this conflicts with the 20-digit `file_id` + `P_` Python/doc wrapper model.
+AI handling: **block as current authority**; keep only as conflict evidence/history. 
+
+**10) `DOC_ID_SYSTEM_AI_REFERENCE_README.md`**
+Status: **conflicting old AI-reference branch**
+Relevance: **medium as history, low as current guidance**
+Fills gaps: only if you are specifically studying the old doc_id-centric system. It explicitly says it is the sole authoritative AI reference for the doc_id system.
+Problem: that is exactly why it should not be loaded for the current 20-digit IDPKG-centric architecture.
+AI handling: **block for current-system reasoning**. Keep only as legacy branch evidence. 
+
+## What actually fills gaps
+
+The files that genuinely improve understanding of the **current** system are:
+
+* `ID_FILE_CLASSIFICATION.md`
+* `ID_SCRIPT_INVENTORY.jsonl`
+* `AI_CLI_ID_ASSIGNMENT_COMPLETE_GUIDE.md`
+* `01260207201000000144_ID_CANONICALITY_CORRECTIONS_V2.1.1.md`
+
+## What is mostly old or superseded
+
+* `01260207201000000174_ID_IDENTITY_CONTRACT.md` — still useful, but older
+* `Unified File+Directory ID Package v1.0` — legacy design ancestor
+* `01260207201000000166_ID_CANONICALITY_INDEX.md` — rollout/index doc
+* `ChatGPT-ID System Sources.md` — source map / prior analysis
+
+## What should be blocked for current-architecture AI loading
+
+* `DOC-ID-GOVERNANCE-REQ-001__ID_SYSTEM_GOVERNANCE_REQUIREMENTS.md`
+* `DOC_ID_SYSTEM_AI_REFERENCE_README.md`
+
+## Recommended AI load set
+
+For another AI working on the **current** system, I would load in this order:
+
+1. `ID_FILE_CLASSIFICATION.md` 
+2. `ID_SCRIPT_INVENTORY.jsonl`
+3. `AI_CLI_ID_ASSIGNMENT_COMPLETE_GUIDE.md` 
+4. the **newer** identity contract referenced by the classification file, not `01260207201000000174_ID_IDENTITY_CONTRACT.md` 
+5. `01260207201000000144_ID_CANONICALITY_CORRECTIONS_V2.1.1.md` 
+
