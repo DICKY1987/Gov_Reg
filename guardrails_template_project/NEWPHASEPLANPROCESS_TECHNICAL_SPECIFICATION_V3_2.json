@@ -21,7 +21,7 @@
     "key_capabilities": [
       "AI-executable plan generation from natural language requirements",
       "Step-level contracts with inputs/outputs/invariants/preconditions/postconditions",
-      "Template-defined validation gates (5 default gates, extensible)",
+        "Template-defined validation gates (6 default gates, extensible)",
       "File manifest with conflict analysis and step-level file scoping",
       "Cryptographic evidence chain linking all execution steps",
       "Self-healing failure types with bounded retries and convergence detection (5 defaults)",
@@ -2917,6 +2917,21 @@
       }
     ],
     "version_history": {
+      "v3.2.0": {
+        "date": "2026-04-04",
+        "changes": [
+          "Added configuration_driven_development enforcement section",
+          "Added pattern_governance with pattern_creation_contract",
+          "Added executor_registry with registered executor binding",
+          "Extended execution_patterns with allow_null_pattern_id enforcement",
+          "Added GATE-CFG-001 through GATE-CFG-006 configuration-driven validation gates",
+          "Added step-level implementation_mode, executor_binding, behavior_spec, behavior_binding_proof fields",
+          "Extended planning_hierarchy with implementation_style and engine_component_id",
+          "Added traceability mappings for requirement_to_pattern, component_to_pattern, step_to_executor",
+          "Expanded anti_pattern_detection with CDD-violation triggers",
+          "Mandatory pattern creation before implementation when no matching pattern exists"
+        ]
+      },
       "v3.0.0": {
         "date": "2026-02-03",
         "changes": [
@@ -2927,7 +2942,7 @@
           "Added ground truth validation levels",
           "Added per-step file scoping",
           "Added step_id tracking throughout pipeline",
-          "Added template default validation gates (5, extensible)"
+          "Added template default validation gates (6, extensible)"
         ]
       },
       "v2.4.0": {
