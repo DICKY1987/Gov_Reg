@@ -1,0 +1,774 @@
+Below is the exact **command-to-API mapping** I would use for the GitHub-facing CLI layer.
+
+This assumes the architecture you already defined:
+
+* GitHub is the **execution surface**
+* plan/package is the authority
+* Projects field IDs come from `config/github_field_registry.json`
+* step linkage is stored in `config/step_issue_linkage.json`
+* Projects writes use **GitHub App installation tokens**, not `GITHUB_TOKEN`, and not PATs as the normal path.  
+
+It also matches GitHub’s current API model:
+
+* **REST** for issues, milestones, and sub-issues
+* **GraphQL** for Projects v2 item add/update
+* Project node IDs, field IDs, option IDs, and iteration IDs must be resolved before mutation. ([GitHub Docs][1])
+
+---
+
+# 0. Common runtime contract for all commands
+
+Every CLI command that mutates GitHub should follow this internal sequence:
+
+```text
+load config → authenticate → resolve IDs → validate intent → call REST/GraphQL → persist linkage/evidence → verify → return result
+```
+
+## Shared preflight
+
+1. Load:
+
+   * `config/github_field_registry.json`
+   * `config/step_issue_linkage.json`
+   * optional `config/github_override_registry.json`
+2. Mint GitHub App installation token
+3. Verify required IDs exist
+4. Validate the requested mutation against the plan and governance laws
+5. Execute API calls
+6. Write updated local registry/linkage artifacts
+7. Return machine-readable result
+
+Your own SSOT explicitly requires runtime field resolution, fail-closed behavior if the registry is missing, and one named writer for automation-only fields.  
+
+---
+
+# 1. `create_step`
+
+## Purpose
+
+Create the GitHub issue that represents one step contract, add it to the project, set its project fields, and record the stable linkage.
+
+## CLI contract
+
+```text
+mycli create_step --step-id STEP-001 --repo owner/repo
+```
+
+## Inputs
+
+* `step_id`
+* repo owner/repo
+* step data from plan/package:
+
+  * title
+  * body/contract markdown
+  * phase
+  * milestone_group
+  * plan_hash
+  * projection_version
+
+## Preconditions
+
+* `step_id` must exist in the plan
+* `step_id` must not already be linked unless `--update-existing` is explicitly passed
+* field registry must already contain:
+
+  * project node ID
+  * Phase field ID + option IDs
+  * Status field ID + option IDs
+  * StepID field ID
+  * PlanHash field ID
+  * ProjectionVersion field ID
+
+This matches your laws `LAW-GH-002`, `LAW-WORK-001`, and the projection phase in the process design. 
+
+## API sequence
+
+### Call 1 — REST: create issue
+
+Use the REST “Create an issue” endpoint. It accepts GitHub App installation tokens and requires Issues write permission. ([GitHub Docs][1])
+
+```http
+POST /repos/{owner}/{repo}/issues
+```
+
+### Minimum body
+
+```json
+{
+  "title": "[STEP-001] <contract_summary>",
+  "body": "<rendered step contract markdown>",
+  "labels": ["planned-work"]
+}
+```
+
+### Call 2 — GraphQL: add issue to project
+
+Use `addProjectV2ItemById`. GitHub documents this as the mutation that links an existing content item to a Project. ([GitHub Docs][2])
+
+```graphql
+mutation {
+  addProjectV2ItemById(input: {
+    projectId: "PROJECT_ID",
+    contentId: "ISSUE_NODE_ID"
+  }) {
+    item { id }
+  }
+}
+```
+
+### Call 3 — GraphQL: set StepID
+
+Use `updateProjectV2ItemFieldValue`. GitHub documents this for project field mutation. ([GitHub Docs][2])
+
+For StepID as text:
+
+```graphql
+mutation {
+  updateProjectV2ItemFieldValue(input: {
+    projectId: "PROJECT_ID",
+    itemId: "ITEM_ID",
+    fieldId: "STEPID_FIELD_ID",
+    value: { text: "STEP-001" }
+  }) {
+    projectV2Item { id }
+  }
+}
+```
+
+### Call 4 — GraphQL: set Phase
+
+For a single-select field, GitHub requires `singleSelectOptionId`. ([GitHub Docs][3])
+
+```graphql
+mutation {
+  updateProjectV2ItemFieldValue(input: {
+    projectId: "PROJECT_ID",
+    itemId: "ITEM_ID",
+    fieldId: "PHASE_FIELD_ID",
+    value: { singleSelectOptionId: "PHASE_OPTION_ID" }
+  }) {
+    projectV2Item { id }
+  }
+}
+```
+
+### Call 5 — GraphQL: set Status
+
+Same mutation pattern as Phase, usually defaulting to `Todo` or `Backlog`. GitHub’s built-in workflows can also set status automatically, but your CLI should only write Status if your ownership model says it is the writer for this transition.
+
+### Call 6 — GraphQL: set PlanHash
+
+Text field:
+
+```graphql
+value: { text: "<sha256>" }
+```
+
+### Call 7 — GraphQL: set ProjectionVersion
+
+Text or number field, depending on your field definition:
+
+```graphql
+value: { text: "12" }
+```
+
+or
+
+```graphql
+value: { number: 12 }
+```
+
+### Call 8 — REST: ensure/assign milestone if `milestone_group` exists
+
+Use the REST milestones endpoint. “Create a milestone” accepts GitHub App installation tokens and Issues/Pull requests write permission. ([GitHub Docs][4])
+
+If milestone missing:
+
+```http
+POST /repos/{owner}/{repo}/milestones
+```
+
+Then assign the issue by updating the issue’s milestone through the Issues REST endpoint, because milestone is an issue property, not a project item field. GitHub explicitly says `updateProjectV2ItemFieldValue` cannot change Milestone. ([GitHub Docs][3])
+
+```http
+PATCH /repos/{owner}/{repo}/issues/{issue_number}
+```
+
+### Local writes
+
+Update:
+
+```json
+config/step_issue_linkage.json
+{
+  "STEP-001": {
+    "issue_number": 123,
+    "issue_node_id": "...",
+    "project_item_id": "...",
+    "repo": "owner/repo",
+    "project_id": "...",
+    "project_number": 5,
+    "milestone": "MVP-Alpha",
+    "projected_at": "2026-04-16T..."
+  }
+}
+```
+
+## Returned result
+
+```json
+{
+  "command": "create_step",
+  "step_id": "STEP-001",
+  "issue_number": 123,
+  "project_item_id": "PVTI_...",
+  "milestone": "MVP-Alpha",
+  "status": "created"
+}
+```
+
+---
+
+# 2. `create_subissue`
+
+## Purpose
+
+Create a child issue and attach it under a parent issue.
+
+## CLI contract
+
+```text
+mycli create_subissue --parent-step STEP-001 --child-step STEP-001A --repo owner/repo
+```
+
+## Inputs
+
+* parent issue reference:
+
+  * parent `step_id` or explicit `issue_number`
+* child step data
+* repo owner/repo
+
+## Preconditions
+
+* parent issue must already exist
+* child step must either:
+
+  * already have a GitHub issue created, or
+  * be created first by the command
+* sub-issue policy must allow this relationship
+
+## API sequence
+
+### Call 1 — if child issue missing: REST create issue
+
+Same REST create issue endpoint as `create_step`. ([GitHub Docs][1])
+
+### Call 2 — REST: add sub-issue
+
+GitHub now has a dedicated REST sub-issues API. “Add sub-issue” accepts GitHub App installation tokens and Issues write permission. It requires:
+
+* parent `issue_number`
+* child `sub_issue_id`
+* optional `replace_parent`. ([GitHub Docs][5])
+
+```http
+POST /repos/{owner}/{repo}/issues/{issue_number}/sub_issues
+```
+
+Body:
+
+```json
+{
+  "sub_issue_id": 456789012,
+  "replace_parent": false
+}
+```
+
+Note: the API expects the child issue **ID**, not the issue number. ([GitHub Docs][5])
+
+### Optional Calls 3+ — GraphQL project item alignment
+
+If child issues are also tracked as project items:
+
+* `addProjectV2ItemById`
+* `updateProjectV2ItemFieldValue` for StepID, Phase, Status, etc. ([GitHub Docs][2])
+
+### Local writes
+
+Update linkage registry with parent-child relation:
+
+```json
+{
+  "STEP-001A": {
+    "issue_number": 124,
+    "parent_step_id": "STEP-001",
+    "parent_issue_number": 123
+  }
+}
+```
+
+## Returned result
+
+```json
+{
+  "command": "create_subissue",
+  "parent_issue_number": 123,
+  "child_issue_number": 124,
+  "status": "linked"
+}
+```
+
+---
+
+# 3. `assign_milestone`
+
+## Purpose
+
+Ensure a milestone exists and assign one or more issues to it.
+
+## CLI contract
+
+```text
+mycli assign_milestone --milestone MVP-Alpha --steps STEP-001 STEP-002 --repo owner/repo
+```
+
+## Inputs
+
+* milestone title
+* optional description / due date
+* issue numbers or step IDs
+* repo owner/repo
+
+## Preconditions
+
+* milestone grouping must be valid under the plan
+* issues must already exist
+
+Your mapping docs are explicit that milestones are **delivery checkpoints**, not lifecycle phases.  
+
+## API sequence
+
+### Call 1 — REST: get/list milestone if you need lookup
+
+Use milestones REST endpoints.
+
+### Call 2 — REST: create milestone if absent
+
+```http
+POST /repos/{owner}/{repo}/milestones
+```
+
+GitHub documents this endpoint and token requirements. ([GitHub Docs][4])
+
+Body:
+
+```json
+{
+  "title": "MVP-Alpha",
+  "description": "Delivery checkpoint for MVP alpha",
+  "due_on": "2026-05-15T00:00:00Z"
+}
+```
+
+### Call 3 — REST: patch each issue to set milestone
+
+Because milestone is an issue property, not a project item field, assign it through the Issues REST endpoint, not through `updateProjectV2ItemFieldValue`. GitHub explicitly documents that Milestone must be changed via issue/PR mutations. ([GitHub Docs][3])
+
+```http
+PATCH /repos/{owner}/{repo}/issues/{issue_number}
+```
+
+Body:
+
+```json
+{
+  "milestone": 7
+}
+```
+
+### Optional project sync
+
+No Project field write is required unless you also mirror milestone grouping into a custom project field.
+
+## Returned result
+
+```json
+{
+  "command": "assign_milestone",
+  "milestone": "MVP-Alpha",
+  "milestone_number": 7,
+  "updated_issues": [123, 124]
+}
+```
+
+---
+
+# 4. `sync_phase`
+
+## Purpose
+
+Project the plan’s current phase structure into GitHub without letting GitHub become the source of truth.
+
+## CLI contract
+
+```text
+mycli sync_phase --phase PH-02 --plan path/to/plan.json
+```
+
+## Inputs
+
+* plan/package
+* target phase or all phases
+* linkage file
+* field registry
+
+## Preconditions
+
+* field registry valid
+* plan valid
+* phase option exists in project
+* `LAW-GH-003` respected: direct phase advancement must not be event-based guesswork
+
+Your SSOT says phase writes are composite and must be backed by evaluator output, not by a single event. 
+
+## Two distinct modes
+
+### Mode A — projection sync
+
+Used when you are aligning issues to the plan’s declared phase placement.
+
+### Mode B — phase advancement
+
+Used only when the evaluator has produced `phase_transition_decision.json`.
+
+Do not mix them.
+
+---
+
+## Mode A — projection sync API sequence
+
+For each linked step issue:
+
+### Call 1 — GraphQL: ensure item is in project
+
+```graphql
+addProjectV2ItemById
+```
+
+([GitHub Docs][2])
+
+### Call 2 — GraphQL: update Phase field
+
+Use `singleSelectOptionId` from registry. ([GitHub Docs][3])
+
+### Call 3 — GraphQL: update PlanHash / ProjectionVersion
+
+Use text/number field mutation. ([GitHub Docs][3])
+
+### Call 4 — optional GraphQL: update Status if your ownership model allows
+
+Only if this command is the named writer.
+
+---
+
+## Mode B — advancement sync API sequence
+
+Only run after evaluator artifact exists:
+
+* `phase_advancement_report.json`
+* `phase_transition_decision.json`
+
+Your architecture delta requires that phase transitions occur only through the evaluator and decision artifact.  
+
+Then:
+
+1. query current project item state
+2. compare current Phase vs desired next Phase
+3. mutate only if decision says `advance=true`
+4. record evidence artifact location and timestamp
+
+## Returned result
+
+```json
+{
+  "command": "sync_phase",
+  "phase": "PH-02",
+  "updated_items": 14,
+  "skipped_items": 32,
+  "mode": "projection"
+}
+```
+
+---
+
+# 5. `reconcile_drift`
+
+## Purpose
+
+Observe current GitHub state, compare it to desired state from plan and local registries, classify drift, and correct only safe cases.
+
+## CLI contract
+
+```text
+mycli reconcile_drift --project 5 --repo owner/repo
+```
+
+## Inputs
+
+* plan/package
+* field registry
+* linkage file
+* project ID / number
+* optional override registry
+
+## Preconditions
+
+* field registry valid
+* app auth valid
+* reconciliation rules loaded
+
+Your architecture explicitly defines this as the governing primitive: **observe → diff → act → report**, level-triggered rather than edge-triggered.   
+
+## Drift classes to implement
+
+Use the taxonomy already defined in your GitHub subsystem:
+
+* Allowed
+* Violation
+* Orphan
+* Missing
+* Override. 
+
+## Read path
+
+### Read 1 — GraphQL: project items and fields
+
+Query:
+
+* all project items
+* StepID
+* Phase
+* Status
+* PlanHash
+* ProjectionVersion
+* EvidenceState
+* GateStatus
+
+GitHub documents that you first need the project node ID, then field IDs/options/iterations. ([GitHub Docs][3])
+
+### Read 2 — REST: issue state
+
+For each linked issue, read:
+
+* open/closed
+* milestone
+* labels if needed
+* assignees if needed
+
+### Read 3 — optional REST/Checks APIs
+
+Read PR/check state if your reconciliation logic includes gate passage.
+
+---
+
+## Diff rules
+
+### Missing
+
+Plan says step exists, but no linked issue/project item exists.
+
+**Action**
+
+* call `create_step` flow
+
+### Orphan
+
+Issue/project item exists with no valid StepID or no linkage entry.
+
+**Action**
+
+* no automatic destructive correction
+* classify as Orphan
+* optionally open a flag issue or emit report only
+
+This aligns directly with `LAW-WORK-001`. 
+
+### Violation
+
+Automation-only field differs from desired value and no approved override exists.
+
+**Action**
+
+* GraphQL `updateProjectV2ItemFieldValue` to correct field
+* record correction in reconciliation report
+
+### Override
+
+Diff exists, but override registry authorizes it.
+
+**Action**
+
+* do not correct
+* emit report entry only
+
+### Allowed
+
+Diff is in GitHub-owned field such as assignee/comment/review thread.
+
+**Action**
+
+* no correction
+
+Your ownership model explicitly splits plan-owned, GitHub-owned, and automation-only data.  
+
+---
+
+## Write path
+
+For safe corrective writes:
+
+### GraphQL corrections
+
+Use:
+
+* `addProjectV2ItemById`
+* `updateProjectV2ItemFieldValue` for Phase, Status, StepID, PlanHash, ProjectionVersion, EvidenceState, GateStatus. ([GitHub Docs][2])
+
+### REST corrections
+
+Use:
+
+* PATCH issue for milestone
+* comments for evidence notices
+* optional issue creation for missing steps. ([GitHub Docs][1])
+
+### Local write
+
+Write:
+
+* `reconciliation_report.json`
+* updated linkage file if any missing items were created
+* updated projection registry if you keep it
+
+## Returned result
+
+```json
+{
+  "command": "reconcile_drift",
+  "summary": {
+    "allowed": 18,
+    "violation": 3,
+    "missing": 2,
+    "orphan": 1,
+    "override": 4
+  },
+  "corrected": [
+    {"step_id": "STEP-002", "field": "Status", "from": "Backlog", "to": "In Progress"},
+    {"step_id": "STEP-007", "action": "created_issue"}
+  ],
+  "report": "artifacts/reconciliation_report.json"
+}
+```
+
+---
+
+# 6. The exact ownership split by command
+
+## `create_step`
+
+Allowed to write:
+
+* issue creation
+* project item creation
+* StepID
+* Phase
+* Status only if designated
+* PlanHash
+* ProjectionVersion
+* milestone assignment
+
+## `create_subissue`
+
+Allowed to write:
+
+* child issue creation
+* parent/child relationship
+* child project item projection if policy allows
+
+## `assign_milestone`
+
+Allowed to write:
+
+* milestone creation
+* issue milestone assignment only
+
+## `sync_phase`
+
+Allowed to write:
+
+* Phase
+* PlanHash
+* ProjectionVersion
+* optionally Status if this command owns that transition
+
+## `reconcile_drift`
+
+Allowed to write:
+
+* only safe corrections of automation-only fields
+* missing step creation if policy allows
+* never write back into the plan
+
+That unidirectional rule is non-negotiable in your SSOT. 
+
+---
+
+# 7. The exact protocol choice for each command
+
+* `create_step`
+  REST issue create → GraphQL add-to-project → GraphQL field writes → REST milestone patch
+
+* `create_subissue`
+  REST issue create if needed → REST add sub-issue → GraphQL project sync if needed
+
+* `assign_milestone`
+  REST create milestone if needed → REST patch issues
+
+* `sync_phase`
+  GraphQL read current state → GraphQL Phase/metadata updates
+
+* `reconcile_drift`
+  GraphQL + REST read sweep → classify drift → GraphQL/REST corrective writes → report
+
+---
+
+# 8. Straight recommendation
+
+Implement these as **separate commands over a shared GitHub integration library**:
+
+* `GitHubAuthClient`
+* `GitHubIssuesClient`
+* `GitHubMilestonesClient`
+* `GitHubProjectsClient`
+* `LinkageRegistry`
+* `ReconciliationEngine`
+
+Do not bury this logic directly in ad hoc CLI command files. The command layer should be thin; the integration layer should own:
+
+* token minting
+* ID resolution
+* mutation guards
+* retries / backoff
+* evidence output
+
+Your own architecture already points in that direction: thin workflow shells, central policy, explicit program specs, and reconciliation-centered control.  
+
+
+
+[1]: https://docs.github.com/en/rest/issues/issues "REST API endpoints for issues - GitHub Docs"
+[2]: https://docs.github.com/en/graphql/reference/mutations "Mutations - GitHub Docs"
+[3]: https://docs.github.com/en/issues/planning-and-tracking-with-projects/automating-your-project/using-the-api-to-manage-projects "Using the API to manage Projects - GitHub Docs"
+[4]: https://docs.github.com/en/rest/issues/milestones "REST API endpoints for milestones - GitHub Docs"
+[5]: https://docs.github.com/en/rest/issues/sub-issues "REST API endpoints for sub-issues - GitHub Docs"

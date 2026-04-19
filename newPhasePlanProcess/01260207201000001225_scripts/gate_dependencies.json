@@ -1,10 +1,35 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "document_id": "GATE-DEPENDENCY-GRAPH-001",
-  "version": "1.0.0",
+  "version": "3.3.0",
   "created_at": "2026-03-05T10:54:00Z",
-  "purpose": "Define validation gate execution order and dependencies for newPhasePlanProcess v3.0.0",
+  "updated_at": "2026-04-12T00:00:00Z",
+  "purpose": "Define validation gate execution order and dependencies for newPhasePlanProcess v3.3.0",
   "execution_model": "topologically_sorted_dag",
+  "pre_execution_gates": [
+    "GATE-001",
+    "GATE-002",
+    "GATE-003",
+    "GATE-004",
+    "GATE-CONTEXT-001",
+    "GATE-CONTEXT-002",
+    "GATE-ARTIFACT-001",
+    "GATE-ARTIFACT-002",
+    "GATE-REGISTRY-001",
+    "GATE-CFG-001",
+    "GATE-CFG-002",
+    "GATE-CFG-003",
+    "GATE-CFG-004",
+    "GATE-CFG-005",
+    "GATE-CFG-006",
+    "GATE-FILE-MUTATIONS"
+  ],
+  "post_execution_gates": [
+    "GATE-005",
+    "GATE-006",
+    "GATE-RECON-001",
+    "GATE-RECON-002"
+  ],
   "gates": [
     {
       "id": "GATE-000",
@@ -52,6 +77,137 @@
       "depends_on": ["GATE-001"],
       "required": true,
       "timeout_sec": 120
+    },
+    {
+      "id": "GATE-CONTEXT-001",
+      "name": "Referenced Context Completeness",
+      "script": "P_01260207233100000741_validate_referenced_context_artifacts.py",
+      "phase": "context-validation",
+      "depends_on": ["GATE-001"],
+      "required": true,
+      "timeout_sec": 120,
+      "command": "python scripts/P_01260207233100000741_validate_referenced_context_artifacts.py {plan_path}",
+      "purpose": "Referenced context completeness: all externally required technical artifacts are declared in referenced_context_artifacts"
+    },
+    {
+      "id": "GATE-CONTEXT-002",
+      "name": "Context Authority Resolution",
+      "script": "P_01260207233100000739_validate_context_authority_resolution.py",
+      "phase": "context-validation",
+      "depends_on": ["GATE-CONTEXT-001"],
+      "required": true,
+      "timeout_sec": 120,
+      "command": "python scripts/P_01260207233100000739_validate_context_authority_resolution.py {plan_path}",
+      "purpose": "Context authority resolution: conflicting referenced artifacts are resolved by declared authority ranking"
+    },
+    {
+      "id": "GATE-ARTIFACT-001",
+      "name": "Artifact Intent Completeness",
+      "script": "P_01260207233100000736_validate_artifact_intent_manifest.py",
+      "phase": "artifact-validation",
+      "depends_on": ["GATE-003"],
+      "required": true,
+      "timeout_sec": 120,
+      "command": "python scripts/P_01260207233100000736_validate_artifact_intent_manifest.py {plan_path}",
+      "purpose": "Artifact intent completeness: required create, edit, and remove artifacts are declared in artifact_intent_manifest"
+    },
+    {
+      "id": "GATE-ARTIFACT-002",
+      "name": "No Undeclared Mutation Intent",
+      "script": "P_01260207233100000737_validate_artifact_intent_vs_steps.py",
+      "phase": "artifact-validation",
+      "depends_on": ["GATE-ARTIFACT-001"],
+      "required": true,
+      "timeout_sec": 120,
+      "command": "python scripts/P_01260207233100000737_validate_artifact_intent_vs_steps.py {plan_path}",
+      "purpose": "No undeclared mutation intent: step-level mutations are represented in artifact_intent_manifest"
+    },
+    {
+      "id": "GATE-REGISTRY-001",
+      "name": "Planned Registry Projection Valid",
+      "script": "P_01260207233100000740_validate_planned_registry_projection.py",
+      "phase": "artifact-validation",
+      "depends_on": ["GATE-ARTIFACT-001"],
+      "required": true,
+      "timeout_sec": 120,
+      "command": "python scripts/P_01260207233100000740_validate_planned_registry_projection.py {plan_path}",
+      "purpose": "Planned registry projection validity: planned projections contain only pre-execution intent, not observed state"
+    },
+    {
+      "id": "GATE-CFG-001",
+      "name": "Pattern Completeness",
+      "script": "validate_pattern_completeness.py",
+      "phase": "config-validation",
+      "depends_on": ["GATE-003"],
+      "required": true,
+      "timeout_sec": 120,
+      "command": "python scripts/validate_pattern_completeness.py",
+      "purpose": "Every executable step has pattern_id, executor_id, spec_file, config_schema_file"
+    },
+    {
+      "id": "GATE-CFG-002",
+      "name": "Engine-Spec Separation",
+      "script": "validate_engine_spec_separation.py",
+      "phase": "config-validation",
+      "depends_on": ["GATE-003"],
+      "required": true,
+      "timeout_sec": 120,
+      "command": "python scripts/validate_engine_spec_separation.py",
+      "purpose": "Behavior supplied by external spec/config, not step prose or custom commands"
+    },
+    {
+      "id": "GATE-CFG-003",
+      "name": "No Ad-hoc Execution",
+      "script": "validate_no_adhoc_execution.py",
+      "phase": "config-validation",
+      "depends_on": ["GATE-003"],
+      "required": true,
+      "timeout_sec": 120,
+      "command": "python scripts/validate_no_adhoc_execution.py",
+      "purpose": "Reject bespoke commands where a registered pattern exists for the task kind"
+    },
+    {
+      "id": "GATE-CFG-004",
+      "name": "Executor Registration",
+      "script": "validate_executor_registration.py",
+      "phase": "config-validation",
+      "depends_on": ["GATE-001"],
+      "required": true,
+      "timeout_sec": 60,
+      "command": "python scripts/validate_executor_registration.py",
+      "purpose": "Reject executor_ids not present in executor_registry"
+    },
+    {
+      "id": "GATE-CFG-005",
+      "name": "Pattern-First Gap Resolution",
+      "script": "validate_pattern_first_gap_resolution.py",
+      "phase": "config-validation",
+      "depends_on": ["GATE-003"],
+      "required": true,
+      "timeout_sec": 120,
+      "command": "python scripts/validate_pattern_first_gap_resolution.py",
+      "purpose": "Implementation steps cannot be scheduled before PATTERN_CREATION work when no pattern exists"
+    },
+    {
+      "id": "GATE-CFG-006",
+      "name": "Behavior Binding Proof",
+      "script": "validate_behavior_binding_proof.py",
+      "phase": "config-validation",
+      "depends_on": ["GATE-003"],
+      "required": true,
+      "timeout_sec": 120,
+      "command": "python scripts/validate_behavior_binding_proof.py",
+      "purpose": "Executor + spec + config + expected outputs are mechanically linked"
+    },
+    {
+      "id": "GATE-FILE-MUTATIONS",
+      "name": "File Mutations Valid",
+      "script": "P_01260207233100000290_validate_file_mutations.py",
+      "phase": "mutation-validation",
+      "depends_on": ["GATE-003"],
+      "required": true,
+      "timeout_sec": 60,
+      "command": "python scripts/P_01260207233100000290_validate_file_mutations.py .state/planning/{plan_id}/file_mutations.json"
     },
     {
       "id": "GATE-005",
@@ -174,14 +330,26 @@
       "timeout_sec": 120
     },
     {
-      "id": "GATE-FILE-MUTATIONS",
-      "name": "File Mutations Valid",
-      "script": "P_01260207233100000290_validate_file_mutations.py",
-      "phase": "validation",
-      "depends_on": ["GATE-003"],
+      "id": "GATE-RECON-001",
+      "name": "Artifact Reconciliation",
+      "script": "P_01260207233100000738_validate_artifact_reconciliation.py",
+      "phase": "reconciliation",
+      "depends_on": ["GATE-ARTIFACT-001", "GATE-ARTIFACT-002"],
       "required": true,
-      "timeout_sec": 60,
-      "command": "python scripts/P_01260207233100000290_validate_file_mutations.py .state/planning/{plan_id}/file_mutations.json"
+      "timeout_sec": 180,
+      "command": "python scripts/P_01260207233100000738_validate_artifact_reconciliation.py {plan_path}",
+      "purpose": "Planned vs observed artifact reconciliation: actual outputs match artifact intent manifest"
+    },
+    {
+      "id": "GATE-RECON-002",
+      "name": "Registry Projection Reconciliation",
+      "script": "P_01260207233100000742_validate_registry_projection_reconciliation.py",
+      "phase": "reconciliation",
+      "depends_on": ["GATE-REGISTRY-001", "GATE-RECON-001"],
+      "required": true,
+      "timeout_sec": 180,
+      "command": "python scripts/P_01260207233100000742_validate_registry_projection_reconciliation.py {plan_path}",
+      "purpose": "Planned projection vs observed registry reconciliation: registry writes match planned projection"
     },
     {
       "id": "GATE-998",
@@ -214,6 +382,26 @@
       "description": "Validate plan structure, gates, contracts, and assumptions"
     },
     {
+      "phase": "context-validation",
+      "gates": ["GATE-CONTEXT-001", "GATE-CONTEXT-002"],
+      "description": "Validate referenced context artifacts and authority resolution"
+    },
+    {
+      "phase": "artifact-validation",
+      "gates": ["GATE-ARTIFACT-001", "GATE-ARTIFACT-002", "GATE-REGISTRY-001"],
+      "description": "Validate artifact intent manifest, mutation declarations, and planned registry projection"
+    },
+    {
+      "phase": "config-validation",
+      "gates": ["GATE-CFG-001", "GATE-CFG-002", "GATE-CFG-003", "GATE-CFG-004", "GATE-CFG-005", "GATE-CFG-006"],
+      "description": "Enforce configuration-driven development: pattern binding, executor registry, no ad-hoc execution"
+    },
+    {
+      "phase": "mutation-validation",
+      "gates": ["GATE-FILE-MUTATIONS"],
+      "description": "Validate declared file mutations are deterministic and properly bounded"
+    },
+    {
       "phase": "testing",
       "gates": ["GATE-005", "GATE-006"],
       "description": "Run unit tests and verify coverage"
@@ -230,8 +418,13 @@
     },
     {
       "phase": "validation",
-      "gates": ["GATE-014", "GATE-015", "GATE-016", "GATE-017", "GATE-FILE-MUTATIONS"],
+      "gates": ["GATE-014", "GATE-015", "GATE-016", "GATE-017"],
       "description": "Final validation checks for completeness and consistency"
+    },
+    {
+      "phase": "reconciliation",
+      "gates": ["GATE-RECON-001", "GATE-RECON-002"],
+      "description": "Post-execution reconciliation of artifacts and registry against planned projections"
     },
     {
       "phase": "meta-validation",
@@ -245,6 +438,18 @@
     "GATE-002",
     "GATE-003",
     "GATE-004",
+    "GATE-CONTEXT-001",
+    "GATE-CONTEXT-002",
+    "GATE-ARTIFACT-001",
+    "GATE-ARTIFACT-002",
+    "GATE-REGISTRY-001",
+    "GATE-CFG-001",
+    "GATE-CFG-002",
+    "GATE-CFG-003",
+    "GATE-CFG-004",
+    "GATE-CFG-005",
+    "GATE-CFG-006",
+    "GATE-FILE-MUTATIONS",
     "GATE-005",
     "GATE-006",
     "GATE-007",
@@ -258,7 +463,8 @@
     "GATE-015",
     "GATE-016",
     "GATE-017",
-    "GATE-FILE-MUTATIONS",
+    "GATE-RECON-001",
+    "GATE-RECON-002",
     "GATE-998",
     "GATE-999"
   ],
@@ -268,6 +474,11 @@
     "Optional gates provide additional validation but do not block execution",
     "GATE-003 is a dependency for most downstream gates (step contracts required)",
     "GATE-005/006 added in v3.0.0 for test validation",
-    "GATE-FILE-MUTATIONS validates deterministic file mutation methods"
+    "GATE-FILE-MUTATIONS validates deterministic file mutation methods",
+    "v3.3.0: Added GATE-CONTEXT-001/002 for referenced context validation",
+    "v3.3.0: Added GATE-ARTIFACT-001/002 and GATE-REGISTRY-001 for pre-execution artifact and registry intent",
+    "v3.3.0: Added GATE-CFG-001 through GATE-CFG-006 for configuration-driven development enforcement",
+    "v3.3.0: Added GATE-RECON-001/002 for post-execution reconciliation",
+    "v3.3.0: Added pre_execution_gates and post_execution_gates classification"
   ]
 }

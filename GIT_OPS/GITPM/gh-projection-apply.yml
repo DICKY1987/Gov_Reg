@@ -1,0 +1,70 @@
+name: GH_PROJECTION_APPLY
+
+# This workflow reads the deterministic projection manifest produced
+# by `GH_PROJECTION_GENERATE` and applies it to GitHub.  It
+# creates new issues when necessary, adds them to the project, sets
+# their fields via GraphQL mutations and assigns milestones.  The
+# workflow separates read/generate from write/apply to allow safe
+# review of the generated state before mutation.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Generate an installation token for project operations.
+      - name: Generate installation token
+        id: generate-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PEM }}
+
+      # Ensure the projection manifest exists.
+      - name: Verify projection manifest
+        run: |
+          if [ ! -f projections/projection_manifest.json ]; then
+            echo "Projection manifest not found. Run GH_PROJECTION_GENERATE first." >&2
+            exit 1
+          fi
+
+      # Apply the projection.  Replace the placeholder code with
+      # commands that iterate through the manifest and perform the
+      # required GraphQL and REST calls.  Remember to call
+      # `addProjectV2ItemById` before `updateProjectV2ItemFieldValue`
+      # when adding a new content item to the project【109688515925987†L540-L564】.
+      - name: Apply projection
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          echo "Applying projection manifest..."
+          # TODO: iterate over projection_manifest.json and for each
+          # entry:
+          #   1. Use gh api REST to create or fetch the issue.
+          #   2. Use gh api GraphQL addProjectV2ItemById to add the
+          #      issue to the project【109688515925987†L540-L564】.
+          #   3. Use gh api GraphQL updateProjectV2ItemFieldValue to
+          #      set StepID, Phase, PlanHash, ProjectionVersion and other
+          #      fields【109688515925987†L540-L564】.
+          #   4. Use gh api REST to create or assign the milestone
+          #      because milestone cannot be set via updateProjectV2ItemFieldValue【109688515925987†L540-L564】.
+          echo "Projection apply placeholder"
+
+      # Optional: commit any linkage or registry updates that result
+      # from the apply operation (for example, updating
+      # `config/step_issue_linkage.json`).  This is left as a
+      # placeholder because the implementation details depend on your
+      # CLI integration.
+      - name: Commit linkage updates
+        if: false  # set to true once implementation writes files
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update linkage after projection apply"
+          file_pattern: config/step_issue_linkage.json

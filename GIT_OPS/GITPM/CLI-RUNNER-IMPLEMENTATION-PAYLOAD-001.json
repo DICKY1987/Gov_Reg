@@ -1,0 +1,620 @@
+{
+  "payload_spec_id": "CLI-RUNNER-IMPLEMENTATION-PAYLOAD-001",
+  "title": "Implementation-ready command payload format for deterministic file operations",
+  "version": "1.0.0",
+  "status": "READY_FOR_EXECUTION",
+  "purpose": "Define the exact command payload structure the CLI runner will consume so each file operation can be executed, validated, and reported in one pass with no interpretation.",
+  "execution_model": {
+    "mode": "single_pass_ordered_execution",
+    "abort_on_first_critical_failure": true,
+    "supports_backup": true,
+    "supports_validation": true,
+    "supports_post_apply_assertions": true,
+    "supports_per_operation_evidence": true
+  },
+  "top_level_schema": {
+    "type": "object",
+    "required": [
+      "payload_id",
+      "version",
+      "run_policy",
+      "workspace",
+      "operations",
+      "final_validation"
+    ],
+    "properties": {
+      "payload_id": {
+        "type": "string"
+      },
+      "version": {
+        "type": "string"
+      },
+      "run_policy": {
+        "type": "object"
+      },
+      "workspace": {
+        "type": "object"
+      },
+      "operations": {
+        "type": "array"
+      },
+      "final_validation": {
+        "type": "array"
+      }
+    }
+  },
+  "run_policy_schema": {
+    "type": "object",
+    "required": [
+      "execution_mode",
+      "abort_on_first_critical_failure",
+      "create_backup_before_write",
+      "write_encoding",
+      "newline_mode"
+    ],
+    "properties": {
+      "execution_mode": {
+        "type": "string",
+        "enum": [
+          "ordered",
+          "ordered_with_continue_on_noncritical"
+        ]
+      },
+      "abort_on_first_critical_failure": {
+        "type": "boolean"
+      },
+      "create_backup_before_write": {
+        "type": "boolean"
+      },
+      "write_encoding": {
+        "type": "string",
+        "enum": [
+          "utf-8"
+        ]
+      },
+      "newline_mode": {
+        "type": "string",
+        "enum": [
+          "lf",
+          "crlf",
+          "preserve_if_exists"
+        ]
+      },
+      "backup_root": {
+        "type": "string"
+      },
+      "default_validation_mode": {
+        "type": "string",
+        "enum": [
+          "strict"
+        ]
+      }
+    }
+  },
+  "workspace_schema": {
+    "type": "object",
+    "required": [
+      "root_path"
+    ],
+    "properties": {
+      "root_path": {
+        "type": "string"
+      },
+      "path_mode": {
+        "type": "string",
+        "enum": [
+          "relative_to_root"
+        ]
+      }
+    }
+  },
+  "operation_schema": {
+    "type": "object",
+    "required": [
+      "op_id",
+      "file_path",
+      "operation",
+      "critical",
+      "content_spec",
+      "validations"
+    ],
+    "properties": {
+      "op_id": {
+        "type": "string"
+      },
+      "description": {
+        "type": "string"
+      },
+      "file_path": {
+        "type": "string"
+      },
+      "operation": {
+        "type": "string",
+        "enum": [
+          "create_or_replace",
+          "patch_json_replace_paths",
+          "append_if_missing"
+        ]
+      },
+      "critical": {
+        "type": "boolean"
+      },
+      "file_type": {
+        "type": "string",
+        "enum": [
+          "json",
+          "yaml",
+          "markdown",
+          "python",
+          "text"
+        ]
+      },
+      "backup_required": {
+        "type": "boolean"
+      },
+      "content_spec": {
+        "type": "object"
+      },
+      "validations": {
+        "type": "array"
+      },
+      "post_apply_assertions": {
+        "type": "array"
+      },
+      "evidence": {
+        "type": "object"
+      }
+    }
+  },
+  "content_spec_variants": {
+    "create_or_replace": {
+      "required": [
+        "mode",
+        "content"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "literal_full_content"
+        },
+        "content": {
+          "type": [
+            "string",
+            "object",
+            "array"
+          ]
+        }
+      }
+    },
+    "patch_json_replace_paths": {
+      "required": [
+        "mode",
+        "patches"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "rfc6902_replace_subset"
+        },
+        "patches": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "op",
+              "path",
+              "value"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "replace",
+                  "add"
+                ]
+              },
+              "path": {
+                "type": "string"
+              },
+              "value": {}
+            }
+          }
+        }
+      }
+    },
+    "append_if_missing": {
+      "required": [
+        "mode",
+        "append_text"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "append_if_exact_text_missing"
+        },
+        "append_text": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "validation_rule_schema": {
+    "type": "object",
+    "required": [
+      "type"
+    ],
+    "properties": {
+      "type": {
+        "type": "string",
+        "enum": [
+          "json_parse",
+          "yaml_parse",
+          "python_compile",
+          "must_contain_string",
+          "must_not_contain_string",
+          "must_contain_key",
+          "json_pointer_exists",
+          "file_exists"
+        ]
+      },
+      "value": {
+        "type": "string"
+      }
+    }
+  },
+  "post_apply_assertion_schema": {
+    "type": "object",
+    "required": [
+      "type"
+    ],
+    "properties": {
+      "type": {
+        "type": "string",
+        "enum": [
+          "workflow_contains",
+          "workflow_not_contains",
+          "text_contains",
+          "text_not_contains"
+        ]
+      },
+      "value": {
+        "type": "string"
+      }
+    }
+  },
+  "result_schema": {
+    "type": "object",
+    "required": [
+      "payload_id",
+      "status",
+      "operation_results",
+      "final_validation_results"
+    ],
+    "properties": {
+      "payload_id": {
+        "type": "string"
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "success",
+          "partial_failure",
+          "failed"
+        ]
+      },
+      "operation_results": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "op_id",
+            "file_path",
+            "status",
+            "backup_path",
+            "validation_results"
+          ],
+          "properties": {
+            "op_id": {
+              "type": "string"
+            },
+            "file_path": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "applied",
+                "skipped",
+                "failed"
+              ]
+            },
+            "backup_path": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "validation_results": {
+              "type": "array"
+            },
+            "error": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        }
+      },
+      "final_validation_results": {
+        "type": "array"
+      }
+    }
+  },
+  "execution_rules": [
+    "The runner must resolve every file_path relative to workspace.root_path.",
+    "The runner must create parent directories before create_or_replace if they do not exist.",
+    "The runner must create a backup before any write when backup_required=true or run_policy.create_backup_before_write=true.",
+    "The runner must apply validations immediately after each operation.",
+    "The runner must stop immediately on a failed critical operation when abort_on_first_critical_failure=true.",
+    "The runner must serialize JSON objects with stable indentation of 2 spaces and newline termination.",
+    "The runner must not infer missing content, missing paths, or missing validation rules."
+  ],
+  "implementation_ready_payload_template": {
+    "payload_id": "GH_HARDENING_APPLY_001",
+    "version": "1.0.0",
+    "run_policy": {
+      "execution_mode": "ordered",
+      "abort_on_first_critical_failure": true,
+      "create_backup_before_write": true,
+      "write_encoding": "utf-8",
+      "newline_mode": "lf",
+      "backup_root": ".cli_backups",
+      "default_validation_mode": "strict"
+    },
+    "workspace": {
+      "root_path": ".",
+      "path_mode": "relative_to_root"
+    },
+    "operations": [
+      {
+        "op_id": "OP001",
+        "description": "Create sync governance policy",
+        "file_path": "policies/github_sync_governance.yaml",
+        "operation": "create_or_replace",
+        "critical": true,
+        "file_type": "yaml",
+        "backup_required": true,
+        "content_spec": {
+          "mode": "literal_full_content",
+          "content": "version: 1.0.0\npolicy_id: GITHUB_SYNC_GOVERNANCE_001\nplan_authority:\n  ssot_source: plan_files\n  statement: \"Plan YAML/JSON files are the sole authority for decomposition, step contracts, phase structure, gate requirements, evidence requirements, and milestone groupings.\"\ngithub_authority:\n  statement: \"GitHub is the execution surface only.\"\n  github_owned_fields:\n    - assignees\n    - review_conversations\n    - comment_threads\nplan_owned_fields:\n  - phase_structure\n  - step_contracts\n  - gate_requirements\n  - evidence_requirements\n  - milestone_groupings\nautomation_only_fields:\n  Phase:\n    writer: GH_PHASE_ADVANCE_EVALUATE\n  Status:\n    writer: GH_PROJECT_ITEM_SYNC\n  StepID:\n    writer: GH_PROJECTION_APPLY\n  EvidenceState:\n    writer: GH_EVIDENCE_SEAL\n  DeterminismState:\n    writer: GH_RECONCILE_DRIFT\n  PlanHash:\n    writer: GH_PROJECTION_APPLY\n  ProjectionVersion:\n    writer: GH_PROJECTION_APPLY\n  GateStatus:\n    writer: GH_EVIDENCE_SEAL\ndrift_classes:\n  - CLEAN\n  - STALE\n  - VIOLATION\n  - ORPHAN\n  - MISSING\n  - OVERRIDE\n  - UNAUTHORIZED_UI_EDIT\nreconciliation:\n  trigger_model: level_triggered\n  cadence: \"*/15 * * * *\"\n  action_pattern:\n    - observe\n    - diff\n    - act\n    - report\noverrides:\n  registry_path: config/github_override_registry.json\n  expiry_required: true\n  approver_required: true\n  suppressible_classes:\n    - VIOLATION\n    - UNAUTHORIZED_UI_EDIT\n  non_suppressible_classes:\n    - ORPHAN\n    - MISSING\n"
+        },
+        "validations": [
+          {
+            "type": "yaml_parse"
+          },
+          {
+            "type": "must_contain_string",
+            "value": "automation_only_fields:"
+          },
+          {
+            "type": "must_contain_string",
+            "value": "UNAUTHORIZED_UI_EDIT"
+          }
+        ],
+        "post_apply_assertions": [
+          {
+            "type": "text_contains",
+            "value": "trigger_model: level_triggered"
+          }
+        ],
+        "evidence": {
+          "record_hash_after_write": true
+        }
+      },
+      {
+        "op_id": "OP002",
+        "description": "Create runner policy",
+        "file_path": "policies/runner_policy.yaml",
+        "operation": "create_or_replace",
+        "critical": true,
+        "file_type": "yaml",
+        "backup_required": true,
+        "content_spec": {
+          "mode": "literal_full_content",
+          "content": "version: 1.0.0\npolicy_id: RUNNER_POLICY_001\ndefault_runner_class: linux_hosted\nallowed_runner_classes:\n  - linux_hosted\n  - windows_hosted\n  - self_hosted_windows\n  - self_hosted_linux\n  - self_hosted_ephemeral\ncategory_to_runner:\n  graphql_rest_operations: linux_hosted\n  projection_generation: linux_hosted\n  projection_apply: linux_hosted\n  gate_evaluation: linux_hosted\n  reconciliation: linux_hosted\n  windows_toolchain_only: self_hosted_windows\nrequirements:\n  every_programspec_must_declare_runner_class: true\n  missing_runner_class_is_error: true\n"
+        },
+        "validations": [
+          {
+            "type": "yaml_parse"
+          },
+          {
+            "type": "must_contain_string",
+            "value": "category_to_runner:"
+          }
+        ],
+        "post_apply_assertions": [],
+        "evidence": {
+          "record_hash_after_write": true
+        }
+      },
+      {
+        "op_id": "OP003",
+        "description": "Create GitHub field registry schema",
+        "file_path": "schemas/github_field_registry.schema.json",
+        "operation": "create_or_replace",
+        "critical": true,
+        "file_type": "json",
+        "backup_required": true,
+        "content_spec": {
+          "mode": "literal_full_content",
+          "content": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "GitHub Field Registry",
+            "type": "object",
+            "required": [
+              "project_id",
+              "generated_at",
+              "generator_version",
+              "api_version",
+              "registry_fingerprint",
+              "fields"
+            ],
+            "properties": {
+              "project_id": {
+                "type": "string"
+              },
+              "generated_at": {
+                "type": "string"
+              },
+              "generator_version": {
+                "type": "string"
+              },
+              "api_version": {
+                "type": "string"
+              },
+              "registry_fingerprint": {
+                "type": "string"
+              },
+              "fields": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "validations": [
+          {
+            "type": "json_parse"
+          },
+          {
+            "type": "must_contain_string",
+            "value": "\"registry_fingerprint\""
+          }
+        ],
+        "post_apply_assertions": [],
+        "evidence": {
+          "record_hash_after_write": true
+        }
+      },
+      {
+        "op_id": "OP004",
+        "description": "Patch SSOT design file to reinforce laws",
+        "file_path": "PROC-DESIGN-GITHUB-AUTOMATION-SSOT.json",
+        "operation": "patch_json_replace_paths",
+        "critical": true,
+        "file_type": "json",
+        "backup_required": true,
+        "content_spec": {
+          "mode": "rfc6902_replace_subset",
+          "patches": [
+            {
+              "op": "replace",
+              "path": "/governing_laws/0/statement",
+              "value": "All automation that reads or writes GitHub Projects must authenticate via a GitHub App installation token. GITHUB_TOKEN cannot access Projects. PATs are permitted only as an explicitly declared exception with a named owner and expiry date."
+            },
+            {
+              "op": "replace",
+              "path": "/governing_laws/1/statement",
+              "value": "No workflow, script, or ProgramSpec may hardcode a GitHub Project node ID, field ID, or option/iteration ID. All IDs must be resolved at runtime from config/github_field_registry.json."
+            },
+            {
+              "op": "replace",
+              "path": "/governing_laws/2/statement",
+              "value": "Phase transitions on the GitHub Project Phase field may only be made by the Phase Advancement Evaluator, backed by a stored phase_transition_decision.json artifact. No workflow may update the Phase field based on a single event."
+            }
+          ]
+        },
+        "validations": [
+          {
+            "type": "json_parse"
+          },
+          {
+            "type": "must_contain_string",
+            "value": "execution surface"
+          }
+        ],
+        "post_apply_assertions": [],
+        "evidence": {
+          "record_hash_after_write": true
+        }
+      },
+      {
+        "op_id": "OP005",
+        "description": "Create bootstrap workflow",
+        "file_path": ".github/workflows/bootstrap-github-fields.yml",
+        "operation": "create_or_replace",
+        "critical": true,
+        "file_type": "yaml",
+        "backup_required": true,
+        "content_spec": {
+          "mode": "literal_full_content",
+          "content": "name: bootstrap-github-fields\non:\n  workflow_dispatch:\n  schedule:\n    - cron: '0 0 * * *'\njobs:\n  bootstrap:\n    runs-on: ubuntu-latest\n    permissions:\n      contents: write\n    steps:\n      - uses: actions/checkout@v4\n      - name: Generate GitHub App token\n        id: app-token\n        uses: actions/create-github-app-token@v2\n        with:\n          app-id: ${{ vars.APP_ID }}\n          private-key: ${{ secrets.APP_PEM }}\n      - name: Lint for inline GitHub IDs\n        run: python scripts/lint_no_inline_github_ids.py\n      - name: Run fields discover\n        run: python -m github_automation_cli.main fields-discover\n      - name: Run fields validate\n        run: python -m github_automation_cli.main fields-validate\n      - name: Commit registry if changed\n        uses: stefanzweifel/git-auto-commit-action@v5\n        with:\n          commit_message: 'chore(github-automation): refresh field registry [bootstrap]'\n          file_pattern: 'config/github_field_registry.json'\n"
+        },
+        "validations": [
+          {
+            "type": "yaml_parse"
+          },
+          {
+            "type": "must_contain_string",
+            "value": "actions/create-github-app-token@v2"
+          },
+          {
+            "type": "must_not_contain_string",
+            "value": "PVTSSF_"
+          }
+        ],
+        "post_apply_assertions": [
+          {
+            "type": "workflow_contains",
+            "value": "python -m github_automation_cli.main fields-discover"
+          }
+        ],
+        "evidence": {
+          "record_hash_after_write": true
+        }
+      }
+    ],
+    "final_validation": [
+      {
+        "type": "file_exists",
+        "value": "policies/github_sync_governance.yaml"
+      },
+      {
+        "type": "file_exists",
+        "value": ".github/workflows/bootstrap-github-fields.yml"
+      },
+      {
+        "type": "text_not_contains",
+        "value": "if: false"
+      }
+    ]
+  },
+  "payload_generation_rules": [
+    "Every file operation from the per-file patch plan must become exactly one operation entry unless the file uses patch_json_replace_paths.",
+    "For create_or_replace operations with JSON object content, the runner must serialize the object to canonical pretty JSON before writing.",
+    "For patch_json_replace_paths operations, the runner must load current JSON, apply patches in order, then reserialize canonical pretty JSON.",
+    "For append_if_missing operations, the runner must perform an exact substring search before appending.",
+    "Each operation must carry only the validations relevant to that file."
+  ],
+  "recommended_cli_commands": {
+    "single_payload_apply": "python -m github_automation_cli.main apply-payload path/to/payload.json",
+    "dry_run": "python -m github_automation_cli.main apply-payload path/to/payload.json --dry-run",
+    "validate_payload_only": "python -m github_automation_cli.main validate-payload path/to/payload.json"
+  },
+  "runner_behavior_contract": {
+    "before_each_operation": [
+      "resolve absolute target path",
+      "ensure parent directory exists when create_or_replace",
+      "create backup when required"
+    ],
+    "after_each_operation": [
+      "run per-operation validations",
+      "capture backup path",
+      "capture content hash"
+    ],
+    "after_all_operations": [
+      "run final_validation rules",
+      "emit result JSON matching result_schema"
+    ]
+  }
+}

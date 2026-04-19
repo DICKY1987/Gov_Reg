@@ -1,0 +1,584 @@
+{
+  "instruction_set_metadata": {
+    "instruction_set_id": "CLI-IMPLEMENT-ABSTRACTION-GOVERNANCE-V3_3",
+    "version": "1.0.0",
+    "created_on": "2026-04-17",
+    "purpose": "CLI-ready implementation instructions to apply abstraction-governance changes across the newPhasePlanProcess v3.2 files, update schema support, add validators, and wire new gates.",
+    "execution_mode": "fail_closed",
+    "target_outcome": "Upgrade the planning system so abstraction is mechanically captured and validated during planning rather than informally implied."
+  },
+  "grounding": {
+    "source_files": [
+      "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+      "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+      "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json",
+      "schemas/NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json"
+    ],
+    "required_input_artifacts": [
+      "cleaned_final_abstraction_patch_plan.json"
+    ],
+    "must_preserve_existing_behavior": [
+      "Existing v3.2 planning sections and semantics unless explicitly extended by this instruction set",
+      "Existing gate registry entries unless explicitly amended",
+      "Existing pattern-first and no-implied-behavior rules unless strengthened"
+    ]
+  },
+  "global_execution_rules": {
+    "preconditions": [
+      "All target files must exist before mutation begins",
+      "A baseline backup or git snapshot must be captured before any writes",
+      "JSON must be parsed and re-serialized canonically after each modification batch",
+      "Instruction document content must be transformed structurally, not by naive blind text append"
+    ],
+    "mutation_policy": {
+      "allowed_mutations": [
+        "edit_existing",
+        "create_new"
+      ],
+      "forbidden_mutations": [
+        "silent_delete",
+        "schema_downgrade",
+        "gate_removal_without_explicit_instruction"
+      ]
+    },
+    "json_write_policy": {
+      "sort_keys": false,
+      "indent": 2,
+      "ensure_ascii": false,
+      "newline": "\\n",
+      "final_newline": true
+    },
+    "failure_policy": {
+      "on_parse_error": "abort",
+      "on_missing_required_path": "abort",
+      "on_array_selector_ambiguity": "abort",
+      "on_schema_validation_failure": "abort",
+      "on_instruction_document_transform_failure": "abort"
+    }
+  },
+  "execution_plan": [
+    {
+      "step_id": "STEP-001",
+      "title": "Load and validate source artifacts",
+      "type": "validation",
+      "inputs": {
+        "required_files": [
+          "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+          "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+          "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json",
+          "schemas/NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json",
+          "cleaned_final_abstraction_patch_plan.json"
+        ]
+      },
+      "actions": [
+        "Verify each required file exists",
+        "Parse JSON files",
+        "Verify cleaned_final_abstraction_patch_plan.json contains strict_rfc6902_object_pointer_operations and companion_array_resolution_instructions"
+      ],
+      "outputs": {
+        "evidence_file": ".state/evidence/abstraction_impl/STEP-001_source_validation.json"
+      }
+    },
+    {
+      "step_id": "STEP-002",
+      "title": "Create backups and baseline snapshot",
+      "type": "baseline",
+      "actions": [
+        "Create timestamped backup copies of all target files",
+        "Compute SHA256 hashes of each original file",
+        "Record current git branch and clean/dirty status if repository exists"
+      ],
+      "outputs": {
+        "backup_manifest": ".state/evidence/abstraction_impl/STEP-002_backup_manifest.json",
+        "baseline_hashes": ".state/evidence/abstraction_impl/STEP-002_baseline_hashes.json"
+      }
+    },
+    {
+      "step_id": "STEP-003",
+      "title": "Patch template object-pointer sections",
+      "type": "patch_apply",
+      "target_file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+      "source_patch_section": "strict_rfc6902_object_pointer_operations.template",
+      "actions": [
+        "Apply only strict RFC-6902 object-pointer operations for the template file",
+        "Do not apply array operations in this step",
+        "Abort if any object-pointer path is missing unless path creation is explicitly part of op semantics"
+      ],
+      "outputs": {
+        "patched_file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+        "evidence_file": ".state/evidence/abstraction_impl/STEP-003_template_object_patch.json"
+      }
+    },
+    {
+      "step_id": "STEP-004",
+      "title": "Resolve template array instructions and convert to concrete RFC-6902 ops",
+      "type": "array_resolution",
+      "target_file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+      "source_patch_section": "companion_array_resolution_instructions.template",
+      "resolution_rules": {
+        "selector_policy": "locate_by_id_or_name_then_convert_to_pointer",
+        "uniqueness_required": true,
+        "on_zero_matches": "create_append_if_instruction_explicitly_allows_otherwise_abort",
+        "on_multiple_matches": "abort"
+      },
+      "actions": [
+        "Resolve validation_gates entries by gate_id",
+        "Resolve ai_instructions arrays by exact field name",
+        "Resolve any other mutable arrays using the companion selector instructions",
+        "Generate a concrete RFC-6902 ops file before applying"
+      ],
+      "outputs": {
+        "resolved_ops_file": ".state/evidence/abstraction_impl/STEP-004_template_resolved_ops.json",
+        "evidence_file": ".state/evidence/abstraction_impl/STEP-004_template_array_patch.json"
+      }
+    },
+    {
+      "step_id": "STEP-005",
+      "title": "Add step-level abstraction_contract support in template step contracts",
+      "type": "structured_edit",
+      "target_file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+      "actions": [
+        "Extend the canonical shape of step contracts so executable steps can include abstraction_contract",
+        "Do not attempt to populate every existing concrete step instance with values unless the template already uses reusable defaults",
+        "Ensure the template communicates that abstraction_contract is required when steps depend on abstracted paths, identities, executors, interfaces, or artifacts"
+      ],
+      "outputs": {
+        "evidence_file": ".state/evidence/abstraction_impl/STEP-005_step_contract_extension.json"
+      }
+    },
+    {
+      "step_id": "STEP-006",
+      "title": "Patch technical specification object-pointer sections",
+      "type": "patch_apply",
+      "target_file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+      "source_patch_section": "strict_rfc6902_object_pointer_operations.technical_spec",
+      "actions": [
+        "Apply strict object-pointer operations only",
+        "Preserve existing documentation structure",
+        "Update version metadata to 3.3.0"
+      ],
+      "outputs": {
+        "evidence_file": ".state/evidence/abstraction_impl/STEP-006_techspec_object_patch.json"
+      }
+    },
+    {
+      "step_id": "STEP-007",
+      "title": "Resolve technical specification array instructions",
+      "type": "array_resolution",
+      "target_file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+      "source_patch_section": "companion_array_resolution_instructions.technical_spec",
+      "resolution_targets": [
+        "executive_summary.key_capabilities",
+        "executive_summary.design_principles",
+        "required_sections",
+        "section_purpose_map.sections",
+        "validation_guarantees",
+        "gate_registry",
+        "glossary.terms",
+        "appendix.version_history"
+      ],
+      "outputs": {
+        "resolved_ops_file": ".state/evidence/abstraction_impl/STEP-007_techspec_resolved_ops.json",
+        "evidence_file": ".state/evidence/abstraction_impl/STEP-007_techspec_array_patch.json"
+      }
+    },
+    {
+      "step_id": "STEP-008",
+      "title": "Transform instruction document content",
+      "type": "content_transform",
+      "target_file": "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json",
+      "actions": [
+        "Update document_metadata.version to 3.3.0",
+        "Parse the markdown content string into section-aware segments",
+        "Apply the structured section-aware transform instructions from the patch plan",
+        "Rebuild the full markdown content string",
+        "Write the updated JSON document back out"
+      ],
+      "validation_rules": [
+        "Do not duplicate existing headings",
+        "Do not remove existing mandatory sections",
+        "Ensure new abstraction sections appear in the section-by-section instructions",
+        "Ensure new general principles bullets are present exactly once"
+      ],
+      "outputs": {
+        "evidence_file": ".state/evidence/abstraction_impl/STEP-008_instruction_transform.json"
+      }
+    },
+    {
+      "step_id": "STEP-009",
+      "title": "Upgrade plan schema for abstraction sections",
+      "type": "schema_update",
+      "target_file": "schemas/NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json",
+      "actions": [
+        "Add new top-level properties: abstraction_governance, abstraction_registry, abstraction_decision_rules, shared_core_allocation, resolver_contracts",
+        "Add these new sections to the schema required list if the template treats them as mandatory",
+        "Define nested schemas for each new top-level section",
+        "Extend step contract schema to support abstraction_contract",
+        "Extend any planning_hierarchy item schemas to allow implementation_abstraction",
+        "Extend execution_patterns schema to allow abstraction_contract metadata",
+        "Extend traceability schema to support abstraction mappings"
+      ],
+      "schema_requirements": {
+        "disallow_additional_properties_where_existing_schema_is_strict": true,
+        "prefer_enum_for_controlled_values": true,
+        "prefer_object_keyed_shapes_over_index-dependent_arrays": true
+      },
+      "outputs": {
+        "evidence_file": ".state/evidence/abstraction_impl/STEP-009_schema_update.json"
+      }
+    },
+    {
+      "step_id": "STEP-010",
+      "title": "Create validator file set",
+      "type": "file_create",
+      "target_directory": "scripts/",
+      "files_to_create": [
+        {
+          "path": "scripts/validate_abstraction_governance.py",
+          "purpose": "Validate plan-wide abstraction policy and required policy fields"
+        },
+        {
+          "path": "scripts/validate_abstraction_registry.py",
+          "purpose": "Validate declared abstracted resources and required fields"
+        },
+        {
+          "path": "scripts/validate_resolver_contracts.py",
+          "purpose": "Validate resolver definitions and fail-closed behavior"
+        },
+        {
+          "path": "scripts/validate_abstraction_coverage.py",
+          "purpose": "Ensure cross-boundary/shared/identity-sensitive dependencies are classified"
+        },
+        {
+          "path": "scripts/validate_resolver_completeness.py",
+          "purpose": "Ensure every abstraction reference resolves through a declared resolver"
+        },
+        {
+          "path": "scripts/validate_direct_reference_violations.py",
+          "purpose": "Detect forbidden direct references such as cross-module literal paths"
+        },
+        {
+          "path": "scripts/validate_shared_core_duplication.py",
+          "purpose": "Detect duplicated shared responsibilities across CLIs/modules/workstreams"
+        },
+        {
+          "path": "scripts/validate_identity_stability.py",
+          "purpose": "Detect unstable identity usage for rename/move/reorder-sensitive entities"
+        },
+        {
+          "path": "scripts/validate_step_abstraction_contract.py",
+          "purpose": "Validate per-step abstraction contracts"
+        }
+      ],
+      "implementation_requirements": {
+        "language": "python",
+        "output_format": "json",
+        "exit_code_policy": "0 pass, non-zero fail",
+        "required_cli_shape": "python <script> <plan_file_or_required_args>",
+        "stderr_for_errors": true
+      },
+      "outputs": {
+        "manifest_file": ".state/evidence/abstraction_impl/STEP-010_validator_manifest.json"
+      }
+    },
+    {
+      "step_id": "STEP-011",
+      "title": "Define validator implementation contract",
+      "type": "contract_definition",
+      "actions": [
+        "All validators must parse input JSON safely",
+        "All validators must emit a structured JSON result with validator_id, passed, findings, evidence_paths, and failure_codes",
+        "All validators must support deterministic ordering of findings",
+        "All validators must fail closed on malformed input",
+        "All validators must avoid implicit defaults for missing critical fields"
+      ],
+      "validator_result_schema": {
+        "required_fields": [
+          "validator_id",
+          "passed",
+          "findings",
+          "error_count",
+          "warning_count",
+          "failure_codes",
+          "checked_file",
+          "timestamp_utc"
+        ]
+      },
+      "outputs": {
+        "evidence_file": ".state/evidence/abstraction_impl/STEP-011_validator_contract.json"
+      }
+    },
+    {
+      "step_id": "STEP-012",
+      "title": "Wire new gates into template and spec",
+      "type": "gate_wiring",
+      "actions": [
+        "Ensure GATE-ABS-001 through GATE-ABS-005 exist in the template validation_gates collection",
+        "Ensure matching gate registry entries exist in the technical specification",
+        "Add these gates to the execution boundary or required validation flow where abstraction correctness must be proven before execution",
+        "Preserve existing gate sequencing and make abstraction gates pre-execution gates"
+      ],
+      "gate_definitions_required": [
+        "GATE-ABS-001 Abstraction Coverage",
+        "GATE-ABS-002 Resolver Completeness",
+        "GATE-ABS-003 Direct Reference Violation Audit",
+        "GATE-ABS-004 Shared Core Duplication Audit",
+        "GATE-ABS-005 Identity Stability Audit"
+      ],
+      "outputs": {
+        "evidence_file": ".state/evidence/abstraction_impl/STEP-012_gate_wiring.json"
+      }
+    },
+    {
+      "step_id": "STEP-013",
+      "title": "Update any gate dependency graph or orchestration index",
+      "type": "integration_update",
+      "actions": [
+        "Search for gate dependency files, gate ordering files, or plan CLI gate registries that must include the new abstraction gates",
+        "If such files exist, update them so the new gates are runnable and ordered before execution",
+        "If no dependency file exists, record that fact in evidence and stop without inventing one"
+      ],
+      "search_targets": [
+        "scripts/gate_dependencies.json",
+        "scripts/NEWPHASEPLANPROCESS_plan_cli.py",
+        "other gate registry or orchestration files referenced by the technical specification"
+      ],
+      "outputs": {
+        "evidence_file": ".state/evidence/abstraction_impl/STEP-013_gate_dependency_update.json"
+      }
+    },
+    {
+      "step_id": "STEP-014",
+      "title": "Run schema validation against modified template",
+      "type": "validation",
+      "actions": [
+        "Validate NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json against the upgraded schema",
+        "Validate NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json is still valid JSON and internally coherent",
+        "Validate NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json is valid JSON and content string is non-empty"
+      ],
+      "outputs": {
+        "evidence_file": ".state/evidence/abstraction_impl/STEP-014_post_patch_validation.json"
+      }
+    },
+    {
+      "step_id": "STEP-015",
+      "title": "Create golden positive fixture",
+      "type": "test_fixture_create",
+      "actions": [
+        "Create a minimal example plan instance that uses abstraction_governance",
+        "Include one abstracted path resource",
+        "Include one resolver contract",
+        "Include one shared-core allocation entry",
+        "Include one step-level abstraction_contract",
+        "Run all new abstraction validators against it"
+      ],
+      "outputs": {
+        "fixture_file": "tests/fixtures/abstraction_governance_positive.json",
+        "evidence_file": ".state/evidence/abstraction_impl/STEP-015_positive_fixture.json"
+      }
+    },
+    {
+      "step_id": "STEP-016",
+      "title": "Create negative fixtures",
+      "type": "test_fixture_create",
+      "actions": [
+        "Create one fixture with cross-module literal path",
+        "Create one fixture with missing resolver",
+        "Create one fixture with duplicated shared service logic",
+        "Create one fixture with unstable identity strategy",
+        "Create one fixture with a step that uses abstraction but omits abstraction_contract"
+      ],
+      "outputs": {
+        "fixture_files": [
+          "tests/fixtures/abstraction_negative_cross_module_literal_path.json",
+          "tests/fixtures/abstraction_negative_missing_resolver.json",
+          "tests/fixtures/abstraction_negative_duplicate_shared_service.json",
+          "tests/fixtures/abstraction_negative_unstable_identity.json",
+          "tests/fixtures/abstraction_negative_missing_step_contract.json"
+        ],
+        "evidence_file": ".state/evidence/abstraction_impl/STEP-016_negative_fixtures.json"
+      }
+    },
+    {
+      "step_id": "STEP-017",
+      "title": "Execute validator suite against fixtures",
+      "type": "test_run",
+      "actions": [
+        "Run each new validator against the positive fixture and require pass",
+        "Run each relevant validator against negative fixtures and require fail where intended",
+        "Emit a summary report"
+      ],
+      "outputs": {
+        "summary_report": ".state/evidence/abstraction_impl/STEP-017_validator_test_summary.json"
+      }
+    },
+    {
+      "step_id": "STEP-018",
+      "title": "Finalize and emit modification report",
+      "type": "report",
+      "actions": [
+        "Compute post-modification hashes for all changed files",
+        "Diff original vs modified target files",
+        "Emit a final report of created and modified files",
+        "List any unresolved follow-up items such as additional orchestration files that need future work"
+      ],
+      "outputs": {
+        "final_report": ".state/evidence/abstraction_impl/STEP-018_final_report.json"
+      }
+    }
+  ],
+  "patch_application_details": {
+    "template_specific_rules": [
+      "Do not hardcode array indexes when inserting new gates",
+      "Use gate_id matching for validation_gates resolution",
+      "If ai_instructions structure differs from assumed shape, inspect actual object and adapt using same semantic intent, then record adaptation in evidence"
+    ],
+    "technical_spec_specific_rules": [
+      "Use exact string matching or stable object selectors for key_capabilities, design_principles, required_sections, gate_registry, and glossary terms",
+      "Do not duplicate existing entries if semantically equivalent text is already present"
+    ],
+    "instruction_document_specific_rules": [
+      "Because /content is markdown text inside JSON, treat all edits as structured markdown transforms then replace the full string once",
+      "Do not insert the same abstraction section twice",
+      "Preserve existing formatting style where possible"
+    ]
+  },
+  "new_sections_contracts": {
+    "abstraction_governance": {
+      "required_fields": [
+        "enabled",
+        "enforcement_mode",
+        "default_policy",
+        "required_abstraction_kinds",
+        "forbidden_direct_reference_types",
+        "resolver_registry_references",
+        "validation"
+      ]
+    },
+    "abstraction_registry": {
+      "required_fields": [
+        "resources",
+        "validation"
+      ],
+      "resource_required_fields": [
+        "abstraction_id",
+        "kind",
+        "semantic_key",
+        "physical_binding_source",
+        "resolver_method",
+        "direct_reference_allowed",
+        "stability_reason",
+        "consumers",
+        "validation_rule"
+      ]
+    },
+    "abstraction_decision_rules": {
+      "required_fields": [
+        "classification_rules",
+        "conflict_policy"
+      ]
+    },
+    "shared_core_allocation": {
+      "required_fields": [
+        "required_shared_services",
+        "validation"
+      ]
+    },
+    "resolver_contracts": {
+      "required_fields": [
+        "resolvers",
+        "validation"
+      ],
+      "resolver_required_fields": [
+        "resolver_id",
+        "input_type",
+        "output_type",
+        "source_of_truth",
+        "determinism_requirements",
+        "failure_mode"
+      ]
+    },
+    "step_abstraction_contract": {
+      "required_fields": [
+        "uses_abstractions",
+        "abstractions",
+        "forbidden_direct_usages",
+        "verification"
+      ]
+    }
+  },
+  "gate_contracts": [
+    {
+      "gate_id": "GATE-ABS-001",
+      "name": "Abstraction Coverage",
+      "validator_script": "scripts/validate_abstraction_coverage.py",
+      "must_fail_if": [
+        "volatile dependency is unclassified",
+        "shared dependency is unclassified",
+        "identity-sensitive dependency is unclassified"
+      ]
+    },
+    {
+      "gate_id": "GATE-ABS-002",
+      "name": "Resolver Completeness",
+      "validator_script": "scripts/validate_resolver_completeness.py",
+      "must_fail_if": [
+        "abstraction reference has no resolver",
+        "resolver points to missing source of truth",
+        "resolver mapping is ambiguous"
+      ]
+    },
+    {
+      "gate_id": "GATE-ABS-003",
+      "name": "Direct Reference Violation Audit",
+      "validator_script": "scripts/validate_direct_reference_violations.py",
+      "must_fail_if": [
+        "cross-module literal path is used where abstraction is required",
+        "unregistered executor is called directly",
+        "identity depends on mutable index or direct unstable locator"
+      ]
+    },
+    {
+      "gate_id": "GATE-ABS-004",
+      "name": "Shared Core Duplication Audit",
+      "validator_script": "scripts/validate_shared_core_duplication.py",
+      "must_fail_if": [
+        "same shared responsibility appears in multiple components without declared shared_core_allocation or exception"
+      ]
+    },
+    {
+      "gate_id": "GATE-ABS-005",
+      "name": "Identity Stability Audit",
+      "validator_script": "scripts/validate_identity_stability.py",
+      "must_fail_if": [
+        "rename/move/reordering-sensitive entities lack stable identity abstraction"
+      ]
+    }
+  ],
+  "deliverables": {
+    "modified_files": [
+      "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+      "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+      "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json",
+      "schemas/NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json"
+    ],
+    "new_files": [
+      "scripts/validate_abstraction_governance.py",
+      "scripts/validate_abstraction_registry.py",
+      "scripts/validate_resolver_contracts.py",
+      "scripts/validate_abstraction_coverage.py",
+      "scripts/validate_resolver_completeness.py",
+      "scripts/validate_direct_reference_violations.py",
+      "scripts/validate_shared_core_duplication.py",
+      "scripts/validate_identity_stability.py",
+      "scripts/validate_step_abstraction_contract.py",
+      "tests/fixtures/abstraction_governance_positive.json",
+      "tests/fixtures/abstraction_negative_cross_module_literal_path.json",
+      "tests/fixtures/abstraction_negative_missing_resolver.json",
+      "tests/fixtures/abstraction_negative_duplicate_shared_service.json",
+      "tests/fixtures/abstraction_negative_unstable_identity.json",
+      "tests/fixtures/abstraction_negative_missing_step_contract.json"
+    ],
+    "evidence_root": ".state/evidence/abstraction_impl/"
+  }
+}

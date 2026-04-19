@@ -1,0 +1,73 @@
+GitHub‑Native Replacement Design for the Idea‑to‑Plan Pipeline
+Background
+
+Your original process converted each idea into a chain of structured artifacts (Idea Intake Card, Qualification Record, Concept Brief, Discovery Packet, Technical Design Document, Plan‑Input Packet, JSON plan, etc.) before pushing the work to GitHub. Because maintaining a separate plan‑compiler and reconciliation engine is heavy, you asked whether GitHub’s native features could replace most of this architecture. The answer is “yes” – if you accept GitHub Issues and Projects as the source of truth and treat the JSON plan as an optional export rather than the primary control plane.
+
+GitHub’s modern planning features include structured issue forms, issue types, organization‑level issue fields, project fields (including single‑select, date and iteration fields), parent/sub‑issue relationships, boards and roadmaps, draft issues, milestones, project templates, and built‑in or custom automations. These can replicate most of your artifact pipeline without a bespoke system.
+
+Overview of Relevant GitHub Features
+Issue forms & templates: YAML‑based issue forms allow repositories to collect structured inputs; fields are converted to markdown in the issue body and can include text, dropdowns, checkboxes, uploads, and validation rules. They can set default labels, assignees and can target specific projects.
+Issue types: Organizations can define up to 25 custom issue types in addition to the defaults (task, bug, feature). Issue types classify work and support filtering and project views.
+Issue fields: Issue fields let organizations add structured metadata—such as priority, effort, impact or any custom category—to every issue. Field types include single‑select, text, number and date; the default fields Priority, Effort, Start date and Target date are customizable.
+Project custom fields: Projects support additional field types such as single‑select and iteration. Single‑select fields provide dropdowns with color‑coded options. Iteration fields create recurring time blocks (e.g., sprints) and allow grouping/filtering by iteration.
+Parent issues and sub‑issue progress: Projects can display a Parent issue field and Sub‑issue progress field to show relationships and completion progress between issues. This enables hierarchical work breakdown within GitHub.
+Milestones: Milestones track progress across a group of issues or pull requests with due dates, completion percentage and lists of open/closed items. Issues and pull requests can be associated with a milestone and can be prioritized within it.
+Project views (table, board, roadmap): Projects can display items in table (spreadsheet‑like), board (kanban) or roadmap layouts. The board layout spreads items across columns keyed by a single‑select or iteration field; dragging cards adjusts their field values accordingly. Table layouts allow grouping, slicing and sorting by field values.
+Project templates: Projects can be marked as templates; new projects created from a template inherit the template’s views, custom fields, draft issues and configured workflows.
+Built‑in workflows & automations: Projects include default workflows that update item status when issues are closed or pull requests are merged. You can configure workflows to auto‑archive items or auto‑add items from repositories based on filters; auto‑add filters include qualifiers such as label, is, and assignee. GitHub Actions and the GraphQL API can automate more complex behaviours (e.g., adding PRs to projects and setting field values).
+Mapping Intended Artifacts to GitHub Features
+
+The table below summarizes how each artifact or control from your original pipeline can be realized using GitHub’s planning features:
+
+Original artifact / control	GitHub‑native equivalent	Purpose & rationale
+Idea Intake Card	Issue form (YAML) with fields for title, problem description, desired outcome, constraints, attachments, etc.; optionally uses the default “Idea” issue type and default issue fields (priority, effort, dates).	Issue forms allow you to collect structured information from submitters and automatically apply labels, assignees and project placement. The collected data becomes the initial issue body and can be grouped or filtered within projects using fields.
+Idea Qualification Record	Custom issue fields (e.g., “Feasibility”, “Complexity”, “Domain”) pinned to the “Idea” issue type; use single‑select options such as “Low/Medium/High” for complexity and a decision field (“Proceed/Hold/Reject”).	Instead of a separate document, the qualification data lives in structured fields on the same issue. Fields are organization‑wide and support filtering and grouping.
+Concept Brief	Issue template or issue form section; store problem statement, objectives, constraints and success criteria as rich text in the issue body; optionally add a custom “Concept ready?” boolean field (single‑select).	The concept brief becomes part of the issue; there is no separate artifact. A custom field indicates readiness for the next stage.
+Discovery / Spec Packet	Sub‑issues or linked issues for research tasks; record findings in the parent issue’s comments or as attachments; use an “Exploration status” field.	Breaking discovery tasks into sub‑issues enables parallel work and progress tracking. A field or label can mark the discovery phase.
+Technical Design Document	Linked design issue or sub‑issue using the “Design” issue type; attach design documents or use the issue body for architecture details; include custom fields for architecture decision status.	A dedicated issue type keeps design discussions separate while preserving hierarchy. Design issues can have their own sub‑issues if the design requires decomposition.
+Plan‑Input Packet / JSON plan	Project fields and views; the normalized structure becomes project fields and grouped views (phases, steps, dependencies). If needed, a JSON export can be generated from project data via API but is not required for day‑to‑day planning.	Treat the project as the plan SSOT: phases correspond to single‑select fields (“Phase”); steps correspond to issues; dependencies can be expressed via blocking relationships or links.
+Artifact Intent Manifest	Custom fields on the issue or project (e.g., “Declared outputs”) and a checklist in the issue body; or use sub‑issues to represent intended artifacts.	Each output becomes a sub‑issue or checklist item, making intended deliverables visible and trackable.
+Planning run manifest / policy snapshot	Project template settings and organization‑level guidelines; record the planning policies in a repository README or wiki.	Since GitHub becomes the SSOT, you do not need separate manifest files; the project template encodes the baseline views, fields and workflows.
+Context bundle & signature	References and attachments within the issue; if your process requires capturing inventory context, attach the analysis documents or link to repository files.	GitHub does not provide tamper‑proof signatures; if required, you can store checksums in a field or comment.
+Plan Skeleton & Lint Reports	Project views configured via templates; required fields ensure completeness; built‑in workflows can flag missing values.	Instead of generating skeleton JSON and linting it, define required fields in issue forms and use built‑in workflows to set status or remind users when fields are empty.
+Refinement rounds & delta patches	Issue comments and edits; design refinements occur as edits and comments on the issue; sub‑issue tasks capture changes.	GitHub’s history preserves edits and discussions. You can label or tag iterations if needed.
+Phase advancement & gates	Project single‑select “Status” field combined with automations that change status based on events (e.g., issue closed → Status “Done”); use additional fields for gate status (e.g., “Review passed/failed”).	Built‑in workflows update status automatically when issues or pull requests are closed or merged. Manual changes or approvals are recorded as field changes.
+Evidence & linkage registry	Attachments and comments on issues and pull requests; use the “Parent issue” and “Sub‑issue progress” fields to visualize relationships; use issue links (e.g., “relates to”, “blocks”) to model dependencies; milestone or iteration fields track completion.	Evidence is stored directly on the issue; hierarchical relations are visible in project views. The need for a separate registry file disappears.
+Designing the GitHub‑Native Workflow
+Create an Idea Issue Form:
+Define a YAML form in the repository’s .github/ISSUE_TEMPLATE folder. Use text inputs, text areas, dropdowns and file upload types to capture the required information. Specify default labels (e.g., idea) and assign the issue to a project.
+Include fields for title, problem description, desired outcomes, constraints, dependencies, attachments, and optional fields like “Proposed priority” or “Domain”.
+When submitted, responses are converted to markdown and become the issue body. The issue will carry any default labels and will be added to the relevant project automatically.
+Define Issue Types for Each Stage:
+Use organization settings to create custom issue types such as Idea, Discovery, Design, Implementation, Bug etc. Organization owners can create up to 25 issue types. Assign colors and descriptions to help users choose the appropriate type.
+Pin relevant issue fields to each issue type. For example, pin “Feasibility”, “Complexity”, and “Decision” fields to the Idea type; pin “Exploration Status” to Discovery; pin “Architecture status” to Design. Fields that are not pinned remain hidden until filled.
+Create Organization‑Level Issue Fields:
+In the organization’s Planning settings, create custom fields (single‑select, text, number, or date) to capture metadata needed for your process. Examples: Feasibility (Low/Medium/High), Complexity (Low/Medium/High), Domain (Automation/Registry/GitHub), Decision (Proceed/Hold/Reject), Target Phase, Review Status, Evidence Link etc.
+Default fields such as Priority and Effort can be retained and customized.
+Pin these fields to appropriate issue types so they appear automatically when creating or viewing issues.
+Set Up a Planning Project Template:
+Create a project within the organization and configure it with the desired layouts and fields. Add custom fields like Status (single‑select: Idea, Discovery, Design, Implementation, Review, Done), Phase, Plan Hash (if you still want to store a checksum), Review Result, Evidence State, and Iteration (for sprints). Use a Milestone field or GitHub milestones to indicate major delivery targets.
+Configure the table view to group items by Status or Phase and show essential fields. You can group by any field; dragging an item to another group automatically updates the field value.
+Configure a board view with columns mapped to the Status or Phase field. Dragging cards between columns automatically changes their status.
+Add a roadmap view if you want to visualize items on a timeline based on an iteration field.
+Once configured, mark the project as a template so new projects will inherit the views, custom fields, draft issues, configured workflows and insights.
+Use Sub‑Issues for Decomposition:
+Break large issues into sub‑issues to represent tasks, discovery activities or deliverables. Sub‑issues add hierarchical relationships and support multiple levels of nesting.
+Enable the Parent issue and Sub‑issue progress fields in your project so that you can group by parent issue and see completion progress. Filters allow you to display only sub‑issues of a particular parent.
+Use tasklists inside the issue body for lightweight checklists; GitHub can convert tasklist items into linked issues when necessary.
+Define Milestones and Iterations:
+Use GitHub milestones to group issues and pull requests by release or major deliverable. Milestones show a description, due date, completion percentage and the list of associated issues and pull requests.
+Use an Iteration project field to plan work in repeating time blocks (e.g., sprints); iterations can have custom start dates, durations and breaks. You can filter or group by iteration and use roadmap views to visualize items across iterations.
+Configure Built‑In Workflows:
+Enable the default workflows so that when an issue or pull request in the project is closed or merged, the item’s status is set to “Done”.
+Optionally configure a workflow that automatically sets Status to “Todo” when new items are added, or automatically archives items when they meet criteria.
+Configure an Auto‑add workflow to add items from repositories when they match filters such as labels, assignees or open/closed status. This removes the need to manually add new issues to your project.
+Add Custom Actions for Advanced Automations (Minimal):
+If you need behaviours beyond the built‑in workflows, use GitHub Actions. For example, an action can trigger when a pull request is marked “ready for review” to add it to a project and set a field to Needs Review.
+Use the actions/add-to-project workflow maintained by GitHub to add an issue or pull request to a project with predefined field values.
+Actions can also compute a plan hash and write it to a field, copy data between fields, or validate that required fields are populated. Keep these automations minimal to avoid reproducing the complexity of your previous projection layer.
+Summary
+
+Moving the planning workflow into GitHub simplifies your architecture by treating GitHub Issues and Projects as the single source of truth. Issue forms capture structured intake; issue types and fields encode classification and qualification; project fields, views, milestones and iterations become the “plan”; sub‑issues represent decomposition; and built‑in workflows and minimal GitHub Actions handle status transitions and auto‑addition of items. Templates ensure repeatability and consistency across projects. This design replaces the complex chain of pre‑plan artifacts and a custom projection layer with native GitHub features while preserving the core goals of traceability, structure, and automation.
+
+This report explains how to use issue forms, issue types, custom fields, project templates, sub‑issues, milestones/iterations and minimal automations to achieve your planning pipeline entirely within GitHub.

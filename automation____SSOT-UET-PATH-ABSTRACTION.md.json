@@ -1,0 +1,98 @@
+{
+  "classification": {
+    "domain_tags": [
+      "automation",
+      "governance",
+      "ssot",
+      "ssot_system"
+    ],
+    "kind": "doc",
+    "sensitivity": "unknown"
+  },
+  "content_summary": {
+    "extracts": {
+      "authoritative_tables": [],
+      "commands": [
+        "> **The contracts ARE your abstractions.**",
+        "> If there is no cross-module boundary, cross-process boundary, or external coupling, a simple function is often enough."
+      ],
+      "critical_rules": [],
+      "examples": []
+    },
+    "key_entities": [],
+    "structure": {
+      "headings": [],
+      "public_api": [],
+      "schemas_referenced": [],
+      "top_level_keys": []
+    }
+  },
+  "file": {
+    "basename": "SSOT-UET-PATH-ABSTRACTION.md",
+    "content_hash_sha256": "05929faa60d2217e7423cce2cdd28bda9a90a89844c546efaf34156b5a6cd9f3",
+    "ext": ".md",
+    "last_modified_utc": "2026-01-01T20:00:19Z",
+    "line_count": 538,
+    "media_type": "text/markdown",
+    "path": "GOVERNANCE\\ssot\\SSOT_System\\automation\\SSOT-UET-PATH-ABSTRACTION.md",
+    "size_bytes": 16541,
+    "stable_id": "FILE-4728155FD277"
+  },
+  "human_summary": {
+    "how_to_use": [],
+    "what_it_is": "---",
+    "why_it_matters": "Doc artifact used in SSOT_System."
+  },
+  "io_contract": {
+    "inputs": [],
+    "outputs": [],
+    "side_effects": [
+      "none"
+    ]
+  },
+  "provenance": {
+    "evidence_locations": [
+      {
+        "type": "line_range",
+        "value": "1-1"
+      }
+    ],
+    "extracted_at_utc": "2026-01-09T01:28:37Z",
+    "extraction_method": "static_parse",
+    "tools": [
+      "build_file_profiles.py"
+    ]
+  },
+  "purpose": {
+    "lifecycle_state": "unknown",
+    "one_liner": "---",
+    "primary_audience": [
+      "human_dev"
+    ],
+    "problem_it_solves": "Not stated in file."
+  },
+  "quality": {
+    "ambiguities": [],
+    "completeness_score_0_5": null,
+    "missing_info": []
+  },
+  "relationships": {
+    "depends_on": [],
+    "generated_by": [],
+    "generates": [],
+    "referenced_by": [],
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "schema_version": "file_profile.v1",
+  "scope": {
+    "assumptions": [],
+    "in_scope": [],
+    "out_of_scope": []
+  },
+  "validation": {
+    "invariants": [],
+    "known_failure_modes": [],
+    "validators": []
+  }
+}

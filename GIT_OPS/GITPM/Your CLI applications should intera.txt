@@ -1,0 +1,416 @@
+Your CLI applications should interact with GitHub through **four distinct channels**, not one.
+
+## 1. The real communication model
+
+```text
+CLI app
+  ├─ A. Git transport        → clone / fetch / pull / push / PR branches
+  ├─ B. REST API             → create issues, milestones, comments, PR metadata
+  ├─ C. GraphQL API          → add items to Projects v2, update project fields
+  └─ D. Event / reconcile    → webhook payloads, Actions events, scheduled polling
+```
+
+That is the clean model.
+
+Your own subsystem design already treats GitHub as the **execution surface** and the plan/package as the authority, with projection and reconciliation between them.  
+
+---
+
+## 2. What each channel is for
+
+### A. Git transport
+
+This is just code and file movement.
+
+Use it for:
+
+* clone
+* fetch
+* pull
+* push
+* branch creation
+* PR source branches
+
+This is separate from project management state.
+Git moves repository content. It does **not** create project items, set project fields, or assign milestones.
+
+Your Git automation notes already separate the Git loop from the GitHub PM layer and recommend a deterministic Git adapter plus audit ledger. 
+
+---
+
+### B. REST API
+
+Use REST for GitHub objects that are not Projects-v2-field-centric.
+
+Use REST for:
+
+* create/update **issues**
+* create/update **milestones**
+* create/update **comments**
+* read/write some PR and issue metadata
+* repo operations not tied to Project v2 fields
+
+This is where your CLI creates the actual issue records that users see in repositories.
+
+---
+
+### C. GraphQL API
+
+Use GraphQL for **Projects v2** operations.
+
+Use GraphQL for:
+
+* `addProjectV2ItemById`
+* `updateProjectV2ItemFieldValue`
+* reading project field definitions
+* reading option IDs for single-select / iteration fields
+* reading current project item state for reconciliation
+
+Your design explicitly says Project field IDs and option IDs must be resolved at runtime from `github_field_registry.json`, and that item add + field update are separate calls.  
+
+---
+
+### D. Event / reconcile channel
+
+This is how GitHub talks back.
+
+There are two forms:
+
+#### Event-triggered
+
+Examples:
+
+* issue opened
+* PR opened
+* PR merged
+* check suite completed
+
+These come into:
+
+* GitHub Actions event payloads
+* or your own webhook receiver
+
+Your current workflow inventory already shows event-driven pieces like project item sync, milestone completion sync, phase sync, branch handling, and remote sync. 
+
+#### Level-triggered reconciliation
+
+This is the more important one.
+
+Instead of trusting webhooks alone, your design requires scheduled reconciliation:
+
+* observe current GitHub state
+* compare to desired state from plan/package
+* correct drift
+* emit report
+
+That “observe → diff → act → report” controller is the real backbone.   
+
+---
+
+## 3. What the CLI actually does behind the scenes
+
+The CLI should not be a dumb wrapper around `gh issue create`.
+
+It should behave like an **orchestrated client** with a stable sequence:
+
+```text
+1. Read plan / user intent
+2. Normalize into internal command
+3. Resolve GitHub IDs and mappings
+4. Call REST/GraphQL
+5. Record linkage locally
+6. Verify result
+7. Emit evidence/log
+```
+
+That is the correct behind-the-scenes behavior.
+
+---
+
+## 4. The actual submission flow
+
+Here is the practical flow for creating work from a CLI app.
+
+### Case: create a new step as a GitHub issue
+
+```text
+CLI command
+  → load plan package / step definition
+  → read step_issue_linkage.json
+  → if no linked issue exists:
+       REST: create issue
+       GraphQL: add issue to Project
+       GraphQL: set StepID, Phase, PlanHash, ProjectionVersion, Status
+       REST: assign milestone if needed
+       write step_id ↔ issue_number ↔ project_item_id to linkage file
+  → return success + identifiers
+```
+
+That is already the intended architecture in your process design.  
+
+---
+
+### Case: create a sub-issue
+
+Your CLI should:
+
+1. determine whether the design allows sub-issues for that step
+2. create the child issue
+3. link it to the parent
+4. add/update it in the project if your policy says sub-issues are also project items
+
+Your SSOT design still flags sub-issue policy as an open design decision, which means your CLI should not guess this. It must follow the chosen policy once defined. 
+
+---
+
+### Case: assign or create a milestone
+
+Your CLI should:
+
+1. determine the delivery grouping from the plan
+2. REST: create milestone if absent
+3. REST: assign issue(s) to milestone
+4. not treat milestone as phase
+
+Your mapping documents are clear that milestones are **delivery checkpoints**, while phases belong in the Project Phase field.  
+
+---
+
+## 5. What GitHub sends back to your applications
+
+GitHub talks back in three ways.
+
+### 1. API responses
+
+After REST/GraphQL calls, GitHub returns:
+
+* issue number / node ID
+* project item ID
+* updated field values
+* errors / rate limit data
+
+Your CLI should capture and persist these immediately.
+
+---
+
+### 2. GitHub Actions event payloads
+
+When things happen in GitHub, workflows receive event payloads.
+
+Your own workflow bundle already assumes this pattern:
+
+* project item sync reacts to issue/PR lifecycle events
+* milestone completion reacts to close/reopen
+* branch handler reacts to PR events
+* phase sync reacts to plan file changes
+* scheduled orchestrator performs periodic control functions.  
+
+---
+
+### 3. Reconciliation observations
+
+On a schedule, your app queries GitHub again and compares:
+
+* desired plan state
+* observed issue/PR/project/milestone/check state
+
+That is how drift is caught:
+
+* orphan issues
+* missing items
+* wrong phase
+* wrong status
+* missing evidence
+* unauthorized manual changes.  
+
+---
+
+## 6. Authentication: how the CLI should authenticate
+
+Do **not** design this around PATs as the normal path.
+
+Your architecture already made the right call:
+
+* Projects access should use a **GitHub App installation token**
+* `GITHUB_TOKEN` cannot access Projects
+* PATs are exception-only
+
+That rule is explicit in your SSOT and hardening delta.  
+
+### Practical auth split
+
+#### For local CLI use
+
+You have two realistic choices:
+
+**Option A — CLI calls a small internal service**
+
+* best for control
+* service owns GitHub App auth
+* CLI never handles app private keys directly
+
+**Option B — CLI mints GitHub App installation tokens directly**
+
+* workable
+* but more operationally fragile
+* requires secure private key handling on the user machine
+
+For your system, **Option A is better** if you want clean behind-the-scenes PM behavior.
+
+---
+
+## 7. What should live in the CLI versus in GitHub Actions
+
+This is the split you want.
+
+### CLI owns
+
+* user-facing commands
+* reading plan/package
+* local validation
+* deciding intent
+* packaging a request
+* showing useful output
+
+### Actions / orchestrator own
+
+* authoritative GitHub field mutation
+* event handling
+* reconciliation
+* phase advancement
+* drift correction
+* evidence sealing
+
+Your own design documents repeatedly point toward a central orchestrator and thin workflows rather than stuffing logic into many disconnected scripts.  
+
+---
+
+## 8. The cleanest architecture for your goal
+
+Since you want to work through CLI apps while GitHub quietly powers project management displays, the best design is:
+
+```text
+User
+  ↓
+CLI Application
+  ↓
+Local command model / plan package
+  ↓
+GitHub Integration Layer
+    ├─ REST client
+    ├─ GraphQL client
+    ├─ Auth client
+    ├─ Linkage registry client
+    └─ Reconcile client
+  ↓
+GitHub
+    ├─ Issues
+    ├─ Milestones
+    ├─ PRs
+    ├─ Project items / fields
+    ├─ Checks
+    └─ Comments / evidence
+```
+
+That gives the user:
+
+* CLI-first workflow
+* GitHub board visibility
+* milestones
+* sub-issues
+* review tracking
+* progress charts
+
+without requiring the user to manually maintain GitHub state.
+
+---
+
+## 9. The minimum internal components your CLI stack needs
+
+You do **not** need one giant app. You need a small set of integration components.
+
+### Required components
+
+#### 1. GitHub auth client
+
+Issues installation token requests and refresh.
+
+#### 2. Field registry loader
+
+Reads `github_field_registry.json` so nothing hardcodes Project field IDs.  
+
+#### 3. Issue/milestone REST client
+
+Creates and updates:
+
+* issues
+* milestones
+* comments
+* labels when needed
+
+#### 4. Project GraphQL client
+
+Adds project items and updates fields.
+
+#### 5. Linkage registry client
+
+Reads/writes:
+
+* `step_issue_linkage.json`
+* projection registry
+* override registry if you keep it.  
+
+#### 6. Reconciliation client
+
+Queries GitHub and compares it to desired state.
+
+---
+
+## 10. What the user experience should look like
+
+This is the practical outcome.
+
+The user runs something like:
+
+```text
+mycli plan sync
+mycli step create STEP-042
+mycli issue open STEP-042
+mycli milestone ensure MILESTONE-ALPHA
+mycli status reconcile
+```
+
+Behind the scenes, the CLI:
+
+* reads the plan
+* resolves IDs
+* creates/updates GitHub artifacts
+* records stable mappings
+* lets GitHub display the work naturally in Projects
+
+So the user mostly lives in:
+
+* the CLI for control
+* GitHub for visibility and collaboration
+
+That is the right division.
+
+---
+
+## 11. Straight answer
+
+Your CLI applications should communicate with GitHub through:
+
+* **git transport** for code movement
+* **REST API** for issues, milestones, comments, and some PR operations
+* **GraphQL API** for Projects v2 items and field mutations
+* **event payloads + scheduled reconciliation** for feedback and state correction
+
+And the proper architecture is:
+
+* CLI = command surface
+* GitHub = execution/project-management surface
+* Actions/orchestrator = behind-the-scenes state engine
+
+That matches your current subsystem direction almost exactly.   
+

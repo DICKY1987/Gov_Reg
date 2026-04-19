@@ -1,0 +1,45 @@
+name: Seal Evidence After Step Completion
+
+# This workflow runs when a CI workflow completes successfully and
+# seals evidence for a step.  It posts a comment to the linked
+# issue with a pointer to the produced artifacts and sets the
+# EvidenceState and GateStatus fields on the project item.  The
+# workflow must execute only after all required gates have passed
+# (tests, code review, etc.).
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+
+jobs:
+  seal_evidence:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate installation token
+        id: generate-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PEM }}
+
+      - name: Seal evidence
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          echo "Sealing evidence for completed step..."
+          # TODO: implement evidence sealing:
+          # 1. Determine which step/issue corresponds to the completed CI run.
+          # 2. Post a comment on the issue with links to artifacts (logs,
+          #    test reports, coverage, etc.).
+          # 3. Use gh api GraphQL updateProjectV2ItemFieldValue to set
+          #    EvidenceState = "Sealed" and GateStatus = "Passed"
+          #    on the project item【109688515925987†L540-L564】.
+          echo "Evidence sealed placeholder"

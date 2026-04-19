@@ -1,0 +1,103 @@
+Below is a structured summary of **native GitHub Projects/Issues features and processes** identified from recent GitHub documentation and changelogs, along with examples of how they can be used to implement or enhance your plan.  Each cited passage supports the key points.
+
+### 1. Views and Layouts
+
+* **Saved Views** – GitHub Projects lets you create multiple views (table, board, roadmap) with filters, sorting and grouping.  Views can show unstarted items, group by team, or sort by date.
+  *Example:* Create a “Unstarted” view that filters items by Status=Todo and groups by Team; this helps focus on backlog items that haven’t been started.
+
+* **Table, Board and Roadmap Layouts** – Table views behave like spreadsheets: you can show/hide fields, group by field values, slice using queries, and sort by columns.  Board views can be customized by changing column fields, column limits, and grouping; you can also set the column field to an iteration or single‑select field.  Roadmaps visualize items on a timeline using date or iteration fields, with vertical markers for milestones and custom zoom levels.
+  *Implementation:* Use board layouts to reflect phases or status columns and roadmap layouts to visualize sprint timelines or release milestones.
+
+* **Hierarchy View** – Recently graduated to GA, hierarchy view shows nested sub‑issues directly in project table views and allows expanding/collapsing up to eight levels.  You can group, slice, sort, and filter while preserving the hierarchy, and it’s enabled from the View menu.  Future enhancements include inline sub‑issue creation, drag‑and‑drop reordering and synced ordering.
+  *Implementation:* Turn on Show hierarchy for project views and use it for epic/initiative planning; plan to adopt inline sub‑issue creation and drag‑and‑drop once released.
+
+* **Hierarchy View Improvements** – Users can filter sub‑issues (`sub-issues.is:open`), avoid duplicates, and preserve expand/collapse state.
+  *Implementation:* Create a view grouped by parent issue and filter to show only open sub‑issues; collapse completed sub‑issues to keep the view tidy.
+
+### 2. Draft Issues, Sub‑Issues and Hierarchies
+
+* **Draft Issues** – Draft issues can be used as a lightweight intake mechanism; they exist only within a project until converted to an issue.  Conversion options in table/board views let you choose the target repository.
+  *Implementation:* Use draft issues for raw idea intake; after qualification convert them into issues in the appropriate repo.
+
+* **Parent Issue & Sub‑Issue Fields** – Enable the built‑in “Parent issue” and “Sub‑issue progress” fields to visualize relationships and progress.  You can group by parent issue and filter by `parent-issue:"owner/repo#issue"`.
+  *Implementation:* Add these fields to your standard project template and group by parent issue to see epics and their progress.
+
+* **Hierarchy View Enhancements** – GA release adds creating and adding sub‑issues inline, drag‑and‑drop reordering, and syncing sub‑issue order between issue and project.
+  *Implementation:* Use the in‑project “Add sub‑issue” to break work down directly from the hierarchy view and reorder tasks by dragging; ensure the plan’s CLI can handle these actions if automation is needed.
+
+### 3. Fields and Metadata
+
+* **Project Fields** – Projects support text, number, date and single‑select fields.  You can create fields like “Phase”, “Status”, “Impact”, or “Owner”.  Board columns can be set to a single‑select or iteration field and grouped by field values.
+  *Implementation:* Define a controlled list of fields in your bootstrap workflow (Phase, Status, StepID, PlanHash, EvidenceState, GateStatus, etc.) and map them to GitHub project fields.
+
+* **Default Values for Project Fields** – You can set default values for text, number and single‑select project fields; those values are applied automatically when new items are added.
+  *Implementation:* Configure default Status=“Todo” or Phase=“Planning” so new items start with the correct state.
+
+* **Issue Fields (Public Preview)** – Issue fields provide typed, organization‑wide metadata such as Priority, Effort, Start date and Target date.  They allow up to 25 custom fields per org, can be pinned to specific issue types, support search and filter, integrate with Projects, and have full REST/GraphQL API support.
+  *Implementation:* Use issue fields to replace label‑based metadata; e.g., create a “Risk level” field or “Impact score” and pin it to your custom issue types.  You can later add these fields as columns in project views for grouping or sorting.
+
+### 4. Templates and Automation
+
+* **Project Templates** – When a project is saved as a template, it copies views, custom fields, draft issues with field values, configured workflows (except auto‑add), and insights into new projects.
+  *Implementation:* Create a canonical “Plan Template” that includes standard views (Backlog, Execution, Roadmap, Blocked, Review), custom fields (Phase, Status, StepID, PlanHash), draft issue templates and built‑in workflows; then use this template for new projects to ensure consistency.
+
+* **Built‑in Workflows** – Projects provide built‑in workflows to automatically set Status to Done when issues or pull requests are closed or merged, archive items when they meet criteria, and add items automatically from repositories based on filters.  You can configure auto‑add workflows to import items that match qualifiers like `is:issue` and `label:<foo>` and auto‑archive items based on criteria such as closed status and last updated date.
+  *Implementation:* Use auto‑add workflows to ingest issues labelled “Plan” or “Phase‑1” into your project; set auto‑archive rules to clean up closed items after a fixed period.
+
+* **Import Items by Query** – When creating a project you can import items by running a search query that uses the same filters as the Issues page (AND/OR, nested queries).
+  *Implementation:* Create a new project and import all open issues with `label:phase1` or `is:open project:old-project` to bootstrap the backlog.
+
+* **Hierarchy View API & View Creation API** – The January 2026 changelog notes a new REST API endpoint to create project views.
+  *Implementation:* Your automation layer could programmatically create views (e.g., Backlog, Execution, Roadmap) when bootstrapping a project.
+
+### 5. Forms, Attachments and Default Values
+
+* **Issue Forms Upload Field** – Issue forms now support an upload field type; you can require file attachments like logs or screenshots at submission.
+  *Implementation:* Add an upload field to your idea intake form to collect relevant files at submission.
+
+* **File Uploads and Copilot Assignment** – Maintainers can set `@copilot` in the `assignees` field of an issue template to auto‑assign Copilot; maintainers can also create blank issues even when blank issues are disabled.
+  *Implementation:* Provide an issue template for bugs that automatically assigns Copilot and collects logs via the upload field.
+
+### 6. Insights and Reporting
+
+* **Insights (Charts)** – Projects support current charts (e.g., items by assignment or iteration) and historical charts (burn‑up charts) to track progress.  Insights can group by fields and summarise number fields (e.g., sum of story points or remaining time).
+  *Implementation:* Define a standard set of charts (e.g., “Items by Phase”, “Remaining Effort by Iteration”, “Blocked Items”) and include them in your project template.
+
+### 7. Search and Query Features
+
+* **Saved Views on Issues Dashboard** – The Issues dashboard now supports saved views; you can create a query, give it a name, icon and description, and quickly access it later.  Examples include “Recently created bugs involving you” or “Stale project items across projects”.
+  *Implementation:* Create cross‑project saved views for tasks like “Stale items older than 30 days” or “Open items across all phase‑1 projects”.
+
+* **Improved Search** – GitHub’s semantic search indexes issue titles and bodies, allowing natural‑language queries (e.g., “improve localization support”).  It’s available via REST and GraphQL by setting `search_type=semantic` or `HYBRID`.
+  *Implementation:* When importing items by query or building reports, use semantic search to find conceptually related issues.
+
+### 8. Agent Activity
+
+* **Agent Sessions in Issues and Projects** – GitHub surfaces AI agent sessions (e.g., Copilot, Claude) directly under assignees in issues and in project table/board views, showing statuses like “queued”, “working”, “waiting for review” and “completed”.  A Show agent sessions toggle is available in the View menu.
+  *Implementation:* If your organization uses coding agents, turn on Show agent sessions so project managers can monitor automated work alongside human work.
+
+### 9. Miscellaneous Improvements
+
+* **Move Items to Next Iteration** – You can bulk‑move all items from one iteration to another directly from the group header menu.
+  *Implementation:* Use this to roll over unfinished work to the next sprint at the end of an iteration.
+
+* **Release Information in Issue Sidebar** – Issues now show the release tag (Latest or Pre‑release) associated with their linked pull request.
+  *Implementation:* Use this for tracking when a fix shipped, especially for production bugs.
+
+* **Improved Sub‑issue Filters** – Sub‑issue filters are now easier to find, and filters auto‑apply to sub‑issues when they match view filters.
+  *Implementation:* Encourage team members to use `sub-issues.is:<state>` filters to focus on open sub‑issues.
+
+* **Improved Issue Search** – Natural language queries combine semantic and keyword matching and support qualifiers like `org:`, `user:` and `repo:`.  Use this when building query‑based imports.
+
+---
+
+### Additional Features to Consider
+
+* **Default Issue Types and Templates** – GitHub Issues supports custom issue types with associated templates (e.g., Feature, Bug, Initiative).  Templates can auto‑assign fields and workflow triggers.
+* **Issue Fields Webhooks** – The `field_added` and `field_removed` events allow actions to react when issue fields change.
+* **API to Create Views** – A new REST API allows programmatically creating project views, useful for bootstrapping projects via automation.
+* **Upload Field in Issue Forms** – Already noted above; supports file attachments in forms.
+
+---
+
+**Summary:** GitHub Projects and Issues have evolved significantly, adding saved views, hierarchy view, default field values, typed issue fields, query‑based item imports, built‑in workflows (auto‑add, auto‑archive), improved search, file‑upload fields, agent session visibility, and more.  To fully leverage the platform, your plan should incorporate these features—especially hierarchy view, default field values, issue fields, query‑based imports, insight charts, saved views on the Issues dashboard, and automation for sub‑issues and iterations—while continuing to use your SSOT and governance model to enforce determinism and reconciliation.

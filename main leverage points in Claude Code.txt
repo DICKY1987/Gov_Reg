@@ -1,0 +1,169 @@
+Yes. The main leverage points in Claude Code are not mysterious “hidden docs.” They are a set of persistent context mechanisms and extension files that Claude Code reads from your project or user config. The important ones are `CLAUDE.md`, `MEMORY.md`/auto memory, `.claude/rules/`, `skills`, `subagents`, `hooks`, and `settings.json`. Anthropic’s docs describe them as separate features with different loading behavior and context cost. ([Claude][1])
+
+What these documents are:
+
+`CLAUDE.md` is the persistent instruction file you write. It is for stable project guidance: coding standards, build and test commands, architecture notes, naming conventions, and common workflows. It loads at session start, so Claude sees it every conversation in that project. Anthropic explicitly positions it as the place for “what you’d otherwise re-explain.” ([Claude][2])
+
+Auto memory is different. Claude writes that itself as it works. It stores learnings such as build commands, debugging insights, architecture notes, code style preferences, and workflow habits that seem useful in future conversations. The first 200 lines or 25KB of `MEMORY.md` load at the start of each session. Anthropic says this is context, not enforcement, and it is machine-local for the CLI. ([Claude][2])
+
+`.claude/rules/` is the modular version of `CLAUDE.md`. Rules let you split instructions into topic files and scope them to file paths so they only load when relevant files are opened. That reduces noise and saves context. Rules without `paths` frontmatter load at launch; scoped rules load when matching files are read. ([Claude][2])
+
+Skills are on-demand playbooks. A `SKILL.md` gives Claude reusable instructions, knowledge, workflows, and optional supporting files. The big difference is that the skill body does **not** load all the time; only the description loads at startup so Claude can decide when to use it. The full body loads when invoked or selected as relevant. That makes skills the right place for long procedures and reference material. ([Claude API Docs][3])
+
+Subagents are isolated workers. They get their own context window and return summarized results, which is useful for research, review, or debugging tasks that would otherwise flood the main session. Subagents can also have their own persistent memory directories. ([Claude API Docs][4])
+
+Hooks are deterministic automation, not memory. They run shell commands at specific events in Claude Code’s lifecycle, which Anthropic recommends for enforcing project rules or automating repetitive tasks. Use hooks when something must always happen rather than merely being “remembered.” ([Claude API Docs][5])
+
+The practical hierarchy is:
+
+1. `CLAUDE.md` = always-on policy and project facts.
+2. `.claude/rules/` = modular and path-scoped policy.
+3. Skills = long, reusable procedures and reference packs.
+4. Subagents = isolated specialists.
+5. Auto memory = learned notes and patterns.
+6. Hooks/settings = enforcement and tool behavior. ([Claude][6])
+
+What each should contain if your goal is higher-quality coding output:
+
+`CLAUDE.md` should contain durable, high-signal information Claude should know on every task:
+
+* canonical build, test, lint, and typecheck commands
+* package manager and environment rules
+* architecture boundaries and ownership lines
+* naming conventions and code style rules
+* file placement conventions
+* “always do X before Y” rules
+* compaction instructions such as what must survive `/compact`
+* repo-specific safety rules, such as forbidden directories or migration order constraints. Anthropic explicitly recommends project-level standards rather than personal preferences in project `CLAUDE.md`, and says concise, specific, well-structured instructions work best, targeting under 200 lines. ([Claude][2])
+
+Good `CLAUDE.md` content is declarative and stable. Bad `CLAUDE.md` content is long procedural sludge, temporary task notes, giant API references, or contradictory rules. Those belong in skills, task prompts, or versioned docs instead. This follows Anthropic’s guidance that skills are better when a section of `CLAUDE.md` has grown into a procedure rather than a fact. ([Claude API Docs][3])
+
+`.claude/rules/` should contain topic-specific or path-specific constraints:
+
+* backend API rules
+* frontend component conventions
+* security rules for auth/payment code
+* testing standards by subsystem
+* migration rules for a particular directory
+* generated-code handling rules. Anthropic documents rules as a way to keep instructions modular and only load them when relevant files are opened. ([Claude][2])
+
+Skills should contain heavy operational knowledge:
+
+* release/deploy checklist
+* refactor playbook
+* bug triage workflow
+* framework-specific implementation recipes
+* “how to add a new endpoint/service/module” procedures
+* reference docs that are too large to keep always loaded. Anthropic is explicit that skills are for reusable content, repeatable tasks, and long reference material that should not sit in baseline context. ([Claude API Docs][3])
+
+Auto memory should contain learned patterns, not policy:
+
+* “this repo uses pnpm recursive workspace commands”
+* “auth bugs usually involve these three files”
+* “team prefers integration tests here, unit tests there”
+* “build breaks often come from generated schema drift”
+* “maintainers want migrations reviewed before application code”
+* recurring debugging insights. Anthropic describes auto memory as learnings and patterns Claude saves for itself, including debugging insights and workflow habits. ([Claude][2])
+
+Subagent memory should be specialized. For example:
+
+* security reviewer remembers recurring vulnerability patterns
+* code reviewer remembers conventions and common review failures
+* debugger remembers recurring failure signatures
+* architecture reviewer remembers module boundaries and invariants. Anthropic supports persistent memory per subagent and says it is suited to codebase patterns, debugging insights, and architectural decisions. ([Claude][7])
+
+What should **not** go in memory documents:
+
+* transient task state better kept in the current session
+* giant duplicated docs that burn tokens
+* conflicting rules across root `CLAUDE.md`, nested `CLAUDE.md`, and rules
+* secrets or sensitive credentials
+* detailed procedures that belong in a skill
+* things you want guaranteed rather than merely suggested. Anthropic warns that these files are context, not enforced configuration, and recommends reviewing for outdated or conflicting instructions. ([Claude][2])
+
+How to get materially better output from Claude Code:
+
+First, treat `CLAUDE.md` as a compact SSOT for repo behavior. Keep it short, explicit, and operational. Put only information that should affect nearly every task. Anthropic recommends adding to it when Claude repeats mistakes or when a new teammate would need the same context. ([Claude][2])
+
+Second, move long playbooks out of `CLAUDE.md` into skills. This is one of the highest-leverage changes because it lowers startup context load while preserving access to rich procedures. ([Claude API Docs][3])
+
+Third, use path-scoped rules aggressively. Large monorepos degrade if every rule loads for every task. Scoped rules keep frontend rules out of backend work and vice versa. Anthropic’s docs explicitly frame this as a way to reduce noise and save context. ([Claude][2])
+
+Fourth, use subagents for investigation-heavy work. Anthropic calls out that subagents keep large file reads out of the main conversation by working in separate context windows and returning summaries. That directly improves implementation quality because the main session stays cleaner. ([Claude][8])
+
+Fifth, use hooks for anything mandatory. If linting, formatting, policy checks, or artifact generation must always happen, do not rely on memory docs alone. Anthropic explicitly says hooks provide deterministic control so certain actions always happen, rather than relying on the model to choose them. ([Claude API Docs][5])
+
+Sixth, manage context brutally. Anthropic recommends `/clear` between unrelated tasks and using `/compact` carefully. They also note that compaction can lose some instruction context unless you keep persistent rules in `CLAUDE.md` and specify what must survive compaction. ([Claude][9])
+
+A strong practical structure looks like this:
+
+* `CLAUDE.md`
+
+  * mission of repo
+  * non-negotiable conventions
+  * canonical commands
+  * architecture boundaries
+  * “definition of done”
+  * compaction preservation rules
+
+* `.claude/rules/`
+
+  * `backend.md`
+  * `frontend.md`
+  * `testing.md`
+  * `security.md`
+  * `migrations.md`
+
+* `.claude/skills/`
+
+  * `add-endpoint/`
+  * `debug-failing-tests/`
+  * `perform-release/`
+  * `refactor-module/`
+
+* `.claude/agents/`
+
+  * `code-reviewer.md`
+  * `security-reviewer.md`
+  * `debugger.md`
+  * `architect.md`
+
+* hooks in `settings.json`
+
+  * format after edit
+  * run fast validation after write
+  * block disallowed commands
+  * emit reminders or checklists. This matches Anthropic’s documented separation of concerns across always-on context, on-demand skills, isolated subagents, and deterministic hooks. ([Claude][10])
+
+For your wording, I assume “probation” meant “information” or “guidance.” The best information to put into these files is not general prose. It is concise, decision-shaping operational context:
+
+* exact commands
+* exact paths
+* exact invariants
+* exact boundaries
+* exact failure-prevention rules
+* exact workflow sequence
+* exact review checklist items. Anthropic repeatedly emphasizes specificity, concision, and structure for reliable behavior. ([Claude][2])
+
+The blunt answer: memory docs improve output, but they do not enforce behavior. If you need hard guarantees, use hooks, permissions, settings, CI, and external validators. Use memory and skills to improve judgment; use hooks and tooling to guarantee compliance. ([Claude][2])
+
+A useful rule of thumb:
+
+* Put **facts and invariants** in `CLAUDE.md`
+* Put **modular scoped policy** in `.claude/rules/`
+* Put **procedures and large references** in skills
+* Put **specialized learned heuristics** in auto memory or subagent memory
+* Put **must-run enforcement** in hooks and CI. ([Claude][6])
+
+I can turn this into a concrete Claude Code file layout and draft starter contents for `CLAUDE.md`, `.claude/rules/`, and 3–5 high-value skills aimed at your deterministic CLI-driven workflow.
+
+[1]: https://code.claude.com/docs/en/claude-directory "Explore the .claude directory - Claude Code Docs"
+[2]: https://code.claude.com/docs/en/memory "How Claude remembers your project - Claude Code Docs"
+[3]: https://docs.anthropic.com/en/docs/claude-code/skills "Extend Claude with skills - Claude Code Docs"
+[4]: https://docs.anthropic.com/en/docs/claude-code/common-workflows "Common workflows - Claude Code Docs"
+[5]: https://docs.anthropic.com/en/docs/claude-code/hooks-guide "Automate workflows with hooks - Claude Code Docs"
+[6]: https://code.claude.com/docs/en/features-overview "Extend Claude Code - Claude Code Docs"
+[7]: https://code.claude.com/docs/en/sub-agents "Create custom subagents - Claude Code Docs"
+[8]: https://code.claude.com/docs/en/context-window "Explore the context window - Claude Code Docs"
+[9]: https://code.claude.com/docs/en/best-practices "Best Practices for Claude Code - Claude Code Docs"
+[10]: https://code.claude.com/docs/en/settings "Claude Code settings - Claude Code Docs"

@@ -1,0 +1,924 @@
+Below is a **machine-oriented RFC-6902 patch plan** for the three v3.2 files.
+
+It is intentionally a **patch plan**, not a blind raw patch, because two of the targets contain array-heavy sections where stable selection should be done by ID/name lookup before emitting final JSON Pointer paths. Your own indexing guidance says JSON Pointer is the right default, but array sections like gate registries and required section lists should be located by ID/name first, then converted to current pointers to avoid brittle index-based patches.
+
+The plan aligns with the current v3.2 structure:
+
+* the template already has `planning_hierarchy`, `pipeline_boundary_contract`, `execution_patterns`, `traceability`, `anti_pattern_detection`, `canonicalization_contract`, and `ai_instructions`
+* the technical spec already defines required sections, design principles, planning architecture, validation gates, and feature-extension workflow
+* the instruction document already treats the plan as a canonical contract, requires explicitness, and gives section-by-section fill instructions for the same areas we are extending
+
+```json
+{
+  "patch_plan_metadata": {
+    "plan_id": "PATCH-PLAN-ABSTRACTION-GOVERNANCE-V3_2-TO-V3_3",
+    "patch_plan_version": "1.0.0",
+    "intent": "Introduce explicit abstraction governance so abstraction decisions are mechanically captured during planning instead of informally implied.",
+    "patch_standard": "RFC-6902",
+    "addressing_policy": {
+      "default": "JSON_POINTER",
+      "array_selection": "LOCATE_BY_ID_OR_NAME_THEN_CONVERT_TO_POINTER",
+      "notes": [
+        "Do not hardcode array indexes for required_sections, key_capabilities, design_principles, gate_registry, glossary terms, or other mutable lists.",
+        "Use object-key JSON Pointer paths directly for stable object sections."
+      ]
+    },
+    "breaking_change": true,
+    "target_version_after_patch": "3.3.0"
+  },
+  "targets": [
+    {
+      "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+      "current_version": "3.2.0",
+      "operations": [
+        {
+          "op": "replace",
+          "path": "/template_metadata/version",
+          "value": "3.3.0",
+          "rationale": "New mandatory top-level sections and new required step/plan semantics are breaking changes."
+        },
+        {
+          "op": "replace",
+          "path": "/template_metadata/last_updated",
+          "value": "2026-04-17"
+        },
+        {
+          "op": "add",
+          "path": "/template_metadata/breaking_changes/-",
+          "value": "Added abstraction_governance global section for plan-wide abstraction policy and fail-closed enforcement."
+        },
+        {
+          "op": "add",
+          "path": "/template_metadata/breaking_changes/-",
+          "value": "Added abstraction_registry global section for declared abstracted resources and resolver bindings."
+        },
+        {
+          "op": "add",
+          "path": "/template_metadata/breaking_changes/-",
+          "value": "Added abstraction_decision_rules global section to classify when abstraction is mandatory, optional, or forbidden."
+        },
+        {
+          "op": "add",
+          "path": "/template_metadata/breaking_changes/-",
+          "value": "Added shared_core_allocation global section for centralized reusable services and duplication control."
+        },
+        {
+          "op": "add",
+          "path": "/template_metadata/breaking_changes/-",
+          "value": "Added resolver_contracts global section for resolver interface contracts and fail-closed lookup semantics."
+        },
+        {
+          "op": "add",
+          "path": "/critical_constraint/rules/-",
+          "value": "Cross-module references, shared automation resources, and rename/move-sensitive identities MUST be explicitly classified as DIRECT_ALLOWED or ABSTRACTED."
+        },
+        {
+          "op": "add",
+          "path": "/critical_constraint/rules/-",
+          "value": "Every abstraction used by the plan MUST declare a resolver, source of truth, validation rule, and evidence path."
+        },
+        {
+          "op": "add",
+          "path": "/critical_constraint/rules/-",
+          "value": "Executable steps MUST declare abstraction_contract when they depend on paths, identities, executors, interfaces, or artifacts that are abstracted."
+        },
+        {
+          "op": "add",
+          "path": "/critical_constraint/rules/-",
+          "value": "Forbidden direct references MUST cause fail-closed plan validation."
+        },
+        {
+          "op": "add",
+          "path": "/usage_instructions/steps/-",
+          "value": "Before defining file changes, classify each dependency as DIRECT_ALLOWED or ABSTRACTED using abstraction_decision_rules."
+        },
+        {
+          "op": "add",
+          "path": "/usage_instructions/steps/-",
+          "value": "Register every abstracted path, identity, executor, interface, and artifact in abstraction_registry before referencing it elsewhere in the plan."
+        },
+        {
+          "op": "add",
+          "path": "/usage_instructions/steps/-",
+          "value": "Populate shared_core_allocation for any responsibility reused across multiple CLIs, workstreams, or modules."
+        },
+        {
+          "op": "add",
+          "path": "/usage_instructions/steps/-",
+          "value": "For each executable step, define abstraction_contract and verify all abstraction references resolve via resolver_contracts."
+        },
+        {
+          "op": "add",
+          "path": "/v3_enhancements/abstraction_governance",
+          "value": {
+            "description": "Plan-level abstraction control layer for stable references, resolver-based indirection, and shared-core allocation.",
+            "features": [
+              "abstraction_governance fail-closed policy",
+              "abstraction_registry with semantic keys and resolver bindings",
+              "abstraction_decision_rules for mandatory vs optional abstraction",
+              "resolver_contracts for deterministic lookup behavior",
+              "shared_core_allocation to prevent duplicated shared logic",
+              "step-level abstraction_contract validation"
+            ],
+            "enforcement": {
+              "validator_command": "python scripts/validate_abstraction_governance.py {plan_file}",
+              "expect_exit_code": 0,
+              "evidence": ".state/evidence/abstraction_governance/validation.json"
+            }
+          }
+        },
+        {
+          "op": "add",
+          "path": "/task_analysis/abstraction_analysis",
+          "value": {
+            "volatile_references": [],
+            "stable_references": [],
+            "cross_boundary_dependencies": [],
+            "shared_services_candidates": [],
+            "identity_sensitive_entities": [],
+            "required_abstractions": [],
+            "abstraction_risks_if_omitted": []
+          }
+        },
+        {
+          "op": "add",
+          "path": "/abstraction_governance",
+          "value": {
+            "enabled": true,
+            "enforcement_mode": "FAIL_CLOSED",
+            "default_policy": {
+              "cross_module_references": "ABSTRACT",
+              "shared_automation_resources": "ABSTRACT",
+              "stable_identity_required_objects": "ABSTRACT",
+              "local_single_module_stable_references": "DIRECT_ALLOWED",
+              "one_off_unique_logic": "NO_FORCED_ABSTRACTION"
+            },
+            "required_abstraction_kinds": [
+              "PATH",
+              "IDENTITY",
+              "PATTERN",
+              "EXECUTOR",
+              "INTERFACE",
+              "ARTIFACT"
+            ],
+            "forbidden_direct_reference_types": [
+              "cross_module_literal_paths",
+              "unregistered_executor_calls",
+              "array_index_based_identity",
+              "ad_hoc_shared_resource_locations"
+            ],
+            "resolver_registry_references": {
+              "path_registry": "config/path_index.yaml",
+              "pattern_registry": "PATTERN_INDEX.yaml",
+              "executor_registry": "registry/executor_registry.json",
+              "artifact_registry": "registry/artifact_registry.json"
+            },
+            "validation": {
+              "command": "python scripts/validate_abstraction_governance.py {plan_file}",
+              "expect_exit_code": 0,
+              "evidence": ".state/evidence/abstraction_governance/validation.json"
+            }
+          }
+        },
+        {
+          "op": "add",
+          "path": "/abstraction_registry",
+          "value": {
+            "resources": [],
+            "validation": {
+              "command": "python scripts/validate_abstraction_registry.py {plan_file}",
+              "expect_exit_code": 0,
+              "evidence": ".state/evidence/abstraction_registry/validation.json"
+            }
+          }
+        },
+        {
+          "op": "add",
+          "path": "/abstraction_decision_rules",
+          "value": {
+            "classification_rules": [
+              {
+                "rule_id": "ABS-RULE-001",
+                "condition": "reference crosses module boundary",
+                "required_action": "USE_ABSTRACTION",
+                "required_kind": "PATH",
+                "direct_reference_forbidden": true
+              },
+              {
+                "rule_id": "ABS-RULE-002",
+                "condition": "resource identity must survive rename or move",
+                "required_action": "USE_ABSTRACTION",
+                "required_kind": "IDENTITY",
+                "direct_reference_forbidden": true
+              },
+              {
+                "rule_id": "ABS-RULE-003",
+                "condition": "task kind already exists in approved execution patterns",
+                "required_action": "USE_ABSTRACTION",
+                "required_kind": "PATTERN",
+                "direct_reference_forbidden": true
+              },
+              {
+                "rule_id": "ABS-RULE-004",
+                "condition": "logic is unique, local, single-use, and non-shared",
+                "required_action": "DIRECT_ALLOWED",
+                "required_kind": null,
+                "direct_reference_forbidden": false
+              }
+            ],
+            "conflict_policy": "STRICTER_RULE_WINS"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/shared_core_allocation",
+          "value": {
+            "required_shared_services": [],
+            "validation": {
+              "command": "python scripts/validate_shared_core_allocation.py {plan_file}",
+              "expect_exit_code": 0,
+              "evidence": ".state/evidence/shared_core_allocation/validation.json"
+            }
+          }
+        },
+        {
+          "op": "add",
+          "path": "/resolver_contracts",
+          "value": {
+            "resolvers": [],
+            "validation": {
+              "command": "python scripts/validate_resolver_contracts.py {plan_file}",
+              "expect_exit_code": 0,
+              "evidence": ".state/evidence/resolver_contracts/validation.json"
+            }
+          }
+        },
+        {
+          "op": "add",
+          "path": "/planning_hierarchy/system_level/implementation_abstraction",
+          "value": {
+            "style": "DIRECT|ABSTRACTED|HYBRID",
+            "abstraction_kinds": [],
+            "shared_core_dependencies": [],
+            "resolver_dependencies": [],
+            "stable_identity_dependencies": [],
+            "justification": ""
+          }
+        },
+        {
+          "op": "add",
+          "path": "/pipeline_boundary_contract/allowed_execution_inputs",
+          "value": [
+            "plan_json",
+            "registered_pattern_spec",
+            "schema_validated_config",
+            "registered_abstraction_registry"
+          ]
+        },
+        {
+          "op": "add",
+          "path": "/pipeline_boundary_contract/forbid_unresolved_abstraction_inputs",
+          "value": true
+        },
+        {
+          "op": "add",
+          "path": "/pipeline_boundary_contract/forbid_unregistered_resolver_invocation",
+          "value": true
+        },
+        {
+          "op": "add",
+          "path": "/execution_patterns/abstraction_contract",
+          "value": {
+            "requires_path_abstraction": true,
+            "requires_executor_abstraction": true,
+            "requires_identity_abstraction": false,
+            "requires_artifact_abstraction": true,
+            "allowed_direct_references": [],
+            "required_resolvers": [
+              "resolve_path",
+              "resolve_executor",
+              "resolve_artifact"
+            ]
+          }
+        },
+        {
+          "op": "add",
+          "path": "/traceability/requirement_to_abstraction",
+          "value": {}
+        },
+        {
+          "op": "add",
+          "path": "/traceability/module_to_shared_service",
+          "value": {}
+        },
+        {
+          "op": "add",
+          "path": "/traceability/component_to_abstraction_id",
+          "value": {}
+        },
+        {
+          "op": "add",
+          "path": "/traceability/step_to_resolver",
+          "value": {}
+        },
+        {
+          "op": "add",
+          "path": "/traceability/step_to_abstraction_id",
+          "value": {}
+        },
+        {
+          "op": "add",
+          "path": "/traceability/pattern_to_required_abstractions",
+          "value": {}
+        },
+        {
+          "op": "add",
+          "path": "/canonicalization_contract/rules/-",
+          "value": "Abstraction registry resources must be canonically sorted by abstraction_id before hashing or emitting derived evidence."
+        },
+        {
+          "op": "add",
+          "path": "/canonicalization_contract/rules/-",
+          "value": "Resolver contract entries must be canonically sorted by resolver_id before hashing or emitting derived evidence."
+        },
+        {
+          "op": "add",
+          "path": "/anti_pattern_detection/triggers/-",
+          "value": "cross_module_literal_path"
+        },
+        {
+          "op": "add",
+          "path": "/anti_pattern_detection/triggers/-",
+          "value": "duplicate_shared_service_logic"
+        },
+        {
+          "op": "add",
+          "path": "/anti_pattern_detection/triggers/-",
+          "value": "unresolved_abstraction_reference"
+        },
+        {
+          "op": "add",
+          "path": "/anti_pattern_detection/triggers/-",
+          "value": "pattern_without_abstraction_contract"
+        },
+        {
+          "op": "add",
+          "path": "/anti_pattern_detection/triggers/-",
+          "value": "identity_by_array_position"
+        },
+        {
+          "op": "add",
+          "path": "/ai_instructions/when_receiving_project_request/-",
+          "value": "Classify each dependency as DIRECT_ALLOWED or ABSTRACTED before planning file mutations."
+        },
+        {
+          "op": "add",
+          "path": "/ai_instructions/when_receiving_project_request/-",
+          "value": "Register every abstracted dependency in abstraction_registry before it is referenced by planning_hierarchy, file_manifest, step_contracts, or traceability."
+        },
+        {
+          "op": "add",
+          "path": "/ai_instructions/when_receiving_project_request/-",
+          "value": "Populate abstraction_contract for every executable step that depends on abstracted paths, executors, identities, interfaces, or artifacts."
+        },
+        {
+          "op": "add",
+          "path": "/ai_instructions/do_not/-",
+          "value": "Use literal cross-module paths when abstraction_governance requires semantic resolution."
+        },
+        {
+          "op": "add",
+          "path": "/ai_instructions/do_not/-",
+          "value": "Reference executors, artifacts, or identities that lack resolver_contracts and abstraction_registry entries."
+        },
+        {
+          "op": "add",
+          "path": "/ai_instructions/remember/-",
+          "value": "Abstract volatile or shared references; keep genuinely local stable references direct only when allowed by abstraction_decision_rules."
+        },
+        {
+          "op": "array_upsert_by_id",
+          "selector": {
+            "jsonpath": "$.validation_gates[?(@.gate_id=='GATE-ABS-001')]",
+            "id_field": "gate_id",
+            "id_value": "GATE-ABS-001"
+          },
+          "value": {
+            "gate_id": "GATE-ABS-001",
+            "name": "Abstraction Coverage",
+            "command": "python scripts/validate_abstraction_coverage.py {plan_file}",
+            "expect": "exit_code == 0",
+            "evidence": ".state/evidence/gates/GATE-ABS-001.result.json",
+            "failure_impact": "Plan leaves volatile, shared, or cross-boundary dependencies unclassified."
+          }
+        },
+        {
+          "op": "array_upsert_by_id",
+          "selector": {
+            "jsonpath": "$.validation_gates[?(@.gate_id=='GATE-ABS-002')]",
+            "id_field": "gate_id",
+            "id_value": "GATE-ABS-002"
+          },
+          "value": {
+            "gate_id": "GATE-ABS-002",
+            "name": "Resolver Completeness",
+            "command": "python scripts/validate_resolver_completeness.py {plan_file}",
+            "expect": "exit_code == 0",
+            "evidence": ".state/evidence/gates/GATE-ABS-002.result.json",
+            "failure_impact": "Plan references abstractions that do not resolve deterministically."
+          }
+        },
+        {
+          "op": "array_upsert_by_id",
+          "selector": {
+            "jsonpath": "$.validation_gates[?(@.gate_id=='GATE-ABS-003')]",
+            "id_field": "gate_id",
+            "id_value": "GATE-ABS-003"
+          },
+          "value": {
+            "gate_id": "GATE-ABS-003",
+            "name": "Direct Reference Violation Audit",
+            "command": "python scripts/validate_direct_reference_violations.py {plan_file}",
+            "expect": "exit_code == 0",
+            "evidence": ".state/evidence/gates/GATE-ABS-003.result.json",
+            "failure_impact": "Plan permits forbidden direct references in governed contexts."
+          }
+        },
+        {
+          "op": "array_upsert_by_id",
+          "selector": {
+            "jsonpath": "$.validation_gates[?(@.gate_id=='GATE-ABS-004')]",
+            "id_field": "gate_id",
+            "id_value": "GATE-ABS-004"
+          },
+          "value": {
+            "gate_id": "GATE-ABS-004",
+            "name": "Shared Core Duplication Audit",
+            "command": "python scripts/validate_shared_core_duplication.py {plan_file}",
+            "expect": "exit_code == 0",
+            "evidence": ".state/evidence/gates/GATE-ABS-004.result.json",
+            "failure_impact": "Plan duplicates reusable shared services across modules or CLIs without approved exception."
+          }
+        },
+        {
+          "op": "array_upsert_by_id",
+          "selector": {
+            "jsonpath": "$.validation_gates[?(@.gate_id=='GATE-ABS-005')]",
+            "id_field": "gate_id",
+            "id_value": "GATE-ABS-005"
+          },
+          "value": {
+            "gate_id": "GATE-ABS-005",
+            "name": "Identity Stability Audit",
+            "command": "python scripts/validate_identity_stability.py {plan_file}",
+            "expect": "exit_code == 0",
+            "evidence": ".state/evidence/gates/GATE-ABS-005.result.json",
+            "failure_impact": "Plan allows rename/move/reordering-sensitive entities without stable identity abstraction."
+          }
+        }
+      ],
+      "manual_followup_required": [
+        {
+          "area": "module_level entries",
+          "reason": "module_level is an array; each existing module entry should receive implementation_abstraction via ID/name-based upsert, not hardcoded index."
+        },
+        {
+          "area": "component_level entries",
+          "reason": "component_level is an array; each existing component entry should receive implementation_abstraction via ID/name-based upsert."
+        },
+        {
+          "area": "execution_packet_level entries",
+          "reason": "execution_packet_level is an array; each existing execution packet entry should receive implementation_abstraction and step abstraction linkage via ID-based upsert."
+        },
+        {
+          "area": "file_manifest entry schema",
+          "reason": "global_files/by_phase/by_step shapes vary by populated plan instance; add reference_mode/reference_value/resolver_required/shared_resource/cross_module_dependency/identity_stable_required in downstream plan schema and generators."
+        },
+        {
+          "area": "step_contracts entry schema",
+          "reason": "step_contracts is nested by phase and step ID; add abstraction_contract to the step contract object schema and population logic."
+        }
+      ]
+    },
+    {
+      "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+      "current_version": "3.2.0",
+      "operations": [
+        {
+          "op": "replace",
+          "path": "/document_metadata/version",
+          "value": "3.3.0"
+        },
+        {
+          "op": "replace",
+          "path": "/document_metadata/title",
+          "value": "newPhasePlanProcess v3.3.0 - Technical Specification & Architecture"
+        },
+        {
+          "op": "add",
+          "selector": {
+            "jsonpath": "$.executive_summary.key_capabilities[?(@=='Abstraction governance for stable references, resolver-based indirection, and shared-core allocation')]"
+          },
+          "value": "Abstraction governance for stable references, resolver-based indirection, and shared-core allocation"
+        },
+        {
+          "op": "add",
+          "selector": {
+            "jsonpath": "$.executive_summary.design_principles[?(@=='ABSTRACTION AS CONTRACT: Volatile, shared, or identity-sensitive references must be declared, resolved, and validated explicitly')]"
+          },
+          "value": "ABSTRACTION AS CONTRACT: Volatile, shared, or identity-sensitive references must be declared, resolved, and validated explicitly"
+        },
+        {
+          "op": "add",
+          "selector": {
+            "jsonpath": "$.executive_summary.design_principles[?(@=='RESOLVER-BOUND INDIRECTION: Abstract references must resolve through declared deterministic resolver contracts')]"
+          },
+          "value": "RESOLVER-BOUND INDIRECTION: Abstract references must resolve through declared deterministic resolver contracts"
+        },
+        {
+          "op": "add",
+          "selector": {
+            "jsonpath": "$.executive_summary.design_principles[?(@=='SHARED-CORE FIRST: Reused responsibilities must be centralized unless explicitly exempted')]"
+          },
+          "value": "SHARED-CORE FIRST: Reused responsibilities must be centralized unless explicitly exempted"
+        },
+        {
+          "op": "add",
+          "path": "/architecture/system_layers/layer_1_planning/components/-",
+          "value": {
+            "name": "Abstraction Governance Layer",
+            "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+            "role": "Declares abstraction policy, abstraction registry entries, resolver contracts, and shared-core allocation for plan generation.",
+            "features": [
+              "abstraction_governance",
+              "abstraction_registry",
+              "abstraction_decision_rules",
+              "shared_core_allocation",
+              "resolver_contracts"
+            ]
+          }
+        },
+        {
+          "op": "array_upsert_by_value",
+          "selector": {
+            "jsonpath": "$.data_structures.plan_document.root_structure.required_sections[?(@=='abstraction_governance')]"
+          },
+          "value": "abstraction_governance"
+        },
+        {
+          "op": "array_upsert_by_value",
+          "selector": {
+            "jsonpath": "$.data_structures.plan_document.root_structure.required_sections[?(@=='abstraction_registry')]"
+          },
+          "value": "abstraction_registry"
+        },
+        {
+          "op": "array_upsert_by_value",
+          "selector": {
+            "jsonpath": "$.data_structures.plan_document.root_structure.required_sections[?(@=='abstraction_decision_rules')]"
+          },
+          "value": "abstraction_decision_rules"
+        },
+        {
+          "op": "array_upsert_by_value",
+          "selector": {
+            "jsonpath": "$.data_structures.plan_document.root_structure.required_sections[?(@=='shared_core_allocation')]"
+          },
+          "value": "shared_core_allocation"
+        },
+        {
+          "op": "array_upsert_by_value",
+          "selector": {
+            "jsonpath": "$.data_structures.plan_document.root_structure.required_sections[?(@=='resolver_contracts')]"
+          },
+          "value": "resolver_contracts"
+        },
+        {
+          "op": "add",
+          "path": "/data_structures/plan_document/section_purpose_map/sections/-",
+          "value": {
+            "section": "abstraction_governance",
+            "purpose": "Plan-wide policy defining when abstraction is mandatory, optional, or forbidden and how violations fail closed.",
+            "example": "\"abstraction_governance\": {\"enabled\": true, \"enforcement_mode\": \"FAIL_CLOSED\"}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/abstraction_governance"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/data_structures/plan_document/section_purpose_map/sections/-",
+          "value": {
+            "section": "abstraction_registry",
+            "purpose": "Registry of abstracted resources, semantic keys, resolver bindings, and validation rules.",
+            "example": "\"abstraction_registry\": {\"resources\": []}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/abstraction_registry"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/data_structures/plan_document/section_purpose_map/sections/-",
+          "value": {
+            "section": "abstraction_decision_rules",
+            "purpose": "Classification rules that determine when abstraction is required, allowed, or forbidden.",
+            "example": "\"abstraction_decision_rules\": {\"classification_rules\": []}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/abstraction_decision_rules"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/data_structures/plan_document/section_purpose_map/sections/-",
+          "value": {
+            "section": "shared_core_allocation",
+            "purpose": "Declares reusable shared services and forbids uncontrolled duplication of shared responsibilities.",
+            "example": "\"shared_core_allocation\": {\"required_shared_services\": []}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/shared_core_allocation"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/data_structures/plan_document/section_purpose_map/sections/-",
+          "value": {
+            "section": "resolver_contracts",
+            "purpose": "Defines deterministic resolver interfaces, lookup sources of truth, and fail-closed resolution semantics.",
+            "example": "\"resolver_contracts\": {\"resolvers\": []}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json#/resolver_contracts"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/architecture/system_layers/layer_2_validation/validation_guarantees/-",
+          "value": "Abstraction completeness: all governed dependencies are classified as direct or abstracted"
+        },
+        {
+          "op": "add",
+          "path": "/architecture/system_layers/layer_2_validation/validation_guarantees/-",
+          "value": "Resolver integrity: all abstraction references resolve through declared deterministic contracts"
+        },
+        {
+          "op": "add",
+          "path": "/architecture/system_layers/layer_2_validation/validation_guarantees/-",
+          "value": "Shared-core discipline: reusable responsibilities are centralized or explicitly exempted"
+        },
+        {
+          "op": "add",
+          "path": "/development_guidelines/adding_new_features/requirements/-",
+          "value": "Feature must declare whether it introduces new abstraction_governance, abstraction_registry, resolver_contracts, or shared_core_allocation requirements."
+        },
+        {
+          "op": "add",
+          "path": "/development_guidelines/adding_new_features/requirements/-",
+          "value": "If a feature introduces volatile, shared, or identity-sensitive references, abstraction coverage and resolver completeness validators must be updated."
+        },
+        {
+          "op": "add",
+          "path": "/development_guidelines/adding_new_features/workflow/-",
+          "value": {
+            "step": 2.5,
+            "action": "Update abstraction model",
+            "files": [
+              "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+              "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json",
+              "This technical specification"
+            ],
+            "outputs": [
+              "abstraction_governance changes",
+              "abstraction_registry semantics",
+              "resolver contracts",
+              "shared core allocation updates"
+            ]
+          }
+        },
+        {
+          "op": "array_upsert_by_id",
+          "selector": {
+            "jsonpath": "$.architecture.system_layers.layer_2_validation.components[?(@.name=='Validation Gate System')].gate_registry[?(@.id=='GATE-ABS-001')]",
+            "id_field": "id",
+            "id_value": "GATE-ABS-001"
+          },
+          "value": {
+            "id": "GATE-ABS-001",
+            "name": "Abstraction Coverage",
+            "script": "validate_abstraction_coverage.py",
+            "purpose": "Ensure all cross-boundary, shared, and identity-sensitive dependencies are classified and governed.",
+            "critical_rule": "No governed dependency may remain implicitly direct or unspecified.",
+            "failure_impact": "Fragile or ambiguous dependency model enters execution."
+          }
+        },
+        {
+          "op": "array_upsert_by_id",
+          "selector": {
+            "jsonpath": "$.architecture.system_layers.layer_2_validation.components[?(@.name=='Validation Gate System')].gate_registry[?(@.id=='GATE-ABS-002')]",
+            "id_field": "id",
+            "id_value": "GATE-ABS-002"
+          },
+          "value": {
+            "id": "GATE-ABS-002",
+            "name": "Resolver Completeness",
+            "script": "validate_resolver_completeness.py",
+            "purpose": "Ensure every abstraction reference resolves through a declared deterministic resolver contract.",
+            "critical_rule": "No abstraction may exist without exactly one declared resolution path.",
+            "failure_impact": "Execution may depend on unresolved or ambiguous lookup behavior."
+          }
+        },
+        {
+          "op": "array_upsert_by_id",
+          "selector": {
+            "jsonpath": "$.architecture.system_layers.layer_2_validation.components[?(@.name=='Validation Gate System')].gate_registry[?(@.id=='GATE-ABS-003')]",
+            "id_field": "id",
+            "id_value": "GATE-ABS-003"
+          },
+          "value": {
+            "id": "GATE-ABS-003",
+            "name": "Direct Reference Violation Audit",
+            "script": "validate_direct_reference_violations.py",
+            "purpose": "Reject forbidden literal paths, unresolved executors, and unstable direct references in governed contexts."
+          }
+        },
+        {
+          "op": "array_upsert_by_id",
+          "selector": {
+            "jsonpath": "$.architecture.system_layers.layer_2_validation.components[?(@.name=='Validation Gate System')].gate_registry[?(@.id=='GATE-ABS-004')]",
+            "id_field": "id",
+            "id_value": "GATE-ABS-004"
+          },
+          "value": {
+            "id": "GATE-ABS-004",
+            "name": "Shared Core Duplication Audit",
+            "script": "validate_shared_core_duplication.py",
+            "purpose": "Detect uncontrolled duplication of reusable responsibilities across CLIs, modules, and workstreams."
+          }
+        },
+        {
+          "op": "array_upsert_by_id",
+          "selector": {
+            "jsonpath": "$.architecture.system_layers.layer_2_validation.components[?(@.name=='Validation Gate System')].gate_registry[?(@.id=='GATE-ABS-005')]",
+            "id_field": "id",
+            "id_value": "GATE-ABS-005"
+          },
+          "value": {
+            "id": "GATE-ABS-005",
+            "name": "Identity Stability Audit",
+            "script": "validate_identity_stability.py",
+            "purpose": "Ensure rename/move/reordering-sensitive entities do not rely on unstable direct identity mechanisms."
+          }
+        },
+        {
+          "op": "add",
+          "path": "/glossary/terms/-",
+          "value": {
+            "term": "Abstraction Governance",
+            "definition": "Plan-wide policy that determines when resources must be referenced indirectly through stable semantic or identity-based abstractions."
+          }
+        },
+        {
+          "op": "add",
+          "path": "/glossary/terms/-",
+          "value": {
+            "term": "Abstraction Registry",
+            "definition": "Registry of abstracted resources, their semantic keys or stable IDs, resolver bindings, and validation rules."
+          }
+        },
+        {
+          "op": "add",
+          "path": "/glossary/terms/-",
+          "value": {
+            "term": "Resolver Contract",
+            "definition": "Deterministic interface contract that maps an abstract reference to a concrete resource using a declared source of truth."
+          }
+        },
+        {
+          "op": "add",
+          "path": "/glossary/terms/-",
+          "value": {
+            "term": "Shared Core Allocation",
+            "definition": "Planning decision that centralizes reusable responsibilities into governed shared services rather than duplicating logic across wrappers or workstreams."
+          }
+        },
+        {
+          "op": "add",
+          "path": "/appendix/version_history/v3.3.0",
+          "value": {
+            "date": "2026-04-17",
+            "changes": [
+              "Added abstraction governance model to the template",
+              "Added abstraction registry and resolver contracts",
+              "Added shared core allocation controls",
+              "Added abstraction-focused validation gates",
+              "Extended planning semantics to make abstraction a first-class contract"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "file": "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json",
+      "current_version": "3.2.0",
+      "operations": [
+        {
+          "op": "replace",
+          "path": "/document_metadata/version",
+          "value": "3.3.0"
+        },
+        {
+          "op": "replace",
+          "path": "/content",
+          "value_transform": {
+            "type": "SECTION_AWARE_MARKDOWN_UPDATE",
+            "instructions": [
+              {
+                "section": "Overview",
+                "action": "append_paragraph",
+                "text": "Version 3.3 adds an abstraction governance layer. Plans must now explicitly classify volatile, shared, cross-module, and identity-sensitive references as direct or abstracted; bind abstracted references to deterministic resolver contracts; and declare shared-core allocation for reusable responsibilities."
+              },
+              {
+                "section": "General principles",
+                "action": "insert_bullets_after",
+                "after_bullet_prefix": "- **Pattern-first execution**",
+                "bullets": [
+                  "- **Abstraction governance** – Treat abstraction as a planning contract, not an implementation preference.  Cross-module references, shared automation resources, and rename/move-sensitive identities must be explicitly classified under `abstraction_governance` and registered in `abstraction_registry`.",
+                  "- **Resolver-bound indirection** – Every abstracted path, executor, artifact, interface, or identity must resolve through `resolver_contracts`.  If no deterministic resolver exists, the plan is incomplete.",
+                  "- **Shared-core discipline** – Reusable responsibilities must be allocated in `shared_core_allocation` rather than duplicated across CLI wrappers, workstreams, or modules unless a justified exception is documented."
+                ]
+              },
+              {
+                "section": "Section-by-section instructions",
+                "action": "insert_new_section_before",
+                "before_heading": "### `planning_hierarchy`",
+                "new_section_markdown": "### `abstraction_governance`\nDefine the plan-wide abstraction policy.  Set whether abstraction enforcement is fail-closed, classify default handling for cross-module references, shared automation resources, stable identities, and local stable references, and list forbidden direct-reference types.  Reference the governing registries for paths, patterns, executors, and artifacts.  Provide a validation command and evidence path.\n\n### `abstraction_registry`\nRegister every abstracted resource before it is referenced elsewhere in the plan.  For each resource, provide `abstraction_id`, `kind`, `semantic_key` or stable identity reference, `physical_binding_source`, `resolver_method`, `direct_reference_allowed`, `stability_reason`, `consumers`, and `validation_rule`.  Do not leave abstracted resources implicit.\n\n### `abstraction_decision_rules`\nDefine the rules that determine when abstraction is mandatory, optional, or forbidden.  Include at least cross-module references, rename/move-sensitive identities, known task-pattern matches, and unique local logic.  State the conflict policy when multiple rules match.\n\n### `shared_core_allocation`\nList reusable responsibilities that must be centralized as shared services.  Use this section to prevent duplicated business logic across CLI wrappers, validators, workstreams, or modules.  If a reusable responsibility is intentionally duplicated, justify the exception explicitly.\n\n### `resolver_contracts`\nDefine every resolver used by the plan.  Each resolver must declare its input type, output type, source of truth, determinism requirements, and fail-closed behavior.  If a plan uses an abstracted dependency but lacks a resolver contract, execution must not proceed.\n"
+              },
+              {
+                "section": "### `planning_hierarchy`",
+                "action": "append_paragraph",
+                "text": "For every system/module/component/execution-packet entry, add `implementation_abstraction` and classify it as `DIRECT`, `ABSTRACTED`, or `HYBRID`.  Record abstraction kinds, resolver dependencies, shared-core dependencies, stable-identity dependencies, and justification.  `HYBRID` entries require explicit justification."
+              },
+              {
+                "section": "### `file_manifest`",
+                "action": "append_paragraph",
+                "text": "For each file or artifact reference, record whether it is addressed by direct path, semantic key, stable file ID, or artifact ID.  Shared, cross-module, governed, or refactor-sensitive references must not remain implicit direct paths."
+              },
+              {
+                "section": "### `execution_patterns`",
+                "action": "append_paragraph",
+                "text": "Each pattern must declare its abstraction requirements through an abstraction contract.  Specify whether path, executor, identity, and artifact abstraction are required and list the resolvers the executor expects.  Do not allow a pattern to rely on undeclared direct references when abstraction governance forbids them."
+              },
+              {
+                "section": "### `traceability`",
+                "action": "append_paragraph",
+                "text": "Add mappings for requirement-to-abstraction, module-to-shared-service, component-to-abstraction-id, step-to-resolver, step-to-abstraction-id, and pattern-to-required-abstractions.  This makes abstraction auditable rather than implicit."
+              },
+              {
+                "section": "Section-by-section instructions",
+                "action": "insert_new_section_before",
+                "before_heading": "### `execution_baseline`",
+                "new_section_markdown": "### Step-level abstraction contract\nFor every executable step, define an `abstraction_contract` whenever the step depends on abstracted paths, identities, executors, interfaces, or artifacts.  The contract must list each abstraction kind, its `abstraction_id`, the resolver used, the semantic key or identity target, forbidden direct usages, and a verification command with an evidence path.  A step that uses abstracted resources but omits this contract is incomplete.\n"
+              },
+              {
+                "section": "General principles",
+                "action": "replace_text",
+                "find": "When no pattern exists, set `pattern_id` to `null` and flag that a new pattern is needed.",
+                "replace": "When no pattern exists, block implementation planning until the missing abstraction or pattern is created, validated, and registered."
+              }
+            ]
+          }
+        }
+      ],
+      "notes": [
+        "This file is a two-key object with `document_metadata` and a large `content` string, so the practical patch is a full `/content` replacement after applying structured markdown transforms." 
+      ]
+    }
+  ],
+  "post_patch_requirements": {
+    "required_validator_additions": [
+      "scripts/validate_abstraction_governance.py",
+      "scripts/validate_abstraction_registry.py",
+      "scripts/validate_resolver_contracts.py",
+      "scripts/validate_abstraction_coverage.py",
+      "scripts/validate_resolver_completeness.py",
+      "scripts/validate_direct_reference_violations.py",
+      "scripts/validate_shared_core_duplication.py",
+      "scripts/validate_identity_stability.py",
+      "scripts/validate_step_abstraction_contract.py"
+    ],
+    "required_schema_followup": [
+      "schemas/NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json must be upgraded to admit the new top-level sections and new nested fields.",
+      "Step contract schema must be extended for abstraction_contract.",
+      "Any plan instance serializers or validators that assume the old required_sections set must be updated."
+    ],
+    "recommended_test_additions": [
+      "Plan with cross-module literal path should fail GATE-ABS-003.",
+      "Plan with abstracted dependency but no resolver contract should fail GATE-ABS-002.",
+      "Plan with duplicated shared-core responsibility should fail GATE-ABS-004.",
+      "Plan with rename-sensitive entity lacking stable identity abstraction should fail GATE-ABS-005.",
+      "Valid plan with abstraction_governance populated should pass all new abstraction gates."
+    ]
+  }
+}
+```
+
+Key reason this needs to be a breaking v3.3-style patch: the current instruction document still allows a missing pattern to be flagged as a gap rather than blocking execution planning, while the stronger governance model you want requires fail-closed abstraction and resolver completeness before execution can proceed.
+
+The historical error taxonomy also supports this direction: it repeatedly points to structural inconsistency, ID scheme conflict, missing structural elements, and unimplemented identity resolution or gating as failure sources, which is exactly the class of problem this abstraction governance layer is meant to close off earlier. 
+
+I can turn this into a **cleaned final JSON artifact** next, with the custom pseudo-ops removed and split into:
+
+1. strict RFC-6902-ready object-pointer operations, and
+2. companion selector instructions for array resolution.

@@ -1,0 +1,625 @@
+{
+  "instruction_set_id": "CLI-GH-HARDENING-INSTRUCTIONS-001",
+  "title": "CLI instructions to implement GitHub automation hardening modifications",
+  "version": "1.0.0",
+  "status": "AUTHORITATIVE_DRAFT",
+  "purpose": "Apply the architectural hardening changes needed to make the GitHub automation subsystem deterministic, App-authenticated, field-registry-driven, level-triggered, and single-writer governed.",
+  "operating_mode": "PLAN_AND_PATCH_ONLY",
+  "execution_policy": {
+    "patch_strategy": "RFC6902_OR_FULL_FILE_CREATE",
+    "no_implied_behavior": true,
+    "fail_closed": true,
+    "write_scope_limited": true,
+    "review_required_before_destructive_changes": true
+  },
+  "global_assumptions": {
+    "ssot_authority": "Plan YAML/JSON files remain SSOT. GitHub remains execution surface only.",
+    "primary_runtime": "python",
+    "workflow_runner_default": "ubuntu-latest",
+    "github_auth_model": "GitHub App installation token",
+    "control_pattern": "observe-diff-act-report",
+    "reconciliation_mode": "level_triggered"
+  },
+  "success_criteria": [
+    "No workflow hardcodes GitHub Project node IDs, field IDs, option IDs, or iteration IDs.",
+    "All GitHub Project writes require a valid github_field_registry.json.",
+    "All Project writes use GitHub App installation tokens unless an explicit exception is declared.",
+    "Phase field writes occur only through the phase advancement evaluator.",
+    "Every execution issue has a StepID and stable entry in step_issue_linkage.json.",
+    "Reconciliation classifies and corrects drift using explicit drift classes.",
+    "Single-writer ownership exists for automation-only fields."
+  ],
+  "implementation_order": [
+    "DECISION_LOCK",
+    "CLI_FOUNDATION",
+    "AUTH_HARDENING",
+    "FIELD_REGISTRY_BOOTSTRAP",
+    "SCHEMA_AND_STATE_FILES",
+    "PROJECTION_AND_LINKAGE",
+    "PHASE_ADVANCEMENT",
+    "FIELD_OWNERSHIP_AND_GOVERNANCE",
+    "RECONCILIATION_LOOP",
+    "WORKFLOW_THINNING",
+    "VALIDATION_AND_ACCEPTANCE"
+  ],
+  "tasks": [
+    {
+      "task_id": "T001",
+      "name": "Lock the architecture decision in SSOT docs",
+      "goal": "Make JSON/YAML plan authority explicit and prevent future GitHub-as-SSOT drift.",
+      "action_type": "patch_file",
+      "targets": [
+        "PROC-DESIGN-GITHUB-AUTOMATION-SSOT.json",
+        "Second Architecture Delta for GitHub Hardening.md",
+        "CLAUDE.md"
+      ],
+      "required_changes": [
+        "Add or confirm language stating that plan files own decomposition, step contracts, phase structure, gate requirements, and evidence requirements.",
+        "Add or confirm language stating that GitHub owns only execution-surface concerns such as assignees, comments, and review discussions.",
+        "Add or confirm language stating that bidirectional sync to plan-owned fields is forbidden."
+      ],
+      "acceptance_checks": [
+        "Document contains explicit statement: 'GitHub is the execution surface, not the control plane.'",
+        "Document contains explicit plan-owned vs github-owned distinction."
+      ],
+      "priority": "critical"
+    },
+    {
+      "task_id": "T002",
+      "name": "Create shared CLI command group for GitHub automation",
+      "goal": "Centralize all GitHub automation logic into one reusable CLI rather than per-workflow embedded scripts.",
+      "action_type": "create_files",
+      "targets": [
+        "programs/GH_AUTH_ISSUE_INSTALLATION_TOKEN.spec.json",
+        "programs/GH_FIELDS_DISCOVER.spec.json",
+        "programs/GH_FIELDS_VALIDATE.spec.json",
+        "programs/GH_PROJECTION_GENERATE.spec.json",
+        "programs/GH_PROJECTION_APPLY.spec.json",
+        "programs/GH_PHASE_ADVANCE_EVALUATE.spec.json",
+        "programs/GH_RECONCILE_DRIFT.spec.json",
+        "programs/GH_EVIDENCE_SEAL.spec.json"
+      ],
+      "required_changes": [
+        "Each ProgramSpec must declare inputs, outputs, runner_class, preconditions, failure codes, and evidence outputs.",
+        "Each ProgramSpec must be invokable by a shared Python CLI.",
+        "The CLI must expose one command per ProgramSpec."
+      ],
+      "acceptance_checks": [
+        "No workflow contains core business logic beyond setup, auth bootstrap, CLI invocation, and evidence upload.",
+        "Each GitHub workflow can map directly to one CLI command."
+      ],
+      "priority": "critical"
+    },
+    {
+      "task_id": "T003",
+      "name": "Standardize on Python runtime for shared CLI",
+      "goal": "Avoid runtime fragmentation and align with existing toolchain.",
+      "action_type": "create_or_patch_file",
+      "targets": [
+        "pyproject.toml",
+        "requirements.txt",
+        "src/github_automation_cli/__init__.py",
+        "src/github_automation_cli/main.py"
+      ],
+      "required_changes": [
+        "Define Python package for GitHub automation CLI.",
+        "Add entrypoint for commands: auth, fields-discover, fields-validate, projection-generate, projection-apply, phase-advance-evaluate, reconcile-drift, evidence-seal.",
+        "Use structured JSON output for all CLI responses."
+      ],
+      "acceptance_checks": [
+        "CLI can be called non-interactively from GitHub Actions.",
+        "Each command returns deterministic JSON output and non-zero exit on failure."
+      ],
+      "priority": "critical"
+    },
+    {
+      "task_id": "T004",
+      "name": "Replace PAT-first workflow assumptions with GitHub App auth",
+      "goal": "Make auth portable, org-safe, ephemeral, and not tied to an individual user token.",
+      "action_type": "patch_workflows_and_specs",
+      "targets": [
+        ".github/workflows/bootstrap-github-fields.yml",
+        ".github/workflows/gh-projection-generate.yml",
+        ".github/workflows/gh-projection-apply.yml",
+        ".github/workflows/phase-advancement-evaluator.yml",
+        ".github/workflows/ssot-drift-reconciliation.yml"
+      ],
+      "required_changes": [
+        "Use actions/create-github-app-token@v2 to issue installation token per run.",
+        "Remove PAT as default auth path from all workflows that touch Projects.",
+        "Allow PAT only behind explicit declared exception block with owner and expiry."
+      ],
+      "acceptance_checks": [
+        "All workflows that touch Projects request GitHub App token first.",
+        "No workflow defaults to GITHUB_TOKEN or PAT for Projects writes."
+      ],
+      "priority": "critical"
+    },
+    {
+      "task_id": "T005",
+      "name": "Create field registry bootstrap and validation path",
+      "goal": "Remove inline field IDs and make field resolution runtime-generated and self-healing.",
+      "action_type": "create_files",
+      "targets": [
+        "config/github_field_registry.json",
+        "schemas/github_field_registry.schema.json",
+        ".github/workflows/bootstrap-github-fields.yml"
+      ],
+      "required_changes": [
+        "Create schema for github_field_registry.json.",
+        "Create workflow that discovers all project fields and options via GraphQL and writes registry file.",
+        "Registry must store project_node_id, field_name->field_id, single-select option_name->option_id, iteration identifiers, generated_at, generator_version, api_version, registry_fingerprint."
+      ],
+      "acceptance_checks": [
+        "Registry file is generated and schema-valid.",
+        "Downstream workflows fail if registry missing or invalid.",
+        "No inline PVTF_, PVTSSF_, or PVTIF_ IDs remain in workflows or scripts."
+      ],
+      "priority": "critical"
+    },
+    {
+      "task_id": "T006",
+      "name": "Add lint rule for hardcoded GitHub field identifiers",
+      "goal": "Prevent future reintroduction of inline field IDs.",
+      "action_type": "create_or_patch_file",
+      "targets": [
+        ".github/workflows/bootstrap-github-fields.yml",
+        "scripts/lint_no_inline_github_ids.py"
+      ],
+      "required_changes": [
+        "Implement scan for strings matching PVTF_, PVTSSF_, PVTIF_.",
+        "Fail workflow if hardcoded IDs are detected outside generated registry artifacts."
+      ],
+      "acceptance_checks": [
+        "Lint fails when inline field IDs are added to workflow YAML or Python code.",
+        "Generated registry files are exempted if needed."
+      ],
+      "priority": "high"
+    },
+    {
+      "task_id": "T007",
+      "name": "Define projection manifest schema",
+      "goal": "Formalize desired GitHub state produced from the plan package.",
+      "action_type": "create_files",
+      "targets": [
+        "schemas/github_projection_manifest.schema.json",
+        "config/github_projection_registry.json"
+      ],
+      "required_changes": [
+        "Define manifest root fields: manifest_version, generated_at, plan_hash, projection_version, steps[].",
+        "Define per-step fields: step_id, title, body, phase, milestone_group, gate_requirements, repo, labels, assignees, plan_hash, projection_version."
+      ],
+      "acceptance_checks": [
+        "GH_PROJECTION_GENERATE emits schema-valid manifest.",
+        "Projection apply consumes only schema-valid manifest."
+      ],
+      "priority": "critical"
+    },
+    {
+      "task_id": "T008",
+      "name": "Define step_issue_linkage schema and stable join behavior",
+      "goal": "Create deterministic traceability between plan StepIDs and GitHub issues/project items.",
+      "action_type": "create_files",
+      "targets": [
+        "config/step_issue_linkage.json",
+        "schemas/step_issue_linkage.schema.json"
+      ],
+      "required_changes": [
+        "Use StepID as top-level key or stable unique field.",
+        "Store issue_number, issue_node_id, project_item_id, milestone_title, plan_hash, projection_version, created_at, updated_at.",
+        "Guarantee all execution issues have a matching linkage record."
+      ],
+      "acceptance_checks": [
+        "All projected issues are represented in linkage file.",
+        "Reconcile-drift can detect missing linkage and classify orphan issues."
+      ],
+      "priority": "critical"
+    },
+    {
+      "task_id": "T009",
+      "name": "Make one step contract equal one issue explicit",
+      "goal": "Remove ambiguity in work granularity.",
+      "action_type": "patch_file",
+      "targets": [
+        "PROC-DESIGN-GITHUB-AUTOMATION-SSOT.json",
+        "Template to GitHub Mapping.md"
+      ],
+      "required_changes": [
+        "Add explicit rule: one step contract = one GitHub issue.",
+        "Allow sub-issues only for declared sub-steps or bounded decomposition.",
+        "Clarify that milestones are delivery checkpoints, not phases."
+      ],
+      "acceptance_checks": [
+        "Docs contain explicit granularity rule.",
+        "Projection logic maps one step to one issue."
+      ],
+      "priority": "high"
+    },
+    {
+      "task_id": "T010",
+      "name": "Implement deterministic projection apply behavior",
+      "goal": "Create/update issues and project items idempotently from manifest.",
+      "action_type": "patch_or_create_files",
+      "targets": [
+        "programs/GH_PROJECTION_APPLY.spec.json",
+        ".github/workflows/gh-projection-apply.yml",
+        "src/github_automation_cli/commands/projection_apply.py"
+      ],
+      "required_changes": [
+        "If step_id absent from linkage, create issue then add to project then set fields.",
+        "If step_id present and PlanHash changed, update issue body and automation-only fields.",
+        "If desired and observed PlanHash match, skip mutation.",
+        "Write updated linkage file after successful mutation."
+      ],
+      "acceptance_checks": [
+        "Running projection apply twice yields same result.",
+        "Duplicate issue creation does not occur for same StepID."
+      ],
+      "priority": "critical"
+    },
+    {
+      "task_id": "T011",
+      "name": "Enable linkage file commit step",
+      "goal": "Remove placeholder behavior that prevents state persistence.",
+      "action_type": "patch_file",
+      "targets": [
+        ".github/workflows/gh-projection-apply.yml"
+      ],
+      "required_changes": [
+        "Replace any disabled placeholder such as if:false on linkage commit step with real success-based condition.",
+        "Commit linkage changes only if file content changed."
+      ],
+      "acceptance_checks": [
+        "Linkage file commits after successful apply when modified.",
+        "No-op run does not create empty commit."
+      ],
+      "priority": "high"
+    },
+    {
+      "task_id": "T012",
+      "name": "Create field option spec and allowed enumerations",
+      "goal": "Formalize allowed values for automation-managed fields.",
+      "action_type": "create_files",
+      "targets": [
+        "config/field_options_spec.json",
+        "schemas/field_options_spec.schema.json"
+      ],
+      "required_changes": [
+        "Define allowed options for EvidenceState, GateStatus, Status, and any other automation-only single-select fields.",
+        "Phase options must derive from plan or plan package metadata.",
+        "Ensure registry validation confirms required option names exist in GitHub."
+      ],
+      "acceptance_checks": [
+        "Phase evaluator and reconciliation logic read option values from spec + registry.",
+        "Invalid field values are rejected."
+      ],
+      "priority": "high"
+    },
+    {
+      "task_id": "T013",
+      "name": "Implement composite phase advancement evaluator",
+      "goal": "Ensure phase changes are based on full exit-criteria evaluation, not a single event.",
+      "action_type": "create_files",
+      "targets": [
+        ".github/workflows/phase-advancement-evaluator.yml",
+        "schemas/phase_advancement_report.schema.json",
+        "config/phase_transition_decision.json",
+        "config/phase_advancement_report.json",
+        "src/github_automation_cli/commands/phase_advance_evaluate.py"
+      ],
+      "required_changes": [
+        "Evaluator must read plan package, linkage file, field registry, and observed GitHub state.",
+        "Evaluator must check all issues closed, all evidence sealed, all gates passed, and milestone completion if phase requires milestone.",
+        "Evaluator must output decision artifact with outcome ADVANCE, HOLD, or BLOCKED.",
+        "Only evaluator may write Phase field."
+      ],
+      "acceptance_checks": [
+        "No non-evaluator workflow writes Phase field.",
+        "Evaluator can run on schedule and on key events.",
+        "Decision artifact is persisted for every run."
+      ],
+      "priority": "critical"
+    },
+    {
+      "task_id": "T014",
+      "name": "Create explicit field ownership matrix",
+      "goal": "Prevent state collisions between humans, workflows, and CLI.",
+      "action_type": "create_files",
+      "targets": [
+        "policies/github_sync_governance.yaml"
+      ],
+      "required_changes": [
+        "Define plan-owned fields.",
+        "Define github-owned fields.",
+        "Define automation-only fields.",
+        "Assign exactly one writer to each automation-only field."
+      ],
+      "acceptance_checks": [
+        "Governance file contains single-writer ownership mapping.",
+        "Reconciliation uses ownership matrix when classifying drift."
+      ],
+      "priority": "critical"
+    },
+    {
+      "task_id": "T015",
+      "name": "Add unauthorized UI edit drift class",
+      "goal": "Catch and correct manual edits to automation-owned fields.",
+      "action_type": "patch_file",
+      "targets": [
+        "policies/github_sync_governance.yaml",
+        "schemas/reconciliation_report.schema.json",
+        "src/github_automation_cli/commands/reconcile_drift.py"
+      ],
+      "required_changes": [
+        "Add drift classes: CLEAN, STALE, VIOLATION, ORPHAN, MISSING, OVERRIDE, UNAUTHORIZED_UI_EDIT.",
+        "UNAUTHORIZED_UI_EDIT must apply when automation-only field changed outside named writer path and no override exists.",
+        "Reconciliation must revert when safe and emit evidence comment/report."
+      ],
+      "acceptance_checks": [
+        "Manual edits to automation-only fields are flagged and reverted unless override exists."
+      ],
+      "priority": "high"
+    },
+    {
+      "task_id": "T016",
+      "name": "Implement override registry",
+      "goal": "Allow approved divergence without forcing operators to bypass governance.",
+      "action_type": "create_files",
+      "targets": [
+        "config/github_override_registry.json",
+        "schemas/github_override_registry.schema.json"
+      ],
+      "required_changes": [
+        "Store override subject, scope, reason, approver, expiry, and suppressed drift classes.",
+        "Reconciliation must read override registry before applying corrections."
+      ],
+      "acceptance_checks": [
+        "Named override suppresses correction only for declared scope and time window.",
+        "Expired override no longer suppresses correction."
+      ],
+      "priority": "medium"
+    },
+    {
+      "task_id": "T017",
+      "name": "Create level-triggered reconciliation workflow",
+      "goal": "Make GitHub state self-healing rather than event-fragile.",
+      "action_type": "create_files",
+      "targets": [
+        ".github/workflows/ssot-drift-reconciliation.yml",
+        "schemas/reconciliation_report.schema.json",
+        "config/reconciliation_report.json",
+        "src/github_automation_cli/commands/reconcile_drift.py"
+      ],
+      "required_changes": [
+        "Run on schedule, push, and manual dispatch.",
+        "Fetch all project items and relevant fields.",
+        "Compare observed state against linkage file, projection registry, field ownership policy, and override registry.",
+        "Classify drift and perform safe convergent corrections.",
+        "Never delete issues automatically.",
+        "Emit reconciliation report every run."
+      ],
+      "acceptance_checks": [
+        "Missed webhook does not permanently break state.",
+        "Reconciliation report is produced on every run.",
+        "Recoverable drift is corrected automatically."
+      ],
+      "priority": "critical"
+    },
+    {
+      "task_id": "T018",
+      "name": "Add evidence sealing linkage",
+      "goal": "Tie passed gates and evidence bundles back to issue/project state.",
+      "action_type": "create_files",
+      "targets": [
+        "programs/GH_EVIDENCE_SEAL.spec.json",
+        "src/github_automation_cli/commands/evidence_seal.py"
+      ],
+      "required_changes": [
+        "After all required gate checks pass, post evidence comment to linked issue.",
+        "Set EvidenceState = Sealed.",
+        "Set GateStatus = Passed.",
+        "Write machine-readable evidence output."
+      ],
+      "acceptance_checks": [
+        "Issue comment includes run_id, bundle_path, and hash.",
+        "EvidenceState and GateStatus change only after required checks pass."
+      ],
+      "priority": "high"
+    },
+    {
+      "task_id": "T019",
+      "name": "Enforce no issue without StepID and no PR without linked issue",
+      "goal": "Prevent bypass of plan traceability and gate enforcement.",
+      "action_type": "patch_workflow_and_cli",
+      "targets": [
+        ".github/workflows/branch-handler.yml",
+        "src/github_automation_cli/validators/pr_linkage.py",
+        "src/github_automation_cli/validators/issue_stepid.py"
+      ],
+      "required_changes": [
+        "Validate PR body contains Closes #N or Fixes #N.",
+        "Validate referenced issue exists in linkage file.",
+        "Validate execution issues carry StepID field.",
+        "Block merge or flag orphan issue on violation."
+      ],
+      "acceptance_checks": [
+        "PR without linked issue fails status check.",
+        "Execution issue without StepID becomes ORPHAN drift."
+      ],
+      "priority": "critical"
+    },
+    {
+      "task_id": "T020",
+      "name": "Add runner platform policy",
+      "goal": "Prevent environment drift across Linux and Windows assumptions.",
+      "action_type": "create_files",
+      "targets": [
+        "policies/runner_policy.yaml"
+      ],
+      "required_changes": [
+        "Define category-to-runner-class mapping.",
+        "Require each ProgramSpec to declare runner_class.",
+        "Fail validation if ProgramSpec omits runner_class."
+      ],
+      "acceptance_checks": [
+        "All ProgramSpecs declare runner_class.",
+        "Workflows align with runner policy."
+      ],
+      "priority": "medium"
+    },
+    {
+      "task_id": "T021",
+      "name": "Add rate-limit budget and retry policy",
+      "goal": "Make autonomous reconciliation stable under GraphQL/API limits.",
+      "action_type": "create_files",
+      "targets": [
+        "config/github_api_runtime_policy.json"
+      ],
+      "required_changes": [
+        "Define RATE_LIMIT_BUDGET, BACKOFF_POLICY, retry jitter, and low-budget behavior.",
+        "Require projection apply and reconciliation commands to honor this policy."
+      ],
+      "acceptance_checks": [
+        "CLI backs off on 429 and low remaining budget.",
+        "No blind rapid retry loops remain."
+      ],
+      "priority": "medium"
+    },
+    {
+      "task_id": "T022",
+      "name": "Thin existing workflows into wrappers",
+      "goal": "Move business logic out of workflow YAML into CLI commands.",
+      "action_type": "patch_files",
+      "targets": [
+        ".github/workflows/bootstrap-github-fields.yml",
+        ".github/workflows/gh-projection-generate.yml",
+        ".github/workflows/gh-projection-apply.yml",
+        ".github/workflows/phase-advancement-evaluator.yml",
+        ".github/workflows/ssot-drift-reconciliation.yml",
+        ".github/workflows/project-item-sync.yml",
+        ".github/workflows/milestone-completion.yml"
+      ],
+      "required_changes": [
+        "Limit workflow steps to checkout, auth token issuance, Python setup, CLI call, artifact upload, and optional commit.",
+        "Remove embedded business decisions where duplicated."
+      ],
+      "acceptance_checks": [
+        "Core logic lives in CLI and ProgramSpecs, not YAML.",
+        "Workflow YAML size and logic branching are reduced."
+      ],
+      "priority": "high"
+    },
+    {
+      "task_id": "T023",
+      "name": "Create validation suite for deterministic spine",
+      "goal": "Prove the hardening changes are wired and enforceable.",
+      "action_type": "create_tests",
+      "targets": [
+        "tests/test_field_registry_validation.py",
+        "tests/test_projection_idempotency.py",
+        "tests/test_phase_advancement_rules.py",
+        "tests/test_reconcile_drift_classes.py",
+        "tests/test_no_inline_field_ids.py",
+        "tests/test_pr_linkage_validation.py"
+      ],
+      "required_changes": [
+        "Test missing registry fail-closed behavior.",
+        "Test repeated projection apply idempotency.",
+        "Test only phase evaluator can write Phase.",
+        "Test manual automation-only field edit becomes drift.",
+        "Test orphan issue detection.",
+        "Test hardcoded ID lint failure."
+      ],
+      "acceptance_checks": [
+        "All critical deterministic tests pass."
+      ],
+      "priority": "high"
+    }
+  ],
+  "required_new_files": [
+    "config/github_field_registry.json",
+    "config/github_projection_registry.json",
+    "config/github_override_registry.json",
+    "config/step_issue_linkage.json",
+    "config/field_options_spec.json",
+    "config/github_api_runtime_policy.json",
+    "config/phase_transition_decision.json",
+    "config/phase_advancement_report.json",
+    "policies/github_sync_governance.yaml",
+    "policies/runner_policy.yaml",
+    "schemas/github_field_registry.schema.json",
+    "schemas/github_projection_manifest.schema.json",
+    "schemas/step_issue_linkage.schema.json",
+    "schemas/github_override_registry.schema.json",
+    "schemas/reconciliation_report.schema.json",
+    "schemas/phase_advancement_report.schema.json",
+    "schemas/field_options_spec.schema.json",
+    ".github/workflows/bootstrap-github-fields.yml",
+    ".github/workflows/phase-advancement-evaluator.yml",
+    ".github/workflows/ssot-drift-reconciliation.yml",
+    "programs/GH_AUTH_ISSUE_INSTALLATION_TOKEN.spec.json",
+    "programs/GH_FIELDS_DISCOVER.spec.json",
+    "programs/GH_FIELDS_VALIDATE.spec.json",
+    "programs/GH_PROJECTION_GENERATE.spec.json",
+    "programs/GH_PROJECTION_APPLY.spec.json",
+    "programs/GH_RECONCILE_DRIFT.spec.json",
+    "programs/GH_PHASE_ADVANCE_EVALUATE.spec.json",
+    "programs/GH_EVIDENCE_SEAL.spec.json"
+  ],
+  "critical_rules_to_encode": [
+    {
+      "rule_id": "R001",
+      "statement": "Plan files are SSOT. GitHub is projection/execution surface only."
+    },
+    {
+      "rule_id": "R002",
+      "statement": "GitHub Projects writes require GitHub App auth by default."
+    },
+    {
+      "rule_id": "R003",
+      "statement": "No inline field IDs or option IDs are permitted."
+    },
+    {
+      "rule_id": "R004",
+      "statement": "One step contract equals one GitHub issue."
+    },
+    {
+      "rule_id": "R005",
+      "statement": "No execution issue without StepID."
+    },
+    {
+      "rule_id": "R006",
+      "statement": "No PR without linked issue."
+    },
+    {
+      "rule_id": "R007",
+      "statement": "No phase transition without composite evaluator decision artifact."
+    },
+    {
+      "rule_id": "R008",
+      "statement": "Automation-only fields have exactly one writer."
+    },
+    {
+      "rule_id": "R009",
+      "statement": "Reconciliation is level-triggered and self-healing."
+    }
+  ],
+  "defer_until_after_core_spine": [
+    "Project template view polish",
+    "Charts and insights standardization",
+    "Backlog hygiene refinement rules beyond baseline scans",
+    "Advanced human-facing workflow ergonomics"
+  ],
+  "final_cli_output_contract": {
+    "format": "json",
+    "must_include": [
+      "task_id",
+      "target_path",
+      "action_taken",
+      "status",
+      "evidence_paths",
+      "validation_results",
+      "errors"
+    ]
+  }
+}

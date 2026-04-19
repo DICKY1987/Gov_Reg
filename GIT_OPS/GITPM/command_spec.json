@@ -1,0 +1,337 @@
+{
+  "create_step": {
+    "description": "Create a GitHub issue for a plan step and project it into the project board with all required metadata.",
+    "request_schema": {
+      "type": "object",
+      "required": ["step_id", "repo", "title", "body", "phase_id", "plan_hash", "projection_version"],
+      "properties": {
+        "step_id": {"type": "string", "description": "Canonical identifier from the plan (e.g., STEP‑001)"},
+        "repo": {"type": "string", "description": "GitHub repository in the form owner/repo"},
+        "title": {"type": "string", "description": "Issue title; often derived from the step summary"},
+        "body": {"type": "string", "description": "Rendered markdown representing the step contract"},
+        "phase_id": {"type": "string", "description": "Plan phase identifier to set in the project (e.g., PH‑01)"},
+        "milestone_group": {"type": ["string", "null"], "description": "Delivery grouping to map to a milestone; optional"},
+        "plan_hash": {"type": "string", "description": "Hash of the plan at generation time"},
+        "projection_version": {"type": ["integer", "string"], "description": "Projection version number from the plan"},
+        "assignees": {"type": "array", "items": {"type": "string"}, "description": "Optional GitHub usernames to assign"},
+        "labels": {"type": "array", "items": {"type": "string"}, "description": "Optional list of labels to apply"}
+      }
+    },
+    "preconditions": [
+      "step_id exists in the plan and has not been linked to an issue unless overwrite is explicitly allowed",
+      "config/github_field_registry.json exists and contains IDs for project node, StepID field, Phase field, Status field, PlanHash field and ProjectionVersion field",
+      "authentication via GitHub App installation token is available"
+    ],
+    "api_calls": [
+      {
+        "name": "create_issue",
+        "type": "REST",
+        "method": "POST",
+        "endpoint": "/repos/{owner}/{repo}/issues",
+        "description": "Creates the issue in the target repository with title, body, labels and assignees"
+      },
+      {
+        "name": "add_item_to_project",
+        "type": "GraphQL",
+        "operation": "addProjectV2ItemById",
+        "description": "Adds the created issue as an item in the target project"
+      },
+      {
+        "name": "set_step_id_field",
+        "type": "GraphQL",
+        "operation": "updateProjectV2ItemFieldValue",
+        "description": "Sets the StepID field for the project item using the text value of step_id"
+      },
+      {
+        "name": "set_phase_field",
+        "type": "GraphQL",
+        "operation": "updateProjectV2ItemFieldValue",
+        "description": "Sets the Phase field to the selected option corresponding to phase_id"
+      },
+      {
+        "name": "set_status_field",
+        "type": "GraphQL",
+        "operation": "updateProjectV2ItemFieldValue",
+        "description": "Optionally sets the Status field to the default value (e.g., Todo) if the CLI is the writer for that field"
+      },
+      {
+        "name": "set_plan_hash_field",
+        "type": "GraphQL",
+        "operation": "updateProjectV2ItemFieldValue",
+        "description": "Sets the PlanHash field using the text value of plan_hash"
+      },
+      {
+        "name": "set_projection_version_field",
+        "type": "GraphQL",
+        "operation": "updateProjectV2ItemFieldValue",
+        "description": "Sets the ProjectionVersion field using text or number value"
+      },
+      {
+        "name": "create_milestone_if_needed",
+        "type": "REST",
+        "method": "POST",
+        "endpoint": "/repos/{owner}/{repo}/milestones",
+        "description": "Creates a milestone if milestone_group is provided and a milestone with that title does not already exist"
+      },
+      {
+        "name": "assign_issue_to_milestone",
+        "type": "REST",
+        "method": "PATCH",
+        "endpoint": "/repos/{owner}/{repo}/issues/{issue_number}",
+        "description": "Assigns the created issue to the milestone by setting the milestone number"
+      }
+    ],
+    "local_writes": [
+      "Update config/step_issue_linkage.json with step_id → issue_number, issue_node_id, project_item_id, milestone title and timestamps",
+      "Record projection metadata (e.g., plan_hash, projection_version) in the linkage entry"
+    ],
+    "failure_codes": {
+      "STEP_ALREADY_EXISTS": "The step_id is already linked to a GitHub issue",
+      "STEP_NOT_FOUND": "The step_id does not exist in the plan",
+      "FIELD_REGISTRY_MISSING": "Field registry file is missing or incomplete",
+      "API_ERROR": "GitHub API returned an error during issue or project mutations",
+      "AUTH_ERROR": "Authentication failed or GitHub App token could not be retrieved",
+      "UNKNOWN_ERROR": "An unexpected error occurred during create_step"
+    }
+  },
+  "create_subissue": {
+    "description": "Create a child issue under a parent issue and optionally project it into the project board",
+    "request_schema": {
+      "type": "object",
+      "required": ["parent_step_id", "child_step_id", "repo"],
+      "properties": {
+        "parent_step_id": {"type": "string", "description": "The step_id of the parent issue"},
+        "child_step_id": {"type": "string", "description": "The step_id of the child sub-issue"},
+        "repo": {"type": "string", "description": "GitHub repository in the form owner/repo"},
+        "title": {"type": "string", "description": "Optional title for the child issue; derived from plan if omitted"},
+        "body": {"type": "string", "description": "Optional body for the child issue; derived from plan if omitted"},
+        "phase_id": {"type": ["string", "null"], "description": "Optional phase identifier for the child issue"}
+      }
+    },
+    "preconditions": [
+      "parent_step_id exists in the plan and is linked to a GitHub issue",
+      "child_step_id exists in the plan",
+      "child_step_id is not already linked to a GitHub issue unless overwrite is explicitly allowed",
+      "Field registry loaded for project operations if projecting child into project"
+    ],
+    "api_calls": [
+      {
+        "name": "create_child_issue_if_needed",
+        "type": "REST",
+        "method": "POST",
+        "endpoint": "/repos/{owner}/{repo}/issues",
+        "description": "Creates the child issue if it does not already exist"
+      },
+      {
+        "name": "add_sub_issue",
+        "type": "REST",
+        "method": "POST",
+        "endpoint": "/repos/{owner}/{repo}/issues/{parent_issue_number}/sub_issues",
+        "description": "Adds the child issue as a sub-issue under the parent issue using the child issue ID"
+      },
+      {
+        "name": "add_child_item_to_project",
+        "type": "GraphQL",
+        "operation": "addProjectV2ItemById",
+        "description": "Optionally adds the child issue to the project board"
+      },
+      {
+        "name": "set_child_metadata_fields",
+        "type": "GraphQL",
+        "operation": "updateProjectV2ItemFieldValue",
+        "description": "Optionally sets StepID, Phase, PlanHash and ProjectionVersion fields for the child project item"
+      }
+    ],
+    "local_writes": [
+      "Update config/step_issue_linkage.json with child_step_id → issue_number mapping and its parent_step_id",
+      "Record project item IDs and metadata for the child if added to the project"
+    ],
+    "failure_codes": {
+      "PARENT_NOT_LINKED": "The parent step is not linked to any GitHub issue",
+      "CHILD_ALREADY_EXISTS": "The child_step_id is already linked to an issue",
+      "CHILD_NOT_FOUND": "child_step_id does not exist in the plan",
+      "API_ERROR": "GitHub API returned an error while creating or linking the sub-issue",
+      "AUTH_ERROR": "Authentication failed when performing API operations",
+      "UNKNOWN_ERROR": "An unexpected error occurred during create_subissue"
+    }
+  },
+  "assign_milestone": {
+    "description": "Ensure a milestone exists and assign one or more issues to it",
+    "request_schema": {
+      "type": "object",
+      "required": ["milestone_title", "steps", "repo"],
+      "properties": {
+        "milestone_title": {"type": "string", "description": "Name of the milestone"},
+        "steps": {"type": "array", "items": {"type": "string"}, "description": "List of step_ids to assign to the milestone"},
+        "repo": {"type": "string", "description": "GitHub repository in the form owner/repo"},
+        "description": {"type": ["string", "null"], "description": "Optional description for the milestone"},
+        "due_on": {"type": ["string", "null"], "description": "Optional ISO 8601 due date for the milestone"}
+      }
+    },
+    "preconditions": [
+      "milestone_title corresponds to a valid delivery grouping in the plan",
+      "Each step_id in steps is linked to a GitHub issue"
+    ],
+    "api_calls": [
+      {
+        "name": "list_milestones",
+        "type": "REST",
+        "method": "GET",
+        "endpoint": "/repos/{owner}/{repo}/milestones?state=all",
+        "description": "Retrieves existing milestones to determine if the milestone already exists"
+      },
+      {
+        "name": "create_milestone_if_absent",
+        "type": "REST",
+        "method": "POST",
+        "endpoint": "/repos/{owner}/{repo}/milestones",
+        "description": "Creates the milestone with the given title, description and due date if not found"
+      },
+      {
+        "name": "assign_milestone_to_issues",
+        "type": "REST",
+        "method": "PATCH",
+        "endpoint": "/repos/{owner}/{repo}/issues/{issue_number}",
+        "description": "Assigns each issue to the milestone by setting the milestone number"
+      }
+    ],
+    "local_writes": [
+      "Update local linkage entries with milestone assignment if necessary"
+    ],
+    "failure_codes": {
+      "INVALID_MILESTONE_GROUP": "milestone_title does not map to a valid grouping in the plan",
+      "STEP_ISSUE_NOT_FOUND": "One or more steps do not have a linked issue",
+      "API_ERROR": "GitHub API returned an error during milestone creation or assignment",
+      "AUTH_ERROR": "Authentication failed when performing API operations",
+      "UNKNOWN_ERROR": "An unexpected error occurred during assign_milestone"
+    }
+  },
+  "sync_phase": {
+    "description": "Sync the plan phase assignments to project items, writing plan metadata but not advancing lifecycle phases unless authorized",
+    "request_schema": {
+      "type": "object",
+      "required": ["phase_id", "plan_path", "repo"],
+      "properties": {
+        "phase_id": {"type": "string", "description": "The phase identifier to sync (e.g., PH‑02); use 'all' to sync all phases"},
+        "plan_path": {"type": "string", "description": "Filesystem path to the plan JSON to read assignments from"},
+        "repo": {"type": "string", "description": "GitHub repository in the form owner/repo"},
+        "mode": {"type": "string", "enum": ["projection", "advancement"], "default": "projection", "description": "projection: align GitHub to plan; advancement: only update phase when evaluator authorizes transition"}
+      }
+    },
+    "preconditions": [
+      "plan_path exists and is readable",
+      "phase_id exists in the plan or is 'all'",
+      "Field registry file loaded and contains IDs for Phase, PlanHash, ProjectionVersion, StepID fields",
+      "For advancement mode: evaluator output exists (e.g., phase_advancement_report.json and phase_transition_decision.json) and authorizes changes"
+    ],
+    "api_calls": [
+      {
+        "name": "ensure_items_in_project",
+        "type": "GraphQL",
+        "operation": "addProjectV2ItemById",
+        "description": "For each step with a linked issue, ensure it is represented as a project item"
+      },
+      {
+        "name": "update_phase_field",
+        "type": "GraphQL",
+        "operation": "updateProjectV2ItemFieldValue",
+        "description": "Set the Phase field to the desired option; only in projection mode or when advancement is authorized"
+      },
+      {
+        "name": "update_plan_hash_field",
+        "type": "GraphQL",
+        "operation": "updateProjectV2ItemFieldValue",
+        "description": "Update the PlanHash field with the current plan hash"
+      },
+      {
+        "name": "update_projection_version_field",
+        "type": "GraphQL",
+        "operation": "updateProjectV2ItemFieldValue",
+        "description": "Update the ProjectionVersion field with the current projection version"
+      },
+      {
+        "name": "update_status_field_if_owned",
+        "type": "GraphQL",
+        "operation": "updateProjectV2ItemFieldValue",
+        "description": "Optionally update the Status field if the CLI is the owner of the transition; otherwise leave it to built‑in workflows"
+      }
+    ],
+    "local_writes": [
+      "Generate a sync report summarizing items updated and skipped (e.g., sync_phase_report.json)"
+    ],
+    "failure_codes": {
+      "PLAN_NOT_FOUND": "The plan file cannot be read",
+      "INVALID_PHASE": "The provided phase_id does not exist in the plan",
+      "FIELD_REGISTRY_MISSING": "Field registry file is missing or incomplete",
+      "ADVANCEMENT_NOT_AUTHORIZED": "Advancement mode requested but evaluator output is missing or denies transition",
+      "API_ERROR": "GitHub API returned an error during project item or field updates",
+      "AUTH_ERROR": "Authentication failed when performing API operations",
+      "UNKNOWN_ERROR": "An unexpected error occurred during sync_phase"
+    }
+  },
+  "reconcile_drift": {
+    "description": "Detect and correct drift between plan/package desired state and the current GitHub state, classifying differences and applying safe corrections",
+    "request_schema": {
+      "type": "object",
+      "required": ["plan_path", "repo", "project_id"],
+      "properties": {
+        "plan_path": {"type": "string", "description": "Path to the plan or plan package used as the desired state"},
+        "repo": {"type": "string", "description": "GitHub repository in the form owner/repo"},
+        "project_id": {"type": "string", "description": "Project node ID for the GitHub project to reconcile"},
+        "override_registry_path": {"type": ["string", "null"], "description": "Optional path to a registry of approved overrides for plan fields"}
+      }
+    },
+    "preconditions": [
+      "plan_path exists and can be parsed",
+      "Field registry and step linkage files are loaded",
+      "Authentication via GitHub App token is available",
+      "project_id corresponds to a valid project"
+    ],
+    "api_calls": [
+      {
+        "name": "query_project_items_and_fields",
+        "type": "GraphQL",
+        "operation": "projectItemsAndFieldsQuery",
+        "description": "Retrieve all items in the project along with StepID, Phase, Status, PlanHash, ProjectionVersion, EvidenceState and GateStatus field values"
+      },
+      {
+        "name": "query_issue_states",
+        "type": "REST",
+        "method": "GET",
+        "endpoint": "/repos/{owner}/{repo}/issues/{issue_number}",
+        "description": "Retrieve current issue properties (open/closed, milestone, labels, etc.) for each linked step"
+      },
+      {
+        "name": "correct_missing_item",
+        "type": "GraphQL",
+        "operation": "addProjectV2ItemById",
+        "description": "Create and project a new issue for steps found in the plan but missing in GitHub"
+      },
+      {
+        "name": "correct_field_value",
+        "type": "GraphQL",
+        "operation": "updateProjectV2ItemFieldValue",
+        "description": "Correct automation‑owned fields (StepID, Phase, Status, PlanHash, ProjectionVersion, EvidenceState, GateStatus) when they drift from the plan and are not covered by overrides"
+      },
+      {
+        "name": "create_missing_issue",
+        "type": "REST",
+        "method": "POST",
+        "endpoint": "/repos/{owner}/{repo}/issues",
+        "description": "Create a GitHub issue for a plan step that lacks any linked issue"
+      }
+    ],
+    "local_writes": [
+      "Write reconciliation_report.json summarizing observed state, drift classifications and corrective actions",
+      "Update step_issue_linkage.json with newly created issues and project item IDs"
+    ],
+    "failure_codes": {
+      "PLAN_NOT_FOUND": "The plan file cannot be read",
+      "FIELD_REGISTRY_MISSING": "Field registry or linkage file is missing or incomplete",
+      "PROJECT_NOT_FOUND": "The specified project_id does not exist or cannot be queried",
+      "API_ERROR": "GitHub API returned an error during query or correction operations",
+      "AUTH_ERROR": "Authentication failed when performing API operations",
+      "UNKNOWN_ERROR": "An unexpected error occurred during reconcile_drift"
+    }
+  }
+}

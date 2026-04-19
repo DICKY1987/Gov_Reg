@@ -1,0 +1,35 @@
+{
+  "generated_at": "2026-04-11T21:48:56Z",
+  "legacy_validator_reference_note": "Historical gate registry entries still document legacy validators that were outside the requested new v3.3 validator set; the new seven validators and plan CLI are present and executable.",
+  "new_validator_scripts": {
+    "missing": [],
+    "status": "PASS"
+  },
+  "pattern_first_language_preserved": true,
+  "report_id": "NPP-V3-3-0-CONSISTENCY",
+  "required_sections_in_instruction": {
+    "missing": [],
+    "status": "PASS"
+  },
+  "required_sections_in_template": {
+    "count": 45,
+    "missing": [],
+    "status": "PASS"
+  },
+  "status": "PASS",
+  "template_gates_in_spec": {
+    "missing": [],
+    "spec_gate_count": 34,
+    "status": "PASS",
+    "template_gate_count": 20
+  },
+  "version_alignment": {
+    "findings": [],
+    "historical_version_history_keys_preserved": [
+      "v3.2.0",
+      "v3.0.0",
+      "v2.4.0"
+    ],
+    "status": "PASS"
+  }
+}

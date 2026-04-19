@@ -1,0 +1,1206 @@
+{
+  "meta": {
+    "document_id": "PROC-DESIGN-GITHUB-AUTOMATION-SSOT-001",
+    "title": "GitHub Automation Subsystem — Technical Process Design (SSOT)",
+    "version": "0.1.0",
+    "status": "DRAFT_FOR_EVALUATION",
+    "created": "2026-04-12",
+    "authors": ["DICKY1987"],
+    "purpose": "Single source of truth for the design and implementation of the GitHub automation subsystem. All workflows, artifacts, gates, and process steps are derived from this document. No implementation work begins until open questions are resolved and status advances to APPROVED.",
+    "delta_chain": {
+      "patches": [
+        "ARCH-DELTA-NPP-GITWORKTREE-PROGRAMSPEC-001",
+        "ARCH-DELTA-NPP-GITHUB-HARDENING-002"
+      ],
+      "supersedes": [],
+      "prior_analysis_sources": [
+        "GIT_OPS/compass_artifact_wf-4a39ee83-b5dc-41ee-b670-d8fddd149e61_text_markdown.md",
+        "GIT_OPS/ChatGPT-Template to GitHub Mapping (1).md",
+        "GIT_OPS/Second Architecture Delta for GitHub Hardening.md"
+      ]
+    }
+  },
+
+  "governing_laws": [
+    {
+      "id": "LAW-GH-001",
+      "name": "APP_FIRST_AUTHENTICATION",
+      "statement": "All automation that reads or writes GitHub Projects must authenticate via a GitHub App installation token. GITHUB_TOKEN cannot access Projects. PATs are permitted only as an explicitly declared exception with a named owner and expiry date.",
+      "rationale": "GITHUB_TOKEN is repository-scoped and cannot access Projects v2. PATs tied to individuals create bus-factor and rotation risk. GitHub App tokens are ephemeral (1-hour max), scope-limited, and do not depend on any individual account.",
+      "enforcement": "GATE_GH_APP_AUTH_AVAILABLE must pass before any workflow that touches Projects fields runs."
+    },
+    {
+      "id": "LAW-GH-002",
+      "name": "NO_INLINE_FIELD_IDS",
+      "statement": "No workflow, script, or ProgramSpec may hardcode a GitHub Project node ID, field ID, or option/iteration ID. All IDs must be resolved at runtime from config/github_field_registry.json.",
+      "rationale": "Field IDs are stable until a field is deleted and recreated or the project is recreated. Hardcoded IDs create silent failures after project migration or recreation. Query-then-extract at runtime makes the system survivable.",
+      "enforcement": "GATE_GH_FIELD_REGISTRY_VALID must pass. Any workflow that reads a field ID must source it from github_field_registry.json. Linting rule in bootstrap-github-fields.yml checks for hardcoded PVTF_/PVTSSF_/PVTIF_ strings in workflow files."
+    },
+    {
+      "id": "LAW-GH-003",
+      "name": "PHASE_ADVANCEMENT_IS_COMPOSITE",
+      "statement": "Phase transitions on the GitHub Project Phase field may only be made by the Phase Advancement Evaluator, backed by a stored phase_transition_decision.json artifact. No workflow may update the Phase field based on a single event.",
+      "rationale": "Phase advancement requires composite evaluation of gate passage, issue closure, and evidence presence. Single-event triggers (PR merged → advance phase) are edge-triggered and create permanent divergence when events are missed.",
+      "enforcement": "GATE_GH_PHASE_ADVANCEMENT_DECIDED is required before Phase field mutation. Phase field is listed under automation_only_fields in the sync governance policy."
+    },
+    {
+      "id": "LAW-RUN-001",
+      "name": "PLATFORM_SPLIT_REQUIRED",
+      "statement": "Every ProgramSpec and workflow must declare its required runner class. GitHub-hosted ubuntu-latest is the default for all GraphQL/REST operations, gate evaluation, and plan projection. Self-hosted Windows runners are used only for Windows-specific toolchain operations. Any workflow targeting a self-hosted runner must declare a fallback strategy.",
+      "rationale": "The codebase has mixed Windows and Linux assumptions. Uncontrolled platform assignment creates environmental drift and untestable workflows.",
+      "allowed_runner_classes": ["linux_hosted", "windows_hosted", "self_hosted_windows", "self_hosted_linux", "self_hosted_ephemeral"],
+      "enforcement": "policies/runner_policy.yaml defines category-to-runner mapping. Missing runner_class in a ProgramSpec is a schema validation error."
+    },
+    {
+      "id": "LAW-SYNC-001",
+      "name": "PROJECTION_IS_UNIDIRECTIONAL",
+      "statement": "The plan SSOT (YAML/JSON files in the repo) is the sole authority for decomposition, step contracts, phase structure, gate requirements, and evidence requirements. GitHub is the execution surface. No automation may write plan-owned fields back from GitHub to the plan files.",
+      "rationale": "Bidirectional sync between SSOT and execution surfaces reliably produces data loss and unresolvable conflicts. Documented failure mode across Linear, custom integrations, and the cross-system analysis.",
+      "plan_owned_fields": ["phase_structure", "step_contracts", "gate_requirements", "evidence_requirements", "milestone_groupings"],
+      "github_owned_fields": ["assignees", "review_conversations", "comment_threads"],
+      "automation_only_fields": ["Phase", "Status", "StepID", "EvidenceState", "DeterminismState", "PlanHash", "ProjectionVersion", "GateStatus"]
+    },
+    {
+      "id": "LAW-WORK-001",
+      "name": "NO_ISSUE_WITHOUT_STEP_ID",
+      "statement": "Every GitHub Issue that represents execution work must carry a StepID project field value matching an entry in config/step_issue_linkage.json. Issues without a StepID are classified as Orphan drift by the reconciliation loop.",
+      "rationale": "Free-floating issues bypass the plan, break traceability, and make phase advancement evaluation unreliable.",
+      "enforcement": "ssot-drift-reconciliation.yml classifies StepID-absent issues as Orphan drift and opens a flag issue referencing the orphan."
+    },
+    {
+      "id": "LAW-WORK-002",
+      "name": "NO_PR_WITHOUT_ISSUE",
+      "statement": "Every pull request must reference a GitHub Issue via 'Closes #N' or 'Fixes #N' in the PR body. The referenced issue must exist in step_issue_linkage.json.",
+      "rationale": "PRs that do not map to step contracts bypass governance and make gate enforcement meaningless.",
+      "enforcement": "TEMP_branch-handler.yml (renamed to branch-handler.yml) validates PR body on opened/edited events and blocks merge if linkage is absent."
+    },
+    {
+      "id": "LAW-WORK-003",
+      "name": "NO_MERGE_WITHOUT_GATE",
+      "statement": "All gate workflows listed in the plan's gate_requirements for the active phase must produce passing required status checks before a PR can be merged.",
+      "rationale": "Gates are the enforcement mechanism for the phase contract. Optional gates defeat the governance model.",
+      "enforcement": "Branch protection rules on the default branch require all gate status checks. Gate list is derived from the active phase's gate_requirements at projection time."
+    }
+  ],
+
+  "architecture": {
+    "pattern": "observe-diff-act-report reconciliation loop (Kubernetes controller pattern applied to project management)",
+    "trigger_model": "level-triggered — reconciliation runs on schedule regardless of events; missed webhooks do not create permanent divergence",
+    "principles": [
+      {
+        "id": "ARCH-P-001",
+        "name": "level_triggered_not_edge_triggered",
+        "statement": "The reconciliation loop cares about current state, not what events occurred. Every critical workflow also runs on a schedule so missed webhooks self-heal on the next cycle."
+      },
+      {
+        "id": "ARCH-P-002",
+        "name": "idempotent_mutations",
+        "statement": "addProjectV2ItemById returns the existing item ID if the item already exists. updateProjectV2ItemFieldValue is safe to re-run. All projection operations converge to the same result regardless of how many times they execute."
+      },
+      {
+        "id": "ARCH-P-003",
+        "name": "checksum_based_change_detection",
+        "statement": "PlanHash (SHA256 of canonical plan package) and ProjectionVersion (monotonic integer) are stored as Project fields. Reconciliation diffs desired vs observed values and skips mutation when they match. Reduces API consumption and eliminates reconciliation storms."
+      },
+      {
+        "id": "ARCH-P-004",
+        "name": "two_step_mutation",
+        "statement": "GitHub Projects v2 requires separate GraphQL calls to add an item (addProjectV2ItemById) and update its fields (updateProjectV2ItemFieldValue). These must never be combined into one call."
+      },
+      {
+        "id": "ARCH-P-005",
+        "name": "escape_hatches_required",
+        "statement": "The Override drift class exists for intentional, approved divergence. A system with no escape hatch forces operators to abandon governance entirely during incidents. Override entries in github_override_registry.json suppress reconciliation correction for named items."
+      },
+      {
+        "id": "ARCH-P-006",
+        "name": "fail_closed_on_missing_prerequisites",
+        "statement": "If github_field_registry.json is absent or fails validation, all downstream workflows that touch Project fields must exit with a non-zero status. Bootstrap must run and pass before projection or reconciliation can proceed."
+      },
+      {
+        "id": "ARCH-P-007",
+        "name": "single_writer_authority",
+        "statement": "Automation-only fields have exactly one writer: the named ProgramSpec for that field. No other workflow, script, or human may write to Phase, PlanHash, ProjectionVersion, EvidenceState, or DeterminismState."
+      }
+    ],
+    "template_to_github_mapping": [
+      {
+        "template_concept": "Phase (PH-00, PH-01, ...)",
+        "github_surface": "Project custom single-select field named 'Phase'",
+        "cardinality": "one plan phase = one option in the Phase field",
+        "writer": "GH_PHASE_ADVANCE_EVALUATE (automation-only)",
+        "notes": "Phases are NOT milestones. Milestones are delivery checkpoints within a phase."
+      },
+      {
+        "template_concept": "Step contract (STEP-NNN)",
+        "github_surface": "GitHub Issue",
+        "cardinality": "one step = one issue; sub-steps may become sub-issues up to 2 levels",
+        "writer": "GH_PROJECTION_APPLY",
+        "linkage_table": "config/step_issue_linkage.json",
+        "notes": "StepID project field carries the step_id value. Issue title format: '[STEP-NNN] <contract_summary>'."
+      },
+      {
+        "template_concept": "Gate (validation checkpoint)",
+        "github_surface": "GitHub Actions required status check",
+        "cardinality": "one gate = one required status check job",
+        "writer": "CI pipeline (GitHub Actions)",
+        "notes": "Gate list per phase is read from the plan package at projection time and written to branch protection rules via GH_PROJECTION_APPLY."
+      },
+      {
+        "template_concept": "Execution",
+        "github_surface": "Pull Request linked to an Issue",
+        "cardinality": "one PR implements one or more step contracts; PR body must contain 'Closes #N'",
+        "writer": "developer",
+        "notes": "PR is the execution attempt. Merge = contract accepted. branch-handler.yml enforces linkage."
+      },
+      {
+        "template_concept": "Completion",
+        "github_surface": "Issue closed + Milestone progress",
+        "cardinality": "issue closed = step complete; all issues in milestone closed = milestone complete",
+        "writer": "GitHub built-in automation on PR merge",
+        "notes": "Milestone groups steps that deliver a shippable output. A phase may span multiple milestones. A milestone may not span multiple phases."
+      },
+      {
+        "template_concept": "Evidence",
+        "github_surface": "Issue comment + EvidenceState project field",
+        "cardinality": "one evidence seal = one comment on the linked issue",
+        "writer": "post-gate step in CI pipeline; EvidenceState updated by GH_EVIDENCE_SEAL program",
+        "notes": "Comment format: 'Evidence sealed: [run_id] — [bundle_path] SHA256: [hash]'. EvidenceState is automation-only."
+      },
+      {
+        "template_concept": "Milestone grouping (delivery checkpoint)",
+        "github_surface": "GitHub Milestone",
+        "cardinality": "one milestone_group in plan = one GitHub Milestone",
+        "writer": "GH_PROJECTION_APPLY",
+        "notes": "Milestones are delivery checkpoints only. They track shippable outputs, not lifecycle stages."
+      }
+    ]
+  },
+
+  "process_phases": [
+    {
+      "id": "PROC-0",
+      "name": "Bootstrap",
+      "description": "One-time setup per project. Discovers and stores all GitHub Project field IDs and option IDs. Must complete successfully before any other process phase can run. Re-runs on demand when the project is recreated or fields are modified.",
+      "trigger": {
+        "manual": "workflow_dispatch on bootstrap-github-fields.yml",
+        "automatic": [
+          "On detection of missing or stale github_field_registry.json by any downstream workflow",
+          "On GATE_GH_FIELD_REGISTRY_VALID failure",
+          "Scheduled: daily at 00:00 UTC to detect field drift"
+        ]
+      },
+      "preconditions": [
+        "GitHub App installed on the organization/user with read/write Projects permission",
+        "App credentials stored as repository secrets: GH_APP_ID, GH_APP_PRIVATE_KEY",
+        "Project exists and is accessible to the App installation"
+      ],
+      "steps": [
+        {
+          "step": "PROC-0-S1",
+          "action": "Issue GitHub App installation token",
+          "program": "GH_AUTH_ISSUE_INSTALLATION_TOKEN",
+          "runner": "linux_hosted",
+          "inputs": ["GH_APP_ID secret", "GH_APP_PRIVATE_KEY secret", "installation scope: organization or user"],
+          "outputs": ["token_envelope.json (token + expiry, redacted in logs)"],
+          "failure_mode": "exit non-zero; GATE_GH_APP_AUTH_AVAILABLE fails; no downstream step runs"
+        },
+        {
+          "step": "PROC-0-S2",
+          "action": "Discover all project fields and options via GraphQL",
+          "program": "GH_FIELDS_DISCOVER",
+          "runner": "linux_hosted",
+          "graphql_query": "query($org: String!, $number: Int!) { organization(login: $org) { projectV2(number: $number) { id fields(first: 50) { nodes { ... on ProjectV2Field { id name } ... on ProjectV2SingleSelectField { id name options { id name } } ... on ProjectV2IterationField { id name configuration { iterations { id title startDate duration } } } } } } } }",
+          "inputs": ["token from PROC-0-S1", "ORG_NAME variable", "PROJECT_NUMBER variable"],
+          "outputs": ["raw_fields_response.json"],
+          "failure_mode": "exit non-zero if required fields are absent from response"
+        },
+        {
+          "step": "PROC-0-S3",
+          "action": "Validate and write field registry",
+          "program": "GH_FIELDS_VALIDATE",
+          "runner": "linux_hosted",
+          "required_fields": ["Phase", "Status", "StepID", "EvidenceState", "DeterminismState", "PlanHash", "ProjectionVersion", "GateStatus"],
+          "inputs": ["raw_fields_response.json"],
+          "outputs": ["config/github_field_registry.json"],
+          "failure_mode": "exit non-zero if any required field name is missing; existing registry is NOT overwritten on failure"
+        },
+        {
+          "step": "PROC-0-S4",
+          "action": "Commit registry file if changed",
+          "runner": "linux_hosted",
+          "inputs": ["config/github_field_registry.json"],
+          "outputs": ["git commit on current branch"],
+          "commit_message_format": "chore(github-automation): refresh field registry [bootstrap]",
+          "notes": "Uses a bot commit identity. Commit is skipped if file content is identical to HEAD."
+        }
+      ],
+      "gates": ["GATE_GH_APP_AUTH_AVAILABLE", "GATE_GH_FIELD_REGISTRY_PRESENT", "GATE_GH_FIELD_REGISTRY_SCHEMA_VALID", "GATE_GH_FIELD_REGISTRY_COVERAGE_VALID"],
+      "outputs": ["config/github_field_registry.json committed to repo"]
+    },
+    {
+      "id": "PROC-1",
+      "name": "Plan Projection",
+      "description": "Projects the plan SSOT (YAML/JSON phase plan files) onto GitHub. Creates Issues for all new step contracts, adds them to the Project, sets all automation-only fields, and records stable step↔issue linkage. Runs on every commit that modifies plan files.",
+      "trigger": {
+        "automatic": [
+          "push to default branch where paths match the plan_files_glob pattern (defined in OPEN_QUESTIONS OQ-001)",
+          "workflow_dispatch for manual re-projection"
+        ]
+      },
+      "preconditions": [
+        "PROC-0 completed: GATE_GH_FIELD_REGISTRY_VALID passes",
+        "GATE_GH_APP_AUTH_AVAILABLE passes",
+        "Plan file at canonical path is schema-valid"
+      ],
+      "steps": [
+        {
+          "step": "PROC-1-S1",
+          "action": "Issue GitHub App installation token",
+          "program": "GH_AUTH_ISSUE_INSTALLATION_TOKEN",
+          "runner": "linux_hosted",
+          "reuse": "same pattern as PROC-0-S1"
+        },
+        {
+          "step": "PROC-1-S2",
+          "action": "Load field registry and validate",
+          "runner": "linux_hosted",
+          "inputs": ["config/github_field_registry.json"],
+          "failure_mode": "exit non-zero and trigger PROC-0 automatically if registry is absent or stale"
+        },
+        {
+          "step": "PROC-1-S3",
+          "action": "Generate projection manifest from plan package",
+          "program": "GH_PROJECTION_GENERATE",
+          "runner": "linux_hosted",
+          "inputs": ["plan package at canonical path (OPEN_QUESTIONS OQ-001)", "config/step_issue_linkage.json (may be empty)"],
+          "outputs": ["config/github_projection_registry.json"],
+          "projection_manifest_fields_per_step": {
+            "step_id": "string, e.g. STEP-001",
+            "title": "string: '[STEP-NNN] <contract_summary>'",
+            "body": "string: full step contract rendered as markdown (inputs, outputs, invariants, gate_requirements)",
+            "phase": "string: phase_id this step belongs to",
+            "milestone_group": "string: milestone name (from plan)",
+            "gate_requirements": "array of gate IDs required for this step",
+            "plan_hash": "SHA256 of the canonical plan package JSON",
+            "projection_version": "monotonic integer, incremented on each re-projection"
+          }
+        },
+        {
+          "step": "PROC-1-S4",
+          "action": "Apply projection: create/update issues and project items",
+          "program": "GH_PROJECTION_APPLY",
+          "runner": "linux_hosted",
+          "for_each_step_in_manifest": [
+            "if step_id NOT in step_issue_linkage.json: create GitHub Issue via REST POST /repos/{owner}/{repo}/issues",
+            "addProjectV2ItemById to add issue to project (idempotent: returns existing item_id if already present)",
+            "updateProjectV2ItemFieldValue: set StepID = step_id",
+            "updateProjectV2ItemFieldValue: set Phase = phase option ID (from field registry)",
+            "updateProjectV2ItemFieldValue: set PlanHash = plan_hash",
+            "updateProjectV2ItemFieldValue: set ProjectionVersion = projection_version",
+            "if milestone_group is set: assign issue to milestone (create milestone if absent)",
+            "write {step_id: issue_number, item_id, projected_at} to step_issue_linkage.json"
+          ],
+          "for_each_step_already_in_linkage": [
+            "compare desired PlanHash vs observed PlanHash on project item",
+            "if mismatch: update issue body + PlanHash + ProjectionVersion fields",
+            "if match: skip (no mutation)"
+          ],
+          "rate_limit_behavior": "read rate limit headers after each mutation; sleep if X-RateLimit-Remaining < 10; use exponential backoff with jitter on 429 responses",
+          "outputs": ["config/step_issue_linkage.json (updated)"]
+        },
+        {
+          "step": "PROC-1-S5",
+          "action": "Commit linkage file if changed",
+          "runner": "linux_hosted",
+          "commit_message_format": "chore(github-automation): update step-issue linkage after projection [PROJ-{run_id}]"
+        }
+      ],
+      "gates": ["GATE_GH_APP_AUTH_AVAILABLE", "GATE_GH_FIELD_REGISTRY_VALID", "GATE_GH_PROJECTION_MANIFEST_VALID"],
+      "outputs": [
+        "GitHub Issues created for all new step contracts",
+        "All issues added to Project with Phase, StepID, PlanHash, ProjectionVersion fields set",
+        "config/step_issue_linkage.json committed to repo",
+        "config/github_projection_registry.json committed to repo"
+      ]
+    },
+    {
+      "id": "PROC-2",
+      "name": "Execution",
+      "description": "Normal development flow. Governs how branches, PRs, and gate checks interact with the plan. Enforces LAW-WORK-001 through LAW-WORK-003.",
+      "trigger": {
+        "automatic": [
+          "pull_request opened, edited, reopened, ready_for_review",
+          "check_suite completed",
+          "pull_request_review submitted"
+        ]
+      },
+      "steps": [
+        {
+          "step": "PROC-2-S1",
+          "action": "Validate PR linkage on open/edit",
+          "workflow": "branch-handler.yml",
+          "runner": "linux_hosted",
+          "checks": [
+            "PR body must contain 'Closes #N' or 'Fixes #N'",
+            "Referenced issue number must exist in config/step_issue_linkage.json",
+            "Referenced issue must be open"
+          ],
+          "failure_action": "Post PR comment explaining the requirement; set status check 'pr-linkage-valid' to failure; block merge"
+        },
+        {
+          "step": "PROC-2-S2",
+          "action": "Set Project item Status to In Progress when PR is opened",
+          "workflow": "project-item-sync.yml",
+          "runner": "linux_hosted",
+          "trigger_event": "pull_request.opened or pull_request.ready_for_review",
+          "mutations": [
+            "addProjectV2ItemById for the PR (idempotent)",
+            "updateProjectV2ItemFieldValue: Status = 'In Progress' option ID"
+          ],
+          "notes": "Source of Status option IDs: github_field_registry.json"
+        },
+        {
+          "step": "PROC-2-S3",
+          "action": "Run gate checks as required CI status checks",
+          "workflows": ["existing TEMP_quality-gates.yml", "existing TEMP_registry_integrity.yml", "existing TEMP_lint.yml", "existing TEMP_incomplete-scanner.yml"],
+          "runner": "linux_hosted",
+          "failure_action": "Status check fails; merge blocked by branch protection"
+        },
+        {
+          "step": "PROC-2-S4",
+          "action": "Seal evidence and update EvidenceState on gate passage",
+          "program": "GH_EVIDENCE_SEAL",
+          "runner": "linux_hosted",
+          "trigger_condition": "all required gate checks pass",
+          "mutations": [
+            "Post comment on linked issue: 'Evidence sealed: [run_id] — [bundle_path] SHA256: [hash]'",
+            "updateProjectV2ItemFieldValue: EvidenceState = 'Sealed' option ID",
+            "updateProjectV2ItemFieldValue: GateStatus = 'Passed' option ID"
+          ]
+        },
+        {
+          "step": "PROC-2-S5",
+          "action": "On PR merge: close linked issue, set Status to Done",
+          "workflow": "project-item-sync.yml",
+          "runner": "linux_hosted",
+          "trigger_event": "pull_request.closed where merged == true",
+          "mutations": [
+            "updateProjectV2ItemFieldValue: Status = 'Done' option ID on the issue project item",
+            "GitHub built-in automation closes the issue via 'Closes #N' in PR body"
+          ]
+        }
+      ],
+      "gates": ["GATE_PR_LINKAGE_VALID", "GATE_ALL_REQUIRED_CHECKS_PASS"],
+      "outputs": [
+        "PR linked to step issue",
+        "Step issue closed on merge",
+        "Project item Status = Done",
+        "EvidenceState = Sealed on linked issue",
+        "Evidence comment posted on issue"
+      ]
+    },
+    {
+      "id": "PROC-3",
+      "name": "Phase Advancement",
+      "description": "Evaluates whether the current phase's exit criteria are fully satisfied and, if so, advances the Phase field on all relevant Project items to the next phase. This is the only mechanism that may write the Phase field. Runs on schedule and on key events.",
+      "trigger": {
+        "automatic": [
+          "pull_request.closed (merged)",
+          "check_suite.completed",
+          "issues.closed",
+          "schedule: cron '*/15 * * * *'"
+        ]
+      },
+      "preconditions": [
+        "GATE_GH_FIELD_REGISTRY_VALID passes",
+        "GATE_GH_APP_AUTH_AVAILABLE passes"
+      ],
+      "steps": [
+        {
+          "step": "PROC-3-S1",
+          "action": "Issue GitHub App installation token",
+          "program": "GH_AUTH_ISSUE_INSTALLATION_TOKEN",
+          "runner": "linux_hosted"
+        },
+        {
+          "step": "PROC-3-S2",
+          "action": "Load plan package and derive current phase exit criteria",
+          "runner": "linux_hosted",
+          "inputs": ["plan package at canonical path", "config/step_issue_linkage.json"],
+          "outputs": ["in-memory: current_phase_id, exit_criteria[]"]
+        },
+        {
+          "step": "PROC-3-S3",
+          "action": "Query GitHub observed state for current phase",
+          "program": "GH_PHASE_ADVANCE_EVALUATE",
+          "runner": "linux_hosted",
+          "graphql_queries": [
+            "Fetch all issues in current phase from Project (filter by Phase field)",
+            "For each issue: fetch open/closed state, linked PR merge status, EvidenceState field value, GateStatus field value",
+            "Fetch milestone completion percentage for current phase milestone(s)"
+          ],
+          "outputs": ["in-memory: observed_state{issues_open, issues_closed, evidence_sealed, gates_passed}"]
+        },
+        {
+          "step": "PROC-3-S4",
+          "action": "Evaluate exit criteria against observed state",
+          "runner": "linux_hosted",
+          "evaluation_rules": [
+            "all_issues_closed: count(open issues in phase) == 0",
+            "all_evidence_sealed: count(issues where EvidenceState != 'Sealed') == 0",
+            "all_gates_passed: count(issues where GateStatus != 'Passed') == 0",
+            "milestone_complete: milestone percent_complete == 100 (if phase has milestone)"
+          ],
+          "decision_outcomes": ["ADVANCE", "HOLD", "BLOCKED"],
+          "outputs": ["config/phase_transition_decision.json", "config/phase_advancement_report.json"]
+        },
+        {
+          "step": "PROC-3-S5",
+          "action": "Apply phase advancement if decision == ADVANCE",
+          "runner": "linux_hosted",
+          "conditional": "phase_transition_decision.outcome == 'ADVANCE'",
+          "mutations": [
+            "For each item in next phase's step list: updateProjectV2ItemFieldValue Phase = next_phase option ID",
+            "updateProjectV2ItemFieldValue ProjectionVersion++ on all affected items"
+          ],
+          "notes": "Phase field on old items is NOT changed; they retain their completed phase. New items get the new phase."
+        },
+        {
+          "step": "PROC-3-S6",
+          "action": "Commit decision artifacts",
+          "runner": "linux_hosted",
+          "outputs_committed": ["config/phase_transition_decision.json", "config/phase_advancement_report.json"],
+          "commit_message_format": "chore(github-automation): phase-advancement decision [{outcome}] phase {from} -> {to} [PHASE-{run_id}]"
+        }
+      ],
+      "gates": ["GATE_GH_PHASE_EVALUATION_COMPLETE", "GATE_GH_PHASE_ADVANCEMENT_DECIDED"],
+      "outputs": [
+        "config/phase_transition_decision.json",
+        "config/phase_advancement_report.json",
+        "Phase field updated on Project items (if ADVANCE)"
+      ]
+    },
+    {
+      "id": "PROC-4",
+      "name": "Reconciliation",
+      "description": "Self-healing loop. Continuously diffs desired state (plan package + step_issue_linkage.json) against observed GitHub state. Classifies drift. Applies convergent corrections for recoverable drift classes. Emits a reconciliation report every run. This process never deletes GitHub Issues; it only flags, corrects field values, and creates missing items.",
+      "trigger": {
+        "automatic": [
+          "schedule: cron '*/15 * * * *'",
+          "push to default branch",
+          "workflow_dispatch"
+        ]
+      },
+      "steps": [
+        {
+          "step": "PROC-4-S1",
+          "action": "Issue GitHub App installation token",
+          "program": "GH_AUTH_ISSUE_INSTALLATION_TOKEN",
+          "runner": "linux_hosted"
+        },
+        {
+          "step": "PROC-4-S2",
+          "action": "Observe: fetch all Project items and their field values",
+          "program": "GH_RECONCILE_DRIFT",
+          "runner": "linux_hosted",
+          "graphql_query": "Paginated query of all projectV2 items with fields: StepID, Phase, Status, PlanHash, ProjectionVersion, EvidenceState, GateStatus, issue open/closed state",
+          "outputs": ["in-memory: observed_items[]"]
+        },
+        {
+          "step": "PROC-4-S3",
+          "action": "Diff: compare observed state against desired state",
+          "runner": "linux_hosted",
+          "desired_state_sources": ["config/step_issue_linkage.json", "config/github_projection_registry.json", "config/github_override_registry.json"],
+          "classification_logic": [
+            {
+              "class": "CLEAN",
+              "condition": "item.StepID in linkage AND item.PlanHash == desired PlanHash AND item.Phase == desired Phase",
+              "action": "no mutation"
+            },
+            {
+              "class": "STALE",
+              "condition": "item.StepID in linkage AND item.PlanHash != desired PlanHash",
+              "action": "update issue body + PlanHash + ProjectionVersion (re-project this item)"
+            },
+            {
+              "class": "VIOLATION",
+              "condition": "item.StepID in linkage AND automation-only field value does not match desired AND item NOT in override_registry",
+              "action": "revert field value to desired; post comment on issue noting the revert and who made the change"
+            },
+            {
+              "class": "ORPHAN",
+              "condition": "item.StepID is absent or not in linkage AND item NOT in override_registry",
+              "action": "open a flag issue titled '[DRIFT-ORPHAN] Issue #{N} has no step_id' referencing the orphan; do NOT close or delete the orphan"
+            },
+            {
+              "class": "MISSING",
+              "condition": "step_id in linkage has no corresponding GitHub issue (issue was manually deleted or never created)",
+              "action": "re-run GH_PROJECTION_APPLY for this step only"
+            },
+            {
+              "class": "OVERRIDE",
+              "condition": "item exists in config/github_override_registry.json",
+              "action": "skip; log to reconciliation report with override reason"
+            }
+          ]
+        },
+        {
+          "step": "PROC-4-S4",
+          "action": "Apply corrections and emit report",
+          "runner": "linux_hosted",
+          "outputs": ["config/reconciliation_report.json (appended to reconciliation_report_history.jsonl)"]
+        }
+      ],
+      "gates": ["GATE_GH_RECONCILIATION_COMPLETE"],
+      "outputs": [
+        "config/reconciliation_report.json",
+        "config/reconciliation_report_history.jsonl (append-only log)"
+      ]
+    }
+  ],
+
+  "workflows": [
+    {
+      "id": "WF-001",
+      "filename": ".github/workflows/bootstrap-github-fields.yml",
+      "replaces": null,
+      "triggers": ["workflow_dispatch", "schedule: daily 00:00 UTC"],
+      "runner": "linux_hosted",
+      "process_phases": ["PROC-0"],
+      "secrets_required": ["GH_APP_ID", "GH_APP_PRIVATE_KEY"],
+      "variables_required": ["ORG_NAME", "PROJECT_NUMBER"]
+    },
+    {
+      "id": "WF-002",
+      "filename": ".github/workflows/plan-projection.yml",
+      "replaces": "TEMP_splinter_phase_sync.yml",
+      "triggers": ["push to default branch matching plan_files_glob (OQ-001)", "workflow_dispatch"],
+      "runner": "linux_hosted",
+      "process_phases": ["PROC-1"],
+      "secrets_required": ["GH_APP_ID", "GH_APP_PRIVATE_KEY"],
+      "variables_required": ["ORG_NAME", "PROJECT_NUMBER", "PLAN_FILE_PATH (OQ-001)"]
+    },
+    {
+      "id": "WF-003",
+      "filename": ".github/workflows/project-item-sync.yml",
+      "replaces": "TEMP_project_item_sync.yml",
+      "triggers": ["issues.opened/closed/reopened", "pull_request.opened/closed/ready_for_review"],
+      "runner": "linux_hosted",
+      "process_phases": ["PROC-2"],
+      "secrets_required": ["GH_APP_ID", "GH_APP_PRIVATE_KEY"],
+      "notes": "Replaces TEMP_project_item_sync.yml. Removes PAT dependency. Sources all field IDs from github_field_registry.json."
+    },
+    {
+      "id": "WF-004",
+      "filename": ".github/workflows/branch-handler.yml",
+      "replaces": "TEMP_branch-handler.yml",
+      "triggers": ["pull_request.opened/edited/reopened/synchronize"],
+      "runner": "linux_hosted",
+      "process_phases": ["PROC-2"],
+      "secrets_required": ["GITHUB_TOKEN (read-only, for PR validation only; does not touch Projects)"],
+      "checks_produced": ["pr-linkage-valid"]
+    },
+    {
+      "id": "WF-005",
+      "filename": ".github/workflows/phase-advancement-evaluator.yml",
+      "replaces": null,
+      "triggers": ["pull_request.closed (merged)", "check_suite.completed", "issues.closed", "schedule: cron '*/15 * * * *'"],
+      "runner": "linux_hosted",
+      "process_phases": ["PROC-3"],
+      "secrets_required": ["GH_APP_ID", "GH_APP_PRIVATE_KEY"],
+      "variables_required": ["ORG_NAME", "PROJECT_NUMBER", "PLAN_FILE_PATH (OQ-001)"]
+    },
+    {
+      "id": "WF-006",
+      "filename": ".github/workflows/ssot-drift-reconciliation.yml",
+      "replaces": "TEMP_scheduled-orchestrator.yml",
+      "triggers": ["schedule: cron '*/15 * * * *'", "push to default branch", "workflow_dispatch"],
+      "runner": "linux_hosted",
+      "process_phases": ["PROC-4"],
+      "secrets_required": ["GH_APP_ID", "GH_APP_PRIVATE_KEY"],
+      "variables_required": ["ORG_NAME", "PROJECT_NUMBER"]
+    },
+    {
+      "id": "WF-007",
+      "filename": ".github/workflows/milestone-completion.yml",
+      "replaces": "TEMP_milestone_completion.yml",
+      "triggers": ["issues.closed", "pull_request.closed (merged)"],
+      "runner": "linux_hosted",
+      "process_phases": ["PROC-2", "PROC-3"],
+      "notes": "Updates milestone state. Fires as input event to PROC-3. Upgrade from TEMP: remove PAT, add App auth, source milestone IDs from step_issue_linkage.json rather than env vars."
+    }
+  ],
+
+  "program_specs": [
+    {
+      "id": "GH_AUTH_ISSUE_INSTALLATION_TOKEN",
+      "category": "Transport",
+      "runner_class": "linux_hosted",
+      "inputs": ["GH_APP_ID", "GH_APP_PRIVATE_KEY", "installation_scope: {type: org|user, name: string}"],
+      "outputs": ["token_envelope: {token: string, expires_at: ISO8601, installation_id: string}"],
+      "fingerprint_fields": ["app_id", "installation_id", "spec_version"],
+      "locks": [],
+      "evidence": "token_issuance_log.json (token value redacted, expiry and installation_id retained)",
+      "implementation_note": "Use actions/create-github-app-token@v2 action. Token lifetime <= 1 hour by GitHub policy. Do not cache or reuse across workflow runs."
+    },
+    {
+      "id": "GH_FIELDS_DISCOVER",
+      "category": "Gate",
+      "runner_class": "linux_hosted",
+      "inputs": ["installation_token", "org_name", "project_number"],
+      "outputs": ["raw_fields_response.json"],
+      "pass_criteria": "HTTP 200, data.organization.projectV2.fields.nodes is non-empty array",
+      "locks": [],
+      "evidence": "raw_fields_response.json"
+    },
+    {
+      "id": "GH_FIELDS_VALIDATE",
+      "category": "Gate",
+      "runner_class": "linux_hosted",
+      "inputs": ["raw_fields_response.json", "schemas/github_field_registry.schema.json"],
+      "outputs": ["config/github_field_registry.json"],
+      "pass_criteria": "All required_fields present by name; schema valid; all single-select fields have at least one option",
+      "required_fields": ["Phase", "Status", "StepID", "EvidenceState", "DeterminismState", "PlanHash", "ProjectionVersion", "GateStatus"],
+      "locks": [],
+      "evidence": "config/github_field_registry.json"
+    },
+    {
+      "id": "GH_PROJECTION_GENERATE",
+      "category": "Transform",
+      "runner_class": "linux_hosted",
+      "inputs": ["plan_package_path", "config/step_issue_linkage.json"],
+      "outputs": ["config/github_projection_registry.json"],
+      "pass_criteria": "Schema valid per schemas/github_projection_manifest.schema.json; all step_ids unique; all phase references resolve",
+      "locks": [],
+      "evidence": "config/github_projection_registry.json"
+    },
+    {
+      "id": "GH_PROJECTION_APPLY",
+      "category": "Mutator",
+      "runner_class": "linux_hosted",
+      "inputs": ["config/github_projection_registry.json", "config/github_field_registry.json", "installation_token"],
+      "outputs": ["config/step_issue_linkage.json (updated)"],
+      "pass_criteria": "All steps in manifest have a corresponding entry in step_issue_linkage.json after run",
+      "locks": ["project_write_lock"],
+      "idempotency": "addProjectV2ItemById returns existing item_id; updateProjectV2ItemFieldValue is a PUT-equivalent; safe to re-run",
+      "evidence": "step_issue_linkage.json, projection_apply_log.json"
+    },
+    {
+      "id": "GH_RECONCILE_DRIFT",
+      "category": "Reconciler",
+      "runner_class": "linux_hosted",
+      "inputs": ["config/step_issue_linkage.json", "config/github_projection_registry.json", "config/github_override_registry.json", "config/github_field_registry.json", "installation_token"],
+      "outputs": ["config/reconciliation_report.json"],
+      "pass_criteria": "Report emitted with zero VIOLATION or MISSING items; ORPHAN and STALE items flagged",
+      "locks": ["project_write_lock"],
+      "evidence": "config/reconciliation_report.json, config/reconciliation_report_history.jsonl"
+    },
+    {
+      "id": "GH_PHASE_ADVANCE_EVALUATE",
+      "category": "Gate",
+      "runner_class": "linux_hosted",
+      "inputs": ["plan_package_path", "config/step_issue_linkage.json", "config/github_field_registry.json", "installation_token"],
+      "outputs": ["config/phase_transition_decision.json", "config/phase_advancement_report.json"],
+      "pass_criteria": "Decision artifact emitted; if ADVANCE then Phase field update succeeded",
+      "locks": ["project_write_lock", "phase_field_lock"],
+      "evidence": "config/phase_transition_decision.json, config/phase_advancement_report.json"
+    },
+    {
+      "id": "GH_EVIDENCE_SEAL",
+      "category": "Mutator",
+      "runner_class": "linux_hosted",
+      "inputs": ["linked_issue_number", "evidence_bundle_path", "evidence_sha256", "run_id", "installation_token", "config/github_field_registry.json"],
+      "outputs": ["GitHub Issue comment", "EvidenceState field = Sealed"],
+      "pass_criteria": "Comment posted; EvidenceState field updated",
+      "locks": [],
+      "evidence": "evidence_seal_log.json"
+    }
+  ],
+
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "path": "config/github_field_registry.json",
+      "type": "config",
+      "purpose": "Single source of truth for all GitHub Project field IDs and option IDs. Eliminates hardcoded IDs. Must be refreshed whenever fields are added, renamed, or the project is recreated.",
+      "schema": "schemas/github_field_registry.schema.json",
+      "owner": "automation",
+      "writer": "GH_FIELDS_VALIDATE (PROC-0)",
+      "consumed_by": ["GH_PROJECTION_APPLY", "GH_RECONCILE_DRIFT", "GH_PHASE_ADVANCE_EVALUATE", "GH_EVIDENCE_SEAL", "project-item-sync.yml"],
+      "lifecycle": "persisted in repo; committed by bootstrap workflow; never hand-edited",
+      "gate": "GATE_GH_FIELD_REGISTRY_VALID"
+    },
+    {
+      "id": "ART-002",
+      "path": "config/step_issue_linkage.json",
+      "type": "config",
+      "purpose": "Stable mapping from plan step_id to GitHub Issue number and Project item_id. Resolves Gap 2 (no stable step↔issue linkage). Is the authoritative record of what was projected.",
+      "schema": "schemas/step_issue_linkage.schema.json",
+      "owner": "automation",
+      "writer": "GH_PROJECTION_APPLY (PROC-1)",
+      "consumed_by": ["GH_RECONCILE_DRIFT", "GH_PHASE_ADVANCE_EVALUATE", "branch-handler.yml"],
+      "schema_shape": {
+        "steps": [
+          {
+            "step_id": "STEP-001",
+            "issue_number": 42,
+            "item_id": "PVTI_lADOBxyz",
+            "projected_at": "2026-04-12T10:00:00Z",
+            "projection_version": 1,
+            "plan_hash": "sha256:abc123"
+          }
+        ]
+      },
+      "lifecycle": "persisted in repo; append-only (entries never deleted); committed by projection workflow"
+    },
+    {
+      "id": "ART-003",
+      "path": "config/github_projection_registry.json",
+      "type": "config",
+      "purpose": "The rendered projection manifest. Describes what the GitHub surface should look like based on the current plan: all issues, their fields, milestone assignments, and gate requirements. Regenerated on every plan commit.",
+      "schema": "schemas/github_projection_manifest.schema.json",
+      "owner": "automation",
+      "writer": "GH_PROJECTION_GENERATE (PROC-1)",
+      "consumed_by": ["GH_PROJECTION_APPLY", "GH_RECONCILE_DRIFT"],
+      "lifecycle": "persisted in repo; overwritten on each projection run; committed"
+    },
+    {
+      "id": "ART-004",
+      "path": "config/github_override_registry.json",
+      "type": "config",
+      "purpose": "Approved intentional divergences from the plan. Items listed here are skipped by the reconciliation loop. Resolves the escape hatch requirement (ARCH-P-005).",
+      "schema": "schemas/github_override_registry.schema.json",
+      "owner": "plan",
+      "writer": "human via PR (see OPEN_QUESTIONS OQ-002 for approval process)",
+      "consumed_by": ["GH_RECONCILE_DRIFT"],
+      "schema_shape": {
+        "overrides": [
+          {
+            "issue_number": 17,
+            "override_reason": "Emergency manual phase assignment during incident INCIDENT-2026-04-10",
+            "approved_by": "DICKY1987",
+            "approved_at": "2026-04-10T14:00:00Z",
+            "expires_at": "2026-04-17T00:00:00Z"
+          }
+        ]
+      },
+      "lifecycle": "persisted in repo; entries expire after expires_at; reconciliation loop should warn on expired entries"
+    },
+    {
+      "id": "ART-005",
+      "path": "config/phase_transition_decision.json",
+      "type": "evidence",
+      "purpose": "Machine-consumable record of the most recent phase advancement evaluation. Required by LAW-GH-003 — no Phase field mutation without this artifact. Stores the decision outcome and all rule evaluations.",
+      "schema": "schemas/phase_advancement_report.schema.json",
+      "owner": "automation",
+      "writer": "GH_PHASE_ADVANCE_EVALUATE (PROC-3)",
+      "consumed_by": ["phase-advancement-evaluator.yml gate check"],
+      "lifecycle": "overwritten on each evaluator run; committed"
+    },
+    {
+      "id": "ART-006",
+      "path": "config/phase_advancement_report.json",
+      "type": "evidence",
+      "purpose": "Human-readable phase advancement report. Summarizes which criteria passed/failed and why. Optional GitHub comment on phase root issue links to this.",
+      "schema": "schemas/phase_advancement_report.schema.json",
+      "owner": "automation",
+      "writer": "GH_PHASE_ADVANCE_EVALUATE (PROC-3)",
+      "lifecycle": "overwritten on each evaluator run; committed"
+    },
+    {
+      "id": "ART-007",
+      "path": "config/reconciliation_report.json",
+      "type": "evidence",
+      "purpose": "Output of the most recent reconciliation run. Lists all items by drift class with corrective actions taken.",
+      "schema": "schemas/reconciliation_report.schema.json",
+      "owner": "automation",
+      "writer": "GH_RECONCILE_DRIFT (PROC-4)",
+      "lifecycle": "overwritten on each reconciliation run; committed"
+    },
+    {
+      "id": "ART-008",
+      "path": "config/reconciliation_report_history.jsonl",
+      "type": "evidence",
+      "purpose": "Append-only log of all reconciliation report summaries. Enables trend analysis and audit trail.",
+      "owner": "automation",
+      "writer": "GH_RECONCILE_DRIFT (PROC-4)",
+      "lifecycle": "append-only; never overwritten; committed after each reconciliation run"
+    },
+    {
+      "id": "ART-009",
+      "path": "policies/github_sync_governance.yaml",
+      "type": "policy",
+      "purpose": "Formal definition of field ownership (plan-owned, github-owned, automation-only), drift taxonomy, reconciliation rules, and mutation constraints. The policy document the reconciliation loop enforces.",
+      "owner": "plan",
+      "writer": "human via PR",
+      "lifecycle": "versioned; changes require PR review"
+    },
+    {
+      "id": "ART-010",
+      "path": "policies/runner_policy.yaml",
+      "type": "policy",
+      "purpose": "Defines allowed runner class per program category. Enforces LAW-RUN-001. Declares self-hosted runner labels and fallback strategies.",
+      "owner": "plan",
+      "writer": "human via PR",
+      "lifecycle": "versioned; changes require PR review"
+    },
+    {
+      "id": "ART-011",
+      "path": "schemas/github_field_registry.schema.json",
+      "type": "schema",
+      "purpose": "JSON Schema for ART-001. Validated by GH_FIELDS_VALIDATE before writing the registry.",
+      "owner": "plan",
+      "writer": "human via PR"
+    },
+    {
+      "id": "ART-012",
+      "path": "schemas/github_projection_manifest.schema.json",
+      "type": "schema",
+      "purpose": "JSON Schema for ART-003. Validated by GH_PROJECTION_GENERATE.",
+      "owner": "plan",
+      "writer": "human via PR"
+    },
+    {
+      "id": "ART-013",
+      "path": "schemas/reconciliation_report.schema.json",
+      "type": "schema",
+      "purpose": "JSON Schema for ART-007.",
+      "owner": "plan",
+      "writer": "human via PR"
+    },
+    {
+      "id": "ART-014",
+      "path": "schemas/phase_advancement_report.schema.json",
+      "type": "schema",
+      "purpose": "JSON Schema for ART-005 and ART-006.",
+      "owner": "plan",
+      "writer": "human via PR"
+    },
+    {
+      "id": "ART-015",
+      "path": "schemas/step_issue_linkage.schema.json",
+      "type": "schema",
+      "purpose": "JSON Schema for ART-002.",
+      "owner": "plan",
+      "writer": "human via PR"
+    },
+    {
+      "id": "ART-016",
+      "path": "schemas/github_override_registry.schema.json",
+      "type": "schema",
+      "purpose": "JSON Schema for ART-004. Includes required expires_at field to prevent permanent overrides.",
+      "owner": "plan",
+      "writer": "human via PR"
+    }
+  ],
+
+  "gates": [
+    {
+      "id": "GATE_GH_APP_AUTH_AVAILABLE",
+      "description": "GitHub App installation token was successfully issued and is not expired.",
+      "pass_criteria": "token_envelope.json present, token non-empty, expires_at > now + 5 minutes",
+      "failure_action": "Abort entire workflow. Do not attempt any GitHub API calls.",
+      "checked_in_phases": ["PROC-0", "PROC-1", "PROC-2", "PROC-3", "PROC-4"]
+    },
+    {
+      "id": "GATE_GH_FIELD_REGISTRY_PRESENT",
+      "description": "config/github_field_registry.json exists at expected path.",
+      "pass_criteria": "File exists and is non-empty",
+      "failure_action": "Trigger PROC-0 automatically",
+      "checked_in_phases": ["PROC-1", "PROC-2", "PROC-3", "PROC-4"]
+    },
+    {
+      "id": "GATE_GH_FIELD_REGISTRY_SCHEMA_VALID",
+      "description": "config/github_field_registry.json conforms to schemas/github_field_registry.schema.json.",
+      "pass_criteria": "jsonschema validation passes with zero errors",
+      "failure_action": "Abort and require manual bootstrap re-run",
+      "checked_in_phases": ["PROC-0"]
+    },
+    {
+      "id": "GATE_GH_FIELD_REGISTRY_COVERAGE_VALID",
+      "description": "All required field names are present in the registry.",
+      "pass_criteria": "All of [Phase, Status, StepID, EvidenceState, DeterminismState, PlanHash, ProjectionVersion, GateStatus] have entries",
+      "failure_action": "Abort. Required fields are missing from the GitHub Project. Add them before re-running.",
+      "checked_in_phases": ["PROC-0"]
+    },
+    {
+      "id": "GATE_GH_FIELD_REGISTRY_VALID",
+      "description": "Composite: GATE_GH_FIELD_REGISTRY_PRESENT AND GATE_GH_FIELD_REGISTRY_SCHEMA_VALID AND GATE_GH_FIELD_REGISTRY_COVERAGE_VALID",
+      "checked_in_phases": ["PROC-1", "PROC-2", "PROC-3", "PROC-4"]
+    },
+    {
+      "id": "GATE_GH_PROJECTION_MANIFEST_VALID",
+      "description": "config/github_projection_registry.json conforms to schemas/github_projection_manifest.schema.json and all step_ids are unique.",
+      "pass_criteria": "Schema valid, no duplicate step_ids, all phase references exist in plan",
+      "failure_action": "Abort PROC-1",
+      "checked_in_phases": ["PROC-1"]
+    },
+    {
+      "id": "GATE_PR_LINKAGE_VALID",
+      "description": "Pull request body contains 'Closes #N' or 'Fixes #N' where N is an issue in step_issue_linkage.json.",
+      "pass_criteria": "Referenced issue number found in step_issue_linkage.json and issue is open",
+      "failure_action": "Set status check 'pr-linkage-valid' to failure. Post comment on PR.",
+      "checked_in_phases": ["PROC-2"]
+    },
+    {
+      "id": "GATE_ALL_REQUIRED_CHECKS_PASS",
+      "description": "All GitHub Actions required status checks for the active phase have passed.",
+      "pass_criteria": "Branch protection required checks all show 'success'",
+      "failure_action": "Merge blocked by GitHub branch protection",
+      "checked_in_phases": ["PROC-2"]
+    },
+    {
+      "id": "GATE_GH_PHASE_EVALUATION_COMPLETE",
+      "description": "config/phase_transition_decision.json was written during this evaluator run.",
+      "pass_criteria": "File present, run_id matches current run",
+      "failure_action": "Abort PROC-3 without mutating Phase field",
+      "checked_in_phases": ["PROC-3"]
+    },
+    {
+      "id": "GATE_GH_PHASE_ADVANCEMENT_DECIDED",
+      "description": "phase_transition_decision.json outcome field is set to ADVANCE, HOLD, or BLOCKED.",
+      "pass_criteria": "outcome in [ADVANCE, HOLD, BLOCKED]",
+      "failure_action": "Treat as BLOCKED; log error",
+      "checked_in_phases": ["PROC-3"]
+    },
+    {
+      "id": "GATE_GH_RECONCILIATION_COMPLETE",
+      "description": "config/reconciliation_report.json was written during this reconciliation run with zero VIOLATION or MISSING items.",
+      "pass_criteria": "File present, run_id matches current run, violation_count == 0, missing_count == 0",
+      "failure_action": "Emit report but set workflow exit code to non-zero so CI flags it",
+      "checked_in_phases": ["PROC-4"]
+    }
+  ],
+
+  "authentication_model": {
+    "primary_method": "GitHub App installation token",
+    "token_issuer": "actions/create-github-app-token@v2",
+    "token_lifetime_max_seconds": 3600,
+    "token_scope": "installation-level, minimum permissions: read/write Projects, read/write Issues, read repository contents",
+    "secrets_required": {
+      "GH_APP_ID": "Numeric GitHub App ID. Store as repository or organization secret.",
+      "GH_APP_PRIVATE_KEY": "PEM-encoded private key for the App. Store as repository or organization secret. Rotate annually."
+    },
+    "pat_exception_policy": {
+      "permitted": false,
+      "exception_conditions": "Only if GitHub App cannot be installed (e.g., user account without org). Must be declared in policies/github_sync_governance.yaml with named owner and hard expiry date.",
+      "saml_sso_note": "Organizations with SAML SSO must explicitly authorize PATs. PATs from unrelated users will fail silently on Projects mutations."
+    },
+    "github_token_policy": "GITHUB_TOKEN may be used only in workflows that do NOT touch Projects v2 fields (e.g., branch-handler.yml PR validation). It cannot access Projects."
+  },
+
+  "rate_limit_policy": {
+    "graphql_points_budget": {
+      "github_app_org": "12500 points/hour (scales with org size up to 15000 for GHEC)",
+      "pat_fallback": "5000 points/hour",
+      "github_token": "1000 points/hour per repository"
+    },
+    "mutation_cost": "5 points per GraphQL mutation (updateProjectV2ItemFieldValue, addProjectV2ItemById)",
+    "query_cost": "1 point per query node",
+    "backoff_strategy": {
+      "primary_rate_limit": "Read X-RateLimit-Remaining header. If < 10, sleep until X-RateLimit-Reset timestamp.",
+      "secondary_rate_limit": "On HTTP 429: exponential backoff with jitter. Initial delay: 60 seconds. Max delay: 600 seconds. Max retries: 5.",
+      "concurrency": "No more than 1 concurrent workflow writing to the same Project. Use workflow concurrency groups: concurrency: group: github-project-{PROJECT_NUMBER} cancel-in-progress: false"
+    }
+  },
+
+  "existing_template_disposition": {
+    "note": "TEMP_*.yml files in the workflow inventory are the current baseline. Each entry below describes how it maps to the new design.",
+    "templates": [
+      {
+        "file": "TEMP_project_item_sync.yml",
+        "sha256": "8b96064054f11b8f53f4dbb1ea20e2a37e52a5eae0360dd6d809ec9193c10a7f",
+        "disposition": "REPLACE",
+        "replaced_by": "WF-003 (.github/workflows/project-item-sync.yml)",
+        "changes_required": ["Remove hardcoded field IDs; source from github_field_registry.json", "Replace PAT auth with GitHub App token via GH_AUTH_ISSUE_INSTALLATION_TOKEN", "Add step_issue_linkage.json lookup before any Project mutation"]
+      },
+      {
+        "file": "TEMP_milestone_completion.yml",
+        "sha256": "b276c1fba3b7afdf87d52f3e9a19cdaddbfb3bd7406f340787962dec58ace168",
+        "disposition": "REPLACE",
+        "replaced_by": "WF-007 (.github/workflows/milestone-completion.yml)",
+        "changes_required": ["Replace PAT auth with GitHub App token", "Source milestone IDs from step_issue_linkage.json and field registry, not env vars"]
+      },
+      {
+        "file": "TEMP_splinter_phase_sync.yml",
+        "sha256": "139aa399212d7b50f1785006e73a03d3c9921b7281d9fbf41b66ef3278907e86",
+        "disposition": "REPLACE",
+        "replaced_by": "WF-002 (.github/workflows/plan-projection.yml)",
+        "changes_required": ["Expand from phase sync to full plan projection", "Add GH_PROJECTION_GENERATE step", "Write step_issue_linkage.json", "Replace PAT with App auth"]
+      },
+      {
+        "file": "TEMP_scheduled-orchestrator.yml",
+        "sha256": "e115ebe71c33c764c257d095dd23d16ada74640384465acb05aa9e73ff961dca",
+        "disposition": "REPLACE",
+        "replaced_by": "WF-006 (.github/workflows/ssot-drift-reconciliation.yml)",
+        "changes_required": ["Implement full observe-diff-act-report pattern", "Add all 5 drift classes", "Replace PAT with App auth"]
+      },
+      {
+        "file": "TEMP_remote-sync.yml",
+        "sha256": "163b5976e46fca90efa02b0a764f51fc0b5352d7ea9f570582ba2badb5927c90",
+        "disposition": "OUT_OF_SCOPE",
+        "notes": "Git remote sync is a separate subsystem concern. Not modified by this design. Evaluate independently."
+      },
+      {
+        "file": "TEMP_triggerA-remote-to-local.yml",
+        "disposition": "OUT_OF_SCOPE",
+        "notes": "Same as TEMP_remote-sync.yml. Out of scope for this design."
+      },
+      {
+        "file": "TEMP_branch-handler.yml",
+        "disposition": "REPLACE",
+        "replaced_by": "WF-004 (.github/workflows/branch-handler.yml)",
+        "changes_required": ["Add LAW-WORK-002 enforcement: PR body must reference issue in step_issue_linkage.json", "Produce 'pr-linkage-valid' required status check", "No Projects mutations in this workflow (use GITHUB_TOKEN, not App token)"]
+      }
+    ]
+  },
+
+  "open_questions": [
+    {
+      "id": "OQ-001",
+      "category": "BLOCKING",
+      "question": "What is the canonical path and schema for the plan package that drives projection?",
+      "detail": "PROC-1 (Plan Projection) is triggered when plan files are committed and reads a plan package to generate the projection manifest. The plan package must contain: phase definitions, step contracts (step_id, title, body, gate_requirements), and milestone_group assignments. Currently multiple candidate formats exist: LP_LONG_PLAN phase YAML files, plan_refine_cli output JSON, and hand-authored YAML. Which is authoritative? What is the exact file path glob that triggers plan-projection.yml?",
+      "options": [
+        "plan_refine_cli output at a fixed path (e.g., config/active_plan.json) — deterministic, schema-enforced",
+        "LP_LONG_PLAN phase YAML files at a glob pattern — requires a translation step",
+        "Hand-authored YAML at a conventional path (e.g., planning/plan.yaml) — simple, manual"
+      ],
+      "blocks": ["PROC-1", "PROC-3", "WF-002", "WF-005", "GH_PROJECTION_GENERATE", "ART-003"],
+      "decision_needed_by": "Before any implementation begins"
+    },
+    {
+      "id": "OQ-002",
+      "category": "BLOCKING",
+      "question": "What is the override approval process for github_override_registry.json?",
+      "detail": "Override entries suppress reconciliation corrections for named GitHub items. Without a defined approval process, this becomes an uncontrolled escape hatch. Options: (a) PR required to add an override entry — human review, audit trail, but slow during incidents; (b) workflow_dispatch with required input fields — faster but no peer review; (c) both, with different expiry limits.",
+      "options": [
+        "PR required: any override entry must be merged via PR with at least 1 reviewer approval. Suitable for planned deviations.",
+        "workflow_dispatch fast-path: emergency overrides can be issued via workflow_dispatch with a max 24-hour expiry. Must be formalized by PR within 48 hours.",
+        "Hybrid: PR for expiry > 24h, workflow_dispatch for expiry <= 24h"
+      ],
+      "blocks": ["ART-004", "PROC-4", "ARCH-P-005"],
+      "decision_needed_by": "Before implementing PROC-4"
+    },
+    {
+      "id": "OQ-003",
+      "category": "BLOCKING",
+      "question": "Is a self-hosted Windows runner available and registered, and what is its label?",
+      "detail": "LAW-RUN-001 requires Windows-only operations (PowerShell workflows, local filesystem sync, Windows toolchain) to run on a self-hosted Windows runner. If no such runner is registered, workflows that declare windows runner class will queue for up to 24 hours before timing out. If unavailable, those workflows must either be restructured to run on ubuntu-latest or deferred.",
+      "options": [
+        "Self-hosted runner available: provide label name, OS, and availability guarantee",
+        "Not available: audit which workflows actually require Windows; restructure or defer those workflows",
+        "Not available now, planned: document which workflows are blocked pending runner setup"
+      ],
+      "blocks": ["LAW-RUN-001", "ART-010", "any workflow with runner_class: self_hosted_windows"],
+      "decision_needed_by": "Before implementing any workflow with self_hosted_windows runner class"
+    },
+    {
+      "id": "OQ-004",
+      "category": "DESIGN",
+      "question": "What is the sub-issue policy for step contracts with nested sub-steps?",
+      "detail": "The mapping defines 'sub-steps may become sub-issues up to 2 levels'. GitHub supports 8 levels, but deep nesting complicates Phase field propagation and reconciliation. The design states one step = one issue but does not define when sub-issues are created vs when additional top-level issues are created for sub-steps.",
+      "options": [
+        "Flat: all steps are top-level issues regardless of nesting in the plan. Simplest for reconciliation.",
+        "One level of sub-issues: step contract = parent issue; sub-steps = sub-issues. Phase field on parent only.",
+        "Full nesting up to 2 levels: plan hierarchy maps directly. Phase field set on all levels."
+      ],
+      "blocks": ["PROC-1-S4", "GH_PROJECTION_GENERATE"],
+      "decision_needed_by": "Before implementing PROC-1"
+    },
+    {
+      "id": "OQ-005",
+      "category": "DESIGN",
+      "question": "What happens to a GitHub Issue when its corresponding step is removed from the plan?",
+      "detail": "When a step_id is removed from the plan, its entry remains in step_issue_linkage.json. The reconciliation loop will not flag it as MISSING (it still has a step_id). But the plan no longer references it. Should the issue be: (a) archived in the Project; (b) closed with an automation comment; (c) left open and flagged as STALE-REMOVED; (d) left untouched (manual decision)?",
+      "options": [
+        "Close and comment: automation closes issue with comment 'Step removed from plan at [commit]'",
+        "Archive in Project: remove from active board view but do not close",
+        "Flag only: reconciliation classifies as STALE-REMOVED and flags it; human decides",
+        "No action: step removal is a human-managed operation"
+      ],
+      "blocks": ["PROC-4 drift classification", "GH_RECONCILE_DRIFT"],
+      "decision_needed_by": "Before implementing PROC-4"
+    },
+    {
+      "id": "OQ-006",
+      "category": "DESIGN",
+      "question": "Where is the GitHub App installed — organization-level or repository-level?",
+      "detail": "Organization projects require org-level App installation with read/write organization projects permission. User projects require user-level installation. The installation scope determines the GraphQL query shape (organization vs user) and the minimum App permissions.",
+      "options": [
+        "Organization project: install App at org level, use organization(login: $org) GraphQL root",
+        "User project: install App at user level, use user(login: $user) GraphQL root"
+      ],
+      "blocks": ["GH_AUTH_ISSUE_INSTALLATION_TOKEN", "GH_FIELDS_DISCOVER", "WF-001 variables"],
+      "decision_needed_by": "Before implementing PROC-0"
+    },
+    {
+      "id": "OQ-007",
+      "category": "DESIGN",
+      "question": "What is the reconciliation interval, and is it configurable per environment?",
+      "detail": "The current design specifies cron '*/15 * * * *' (every 15 minutes). This means up to 96 runs per day. At 1 GraphQL query per item in the project plus 1 per field read, with 50+ items and 8 fields each, this is significant API consumption. For large projects this may approach rate limits. The interval should be configurable, with a recommendation per project size.",
+      "options": [
+        "Fixed 15 minutes: simple, matches the design intent",
+        "Configurable via repository variable RECONCILIATION_INTERVAL_MINUTES: default 15, allows tuning",
+        "Adaptive: start at 15 min, back off to 60 min when zero drift is observed for 3 consecutive runs"
+      ],
+      "blocks": ["WF-006"],
+      "decision_needed_by": "Before implementing WF-006"
+    },
+    {
+      "id": "OQ-008",
+      "category": "DESIGN",
+      "question": "How is the initial phase determined when an issue is first created by projection?",
+      "detail": "When GH_PROJECTION_APPLY creates a new issue, it sets the Phase field to the step's assigned phase from the plan. However, if the plan's current active phase is PH-02 and a new step is added to PH-01 (backfill), should the Phase field be set to PH-01 (plan value) or the current active phase? The answer determines whether projection and advancement are fully independent operations.",
+      "options": [
+        "Always use plan value: Phase = the phase the step belongs to per plan. Advancement evaluator reads this correctly.",
+        "Use min(plan value, current active phase): prevents projecting items into phases already completed.",
+        "Flag as ANOMALY and require manual resolution when projected phase < current active phase"
+      ],
+      "blocks": ["PROC-1-S4", "GH_PROJECTION_APPLY"],
+      "decision_needed_by": "Before implementing PROC-1"
+    }
+  ],
+
+  "implementation_order": {
+    "note": "Derived from dependency graph. No item should be implemented before all its blockers are resolved.",
+    "critical_path": [
+      {
+        "step": 1,
+        "deliverables": ["Resolve OQ-001, OQ-003, OQ-006 (all BLOCKING open questions)"],
+        "reason": "These three decisions unblock the entire implementation"
+      },
+      {
+        "step": 2,
+        "deliverables": ["All schemas (ART-011 through ART-016)", "policies/github_sync_governance.yaml (ART-009)", "policies/runner_policy.yaml (ART-010)"],
+        "reason": "Schemas must exist before any artifact can be validated. Policy files define what everything else enforces."
+      },
+      {
+        "step": 3,
+        "deliverables": ["bootstrap-github-fields.yml (WF-001)", "GH_AUTH_ISSUE_INSTALLATION_TOKEN", "GH_FIELDS_DISCOVER", "GH_FIELDS_VALIDATE"],
+        "reason": "PROC-0 is the prerequisite for all other process phases. Nothing else runs until the field registry is valid."
+      },
+      {
+        "step": 4,
+        "deliverables": ["plan-projection.yml (WF-002)", "GH_PROJECTION_GENERATE", "GH_PROJECTION_APPLY", "config/step_issue_linkage.json (empty initial)"],
+        "reason": "PROC-1 creates the issue corpus and linkage table that all downstream processes depend on."
+      },
+      {
+        "step": 5,
+        "deliverables": ["branch-handler.yml (WF-004)", "project-item-sync.yml (WF-003)", "milestone-completion.yml (WF-007)"],
+        "reason": "PROC-2 execution workflows. Depend on step_issue_linkage.json being populated."
+      },
+      {
+        "step": 6,
+        "deliverables": ["ssot-drift-reconciliation.yml (WF-006)", "GH_RECONCILE_DRIFT", "config/github_override_registry.json (empty initial)"],
+        "reason": "PROC-4 self-healing loop. Requires resolved OQ-002, OQ-005, OQ-007 before finalizing."
+      },
+      {
+        "step": 7,
+        "deliverables": ["phase-advancement-evaluator.yml (WF-005)", "GH_PHASE_ADVANCE_EVALUATE", "GH_EVIDENCE_SEAL"],
+        "reason": "PROC-3 phase advancement. Depends on PROC-2 producing EvidenceState values correctly."
+      }
+    ]
+  }
+}

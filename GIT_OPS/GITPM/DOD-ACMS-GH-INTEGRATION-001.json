@@ -1,0 +1,1073 @@
+{
+"document_id": "DOD-ACMS-GH-INTEGRATION-001",
+"version": "1.0.0",
+"workstreams": [
+{
+"workstream_id": "WORKSTREAM-A-GITHUB-PM-PROJECTION-PIPELINE",
+"entry_points": [
+{
+"entry_point_id": "EP-A-BOOTSTRAP-INITIALIZATION",
+"trigger_type": "workflow_dispatch",
+"steps": [
+{
+"step_id": "A-BOOT-001",
+"title": "Validate first-run bootstrap prerequisites",
+"owner": "human",
+"associated_files": [
+"bootstrap-github-fields",
+"config/github_field_registry.json",
+"command_spec.json"
+],
+"preconditions": [
+"GitHub App credentials are configured for the repository workflow environment.",
+"The bootstrap workflow artifact exists.",
+"The JSON SSOT plan is available for downstream projection work."
+],
+"actions": [
+"Confirm bootstrap-github-fields is present and callable by manual workflow dispatch.",
+"Confirm command_spec.json includes the command surface needed after bootstrap.",
+"Confirm config/github_field_registry.json is either absent, empty, or marked for regeneration."
+],
+"done_criteria": [
+"bootstrap-github-fields is present as an accessible workflow artifact.",
+"command_spec.json exists.",
+"config/github_field_registry.json exists or is explicitly queued for bootstrap regeneration."
+],
+"evidence_output": "config/github_field_registry.json",
+"failure_codes": {
+"BOOTSTRAP_WORKFLOW_MISSING": "Bootstrap workflow artifact is not present.",
+"COMMAND_SPEC_MISSING": "command_spec.json is missing.",
+"FIELD_REGISTRY_PRECHECK_FAILED": "Field registry prerequisite state is invalid for first run."
+},
+"blocking": true
+},
+{
+"step_id": "A-BOOT-002",
+"title": "Run field registry bootstrap discovery",
+"owner": "github_actions",
+"associated_files": [
+"bootstrap-github-fields",
+"config/github_field_registry.json"
+],
+"preconditions": [
+"A-BOOT-001 is complete.",
+"GitHub App installation token path is configured for the workflow.",
+"Project field discovery is permitted for the target GitHub Project."
+],
+"actions": [
+"Dispatch bootstrap-github-fields manually.",
+"Query GitHub Project field metadata using GitHub App auth.",
+"Write discovered field IDs and option IDs into config/github_field_registry.json."
+],
+"done_criteria": [
+"config/github_field_registry.json exists.",
+"config/github_field_registry.json is non-empty.",
+"Workflow run exits with status success."
+],
+"evidence_output": "config/github_field_registry.json",
+"failure_codes": {
+"GH_APP_AUTH_UNAVAILABLE": "GitHub App token could not be issued.",
+"FIELD_DISCOVERY_FAILED": "Project field discovery did not complete successfully.",
+"REGISTRY_WRITE_FAILED": "Registry file was not written."
+},
+"blocking": true
+}
+]
+},
+{
+"entry_point_id": "EP-A-CLI-CREATE-STEP",
+"trigger_type": "cli_command",
+"steps": [
+{
+"step_id": "A-CLI-001",
+"title": "Validate create_step command inputs",
+"owner": "cli",
+"associated_files": [
+"command_spec.json",
+"config/github_field_registry.json",
+"config/step_issue_linkage.json"
+],
+"preconditions": [
+"Bootstrap registry exists.",
+"Requested step exists in JSON SSOT plan context.",
+"GitHub App installation token path is available for Projects mutation."
+],
+"actions": [
+"Load create_step request schema from command_spec.json.",
+"Validate required inputs and reject if the linkage already exists without explicit overwrite semantics.",
+"Load config/github_field_registry.json and config/step_issue_linkage.json."
+],
+"done_criteria": [
+"CLI validation exits with code 0.",
+"config/github_field_registry.json exists.",
+"command_spec.json contains the create_step command definition."
+],
+"evidence_output": "config/step_issue_linkage.json",
+"failure_codes": {
+"STEP_NOT_FOUND": "Requested step is not present in the plan.",
+"FIELD_REGISTRY_MISSING": "GitHub field registry is missing.",
+"STEP_ALREADY_LINKED": "Step already exists in linkage file."
+},
+"blocking": true
+},
+{
+"step_id": "A-CLI-002",
+"title": "Create issue and project item for step",
+"owner": "cli",
+"associated_files": [
+"command_spec.json",
+"config/github_field_registry.json",
+"config/step_issue_linkage.json",
+"projections/projection_manifest.json"
+],
+"preconditions": [
+"A-CLI-001 is complete.",
+"GitHub App installation token is valid.",
+"Projection data for the step is available."
+],
+"actions": [
+"Execute create_step.",
+"Create the issue if no linkage exists.",
+"Add the issue to the GitHub Project and set automation-owned fields using config/github_field_registry.json.",
+"Update config/step_issue_linkage.json with issue_number, project_item_id, and projection metadata."
+],
+"done_criteria": [
+"config/step_issue_linkage.json contains an entry for the requested step.",
+"CLI command exits with code 0.",
+"If projections/projection_manifest.json contains the step, its step_id matches the linkage entry."
+],
+"evidence_output": "config/step_issue_linkage.json",
+"failure_codes": {
+"ISSUE_CREATE_FAILED": "GitHub issue creation failed.",
+"PROJECT_ITEM_CREATE_FAILED": "Project item creation failed.",
+"FIELD_SET_FAILED": "One or more Project field mutations failed."
+},
+"blocking": true
+}
+]
+},
+{
+"entry_point_id": "EP-A-CLI-CREATE-SUBISSUE",
+"trigger_type": "cli_command",
+"steps": [
+{
+"step_id": "A-CLI-003",
+"title": "Validate create_subissue parent and child linkage prerequisites",
+"owner": "cli",
+"associated_files": [
+"command_spec.json",
+"config/step_issue_linkage.json"
+],
+"preconditions": [
+"Parent execution issue exists in linkage file.",
+"Child step is defined in the SSOT plan.",
+"GitHub App auth path is available."
+],
+"actions": [
+"Load create_subissue schema from command_spec.json.",
+"Check that parent step maps to an existing issue in config/step_issue_linkage.json.",
+"Reject the command if the child is already linked."
+],
+"done_criteria": [
+"CLI validation exits with code 0.",
+"config/step_issue_linkage.json contains the parent step linkage."
+],
+"evidence_output": "config/step_issue_linkage.json",
+"failure_codes": {
+"PARENT_NOT_LINKED": "Parent issue is not present in linkage file.",
+"CHILD_ALREADY_LINKED": "Child step already has an issue linkage.",
+"COMMAND_SCHEMA_INVALID": "Command payload failed schema validation."
+},
+"blocking": true
+},
+{
+"step_id": "A-CLI-004",
+"title": "Create and link sub-issue",
+"owner": "cli",
+"associated_files": [
+"command_spec.json",
+"config/step_issue_linkage.json"
+],
+"preconditions": [
+"A-CLI-003 is complete.",
+"GitHub App installation token is valid."
+],
+"actions": [
+"Execute create_subissue.",
+"Create the child issue if required.",
+"Link child issue to parent issue.",
+"Write child linkage and parent_step_id into config/step_issue_linkage.json."
+],
+"done_criteria": [
+"config/step_issue_linkage.json contains the child step linkage.",
+"The child linkage contains parent_step_id.",
+"CLI exits with code 0."
+],
+"evidence_output": "config/step_issue_linkage.json",
+"failure_codes": {
+"CHILD_CREATE_FAILED": "Child issue creation failed.",
+"SUBISSUE_LINK_FAILED": "GitHub sub-issue linkage failed.",
+"LINKAGE_WRITE_FAILED": "Updated linkage file could not be written."
+},
+"blocking": true
+}
+]
+},
+{
+"entry_point_id": "EP-A-CLI-ASSIGN-MILESTONE",
+"trigger_type": "cli_command",
+"steps": [
+{
+"step_id": "A-CLI-005",
+"title": "Validate milestone assignment request",
+"owner": "cli",
+"associated_files": [
+"command_spec.json",
+"config/step_issue_linkage.json",
+"projections/projection_manifest.json"
+],
+"preconditions": [
+"Target steps are already linked to issues.",
+"Milestone grouping exists in plan or projection context."
+],
+"actions": [
+"Load assign_milestone schema from command_spec.json.",
+"Resolve requested step_ids against config/step_issue_linkage.json.",
+"Validate milestone title against projections/projection_manifest.json when present."
+],
+"done_criteria": [
+"CLI validation exits with code 0.",
+"All requested step_ids resolve to linked issues."
+],
+"evidence_output": "config/step_issue_linkage.json",
+"failure_codes": {
+"STEP_LINKAGE_MISSING": "One or more step linkages are missing.",
+"INVALID_MILESTONE_GROUP": "Milestone title does not match allowed grouping.",
+"COMMAND_SCHEMA_INVALID": "Command payload failed schema validation."
+},
+"blocking": true
+},
+{
+"step_id": "A-CLI-006",
+"title": "Create or assign milestone to linked issues",
+"owner": "cli",
+"associated_files": [
+"command_spec.json",
+"config/step_issue_linkage.json"
+],
+"preconditions": [
+"A-CLI-005 is complete.",
+"GitHub App or allowed issue/milestone auth path is valid."
+],
+"actions": [
+"Execute assign_milestone.",
+"Create milestone if absent.",
+"Assign milestone to each linked issue.",
+"Update config/step_issue_linkage.json milestone_title or milestone metadata if tracked."
+],
+"done_criteria": [
+"CLI exits with code 0.",
+"config/step_issue_linkage.json remains parseable after update."
+],
+"evidence_output": "config/step_issue_linkage.json",
+"failure_codes": {
+"MILESTONE_CREATE_FAILED": "Milestone creation failed.",
+"ISSUE_MILESTONE_ASSIGN_FAILED": "Milestone assignment to one or more issues failed.",
+"LINKAGE_UPDATE_FAILED": "Linkage persistence failed after milestone assignment."
+},
+"blocking": true
+}
+]
+},
+{
+"entry_point_id": "EP-A-CLI-SYNC-PHASE",
+"trigger_type": "cli_command",
+"steps": [
+{
+"step_id": "A-CLI-007",
+"title": "Validate phase sync request against registry and plan state",
+"owner": "cli",
+"associated_files": [
+"command_spec.json",
+"config/github_field_registry.json",
+"config/step_issue_linkage.json",
+"projections/projection_manifest.json"
+],
+"preconditions": [
+"Bootstrap registry exists.",
+"Phase value exists in the plan/projection context.",
+"Requested mode is allowed."
+],
+"actions": [
+"Load sync_phase schema from command_spec.json.",
+"Validate phase target against projections/projection_manifest.json when present.",
+"Load config/github_field_registry.json and step linkage data."
+],
+"done_criteria": [
+"CLI validation exits with code 0.",
+"config/github_field_registry.json exists."
+],
+"evidence_output": "projections/projection_manifest.json",
+"failure_codes": {
+"INVALID_PHASE": "Phase is not defined in projection context.",
+"FIELD_REGISTRY_MISSING": "Field registry is missing.",
+"LINKAGE_MISSING": "Step linkage required for phase sync is missing."
+},
+"blocking": true
+},
+{
+"step_id": "A-CLI-008",
+"title": "Apply phase projection sync without violating phase advancement law",
+"owner": "cli",
+"associated_files": [
+"command_spec.json",
+"config/github_field_registry.json",
+"config/step_issue_linkage.json",
+"projections/projection_manifest.json"
+],
+"preconditions": [
+"A-CLI-007 is complete.",
+"GitHub App installation token is valid.",
+"Requested write does not violate the rule that only evaluator advances the Phase field as a lifecycle transition."
+],
+"actions": [
+"Execute sync_phase in projection mode only.",
+"Ensure items exist in the project.",
+"Update allowed metadata such as PlanHash and ProjectionVersion.",
+"Write any resulting linkage or projection evidence updates."
+],
+"done_criteria": [
+"CLI exits with code 0.",
+"No unauthorized Phase transition is performed outside evaluator-controlled flow.",
+"projections/projection_manifest.json remains parseable."
+],
+"evidence_output": "projections/projection_manifest.json",
+"failure_codes": {
+"PHASE_WRITE_FORBIDDEN": "Phase write attempted outside evaluator authority.",
+"PROJECT_SYNC_FAILED": "One or more Project item sync operations failed.",
+"METADATA_UPDATE_FAILED": "PlanHash or ProjectionVersion update failed."
+},
+"blocking": true
+}
+]
+},
+{
+"entry_point_id": "EP-A-CLI-RECONCILE-DRIFT",
+"trigger_type": "cli_command",
+"steps": [
+{
+"step_id": "A-CLI-009",
+"title": "Load desired and observed state inputs for drift reconciliation",
+"owner": "cli",
+"associated_files": [
+"command_spec.json",
+"config/github_field_registry.json",
+"config/step_issue_linkage.json",
+"projections/projection_manifest.json"
+],
+"preconditions": [
+"Field registry exists.",
+"Linkage file exists.",
+"Projection manifest exists for desired state comparison."
+],
+"actions": [
+"Load reconcile_drift schema from command_spec.json.",
+"Load registry, linkage, and projection data.",
+"Validate that GitHub App auth is available for Project queries."
+],
+"done_criteria": [
+"CLI validation exits with code 0.",
+"config/github_field_registry.json exists.",
+"config/step_issue_linkage.json exists.",
+"projections/projection_manifest.json exists."
+],
+"evidence_output": "projections/projection_manifest.json",
+"failure_codes": {
+"DESIRED_STATE_MISSING": "One or more desired-state artifacts are missing.",
+"FIELD_REGISTRY_INVALID": "Field registry cannot be used for reconciliation.",
+"COMMAND_SCHEMA_INVALID": "Command payload failed schema validation."
+},
+"blocking": true
+},
+{
+"step_id": "A-CLI-010",
+"title": "Classify and correct drift where safe",
+"owner": "cli",
+"associated_files": [
+"command_spec.json",
+"config/github_field_registry.json",
+"config/step_issue_linkage.json",
+"projections/projection_manifest.json"
+],
+"preconditions": [
+"A-CLI-009 is complete.",
+"GitHub App installation token is valid."
+],
+"actions": [
+"Execute reconcile_drift.",
+"Classify missing steps, orphan issues, unauthorized field edits, and stale projection state.",
+"Apply safe corrective writes only.",
+"Persist updated linkage if missing items are created or corrected."
+],
+"done_criteria": [
+"CLI exits with code 0.",
+"config/step_issue_linkage.json remains parseable after correction.",
+"Any created issue or project item is reflected in linkage state."
+],
+"evidence_output": "config/step_issue_linkage.json",
+"failure_codes": {
+"RECONCILIATION_QUERY_FAILED": "Observed state could not be queried.",
+"DRIFT_CORRECTION_FAILED": "A required corrective action failed.",
+"LINKAGE_PERSIST_FAILED": "Corrected linkage state could not be written."
+},
+"blocking": true
+}
+]
+},
+{
+"entry_point_id": "EP-A-WF-PROJECTION-GENERATE",
+"trigger_type": "push_event",
+"steps": [
+{
+"step_id": "A-WF-001",
+"title": "Generate projection manifest from updated SSOT plan files",
+"owner": "github_actions",
+"associated_files": [
+"gh-projection-generate",
+"projections/projection_manifest.json",
+"command_spec.json"
+],
+"preconditions": [
+"SSOT plan changes are pushed to the tracked branch/path set.",
+"Bootstrap has completed successfully at least once."
+],
+"actions": [
+"Run gh-projection-generate on push or manual dispatch.",
+"Generate projections/projection_manifest.json from SSOT data.",
+"Make projection manifest available for apply stage."
+],
+"done_criteria": [
+"projections/projection_manifest.json exists.",
+"Workflow exits with status success."
+],
+"evidence_output": "projections/projection_manifest.json",
+"failure_codes": {
+"PROJECTION_GENERATION_FAILED": "Projection generation workflow failed.",
+"MANIFEST_WRITE_FAILED": "Projection manifest was not written."
+},
+"blocking": true
+}
+]
+},
+{
+"entry_point_id": "EP-A-WF-PROJECTION-APPLY",
+"trigger_type": "workflow_dispatch",
+"steps": [
+{
+"step_id": "A-WF-002",
+"title": "Apply generated projection to GitHub execution surface",
+"owner": "github_actions",
+"associated_files": [
+"gh-projection-apply",
+"projections/projection_manifest.json",
+"config/github_field_registry.json",
+"config/step_issue_linkage.json"
+],
+"preconditions": [
+"projections/projection_manifest.json exists.",
+"config/github_field_registry.json exists.",
+"GitHub App installation token is available."
+],
+"actions": [
+"Dispatch gh-projection-apply.",
+"Create or update issues, milestones, and project items based on projection manifest.",
+"Write config/step_issue_linkage.json."
+],
+"done_criteria": [
+"Workflow exits with status success.",
+"config/step_issue_linkage.json exists.",
+"config/step_issue_linkage.json is non-empty after apply when projection contains steps."
+],
+"evidence_output": "config/step_issue_linkage.json",
+"failure_codes": {
+"APP_AUTH_FAILED": "GitHub App token was unavailable.",
+"FIELD_REGISTRY_MISSING": "Field registry required for apply is missing.",
+"PROJECTION_APPLY_FAILED": "Projection apply workflow failed."
+},
+"blocking": true
+}
+]
+},
+{
+"entry_point_id": "EP-A-WF-RECONCILIATION-SCHEDULED",
+"trigger_type": "scheduled",
+"steps": [
+{
+"step_id": "A-WF-003",
+"title": "Run scheduled drift reconciliation loop",
+"owner": "github_actions",
+"associated_files": [
+"ssot-drift-reconciliation",
+"config/github_field_registry.json",
+"config/step_issue_linkage.json",
+"projections/projection_manifest.json"
+],
+"preconditions": [
+"Bootstrap registry exists.",
+"Projection manifest exists.",
+"Scheduled cadence is enabled."
+],
+"actions": [
+"Run ssot-drift-reconciliation on schedule.",
+"Observe current GitHub state.",
+"Diff desired and observed state.",
+"Correct safe drift and persist any linkage changes."
+],
+"done_criteria": [
+"Workflow exits with status success.",
+"config/step_issue_linkage.json remains present after run."
+],
+"evidence_output": "config/step_issue_linkage.json",
+"failure_codes": {
+"RECONCILIATION_FAILED": "Scheduled reconciliation failed.",
+"DESIRED_STATE_UNAVAILABLE": "Desired-state artifacts were unavailable at runtime."
+},
+"blocking": true
+}
+]
+},
+{
+"entry_point_id": "EP-A-WF-BACKLOG-HYGIENE-SCHEDULED",
+"trigger_type": "scheduled",
+"steps": [
+{
+"step_id": "A-WF-004",
+"title": "Run periodic backlog hygiene scan",
+"owner": "github_actions",
+"associated_files": [
+"backlog-hygiene",
+"config/github_field_registry.json",
+"config/step_issue_linkage.json"
+],
+"preconditions": [
+"Field registry exists.",
+"Backlog-hygiene workflow is enabled."
+],
+"actions": [
+"Run backlog-hygiene on schedule.",
+"Scan for stuck items, missing fields, and stale backlog state.",
+"Emit workflow result for downstream review."
+],
+"done_criteria": [
+"Workflow exits with status success."
+],
+"evidence_output": "config/step_issue_linkage.json",
+"failure_codes": {
+"HYGIENE_SCAN_FAILED": "Backlog hygiene scan did not complete.",
+"FIELD_AUDIT_FAILED": "Missing-field enforcement did not complete."
+},
+"blocking": false
+}
+]
+},
+{
+"entry_point_id": "EP-A-GATE-EVIDENCE-AND-ADVANCEMENT",
+"trigger_type": "gate_evaluation",
+"steps": [
+{
+"step_id": "A-GATE-001",
+"title": "Seal evidence after required gates pass",
+"owner": "github_actions",
+"associated_files": [
+"evidence-seal",
+"config/step_issue_linkage.json",
+"config/github_field_registry.json"
+],
+"preconditions": [
+"Existing CI and gate workflows completed successfully.",
+"Linked execution issue exists.",
+"Evidence artifacts for the run are available."
+],
+"actions": [
+"Run evidence-seal after successful gate completion.",
+"Post evidence comment to linked issue.",
+"Set EvidenceState to Sealed and GateStatus to Passed."
+],
+"done_criteria": [
+"Workflow exits with status success.",
+"Linked issue evidence update is reflected through successful workflow completion."
+],
+"evidence_output": "config/step_issue_linkage.json",
+"failure_codes": {
+"EVIDENCE_LINKAGE_FAILED": "Linked issue could not be resolved.",
+"EVIDENCE_SEAL_FAILED": "Evidence state could not be sealed.",
+"GATE_STATUS_UPDATE_FAILED": "Gate status could not be updated."
+},
+"blocking": true
+},
+{
+"step_id": "A-GATE-002",
+"title": "Evaluate phase advancement using composite state",
+"owner": "github_actions",
+"associated_files": [
+"phase-advancement-evaluator",
+"config/github_field_registry.json",
+"config/step_issue_linkage.json",
+"projections/projection_manifest.json"
+],
+"preconditions": [
+"All prerequisite CI, evidence, and completion gates have run.",
+"Field registry exists.",
+"Linkage and projection artifacts exist."
+],
+"actions": [
+"Run phase-advancement-evaluator.",
+"Evaluate issue closure, evidence state, gate state, and milestone/completion context.",
+"Advance phase only if composite criteria are satisfied."
+],
+"done_criteria": [
+"Workflow exits with status success.",
+"No phase advancement occurs unless composite evaluator completes successfully."
+],
+"evidence_output": "projections/projection_manifest.json",
+"failure_codes": {
+"PHASE_EVALUATION_FAILED": "Phase evaluator failed to produce a valid decision.",
+"ADVANCEMENT_BLOCKED": "Composite criteria not satisfied.",
+"FIELD_WRITE_FAILED": "Authorized phase or metadata update failed."
+},
+"blocking": true
+}
+]
+}
+]
+},
+{
+"workstream_id": "WORKSTREAM-B-NPP-V3_2-ABSTRACTION-GOVERNANCE-UPGRADE",
+"entry_points": [
+{
+"entry_point_id": "EP-B-BOOTSTRAP-UPGRADE-CONTEXT",
+"trigger_type": "workflow_dispatch",
+"steps": [
+{
+"step_id": "B-BOOT-001",
+"title": "Load abstraction governance patch sources and implementation instructions",
+"owner": "human",
+"associated_files": [
+"cleaned_final_abstraction_patch_plan.json",
+"CLI_ready_implementation_instructions_abstraction_governance.json"
+],
+"preconditions": [
+"Workstream B artifacts are present.",
+"Upgrade is approved for execution."
+],
+"actions": [
+"Confirm cleaned_final_abstraction_patch_plan.json exists.",
+"Confirm CLI_ready_implementation_instructions_abstraction_governance.json exists.",
+"Confirm implementation instructions expose STEP-001 through STEP-006."
+],
+"done_criteria": [
+"cleaned_final_abstraction_patch_plan.json exists.",
+"CLI_ready_implementation_instructions_abstraction_governance.json exists."
+],
+"evidence_output": "CLI_ready_implementation_instructions_abstraction_governance.json",
+"failure_codes": {
+"PATCH_PLAN_MISSING": "Abstraction patch plan file is missing.",
+"IMPLEMENTATION_INSTRUCTIONS_MISSING": "CLI implementation instructions file is missing."
+},
+"blocking": true
+}
+]
+},
+{
+"entry_point_id": "EP-B-PUSH-APPLY-UPGRADE-STEPS",
+"trigger_type": "push_event",
+"steps": [
+{
+"step_id": "B-STEP-001",
+"title": "Execute governance upgrade STEP-001",
+"owner": "cli",
+"associated_files": [
+"CLI_ready_implementation_instructions_abstraction_governance.json",
+"cleaned_final_abstraction_patch_plan.json"
+],
+"preconditions": [
+"B-BOOT-001 is complete.",
+"STEP-001 exists in CLI_ready_implementation_instructions_abstraction_governance.json."
+],
+"actions": [
+"Load STEP-001 from CLI implementation instructions.",
+"Apply the corresponding patch segment from cleaned_final_abstraction_patch_plan.json.",
+"Write resulting file modifications."
+],
+"done_criteria": [
+"CLI exits with code 0 for STEP-001 execution.",
+"STEP-001 is marked complete in observable CLI output or evidence file."
+],
+"evidence_output": "cleaned_final_abstraction_patch_plan.json",
+"failure_codes": {
+"STEP_001_NOT_FOUND": "STEP-001 is missing from implementation instructions.",
+"STEP_001_APPLY_FAILED": "CLI application of STEP-001 failed."
+},
+"blocking": true
+},
+{
+"step_id": "B-STEP-002",
+"title": "Execute governance upgrade STEP-002",
+"owner": "cli",
+"associated_files": [
+"CLI_ready_implementation_instructions_abstraction_governance.json",
+"cleaned_final_abstraction_patch_plan.json"
+],
+"preconditions": [
+"B-STEP-001 is complete.",
+"STEP-002 exists in CLI_ready_implementation_instructions_abstraction_governance.json."
+],
+"actions": [
+"Load STEP-002 from CLI implementation instructions.",
+"Apply STEP-002 modifications from patch plan.",
+"Persist modified artifacts."
+],
+"done_criteria": [
+"CLI exits with code 0 for STEP-002.",
+"Observable patch application output is produced."
+],
+"evidence_output": "cleaned_final_abstraction_patch_plan.json",
+"failure_codes": {
+"STEP_002_NOT_FOUND": "STEP-002 is missing from implementation instructions.",
+"STEP_002_APPLY_FAILED": "CLI application of STEP-002 failed."
+},
+"blocking": true
+},
+{
+"step_id": "B-STEP-003",
+"title": "Execute governance upgrade STEP-003",
+"owner": "cli",
+"associated_files": [
+"CLI_ready_implementation_instructions_abstraction_governance.json",
+"cleaned_final_abstraction_patch_plan.json"
+],
+"preconditions": [
+"B-STEP-002 is complete.",
+"STEP-003 exists in CLI_ready_implementation_instructions_abstraction_governance.json."
+],
+"actions": [
+"Load STEP-003 from CLI implementation instructions.",
+"Apply STEP-003 modifications from patch plan.",
+"Persist modified artifacts."
+],
+"done_criteria": [
+"CLI exits with code 0 for STEP-003.",
+"Observable patch application output is produced."
+],
+"evidence_output": "cleaned_final_abstraction_patch_plan.json",
+"failure_codes": {
+"STEP_003_NOT_FOUND": "STEP-003 is missing from implementation instructions.",
+"STEP_003_APPLY_FAILED": "CLI application of STEP-003 failed."
+},
+"blocking": true
+},
+{
+"step_id": "B-STEP-004",
+"title": "Execute governance upgrade STEP-004",
+"owner": "cli",
+"associated_files": [
+"CLI_ready_implementation_instructions_abstraction_governance.json",
+"cleaned_final_abstraction_patch_plan.json"
+],
+"preconditions": [
+"B-STEP-003 is complete.",
+"STEP-004 exists in CLI_ready_implementation_instructions_abstraction_governance.json."
+],
+"actions": [
+"Load STEP-004 from CLI implementation instructions.",
+"Apply STEP-004 modifications from patch plan.",
+"Persist modified artifacts."
+],
+"done_criteria": [
+"CLI exits with code 0 for STEP-004.",
+"Observable patch application output is produced."
+],
+"evidence_output": "cleaned_final_abstraction_patch_plan.json",
+"failure_codes": {
+"STEP_004_NOT_FOUND": "STEP-004 is missing from implementation instructions.",
+"STEP_004_APPLY_FAILED": "CLI application of STEP-004 failed."
+},
+"blocking": true
+},
+{
+"step_id": "B-STEP-005",
+"title": "Execute governance upgrade STEP-005",
+"owner": "cli",
+"associated_files": [
+"CLI_ready_implementation_instructions_abstraction_governance.json",
+"cleaned_final_abstraction_patch_plan.json"
+],
+"preconditions": [
+"B-STEP-004 is complete.",
+"STEP-005 exists in CLI_ready_implementation_instructions_abstraction_governance.json."
+],
+"actions": [
+"Load STEP-005 from CLI implementation instructions.",
+"Apply STEP-005 modifications from patch plan.",
+"Persist modified artifacts."
+],
+"done_criteria": [
+"CLI exits with code 0 for STEP-005.",
+"Observable patch application output is produced."
+],
+"evidence_output": "cleaned_final_abstraction_patch_plan.json",
+"failure_codes": {
+"STEP_005_NOT_FOUND": "STEP-005 is missing from implementation instructions.",
+"STEP_005_APPLY_FAILED": "CLI application of STEP-005 failed."
+},
+"blocking": true
+},
+{
+"step_id": "B-STEP-006",
+"title": "Execute governance upgrade STEP-006",
+"owner": "cli",
+"associated_files": [
+"CLI_ready_implementation_instructions_abstraction_governance.json",
+"cleaned_final_abstraction_patch_plan.json"
+],
+"preconditions": [
+"B-STEP-005 is complete.",
+"STEP-006 exists in CLI_ready_implementation_instructions_abstraction_governance.json."
+],
+"actions": [
+"Load STEP-006 from CLI implementation instructions.",
+"Apply STEP-006 modifications from patch plan.",
+"Persist modified artifacts."
+],
+"done_criteria": [
+"CLI exits with code 0 for STEP-006.",
+"Observable patch application output is produced."
+],
+"evidence_output": "cleaned_final_abstraction_patch_plan.json",
+"failure_codes": {
+"STEP_006_NOT_FOUND": "STEP-006 is missing from implementation instructions.",
+"STEP_006_APPLY_FAILED": "CLI application of STEP-006 failed."
+},
+"blocking": true
+}
+]
+},
+{
+"entry_point_id": "EP-B-GATE-ABS-VALIDATION",
+"trigger_type": "gate_evaluation",
+"steps": [
+{
+"step_id": "B-GATE-001",
+"title": "Run GATE-ABS-001 validator",
+"owner": "validator",
+"associated_files": [
+"validate_abstraction_*.py",
+"CLI_ready_implementation_instructions_abstraction_governance.json"
+],
+"preconditions": [
+"Relevant upgrade steps have been applied.",
+"Validator scripts are present."
+],
+"actions": [
+"Run the validator script mapped to GATE-ABS-001.",
+"Capture exit code and emitted validation output."
+],
+"done_criteria": [
+"Validator exits with code 0."
+],
+"evidence_output": "validate_abstraction_*.py",
+"failure_codes": {
+"GATE_ABS_001_FAILED": "GATE-ABS-001 returned non-zero exit."
+},
+"blocking": true
+},
+{
+"step_id": "B-GATE-002",
+"title": "Run GATE-ABS-002 validator",
+"owner": "validator",
+"associated_files": [
+"validate_abstraction_*.py",
+"cleaned_final_abstraction_patch_plan.json"
+],
+"preconditions": [
+"B-GATE-001 passed."
+],
+"actions": [
+"Run the validator script mapped to GATE-ABS-002.",
+"Capture exit code and emitted validation output."
+],
+"done_criteria": [
+"Validator exits with code 0."
+],
+"evidence_output": "validate_abstraction_*.py",
+"failure_codes": {
+"GATE_ABS_002_FAILED": "GATE-ABS-002 returned non-zero exit."
+},
+"blocking": true
+},
+{
+"step_id": "B-GATE-003",
+"title": "Run GATE-ABS-003 validator",
+"owner": "validator",
+"associated_files": [
+"validate_abstraction_*.py",
+"CLI_ready_implementation_instructions_abstraction_governance.json"
+],
+"preconditions": [
+"B-GATE-002 passed."
+],
+"actions": [
+"Run the validator script mapped to GATE-ABS-003.",
+"Capture exit code and emitted validation output."
+],
+"done_criteria": [
+"Validator exits with code 0."
+],
+"evidence_output": "validate_abstraction_*.py",
+"failure_codes": {
+"GATE_ABS_003_FAILED": "GATE-ABS-003 returned non-zero exit."
+},
+"blocking": true
+},
+{
+"step_id": "B-GATE-004",
+"title": "Run GATE-ABS-004 validator",
+"owner": "validator",
+"associated_files": [
+"validate_abstraction_*.py",
+"cleaned_final_abstraction_patch_plan.json"
+],
+"preconditions": [
+"B-GATE-003 passed."
+],
+"actions": [
+"Run the validator script mapped to GATE-ABS-004.",
+"Capture exit code and emitted validation output."
+],
+"done_criteria": [
+"Validator exits with code 0."
+],
+"evidence_output": "validate_abstraction_*.py",
+"failure_codes": {
+"GATE_ABS_004_FAILED": "GATE-ABS-004 returned non-zero exit."
+},
+"blocking": true
+},
+{
+"step_id": "B-GATE-005",
+"title": "Run GATE-ABS-005 validator",
+"owner": "validator",
+"associated_files": [
+"validate_abstraction_*.py",
+"CLI_ready_implementation_instructions_abstraction_governance.json"
+],
+"preconditions": [
+"B-GATE-004 passed."
+],
+"actions": [
+"Run the validator script mapped to GATE-ABS-005.",
+"Capture exit code and emitted validation output."
+],
+"done_criteria": [
+"Validator exits with code 0."
+],
+"evidence_output": "validate_abstraction_*.py",
+"failure_codes": {
+"GATE_ABS_005_FAILED": "GATE-ABS-005 returned non-zero exit."
+},
+"blocking": true
+}
+]
+}
+]
+}
+],
+"cross_cutting_rules": [
+"JSON plan is SSOT. GitHub is the execution surface only.",
+"GitHub App installation token is required for all GraphQL and Projects operations.",
+"Every step must identify its owner as cli, github_actions, validator, or human.",
+"Completion is validated by observable output only.",
+"A non-zero exit from a blocking gate or command stops progression.",
+"Every step must write or reference named evidence before being considered done.",
+"No phase advancement is allowed from a single event alone; composite evaluation is required.",
+"No execution issue is considered valid unless it can be linked through config/step_issue_linkage.json.",
+"Machine-verifiable done criteria take precedence over comments, summaries, or AI claims."
+],
+"known_blockers": [
+{
+"blocker_id": "KB-001",
+"affects_steps": [
+"A-BOOT-002",
+"A-CLI-002",
+"A-WF-002",
+"A-WF-003",
+"A-GATE-002"
+],
+"description": "If GitHub App installation token issuance is not configured, all Project and GraphQL operations are blocked."
+},
+{
+"blocker_id": "KB-002",
+"affects_steps": [
+"A-CLI-001",
+"A-CLI-007",
+"A-CLI-009",
+"A-WF-002",
+"A-WF-003",
+"A-GATE-002"
+],
+"description": "Missing or invalid config/github_field_registry.json blocks all field-based projection, reconciliation, and phase evaluation work."
+},
+{
+"blocker_id": "KB-003",
+"affects_steps": [
+"A-CLI-002",
+"A-CLI-004",
+"A-CLI-006",
+"A-CLI-010",
+"A-WF-002",
+"A-WF-003",
+"A-GATE-001",
+"A-GATE-002"
+],
+"description": "Missing or corrupt config/step_issue_linkage.json breaks traceability and prevents deterministic issue/project updates."
+},
+{
+"blocker_id": "KB-004",
+"affects_steps": [
+"A-WF-001",
+"A-WF-002",
+"A-WF-003",
+"A-GATE-002"
+],
+"description": "Missing projections/projection_manifest.json prevents deterministic apply, reconciliation, and phase evaluation against desired state."
+},
+{
+"blocker_id": "KB-005",
+"affects_steps": [
+"B-STEP-001",
+"B-STEP-002",
+"B-STEP-003",
+"B-STEP-004",
+"B-STEP-005",
+"B-STEP-006",
+"B-GATE-001",
+"B-GATE-002",
+"B-GATE-003",
+"B-GATE-004",
+"B-GATE-005"
+],
+"description": "If cleaned_final_abstraction_patch_plan.json or CLI_ready_implementation_instructions_abstraction_governance.json is missing or incomplete, the abstraction governance upgrade cannot proceed deterministically."
+},
+{
+"blocker_id": "KB-006",
+"affects_steps": [
+"B-GATE-001",
+"B-GATE-002",
+"B-GATE-003",
+"B-GATE-004",
+"B-GATE-005"
+],
+"description": "If the validate_abstraction_*.py validator set is missing or not executable, none of the abstraction governance gates can be satisfied."
+}
+]
+}

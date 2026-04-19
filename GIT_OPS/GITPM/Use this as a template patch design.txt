@@ -1,0 +1,575 @@
+Use this as a **template patch design** for making abstraction explicit, enforceable, and machine-checkable in the planning process.
+
+The goal is simple:
+
+**the plan must declare what is abstracted, why it is abstracted, what resolver or contract governs it, and how compliance is validated before execution begins.**
+
+Your current template already supports explicit contracts, pattern-first execution, traceability, mutation modeling, and fail-closed planning.
+What it does not yet do is force the planner to classify abstraction decisions as first-class planning data.
+
+Add the following.
+
+---
+
+## 1. New top-level section: `abstraction_governance`
+
+Purpose: define the global abstraction policy for the whole plan.
+
+```json
+"abstraction_governance": {
+  "enabled": true,
+  "enforcement_mode": "FAIL_CLOSED",
+  "default_policy": {
+    "cross_module_references": "ABSTRACT",
+    "shared_automation_resources": "ABSTRACT",
+    "stable_identity_required_objects": "ABSTRACT",
+    "local_single_module_stable_references": "DIRECT_ALLOWED",
+    "one_off_unique_logic": "NO_FORCED_ABSTRACTION"
+  },
+  "required_abstraction_kinds": [
+    "PATH",
+    "IDENTITY",
+    "PATTERN",
+    "EXECUTOR",
+    "INTERFACE",
+    "ARTIFACT"
+  ],
+  "forbidden_direct_reference_types": [
+    "cross_module_literal_paths",
+    "unregistered_executor_calls",
+    "array_index_based_identity",
+    "ad_hoc_shared_resource_locations"
+  ],
+  "resolver_registry_references": {
+    "path_registry": "",
+    "pattern_registry": "",
+    "executor_registry": "",
+    "artifact_registry": ""
+  },
+  "validation": {
+    "command": "python scripts/validate_abstraction_governance.py {plan_file}",
+    "expect_exit_code": 0,
+    "evidence": ".state/evidence/abstraction_governance_validation.json"
+  }
+}
+```
+
+### Rule
+
+If this section is missing, the plan is incomplete.
+
+### Why
+
+This turns abstraction into policy instead of style. That fits your instruction document’s requirement that rules be explicit, executable, and tied to evidence. 
+
+---
+
+## 2. New top-level section: `abstraction_registry`
+
+Purpose: declare every abstracted resource the plan depends on.
+
+```json
+"abstraction_registry": {
+  "resources": [
+    {
+      "abstraction_id": "ABS-PATH-001",
+      "name": "phase_plan_output",
+      "kind": "PATH",
+      "semantic_key": "plans.current.phase_plan",
+      "physical_binding_source": "config/path_index.yaml",
+      "resolver_method": "resolve_path",
+      "direct_reference_allowed": false,
+      "stability_reason": "file may move across refactors",
+      "consumers": ["PH-00/STEP-001", "PH-01/STEP-002"],
+      "validation_rule": "semantic_key_resolves_to_one_path"
+    }
+  ],
+  "validation": {
+    "command": "python scripts/validate_abstraction_registry.py {plan_file}",
+    "expect_exit_code": 0,
+    "evidence": ".state/evidence/abstraction_registry_validation.json"
+  }
+}
+```
+
+### Required fields per resource
+
+* `abstraction_id`
+* `kind`
+* `semantic_key`
+* `physical_binding_source`
+* `resolver_method`
+* `direct_reference_allowed`
+* `stability_reason`
+* `consumers`
+* `validation_rule`
+
+### Rule
+
+Every shared or unstable dependency referenced anywhere else in the plan must appear here first.
+
+### Why
+
+Your path abstraction material is built around stable semantic keys resolved from a registry instead of direct physical paths. 
+
+---
+
+## 3. New top-level section: `abstraction_decision_rules`
+
+Purpose: force the planner to classify when abstraction is mandatory, optional, or forbidden.
+
+```json
+"abstraction_decision_rules": {
+  "classification_rules": [
+    {
+      "rule_id": "ABS-RULE-001",
+      "condition": "reference crosses module boundary",
+      "required_action": "USE_ABSTRACTION",
+      "required_kind": "PATH",
+      "direct_reference_forbidden": true
+    },
+    {
+      "rule_id": "ABS-RULE-002",
+      "condition": "resource identity must survive rename or move",
+      "required_action": "USE_ABSTRACTION",
+      "required_kind": "IDENTITY",
+      "direct_reference_forbidden": true
+    },
+    {
+      "rule_id": "ABS-RULE-003",
+      "condition": "logic is unique, local, single-use, and non-shared",
+      "required_action": "DIRECT_ALLOWED",
+      "required_kind": null,
+      "direct_reference_forbidden": false
+    },
+    {
+      "rule_id": "ABS-RULE-004",
+      "condition": "task kind already exists in approved execution patterns",
+      "required_action": "USE_ABSTRACTION",
+      "required_kind": "PATTERN",
+      "direct_reference_forbidden": true
+    }
+  ],
+  "conflict_policy": "STRICTER_RULE_WINS"
+}
+```
+
+### Rule
+
+Every planning decision must be classifiable by at least one rule here.
+
+### Why
+
+This stops arbitrary judgment during planning and creates deterministic classification.
+
+---
+
+## 4. Extend `task_analysis` with `abstraction_analysis`
+
+Add a new nested block under `task_analysis`.
+
+```json
+"abstraction_analysis": {
+  "volatile_references": [],
+  "stable_references": [],
+  "cross_boundary_dependencies": [],
+  "shared_services_candidates": [],
+  "identity_sensitive_entities": [],
+  "required_abstractions": [],
+  "abstraction_risks_if_omitted": []
+}
+```
+
+### Required planner behavior
+
+For each task, explicitly identify:
+
+* what references are likely to move
+* what logic should be shared core
+* what entities require stable identity
+* what breaks if abstraction is skipped
+
+### Why
+
+This makes abstraction part of project analysis instead of post-hoc refactoring.
+
+---
+
+## 5. Extend `planning_hierarchy`
+
+At **module**, **component**, and **execution packet** levels, add these required fields:
+
+```json
+"implementation_abstraction": {
+  "style": "DIRECT|ABSTRACTED|HYBRID",
+  "abstraction_kinds": [],
+  "shared_core_dependencies": [],
+  "resolver_dependencies": [],
+  "stable_identity_dependencies": [],
+  "justification": ""
+}
+```
+
+### Rule
+
+Every module/component/execution packet must declare one of:
+
+* `DIRECT`
+* `ABSTRACTED`
+* `HYBRID`
+
+### Additional rule
+
+`HYBRID` requires manual justification and validation.
+
+### Why
+
+Your hierarchy already decomposes work across system/module/component/execution levels. This extends that hierarchy so abstraction is visible at each scope.
+
+---
+
+## 6. Extend `file_manifest` with abstraction metadata
+
+For every file entry, add:
+
+```json
+{
+  "path": "src/module_a/runner.py",
+  "mutation_type": "edit_existing",
+  "reference_mode": "DIRECT|SEMANTIC_KEY|FILE_ID|ARTIFACT_ID",
+  "reference_value": "paths.runners.module_a",
+  "resolver_required": true,
+  "shared_resource": true,
+  "cross_module_dependency": true,
+  "identity_stable_required": false
+}
+```
+
+### Rule
+
+No file in a shared/cross-module/worktree-sensitive/governed path may use `reference_mode = DIRECT`.
+
+### Why
+
+This moves abstraction into the file-level planning surface where breakage often begins.
+
+---
+
+## 7. Extend `execution_patterns`
+
+Add abstraction binding requirements per task pattern.
+
+```json
+"abstraction_contract": {
+  "requires_path_abstraction": true,
+  "requires_executor_abstraction": true,
+  "requires_identity_abstraction": false,
+  "requires_artifact_abstraction": true,
+  "allowed_direct_references": [],
+  "required_resolvers": [
+    "resolve_path",
+    "resolve_artifact"
+  ]
+}
+```
+
+### Rule
+
+Every pattern must declare what kinds of abstraction are mandatory for tasks that use it.
+
+### Why
+
+Pattern-first execution is already required in your instruction stack. This makes abstraction part of the pattern contract instead of an unstated assumption.
+
+---
+
+## 8. New step-level field: `abstraction_contract`
+
+Every executable step should have this block.
+
+```json
+"abstraction_contract": {
+  "uses_abstractions": true,
+  "abstractions": [
+    {
+      "kind": "PATH",
+      "abstraction_id": "ABS-PATH-001",
+      "resolver": "resolve_path",
+      "target_semantic_key": "plans.current.phase_plan"
+    },
+    {
+      "kind": "EXECUTOR",
+      "abstraction_id": "ABS-EXEC-003",
+      "resolver": "resolve_executor",
+      "target_semantic_key": "executors.python.schema_validator"
+    }
+  ],
+  "forbidden_direct_usages": [
+    "literal_cross_module_path",
+    "inline_unregistered_executor_call"
+  ],
+  "verification": {
+    "command": "python scripts/validate_step_abstraction_contract.py {phase} {step_id}",
+    "expect_exit_code": 0,
+    "evidence": ".state/evidence/{phase}/{step_id}/abstraction_contract_validation.json"
+  }
+}
+```
+
+### Rule
+
+No executable step may omit this block.
+
+### Why
+
+This is the core enforcement point. If the step does not declare its abstractions, the planner has not finished specifying execution.
+
+---
+
+## 9. New top-level section: `shared_core_allocation`
+
+Purpose: declare what logic must be centralized instead of duplicated.
+
+```json
+"shared_core_allocation": {
+  "required_shared_services": [
+    {
+      "service_id": "SVC-PATH-RESOLVER",
+      "responsibility": "resolve semantic keys to physical paths",
+      "consumed_by": ["cli.plan.validate", "cli.plan.execute"],
+      "duplicate_implementation_forbidden": true
+    },
+    {
+      "service_id": "SVC-GATE-RUNNER",
+      "responsibility": "execute validation gates with evidence capture",
+      "consumed_by": ["gate_schema_validate", "gate_traceability_validate"],
+      "duplicate_implementation_forbidden": true
+    }
+  ],
+  "validation": {
+    "command": "python scripts/validate_shared_core_allocation.py {plan_file}",
+    "expect_exit_code": 0,
+    "evidence": ".state/evidence/shared_core_allocation_validation.json"
+  }
+}
+```
+
+### Rule
+
+If the same responsibility appears in multiple workstreams or CLIs, it must be explicitly assigned here or justified as intentionally duplicated.
+
+### Why
+
+Your multi-CLI architecture notes point to shared core plus thin wrappers as the right model, not repeated logic per command.
+
+---
+
+## 10. New top-level section: `resolver_contracts`
+
+Purpose: make resolvers explicit system components.
+
+```json
+"resolver_contracts": {
+  "resolvers": [
+    {
+      "resolver_id": "resolve_path",
+      "input_type": "semantic_key",
+      "output_type": "physical_path",
+      "source_of_truth": "config/path_index.yaml",
+      "determinism_requirements": [
+        "same input returns same output for same snapshot"
+      ],
+      "failure_mode": "fail_closed"
+    },
+    {
+      "resolver_id": "resolve_executor",
+      "input_type": "executor_key",
+      "output_type": "executor_entrypoint",
+      "source_of_truth": "registry/executor_registry.json",
+      "determinism_requirements": [
+        "must resolve to exactly one registered executor"
+      ],
+      "failure_mode": "fail_closed"
+    }
+  ]
+}
+```
+
+### Rule
+
+Any abstraction reference used in the plan must be backed by a declared resolver here.
+
+### Why
+
+Abstraction without resolver contracts becomes fuzzy indirection. This makes it mechanical.
+
+---
+
+## 11. Extend `traceability`
+
+Add these mappings:
+
+```json
+"traceability": {
+  "requirement_to_abstraction": {},
+  "module_to_shared_service": {},
+  "component_to_abstraction_id": {},
+  "step_to_resolver": {},
+  "step_to_abstraction_id": {},
+  "pattern_to_required_abstractions": {}
+}
+```
+
+### Rule
+
+Every abstracted dependency must be traceable from requirement → module/component → step → resolver.
+
+### Why
+
+This makes abstraction auditable and keeps it from becoming disconnected design rhetoric.
+
+---
+
+## 12. New anti-patterns in `anti_pattern_detection`
+
+Add these anti-pattern IDs:
+
+```json
+"anti_pattern_detection": {
+  "rules": [
+    {
+      "anti_pattern_id": "AP-ABS-001",
+      "name": "cross_module_literal_path",
+      "trigger": "cross-module dependency uses direct literal path",
+      "action": "fail_plan"
+    },
+    {
+      "anti_pattern_id": "AP-ABS-002",
+      "name": "duplicate_shared_service_logic",
+      "trigger": "same shared responsibility implemented in multiple places without approved exception",
+      "action": "fail_plan"
+    },
+    {
+      "anti_pattern_id": "AP-ABS-003",
+      "name": "unresolved_abstraction_reference",
+      "trigger": "abstraction_id or semantic_key has no registered resolver binding",
+      "action": "fail_plan"
+    },
+    {
+      "anti_pattern_id": "AP-ABS-004",
+      "name": "pattern_without_abstraction_contract",
+      "trigger": "execution pattern exists but does not define required abstractions",
+      "action": "fail_plan"
+    },
+    {
+      "anti_pattern_id": "AP-ABS-005",
+      "name": "identity_by_array_position",
+      "trigger": "entity identity depends on mutable index position",
+      "action": "fail_plan"
+    }
+  ]
+}
+```
+
+### Why
+
+This is how you catch abstraction drift mechanically, not by review alone.
+
+---
+
+## 13. New validation gates
+
+Add these mandatory gates.
+
+### `GATE-ABS-001` Abstraction coverage
+
+Confirms every cross-boundary/shared/volatile dependency is classified.
+
+### `GATE-ABS-002` Resolver completeness
+
+Confirms every abstraction reference resolves through a declared resolver.
+
+### `GATE-ABS-003` Direct-reference violation audit
+
+Fails if forbidden direct references are present.
+
+### `GATE-ABS-004` Shared-core duplication audit
+
+Fails if repeated responsibilities are planned as separate bespoke implementations.
+
+### `GATE-ABS-005` Identity stability audit
+
+Fails if rename/move-sensitive entities lack stable ID abstraction.
+
+Example shape:
+
+```json
+{
+  "gate_id": "GATE-ABS-001",
+  "name": "Abstraction Coverage",
+  "command": "python scripts/validate_abstraction_coverage.py {plan_file}",
+  "expect_exit_code": 0,
+  "evidence": ".state/evidence/gates/GATE-ABS-001.result.json",
+  "failure_impact": "Plan allows unstable or ambiguous dependency references"
+}
+```
+
+---
+
+## 14. Add planner rules to `ai_instructions` / instruction document
+
+These rules should become mandatory generation behavior:
+
+1. **Before defining file changes, classify each dependency as direct or abstracted.**
+2. **Any cross-module/shared/volatile dependency must use a declared abstraction.**
+3. **Do not allow a step to reference a path, executor, or artifact that lacks a resolver contract.**
+4. **Do not duplicate shared responsibilities across CLIs or workstreams unless explicitly approved.**
+5. **If identity must survive rename, move, merge, or reordering, require stable ID abstraction.**
+6. **If no abstraction exists where required, create the abstraction entry before implementation planning continues.**
+
+This fits the instruction document’s existing “explicit, mechanical, no implied behavior” posture. 
+
+---
+
+## 15. Minimal version if you want less bloat
+
+If you do not want to add all of the above right now, the smallest useful patch is:
+
+* new top-level `abstraction_governance`
+* new top-level `abstraction_registry`
+* new step-level `abstraction_contract`
+* new `GATE-ABS-001` and `GATE-ABS-002`
+* new anti-pattern `cross_module_literal_path`
+
+That would already force planners to:
+
+* identify abstracted dependencies
+* bind them to resolvers
+* prevent direct fragile references
+
+---
+
+## Hard rules summary
+
+These are the actual enforcement rules the template should adopt:
+
+1. **Cross-module references must be abstracted.**
+2. **Shared automation resources must be abstracted.**
+3. **Any identity that must survive rename/move/reordering must be abstracted.**
+4. **Every abstraction must have a declared resolver and source of truth.**
+5. **Every executable step must declare its abstraction contract.**
+6. **Forbidden direct references fail plan validation.**
+7. **Shared core responsibilities must not be duplicated without explicit exception.**
+8. **Patterns must declare their abstraction requirements.**
+9. **Traceability must include abstraction mappings.**
+10. **Abstraction compliance must be validated by gates before execution.**
+
+That is the shift from “abstraction is a good idea” to:
+
+**“abstraction is part of the plan contract and execution is blocked if it is underspecified.”**
+
+The next clean step is to convert this into an **RFC-6902 patch plan** targeting your three v3.2 files:
+
+* `NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json`
+* `NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json`
+* `NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json`

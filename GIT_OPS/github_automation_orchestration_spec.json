@@ -1,0 +1,1128 @@
+{
+  "meta": {
+    "spec_id": "GH-AUTOMATION-ORCHESTRATION-SPEC-001",
+    "title": "GitHub Automation Subsystem Orchestration Spec",
+    "version": "1.0.0",
+    "status": "MACHINE_EXECUTABLE_DRAFT",
+    "created_utc": "2026-04-12T00:00:00Z",
+    "generated_utc": "2026-04-12T17:17:44Z",
+    "purpose": "Single machine-executable orchestration spec for projecting SSOT plan artifacts onto GitHub and reconciling execution-state drift deterministically.",
+    "source_authority": "plan_ssot",
+    "execution_surface": "github",
+    "control_plane": "plan_ssot_plus_orchestrator",
+    "assumptions": [
+      "Plan SSOT remains the only authority for decomposition, phase structure, step contracts, gate requirements, and evidence requirements.",
+      "GitHub Projects v2 is available and the target project already exists.",
+      "GitHub App authentication is used for all project mutations by default.",
+      "Workflow template inventory is authoritative for currently-known workflow templates and hashes.",
+      "Issue fields in public preview are treated as optional extensions; stable operation relies on project-level custom fields."
+    ],
+    "resolved_design_choices": {
+      "phase_representation": "project_field",
+      "milestone_representation": "delivery_checkpoint_only",
+      "step_to_issue_granularity": "one_step_one_issue",
+      "sync_direction": "unidirectional_plan_to_github",
+      "reconciliation_model": "level_triggered_observe_diff_act_report",
+      "field_id_strategy": "bootstrap_registry_runtime_resolution",
+      "phase_advance_strategy": "composite_evaluator_only",
+      "runner_policy_default": "linux_hosted_for_control_plane_windows_self_hosted_for_windows_only_work"
+    },
+    "spec_sha256": "05d2ce5aa782562d3e53eeee05001dc8f188bcd3d9cab145a82b5fc0e360d212"
+  },
+  "source_documents": [
+    {
+      "id": "SRC-CLAUDE",
+      "path": "CLAUDE.md",
+      "role": "repository_guidance",
+      "key_points": [
+        "GitHub is execution surface, not control plane",
+        "Phase -> project field, Step -> issue, Gate -> required CI check, Execution -> PR",
+        "Required constructs include app auth, field registry, phase evaluator, runner policy, sync governance"
+      ]
+    },
+    {
+      "id": "SRC-SSOT-DESIGN",
+      "path": "PROC-DESIGN-GITHUB-AUTOMATION-SSOT.json",
+      "role": "primary_design_seed"
+    },
+    {
+      "id": "SRC-HARDENING-DELTA",
+      "path": "Second Architecture Delta for GitHub Hardening.md",
+      "role": "hardening_requirements"
+    },
+    {
+      "id": "SRC-GAP-ANALYSIS",
+      "path": "GitHub PM and NPP gap analysis .txt",
+      "role": "last_mile_gaps"
+    },
+    {
+      "id": "SRC-RECONCILIATION-RESEARCH",
+      "path": "compass_artifact_wf-4a39ee83-b5dc-41ee-b670-d8fddd149e61_text_markdown.md",
+      "role": "reconciliation_pattern_reference"
+    },
+    {
+      "id": "SRC-WORKFLOW-INVENTORY",
+      "path": "github_project_management_process_inventory.json",
+      "role": "known_workflow_templates_and_hashes"
+    },
+    {
+      "id": "SRC-GIT-SUBSYSTEM",
+      "path": "Git automation subsystem.txt",
+      "role": "local_git_automation_and_policy_gate_reference"
+    }
+  ],
+  "governing_laws": [
+    {
+      "id": "LAW-GH-001",
+      "name": "APP_FIRST_AUTHENTICATION",
+      "statement": "All Project reads/writes must use GitHub App installation tokens unless an explicit PAT exception record exists.",
+      "enforcement_gate": "GATE_GH_APP_AUTH_AVAILABLE"
+    },
+    {
+      "id": "LAW-GH-002",
+      "name": "NO_INLINE_FIELD_IDS",
+      "statement": "No workflow or program may hardcode project node IDs, field IDs, option IDs, or iteration IDs.",
+      "enforcement_gate": "GATE_GH_FIELD_REGISTRY_VALID"
+    },
+    {
+      "id": "LAW-GH-003",
+      "name": "PHASE_ADVANCEMENT_IS_COMPOSITE",
+      "statement": "Only the phase advancement evaluator may mutate the Phase field, and only after composite evaluation and decision artifact generation.",
+      "enforcement_gate": "GATE_GH_PHASE_ADVANCEMENT_DECIDED"
+    },
+    {
+      "id": "LAW-RUN-001",
+      "name": "PLATFORM_SPLIT_REQUIRED",
+      "statement": "Each program and workflow must declare a runner class. Linux-hosted is default for control-plane logic. Windows-specific work must use self-hosted Windows.",
+      "enforcement_gate": "GATE_RUNNER_POLICY_VALID"
+    },
+    {
+      "id": "LAW-SYNC-001",
+      "name": "PROJECTION_IS_UNIDIRECTIONAL",
+      "statement": "GitHub state may not write back into plan-owned fields in the plan SSOT.",
+      "enforcement_gate": "GATE_SYNC_DIRECTION_VALID"
+    },
+    {
+      "id": "LAW-WORK-001",
+      "name": "NO_ISSUE_WITHOUT_STEP_ID",
+      "statement": "Every execution issue must carry StepID mapped in step_issue_linkage.json.",
+      "enforcement_gate": "GATE_STEP_LINKAGE_VALID"
+    },
+    {
+      "id": "LAW-WORK-002",
+      "name": "NO_PR_WITHOUT_ISSUE",
+      "statement": "Every PR must link to at least one governed issue via Closes/Fixes syntax and linkage registry membership.",
+      "enforcement_gate": "GATE_PR_LINKAGE_VALID"
+    },
+    {
+      "id": "LAW-WORK-003",
+      "name": "NO_MERGE_WITHOUT_GATE",
+      "statement": "All required gates for the active phase must pass before merge.",
+      "enforcement_gate": "GATE_ALL_REQUIRED_CHECKS_PASS"
+    }
+  ],
+  "ownership_model": {
+    "plan_owned_fields": [
+      "phase_structure",
+      "step_contracts",
+      "gate_requirements",
+      "evidence_requirements",
+      "milestone_groupings",
+      "decomposition_rules",
+      "execution_patterns"
+    ],
+    "github_owned_fields": [
+      "assignees",
+      "review_conversations",
+      "comment_threads",
+      "review_requests"
+    ],
+    "automation_only_project_fields": [
+      "Phase",
+      "Status",
+      "StepID",
+      "EvidenceState",
+      "DeterminismState",
+      "PlanHash",
+      "ProjectionVersion",
+      "GateStatus"
+    ],
+    "manual_edit_policy": {
+      "allowed": [
+        "github_owned_fields"
+      ],
+      "forbidden": [
+        "automation_only_project_fields",
+        "plan_owned_fields"
+      ],
+      "violation_classification": "Violation"
+    }
+  },
+  "artifacts": [
+    {
+      "id": "ART-001",
+      "path": "config/github_field_registry.json",
+      "type": "config",
+      "writer": "GH_FIELDS_VALIDATE",
+      "schema_ref": "schemas/github_field_registry.schema.json",
+      "required": true
+    },
+    {
+      "id": "ART-002",
+      "path": "config/step_issue_linkage.json",
+      "type": "config",
+      "writer": "GH_PROJECTION_APPLY",
+      "schema_ref": "schemas/step_issue_linkage.schema.json",
+      "required": true
+    },
+    {
+      "id": "ART-003",
+      "path": "config/github_projection_registry.json",
+      "type": "config",
+      "writer": "GH_PROJECTION_GENERATE",
+      "schema_ref": "schemas/github_projection_manifest.schema.json",
+      "required": true
+    },
+    {
+      "id": "ART-004",
+      "path": "config/github_override_registry.json",
+      "type": "config",
+      "writer": "human_via_pr",
+      "schema_ref": "schemas/github_override_registry.schema.json",
+      "required": true
+    },
+    {
+      "id": "ART-005",
+      "path": "reports/reconciliation_report.json",
+      "type": "report",
+      "writer": "GH_RECONCILE_DRIFT",
+      "schema_ref": "schemas/reconciliation_report.schema.json",
+      "required": true
+    },
+    {
+      "id": "ART-006",
+      "path": "reports/phase_advancement_report.json",
+      "type": "report",
+      "writer": "GH_PHASE_ADVANCE_EVALUATE",
+      "schema_ref": "schemas/phase_advancement_report.schema.json",
+      "required": true
+    },
+    {
+      "id": "ART-007",
+      "path": "reports/phase_transition_decision.json",
+      "type": "decision",
+      "writer": "GH_PHASE_ADVANCE_EVALUATE",
+      "schema_ref": "schemas/phase_transition_decision.schema.json",
+      "required": true
+    },
+    {
+      "id": "ART-008",
+      "path": "reports/evidence_seal_log.json",
+      "type": "report",
+      "writer": "GH_EVIDENCE_SEAL",
+      "schema_ref": "schemas/evidence_seal_log.schema.json",
+      "required": true
+    }
+  ],
+  "runner_policy": {
+    "classes": [
+      "linux_hosted",
+      "windows_hosted",
+      "self_hosted_windows",
+      "self_hosted_linux",
+      "self_hosted_ephemeral"
+    ],
+    "defaults": {
+      "graphql_rest_control_plane": "linux_hosted",
+      "projection_and_reconciliation": "linux_hosted",
+      "windows_filesystem_sync": "self_hosted_windows",
+      "windows_toolchain_gates": "self_hosted_windows"
+    },
+    "fallbacks": {
+      "self_hosted_windows": {
+        "on_unavailable": "queue_then_fail_closed_after_timeout",
+        "fallback_runner": null,
+        "operator_action": "restore_runner_or_disable_windows_only_program"
+      }
+    }
+  },
+  "workflow_inventory": {
+    "known_templates": [
+      {
+        "workflow_id": "WF-PROJECT-ITEM-SYNC",
+        "template_name": "TEMP_project_item_sync.yml",
+        "target_name": "project-item-sync.yml",
+        "source_sha256": "8b96064054f11b8f53f4dbb1ea20e2a37e52a5eae0360dd6d809ec9193c10a7f",
+        "role": "issue_pr_to_project_field_sync"
+      },
+      {
+        "workflow_id": "WF-MILESTONE-COMPLETION",
+        "template_name": "TEMP_milestone_completion.yml",
+        "target_name": "milestone-completion.yml",
+        "source_sha256": "b276c1fba3b7afdf87d52f3e9a19cdaddbfb3bd7406f340787962dec58ace168",
+        "role": "milestone_rollup_sync"
+      },
+      {
+        "workflow_id": "WF-PHASE-SYNC",
+        "template_name": "TEMP_splinter_phase_sync.yml",
+        "target_name": "plan-projection-sync.yml",
+        "source_sha256": "139aa399212d7b50f1785006e73a03d3c9921b7281d9fbf41b66ef3278907e86",
+        "role": "plan_change_projection_trigger"
+      },
+      {
+        "workflow_id": "WF-SCHEDULED-ORCHESTRATOR",
+        "template_name": "TEMP_scheduled-orchestrator.yml",
+        "target_name": "scheduled-orchestrator.yml",
+        "source_sha256": "e115ebe71c33c764c257d095dd23d16ada74640384465acb05aa9e73ff961dca",
+        "role": "master_reconciliation_and_reporting"
+      },
+      {
+        "workflow_id": "WF-REMOTE-SYNC",
+        "template_name": "TEMP_remote-sync.yml",
+        "target_name": "remote-sync.yml",
+        "source_sha256": "163b5976e46fca90efa02b0a764f51fc0b5352d7ea9f570582ba2badb5927c90",
+        "role": "remote_change_to_local_signal_and_loop_prevention"
+      },
+      {
+        "workflow_id": "WF-REMOTE-TO-LOCAL",
+        "template_name": "TEMP_triggerA-remote-to-local.yml",
+        "target_name": "remote-to-local.yml",
+        "source_sha256": "659d6781ec4eb6b080d2e1addd81a6f3f0950f0e715c74b2d63a904d0c6c509d",
+        "role": "self_hosted_windows_local_sync_execution"
+      },
+      {
+        "workflow_id": "WF-BRANCH-HANDLER",
+        "template_name": "TEMP_branch-handler.yml",
+        "target_name": "branch-handler.yml",
+        "source_sha256": "073c0be356a1856e107a9557180fb12d0b8984ca9ceabae8a797be108dbf59fc",
+        "role": "pr_linkage_quality_auto_merge_block_post_merge_sync"
+      },
+      {
+        "workflow_id": "WF-BOOTSTRAP-FIELDS",
+        "template_name": null,
+        "target_name": "bootstrap-github-fields.yml",
+        "source_sha256": null,
+        "role": "field_registry_bootstrap"
+      },
+      {
+        "workflow_id": "WF-PHASE-ADVANCEMENT",
+        "template_name": null,
+        "target_name": "phase-advancement-evaluator.yml",
+        "source_sha256": null,
+        "role": "phase_decision_and_field_update"
+      },
+      {
+        "workflow_id": "WF-DRIFT-RECONCILIATION",
+        "template_name": null,
+        "target_name": "ssot-drift-reconciliation.yml",
+        "source_sha256": null,
+        "role": "observe_diff_act_report_controller"
+      }
+    ]
+  },
+  "programs": [
+    {
+      "program_id": "GH_AUTH_ISSUE_INSTALLATION_TOKEN",
+      "category": "auth",
+      "runner_class": "linux_hosted",
+      "inputs": [
+        "GH_APP_ID",
+        "GH_APP_PRIVATE_KEY",
+        "GH_INSTALLATION_SCOPE"
+      ],
+      "outputs": [
+        "token_envelope.json"
+      ],
+      "locks": [],
+      "pass_criteria": [
+        "token_issued",
+        "expires_at_present"
+      ],
+      "evidence": [
+        "token_envelope.json"
+      ]
+    },
+    {
+      "program_id": "GH_FIELDS_DISCOVER",
+      "category": "bootstrap",
+      "runner_class": "linux_hosted",
+      "inputs": [
+        "token_envelope.json",
+        "ORG_OR_USER",
+        "PROJECT_NUMBER"
+      ],
+      "outputs": [
+        "raw_fields_response.json"
+      ],
+      "locks": [],
+      "pass_criteria": [
+        "project_found",
+        "fields_queried"
+      ],
+      "evidence": [
+        "raw_fields_response.json"
+      ]
+    },
+    {
+      "program_id": "GH_FIELDS_VALIDATE",
+      "category": "bootstrap",
+      "runner_class": "linux_hosted",
+      "inputs": [
+        "raw_fields_response.json"
+      ],
+      "outputs": [
+        "config/github_field_registry.json"
+      ],
+      "locks": [
+        "field_registry_write"
+      ],
+      "pass_criteria": [
+        "required_fields_present",
+        "schema_valid"
+      ],
+      "evidence": [
+        "config/github_field_registry.json"
+      ]
+    },
+    {
+      "program_id": "GH_PROJECTION_GENERATE",
+      "category": "projection",
+      "runner_class": "linux_hosted",
+      "inputs": [
+        "plan_package",
+        "config/step_issue_linkage.json"
+      ],
+      "outputs": [
+        "config/github_projection_registry.json"
+      ],
+      "locks": [
+        "projection_registry_write"
+      ],
+      "pass_criteria": [
+        "manifest_generated",
+        "manifest_schema_valid"
+      ],
+      "evidence": [
+        "config/github_projection_registry.json"
+      ]
+    },
+    {
+      "program_id": "GH_PROJECTION_APPLY",
+      "category": "projection",
+      "runner_class": "linux_hosted",
+      "inputs": [
+        "config/github_projection_registry.json",
+        "config/github_field_registry.json",
+        "config/step_issue_linkage.json"
+      ],
+      "outputs": [
+        "config/step_issue_linkage.json",
+        "projection_apply_report.json"
+      ],
+      "locks": [
+        "github_project_write",
+        "step_issue_linkage_write"
+      ],
+      "pass_criteria": [
+        "all_new_steps_projected_or_blocked",
+        "linkage_file_updated"
+      ],
+      "evidence": [
+        "projection_apply_report.json"
+      ]
+    },
+    {
+      "program_id": "GH_RECONCILE_DRIFT",
+      "category": "reconciliation",
+      "runner_class": "linux_hosted",
+      "inputs": [
+        "config/github_projection_registry.json",
+        "config/step_issue_linkage.json",
+        "config/github_field_registry.json",
+        "config/github_override_registry.json"
+      ],
+      "outputs": [
+        "reports/reconciliation_report.json"
+      ],
+      "locks": [
+        "github_project_write"
+      ],
+      "pass_criteria": [
+        "observe_complete",
+        "diff_complete",
+        "act_complete",
+        "report_complete"
+      ],
+      "evidence": [
+        "reports/reconciliation_report.json"
+      ]
+    },
+    {
+      "program_id": "GH_PHASE_ADVANCE_EVALUATE",
+      "category": "phase",
+      "runner_class": "linux_hosted",
+      "inputs": [
+        "plan_package",
+        "config/step_issue_linkage.json",
+        "config/github_field_registry.json",
+        "observed_github_state"
+      ],
+      "outputs": [
+        "reports/phase_advancement_report.json",
+        "reports/phase_transition_decision.json"
+      ],
+      "locks": [
+        "phase_field_write",
+        "github_project_write"
+      ],
+      "pass_criteria": [
+        "decision_written",
+        "phase_updated_or_explicitly_blocked"
+      ],
+      "evidence": [
+        "reports/phase_advancement_report.json",
+        "reports/phase_transition_decision.json"
+      ]
+    },
+    {
+      "program_id": "GH_EVIDENCE_SEAL",
+      "category": "evidence",
+      "runner_class": "linux_hosted",
+      "inputs": [
+        "gate_results",
+        "linked_issue",
+        "bundle_path",
+        "bundle_hash",
+        "config/github_field_registry.json"
+      ],
+      "outputs": [
+        "reports/evidence_seal_log.json"
+      ],
+      "locks": [
+        "github_project_write"
+      ],
+      "pass_criteria": [
+        "issue_comment_posted",
+        "evidence_state_updated"
+      ],
+      "evidence": [
+        "reports/evidence_seal_log.json"
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "gate_id": "GATE_GH_APP_AUTH_AVAILABLE",
+      "type": "binary",
+      "source": "GH_AUTH_ISSUE_INSTALLATION_TOKEN"
+    },
+    {
+      "gate_id": "GATE_GH_FIELD_REGISTRY_PRESENT",
+      "type": "binary",
+      "source": "GH_FIELDS_VALIDATE"
+    },
+    {
+      "gate_id": "GATE_GH_FIELD_REGISTRY_VALID",
+      "type": "binary",
+      "source": "GH_FIELDS_VALIDATE"
+    },
+    {
+      "gate_id": "GATE_GH_PROJECTION_MANIFEST_VALID",
+      "type": "binary",
+      "source": "GH_PROJECTION_GENERATE"
+    },
+    {
+      "gate_id": "GATE_PR_LINKAGE_VALID",
+      "type": "binary",
+      "source": "branch-handler.yml"
+    },
+    {
+      "gate_id": "GATE_ALL_REQUIRED_CHECKS_PASS",
+      "type": "binary",
+      "source": "phase_gate_workflows"
+    },
+    {
+      "gate_id": "GATE_GH_RECONCILIATION_COMPLETE",
+      "type": "binary",
+      "source": "GH_RECONCILE_DRIFT"
+    },
+    {
+      "gate_id": "GATE_GH_PHASE_ADVANCEMENT_DECIDED",
+      "type": "binary",
+      "source": "GH_PHASE_ADVANCE_EVALUATE"
+    },
+    {
+      "gate_id": "GATE_RUNNER_POLICY_VALID",
+      "type": "binary",
+      "source": "runner_policy_validation"
+    },
+    {
+      "gate_id": "GATE_SYNC_DIRECTION_VALID",
+      "type": "binary",
+      "source": "sync_governance_validation"
+    },
+    {
+      "gate_id": "GATE_STEP_LINKAGE_VALID",
+      "type": "binary",
+      "source": "step_issue_linkage_validation"
+    }
+  ],
+  "trigger_catalog": [
+    {
+      "trigger_id": "TRIG-MANUAL-BOOTSTRAP",
+      "event": "workflow_dispatch",
+      "workflow": "bootstrap-github-fields.yml"
+    },
+    {
+      "trigger_id": "TRIG-PLAN-PUSH",
+      "event": "push",
+      "paths": [
+        "plan/**/*.yml",
+        "plan/**/*.yaml",
+        "plan/**/*.json",
+        "phases/**/*.yml",
+        "phases/**/*.yaml",
+        "phases/**/*.json"
+      ]
+    },
+    {
+      "trigger_id": "TRIG-ISSUE-OPENED",
+      "event": "issues.opened"
+    },
+    {
+      "trigger_id": "TRIG-ISSUE-REOPENED",
+      "event": "issues.reopened"
+    },
+    {
+      "trigger_id": "TRIG-ISSUE-CLOSED",
+      "event": "issues.closed"
+    },
+    {
+      "trigger_id": "TRIG-PR-OPENED",
+      "event": "pull_request.opened"
+    },
+    {
+      "trigger_id": "TRIG-PR-EDITED",
+      "event": "pull_request.edited"
+    },
+    {
+      "trigger_id": "TRIG-PR-REOPENED",
+      "event": "pull_request.reopened"
+    },
+    {
+      "trigger_id": "TRIG-PR-READY",
+      "event": "pull_request.ready_for_review"
+    },
+    {
+      "trigger_id": "TRIG-PR-CLOSED-MERGED",
+      "event": "pull_request.closed",
+      "condition": "merged == true"
+    },
+    {
+      "trigger_id": "TRIG-CHECK-COMPLETE",
+      "event": "check_suite.completed"
+    },
+    {
+      "trigger_id": "TRIG-SCHEDULED-RECONCILIATION",
+      "event": "schedule",
+      "cron": "*/15 * * * *"
+    },
+    {
+      "trigger_id": "TRIG-DAILY-BOOTSTRAP-CHECK",
+      "event": "schedule",
+      "cron": "0 0 * * *"
+    },
+    {
+      "trigger_id": "TRIG-DAILY-ORCHESTRATOR",
+      "event": "schedule",
+      "cron": "0 6 * * *"
+    },
+    {
+      "trigger_id": "TRIG-REMOTE-PUSH",
+      "event": "push",
+      "workflow": "remote-sync.yml"
+    }
+  ],
+  "state_model": {
+    "project_fields": {
+      "Phase": {
+        "type": "single_select",
+        "writer": "GH_PHASE_ADVANCE_EVALUATE"
+      },
+      "Status": {
+        "type": "single_select",
+        "writer": "WF-PROJECT-ITEM-SYNC"
+      },
+      "StepID": {
+        "type": "text_or_single_select",
+        "writer": "GH_PROJECTION_APPLY"
+      },
+      "EvidenceState": {
+        "type": "single_select",
+        "writer": "GH_EVIDENCE_SEAL"
+      },
+      "DeterminismState": {
+        "type": "single_select",
+        "writer": "GH_RECONCILE_DRIFT"
+      },
+      "PlanHash": {
+        "type": "text",
+        "writer": "GH_PROJECTION_APPLY"
+      },
+      "ProjectionVersion": {
+        "type": "number_or_text",
+        "writer": "GH_PROJECTION_APPLY"
+      },
+      "GateStatus": {
+        "type": "single_select",
+        "writer": "GH_EVIDENCE_SEAL"
+      }
+    },
+    "status_options_recommended": [
+      "Backlog",
+      "Todo",
+      "In Progress",
+      "In Review",
+      "Blocked",
+      "Done"
+    ],
+    "evidence_state_options_recommended": [
+      "Missing",
+      "Pending",
+      "Sealed",
+      "Invalid"
+    ],
+    "determinism_state_options_recommended": [
+      "Projected",
+      "Reconciled",
+      "DriftDetected",
+      "Override",
+      "Blocked"
+    ]
+  },
+  "drift_taxonomy": [
+    {
+      "class": "Allowed",
+      "definition": "Observed difference is permitted by governance."
+    },
+    {
+      "class": "Violation",
+      "definition": "Forbidden manual edit or mutation outside ownership model."
+    },
+    {
+      "class": "Orphan",
+      "definition": "GitHub issue/PR lacks governing linkage or step identity."
+    },
+    {
+      "class": "Missing",
+      "definition": "Required GitHub artifact or field value absent."
+    },
+    {
+      "class": "Override",
+      "definition": "Approved intentional divergence recorded in override registry."
+    }
+  ],
+  "phase_advancement_policy": {
+    "authority": "GH_PHASE_ADVANCE_EVALUATE",
+    "write_target": "project_field.Phase",
+    "decision_artifacts": [
+      "reports/phase_advancement_report.json",
+      "reports/phase_transition_decision.json"
+    ],
+    "level_triggered": true,
+    "event_triggers": [
+      "TRIG-PR-CLOSED-MERGED",
+      "TRIG-CHECK-COMPLETE",
+      "TRIG-ISSUE-CLOSED",
+      "TRIG-SCHEDULED-RECONCILIATION"
+    ],
+    "composite_exit_criteria": [
+      "all_required_phase_gates_pass == true",
+      "all_step_issues_in_phase_closed == true",
+      "all_required_evidence_states_sealed == true",
+      "all_required_milestones_for_phase_complete == true OR phase_has_no_milestone_requirements",
+      "no_open_blocking_subissues == true",
+      "no_unresolved_violation_drift_for_phase == true"
+    ],
+    "decision_actions": {
+      "if_true": [
+        "advance_phase_to_next_option_id",
+        "write_decision_artifacts",
+        "update_determinism_state_to_reconciled"
+      ],
+      "if_false": [
+        "write_decision_artifacts",
+        "set_gate_GH_PHASE_ADVANCE_APPLIED_OR_EXPLICITLY_BLOCKED_to_blocked"
+      ]
+    }
+  },
+  "pipeline_bridge": {
+    "generic_pipeline_to_github_mapping": [
+      {
+        "pipeline_stage": "Trigger",
+        "github_transition": "issue_created_or_project_item_detected"
+      },
+      {
+        "pipeline_stage": "Ingest",
+        "github_transition": "project_item_added"
+      },
+      {
+        "pipeline_stage": "Stabilize",
+        "github_transition": "determinism_state_pending"
+      },
+      {
+        "pipeline_stage": "Classify",
+        "github_transition": "labels_or_fields_routed"
+      },
+      {
+        "pipeline_stage": "Identify",
+        "github_transition": "StepID_bound"
+      },
+      {
+        "pipeline_stage": "Lock",
+        "github_transition": "issue_assigned_and_status_in_progress"
+      },
+      {
+        "pipeline_stage": "ValidatePre",
+        "github_transition": "preflight_checks_running"
+      },
+      {
+        "pipeline_stage": "Process",
+        "github_transition": "branch_and_pr_created"
+      },
+      {
+        "pipeline_stage": "Generate",
+        "github_transition": "code_changes_present_in_pr"
+      },
+      {
+        "pipeline_stage": "Commit",
+        "github_transition": "commit_and_pr_update"
+      },
+      {
+        "pipeline_stage": "ValidatePost",
+        "github_transition": "gate_status_passed_or_failed"
+      },
+      {
+        "pipeline_stage": "Rollback",
+        "github_transition": "pr_blocked_or_reverted_and_evidence_written"
+      },
+      {
+        "pipeline_stage": "Complete",
+        "github_transition": "issue_closed_status_done_auto_archive_eligible"
+      }
+    ]
+  },
+  "process_phases": [
+    {
+      "phase_id": "PROC-0",
+      "name": "Bootstrap",
+      "trigger_ids": [
+        "TRIG-MANUAL-BOOTSTRAP",
+        "TRIG-DAILY-BOOTSTRAP-CHECK"
+      ],
+      "preconditions": [
+        "GitHub App installed",
+        "Project exists"
+      ],
+      "program_sequence": [
+        "GH_AUTH_ISSUE_INSTALLATION_TOKEN",
+        "GH_FIELDS_DISCOVER",
+        "GH_FIELDS_VALIDATE"
+      ],
+      "writes": [
+        "config/github_field_registry.json"
+      ],
+      "gates_required": [
+        "GATE_GH_APP_AUTH_AVAILABLE",
+        "GATE_GH_FIELD_REGISTRY_VALID"
+      ]
+    },
+    {
+      "phase_id": "PROC-1",
+      "name": "PlanProjection",
+      "trigger_ids": [
+        "TRIG-PLAN-PUSH"
+      ],
+      "preconditions": [
+        "GATE_GH_FIELD_REGISTRY_VALID"
+      ],
+      "program_sequence": [
+        "GH_AUTH_ISSUE_INSTALLATION_TOKEN",
+        "GH_PROJECTION_GENERATE",
+        "GH_PROJECTION_APPLY"
+      ],
+      "writes": [
+        "config/github_projection_registry.json",
+        "config/step_issue_linkage.json",
+        "github_issues",
+        "github_project_items"
+      ],
+      "gates_required": [
+        "GATE_GH_APP_AUTH_AVAILABLE",
+        "GATE_GH_PROJECTION_MANIFEST_VALID"
+      ]
+    },
+    {
+      "phase_id": "PROC-2",
+      "name": "ExecutionGovernance",
+      "trigger_ids": [
+        "TRIG-PR-OPENED",
+        "TRIG-PR-EDITED",
+        "TRIG-PR-REOPENED",
+        "TRIG-PR-READY",
+        "TRIG-CHECK-COMPLETE",
+        "TRIG-PR-CLOSED-MERGED"
+      ],
+      "workflow_sequence": [
+        "branch-handler.yml",
+        "project-item-sync.yml",
+        "phase_gate_workflows",
+        "GH_EVIDENCE_SEAL"
+      ],
+      "writes": [
+        "project_field.Status",
+        "project_field.GateStatus",
+        "project_field.EvidenceState",
+        "issue_comments"
+      ],
+      "gates_required": [
+        "GATE_PR_LINKAGE_VALID",
+        "GATE_ALL_REQUIRED_CHECKS_PASS"
+      ]
+    },
+    {
+      "phase_id": "PROC-3",
+      "name": "PhaseAdvancement",
+      "trigger_ids": [
+        "TRIG-PR-CLOSED-MERGED",
+        "TRIG-CHECK-COMPLETE",
+        "TRIG-ISSUE-CLOSED",
+        "TRIG-SCHEDULED-RECONCILIATION"
+      ],
+      "program_sequence": [
+        "GH_AUTH_ISSUE_INSTALLATION_TOKEN",
+        "GH_PHASE_ADVANCE_EVALUATE"
+      ],
+      "writes": [
+        "reports/phase_advancement_report.json",
+        "reports/phase_transition_decision.json",
+        "project_field.Phase"
+      ],
+      "gates_required": [
+        "GATE_GH_PHASE_ADVANCEMENT_DECIDED"
+      ]
+    },
+    {
+      "phase_id": "PROC-4",
+      "name": "Reconciliation",
+      "trigger_ids": [
+        "TRIG-SCHEDULED-RECONCILIATION",
+        "TRIG-ISSUE-OPENED",
+        "TRIG-ISSUE-REOPENED",
+        "TRIG-ISSUE-CLOSED",
+        "TRIG-PR-CLOSED-MERGED",
+        "TRIG-PLAN-PUSH"
+      ],
+      "program_sequence": [
+        "GH_AUTH_ISSUE_INSTALLATION_TOKEN",
+        "GH_RECONCILE_DRIFT"
+      ],
+      "writes": [
+        "reports/reconciliation_report.json",
+        "project_fields",
+        "issue_metadata"
+      ],
+      "gates_required": [
+        "GATE_GH_RECONCILIATION_COMPLETE"
+      ]
+    },
+    {
+      "phase_id": "PROC-5",
+      "name": "RemoteLocalSync",
+      "trigger_ids": [
+        "TRIG-REMOTE-PUSH"
+      ],
+      "workflow_sequence": [
+        "remote-sync.yml",
+        "remote-to-local.yml"
+      ],
+      "writes": [
+        "local_sync_signal",
+        "local_repo_state"
+      ],
+      "gates_required": [
+        "GATE_RUNNER_POLICY_VALID"
+      ]
+    },
+    {
+      "phase_id": "PROC-6",
+      "name": "ScheduledOrchestration",
+      "trigger_ids": [
+        "TRIG-DAILY-ORCHESTRATOR"
+      ],
+      "workflow_sequence": [
+        "scheduled-orchestrator.yml"
+      ],
+      "subprocesses": [
+        "PROC-4",
+        "PROC-3",
+        "healthcheck",
+        "rollup_reporting"
+      ],
+      "writes": [
+        "daily_reports",
+        "healthcheck_reports"
+      ],
+      "gates_required": [
+        "GATE_SYNC_DIRECTION_VALID",
+        "GATE_RUNNER_POLICY_VALID"
+      ]
+    }
+  ],
+  "event_routes": [
+    {
+      "route_id": "ROUTE-PLAN-TO-PROJECTION",
+      "when": "TRIG-PLAN-PUSH",
+      "run": [
+        "PROC-1",
+        "PROC-4"
+      ],
+      "expected_result": "GitHub surface converges to latest plan"
+    },
+    {
+      "route_id": "ROUTE-ISSUE-INTAKE",
+      "when": "TRIG-ISSUE-OPENED",
+      "run": [
+        "WF-PROJECT-ITEM-SYNC",
+        "PROC-4"
+      ],
+      "expected_result": "Issue added to project and classified or flagged orphan"
+    },
+    {
+      "route_id": "ROUTE-PR-OPEN",
+      "when": "TRIG-PR-OPENED",
+      "run": [
+        "branch-handler.yml",
+        "project-item-sync.yml"
+      ],
+      "expected_result": "PR linkage validated and status set in progress"
+    },
+    {
+      "route_id": "ROUTE-GATES-PASSED",
+      "when": "TRIG-CHECK-COMPLETE",
+      "condition": "all_required_checks_pass == true",
+      "run": [
+        "GH_EVIDENCE_SEAL",
+        "PROC-3"
+      ],
+      "expected_result": "Evidence sealed and phase advancement evaluated"
+    },
+    {
+      "route_id": "ROUTE-PR-MERGED",
+      "when": "TRIG-PR-CLOSED-MERGED",
+      "run": [
+        "project-item-sync.yml",
+        "milestone-completion.yml",
+        "PROC-3",
+        "PROC-4"
+      ],
+      "expected_result": "Issue closed, milestone updated, phase evaluated, drift reconciled"
+    },
+    {
+      "route_id": "ROUTE-SCHEDULED-SELF-HEAL",
+      "when": "TRIG-SCHEDULED-RECONCILIATION",
+      "run": [
+        "PROC-4",
+        "PROC-3"
+      ],
+      "expected_result": "Missed events healed by level-triggered convergence"
+    }
+  ],
+  "mutation_rules": {
+    "idempotency": {
+      "strategy": "compare_before_write",
+      "safe_mutations": [
+        "addProjectV2ItemById",
+        "updateProjectV2ItemFieldValue",
+        "issue_body_update_if_planhash_changed",
+        "comment_post_if_missing_evidence_marker"
+      ]
+    },
+    "rate_limit_budget": {
+      "strategy": "header_aware_backoff",
+      "sleep_threshold_remaining": 10,
+      "retry_policy": {
+        "max_retries": 5,
+        "backoff": "exponential_with_jitter"
+      }
+    },
+    "loop_prevention": {
+      "enabled": true,
+      "mechanism": "sync_commit_prefix_and_paths_ignore",
+      "applies_to": [
+        "remote-sync.yml",
+        "remote-to-local.yml"
+      ]
+    }
+  },
+  "implementation_targets": {
+    "must_exist": [
+      ".github/workflows/bootstrap-github-fields.yml",
+      ".github/workflows/project-item-sync.yml",
+      ".github/workflows/milestone-completion.yml",
+      ".github/workflows/plan-projection-sync.yml",
+      ".github/workflows/phase-advancement-evaluator.yml",
+      ".github/workflows/ssot-drift-reconciliation.yml",
+      ".github/workflows/branch-handler.yml",
+      ".github/workflows/scheduled-orchestrator.yml",
+      "config/github_field_registry.json",
+      "config/step_issue_linkage.json",
+      "config/github_projection_registry.json",
+      "config/github_override_registry.json",
+      "policies/runner_policy.yaml",
+      "policies/github_sync_governance.yaml",
+      "programs/GH_AUTH_ISSUE_INSTALLATION_TOKEN.spec.json",
+      "programs/GH_FIELDS_DISCOVER.spec.json",
+      "programs/GH_FIELDS_VALIDATE.spec.json",
+      "programs/GH_PROJECTION_GENERATE.spec.json",
+      "programs/GH_PROJECTION_APPLY.spec.json",
+      "programs/GH_RECONCILE_DRIFT.spec.json",
+      "programs/GH_PHASE_ADVANCE_EVALUATE.spec.json",
+      "schemas/github_field_registry.schema.json",
+      "schemas/github_projection_manifest.schema.json",
+      "schemas/reconciliation_report.schema.json",
+      "schemas/phase_advancement_report.schema.json",
+      "schemas/phase_transition_decision.schema.json",
+      "schemas/step_issue_linkage.schema.json"
+    ]
+  },
+  "open_questions": [
+    {
+      "id": "OQ-001",
+      "question": "What is the exact canonical plan file glob for projection input in this repository?",
+      "default_used_here": [
+        "plan/**/*.yml",
+        "plan/**/*.yaml",
+        "plan/**/*.json",
+        "phases/**/*.yml",
+        "phases/**/*.yaml",
+        "phases/**/*.json"
+      ]
+    },
+    {
+      "id": "OQ-002",
+      "question": "What is the approval process for adding entries to github_override_registry.json?",
+      "default_used_here": "human_via_pull_request_plus_named_owner"
+    },
+    {
+      "id": "OQ-003",
+      "question": "Which existing CI workflows are authoritative for required phase gates in this repository?",
+      "default_used_here": [
+        "quality-gates",
+        "registry-integrity",
+        "lint",
+        "incomplete-scanner"
+      ]
+    }
+  ]
+}

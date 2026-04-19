@@ -1,0 +1,24 @@
+{
+  "checks": [
+    {
+      "executor_id": "EXEC-PLAN-DOC-WRITER",
+      "executor_registered": true,
+      "pattern_id": "PAT-EXAMPLE-PLAN-DOC",
+      "pattern_registered": true,
+      "phase_id": "PH-00",
+      "step_id": "STEP-001"
+    },
+    {
+      "executor_id": "EXEC-GATE-EXTRACTOR",
+      "executor_registered": true,
+      "pattern_id": "PAT-EXAMPLE-GATE-EXTRACTION",
+      "pattern_registered": true,
+      "phase_id": "PH-02",
+      "step_id": "STEP-001"
+    }
+  ],
+  "generated_at": "2026-04-12T15:23:13Z",
+  "observed_state_source": "registered pattern and executor maps",
+  "planned_state_source": "step_contracts",
+  "status": "PASS"
+}

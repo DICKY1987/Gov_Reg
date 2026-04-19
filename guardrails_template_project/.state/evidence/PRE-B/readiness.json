@@ -1,0 +1,71 @@
+{
+  "generated_at": "2026-04-11T21:48:56Z",
+  "git_head": "1bc0d14102d23dfbc3738a7efbfa39beb4a9d2cc",
+  "git_status_short": [
+    "D ../GIT_OPS/IMPLEMENTATION_PROGRESS.md",
+    " M NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+    " M NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json",
+    " M NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json",
+    " M evidence/PH-03/inventory_validation.json",
+    " M evidence/PH-06/resolver_report.json",
+    " M evidence/PH-08/validation_gate_report.json",
+    " M evidence/PH-09/final_readiness_report.json",
+    " M index_generator.py",
+    " M indexes/NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.index.json",
+    " M indexes/NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.index.json",
+    " M indexes/NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.index.json",
+    " M inventory.json",
+    "?? .state/",
+    "?? NEWPHASEPLANPROCESS_ARRAYS.json",
+    "?? NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json.bak_2026-04-11T213004Z",
+    "?? NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json.bak_2026-04-11T213004Z",
+    "?? NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json.bak_2026-04-11T213004Z",
+    "?? NNP_UPDATE_WITHPATCH.txt",
+    "?? NPP_UPDATE_patch_plan.json",
+    "?? NPP_remaining_updates_cli_instructions.json",
+    "?? evidence/PH-03/inventory_validation.json.bak_2026-04-11T213004Z",
+    "?? evidence/PH-05/index_build_report.json.bak_2026-04-11T213004Z",
+    "?? evidence/PH-06/resolver_report.json.bak_2026-04-11T213004Z",
+    "?? evidence/PH-08/validation_gate_report.json.bak_2026-04-11T213004Z",
+    "?? evidence/PH-09/final_readiness_report.json.bak_2026-04-11T213004Z",
+    "?? final_blocker_resolution_report.json",
+    "?? index_generator.py.bak_2026-04-11T213004Z",
+    "?? indexes/NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.index.json.bak_2026-04-11T213004Z",
+    "?? indexes/NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.index.json.bak_2026-04-11T213004Z",
+    "?? indexes/NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.index.json.bak_2026-04-11T213004Z",
+    "?? npp_v3_3_0_update_completion_report.json",
+    "?? resolver.py",
+    "?? schemas/",
+    "?? scripts/"
+  ],
+  "readiness_checks": {
+    "cross_file_consistency": "PASS",
+    "phase_b_override_map_present": true,
+    "plan_cli_validate": "PASS",
+    "reserved_id_namespaces_present": true,
+    "run_gates": "PASS",
+    "semantic_index_readiness": "PASS",
+    "source_json_parse": "PASS",
+    "worktree_clean": false
+  },
+  "report_id": "PRE-B-READINESS",
+  "source_hashes": {
+    "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json": {
+      "after_hash": "eb47d02a0f1ce2ac5362a948230f13598cffc14048e3f197c0abd8b195d6e51a",
+      "backup": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json.bak_2026-04-11T213004Z",
+      "before_hash": "f87517ff7e1f6d94eb58e35b984c65d5ced53830172395e278c686524edd80ed"
+    },
+    "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json": {
+      "after_hash": "9dad1a2fe38d1bce1eac1d16e03cb4e7bf39d8e9699a40324cfdb589479c2650",
+      "backup": "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_2.json.bak_2026-04-11T213004Z",
+      "before_hash": "12af4ebb26476889fca04316e9a341e45e35383d33f628cdc7c35ca529ab68c4"
+    },
+    "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json": {
+      "after_hash": "56460042a2e995c9f2493f6bcc1b2528baed7f3a01f9fc8561ec6d954c444b28",
+      "backup": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_2.json.bak_2026-04-11T213004Z",
+      "before_hash": "4f0d8f53a5349a327919d0a98d5cf42f33a85d803fcdd1c77d31c7302d4dd949"
+    }
+  },
+  "status": "PASS_WITH_WARNINGS",
+  "warning": "Worktree is dirty because this run created and modified the requested release artifacts; commit status was not claimed as observed readiness."
+}

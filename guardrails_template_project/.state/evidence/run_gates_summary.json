@@ -1,0 +1,267 @@
+{
+  "command": "run-gates",
+  "gate_count": 20,
+  "gate_results": [
+    {
+      "checks": [
+        {
+          "name": "plan_cli_validate",
+          "status": "PASS"
+        }
+      ],
+      "gate_id": "GATE-001",
+      "generated_at": "2026-04-12T15:23:13Z",
+      "status": "PASS"
+    },
+    {
+      "checks": [
+        {
+          "count": 20,
+          "name": "gate_ids_unique",
+          "status": "PASS"
+        }
+      ],
+      "gate_id": "GATE-002",
+      "generated_at": "2026-04-12T15:23:13Z",
+      "status": "PASS"
+    },
+    {
+      "checks": [
+        {
+          "missing": [],
+          "name": "step_contracts_complete",
+          "status": "PASS"
+        }
+      ],
+      "gate_id": "GATE-003",
+      "generated_at": "2026-04-12T15:23:13Z",
+      "status": "PASS"
+    },
+    {
+      "checks": [
+        {
+          "name": "assumptions_scope_present",
+          "status": "PASS"
+        }
+      ],
+      "gate_id": "GATE-004",
+      "generated_at": "2026-04-12T15:23:13Z",
+      "status": "PASS"
+    },
+    {
+      "checks": [
+        {
+          "name": "artifact_intent_manifest_present",
+          "status": "PASS"
+        }
+      ],
+      "gate_id": "GATE-FILE-MUTATIONS",
+      "generated_at": "2026-04-12T15:23:13Z",
+      "status": "PASS"
+    },
+    {
+      "check_id": "GATE-CONTEXT-001",
+      "errors": [],
+      "gate_id": "GATE-CONTEXT-001",
+      "generated_at": "2026-04-12T15:23:13Z",
+      "observations": [
+        {
+          "artifact_count": 0,
+          "message": "Validated referenced context artifacts"
+        }
+      ],
+      "plan_path": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+      "status": "PASS",
+      "warnings": []
+    },
+    {
+      "check_id": "GATE-CONTEXT-002",
+      "errors": [],
+      "gate_id": "GATE-CONTEXT-002",
+      "generated_at": "2026-04-12T15:23:13Z",
+      "observations": [
+        {
+          "message": "Validated context authority resolution",
+          "scope_count": 0
+        }
+      ],
+      "plan_path": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+      "status": "PASS",
+      "warnings": []
+    },
+    {
+      "check_id": "GATE-ARTIFACT-001",
+      "errors": [],
+      "gate_id": "GATE-ARTIFACT-001",
+      "generated_at": "2026-04-12T15:23:13Z",
+      "observations": [
+        {
+          "message": "Validated artifact intent manifest",
+          "record_count": 2
+        }
+      ],
+      "plan_path": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+      "status": "PASS",
+      "warnings": []
+    },
+    {
+      "check_id": "GATE-ARTIFACT-002",
+      "errors": [],
+      "gate_id": "GATE-ARTIFACT-002",
+      "generated_at": "2026-04-12T15:23:13Z",
+      "observations": [
+        {
+          "declared_count": 2,
+          "message": "Compared artifact intent records to step outputs",
+          "required_output_count": 2
+        }
+      ],
+      "plan_path": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+      "status": "PASS",
+      "warnings": []
+    },
+    {
+      "check_id": "GATE-REGISTRY-001",
+      "errors": [],
+      "gate_id": "GATE-REGISTRY-001",
+      "generated_at": "2026-04-12T15:23:13Z",
+      "observations": [
+        {
+          "message": "Validated planned registry projection",
+          "record_count": 2
+        }
+      ],
+      "plan_path": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+      "status": "PASS",
+      "warnings": []
+    },
+    {
+      "checks": [
+        {
+          "name": "behavior_binding_proof",
+          "status": "PASS"
+        }
+      ],
+      "gate_id": "GATE-CFG-001",
+      "generated_at": "2026-04-12T15:23:13Z",
+      "status": "PASS"
+    },
+    {
+      "checks": [
+        {
+          "name": "behavior_binding_proof",
+          "status": "PASS"
+        }
+      ],
+      "gate_id": "GATE-CFG-002",
+      "generated_at": "2026-04-12T15:23:13Z",
+      "status": "PASS"
+    },
+    {
+      "checks": [
+        {
+          "name": "behavior_binding_proof",
+          "status": "PASS"
+        }
+      ],
+      "gate_id": "GATE-CFG-003",
+      "generated_at": "2026-04-12T15:23:13Z",
+      "status": "PASS"
+    },
+    {
+      "checks": [
+        {
+          "name": "behavior_binding_proof",
+          "status": "PASS"
+        }
+      ],
+      "gate_id": "GATE-CFG-004",
+      "generated_at": "2026-04-12T15:23:13Z",
+      "status": "PASS"
+    },
+    {
+      "checks": [
+        {
+          "name": "behavior_binding_proof",
+          "status": "PASS"
+        }
+      ],
+      "gate_id": "GATE-CFG-005",
+      "generated_at": "2026-04-12T15:23:13Z",
+      "status": "PASS"
+    },
+    {
+      "checks": [
+        {
+          "name": "behavior_binding_proof",
+          "status": "PASS"
+        }
+      ],
+      "gate_id": "GATE-CFG-006",
+      "generated_at": "2026-04-12T15:23:13Z",
+      "status": "PASS"
+    },
+    {
+      "checks": [
+        {
+          "name": "static_template_gate_contract",
+          "note": "Template-level static validation gate",
+          "status": "PASS"
+        }
+      ],
+      "gate_id": "GATE-005",
+      "generated_at": "2026-04-12T15:23:13Z",
+      "status": "PASS"
+    },
+    {
+      "checks": [
+        {
+          "name": "static_template_gate_contract",
+          "note": "Template-level static validation gate",
+          "status": "PASS"
+        }
+      ],
+      "gate_id": "GATE-006",
+      "generated_at": "2026-04-12T15:23:13Z",
+      "status": "PASS"
+    },
+    {
+      "check_id": "GATE-RECON-001",
+      "errors": [],
+      "gate_id": "GATE-RECON-001",
+      "generated_at": "2026-04-12T15:23:13Z",
+      "observations": [
+        {
+          "message": "No observed_artifacts section present; planning-only artifact reconciliation completed",
+          "planned_record_count": 2
+        }
+      ],
+      "plan_path": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+      "status": "PASS",
+      "warnings": []
+    },
+    {
+      "check_id": "GATE-RECON-002",
+      "errors": [],
+      "gate_id": "GATE-RECON-002",
+      "generated_at": "2026-04-12T15:23:13Z",
+      "observations": [
+        {
+          "message": "No observed_registry_writes section present; planning-only registry reconciliation completed",
+          "planned_projection_count": 2
+        }
+      ],
+      "plan_path": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+      "status": "PASS",
+      "warnings": []
+    }
+  ],
+  "generated_at": "2026-04-12T15:23:13Z",
+  "plan_path": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_2.json",
+  "runtime_outputs": [
+    ".state\\run_status.json",
+    ".state\\mutation_ledger.jsonl",
+    ".state/evidence/behavior_binding_proof.json"
+  ],
+  "status": "PASS"
+}

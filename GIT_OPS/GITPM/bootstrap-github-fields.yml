@@ -1,0 +1,111 @@
+name: Bootstrap GitHub field registry
+
+# This workflow discovers the IDs of the fields defined in your
+# organization project and writes them into a machine‑readable
+# registry.  It must run before any projection or reconciliation
+# workflow so that subsequent scripts know the canonical field
+# identifiers.  The workflow authenticates using a GitHub App
+# installation token because the built in `GITHUB_TOKEN` does not
+# have access to organization projects【109688515925987†L540-L564】.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      # Check out the repository so we can write the registry file.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Mint a GitHub App installation token.  The app ID is stored as
+      # an organization variable and the private key is stored as a
+      # secret.  See the GitHub docs for an example of authenticating
+      # with a GitHub App【109688515925987†L540-L564】.
+      - name: Generate token
+        id: generate-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PEM }}
+
+      # Fetch the project metadata and build a registry of field IDs.
+      # The GraphQL query returns the project ID and all field nodes,
+      # including text, single‑select and iteration fields.  The
+      # registry maps field names to their identifiers and, for
+      # selectable fields, enumerates option names to IDs.
+      - name: Fetch project fields and build registry
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+          ORGANIZATION: ${{ vars.ORGANIZATION }}
+          PROJECT_NUMBER: ${{ vars.PROJECT_NUMBER }}
+        run: |
+          # Query the GraphQL API for the project and field definitions.
+          gh api graphql -f query='query($org: String!, $number: Int!) {
+            organization(login: $org) {
+              projectV2(number: $number) {
+                id
+                fields(first: 100) {
+                  nodes {
+                    ... on ProjectV2Field {
+                      id
+                      name
+                      dataType
+                    }
+                    ... on ProjectV2SingleSelectField {
+                      id
+                      name
+                      options {
+                        id
+                        name
+                      }
+                    }
+                    ... on ProjectV2IterationField {
+                      id
+                      name
+                      configuration {
+                        iterations {
+                          id
+                          title
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }' -f org=$ORGANIZATION -F number=$PROJECT_NUMBER > project_data.json
+
+          # Create the config directory if it does not exist.
+          mkdir -p config
+
+          # Build the registry as a JSON document.  Each field name keys
+          # into a structure containing its ID, type and any option IDs.
+          jq '{
+            project_id: .data.organization.projectV2.id,
+            fields: (
+              .data.organization.projectV2.fields.nodes
+              | map({
+                  ( .name ): (
+                    { id: .id }
+                    + ( if has("options") then { type: "single_select", options: (.options | map({name: .name, id: .id})) }
+                        elif has("configuration") then { type: "iteration", options: (.configuration.iterations | map({name: .title, id: .id})) }
+                        else { type: "text", options: [] } end )
+                  )
+                })
+              | add
+            )
+          }' project_data.json > config/github_field_registry.json
+
+      # Commit the generated registry back to the repository.  This
+      # auto‑commit action will handle the git configuration, commit
+      # author and push automatically.  Only the registry file will be
+      # committed.
+      - name: Commit and push field registry
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: bootstrap GitHub field registry"
+          file_pattern: config/github_field_registry.json

@@ -1,0 +1,63 @@
+gitauto_eval
+
+The mapping is conceptually sound and well-researched — the phase→field, step→issue, gate→CI-check, execution→PR chain is the right model and aligns cleanly with your `newPhasePlanProcess` determinism philosophy. However the documents are predominantly descriptive of GitHub capabilities rather than prescriptive about how *your specific system* should implement them. Several gaps in that last mile are significant.
+
+---
+
+## What the documents get right
+
+The core 1:1 mapping from the ChatGPT session is accurate and defensible. Phases as a single-select Project field (not milestones) is the correct call — milestones as delivery checkpoints, phases as lifecycle state. The use of `addProjectV2ItemById` + `updateProjectV2ItemFieldValue` as the GraphQL automation spine is the right primitive pair. The recommendation to use sub-issues for step-contract decomposition maps well to your hierarchy model, and requiring status checks before merge as gate enforcement is exactly correct.
+
+The CDD evaluation document is the stronger of the two outputs — it correctly identifies that the v3.2 template enforces configuration-driven *governance* but not configuration-driven *architecture*, and the proposed v3.3 patch scope (the `no_pattern_policy`, `allow_null_pattern_id: false`, `missing_pattern_action: fail_closed_create_pattern_task` additions) is precisely the right fix. The single most important line in all the documents is this one from the CDD evaluation: *replace every instruction that says "if no pattern exists, flag the gap" with "if no pattern exists, create and validate the pattern first; otherwise fail closed."* That is the exact delta between soft tendency and hard constraint.
+
+---
+
+## Gap 1 — PAT authentication is a production liability
+
+Every workflow example relies on a Personal Access Token with `repo` and `project` scopes. At the volume of automation you're describing (autonomous phase transitions, CI-triggered field updates, multi-repo triage), PATs introduce token rotation burden, single-point-of-failure risk, and a 5,000 GraphQL points/hour rate limit. The correct replacement is a **GitHub App** with fine-grained permissions scoped to exactly the repositories it needs to touch. GitHub Apps get a separate, higher rate limit, support automatic token rotation via installation access tokens, and are the documented path for production-grade automation. None of the documents mention this.
+
+---
+
+## Gap 2 — Phase advance logic is entirely unspecified
+
+The documents describe *setting* the Phase field via GraphQL after gates pass, but never define *what triggers the transition decision*. In your framework, phase exit criteria are deterministic contracts — but here the logic is: "after a CI job completes, run a GraphQL mutation to set Phase to the next stage." That is circular. What is the exact condition? All required checks green AND milestone closed AND no open sub-issues? Who evaluates that composite? There needs to be an explicit Phase Advancement Evaluator — a discrete workflow job that queries the project state, evaluates all exit criteria for the current phase, and only then advances the field. Without this, the Phase field either lags manually or advances on a single gate condition that doesn't represent true phase completion.
+
+---
+
+## Gap 3 — Field ID bootstrap problem
+
+The GraphQL mutations require hardcoded field IDs and `singleSelectOptionId` values that are environment-specific — they differ between organizations, between projects, and are not stable across recreations. The ohmyzsh example shows fetching them dynamically at workflow runtime by querying the project schema first, then parsing with `jq`. The documents acknowledge this pattern but don't address bootstrapping: when you stand up a new project or migrate to a new org, you need a setup script that discovers and registers all field IDs into a config registry. Without that, every GraphQL mutation workflow becomes brittle and environment-coupled. The correct pattern is a `field_id_registry.json` generated at project creation and stored in the repo, with a bootstrapping action that regenerates it if the project is recreated.
+
+---
+
+## Gap 4 — Your environment is Windows; all Actions assume Linux
+
+HPROBOOK450 is Windows. Every workflow example uses `ubuntu-latest`. For Actions that only call `gh api graphql` this is fine. But any gate that runs your Python static analysis toolchain, PowerShell scripts, or Windows-specific tooling (pydeps, pipreqs, the setup scripts you've been working on) will fail on a Linux runner. The documents say nothing about self-hosted runners. You either need self-hosted runners registered on HPROBOOK450 for Windows-dependent gates, or a strict separation between platform-agnostic gates (run on ubuntu-latest) and Windows-specific gates (run on a self-hosted Windows runner). This should have been an explicit design constraint throughout.
+
+---
+
+## Gap 5 — Org-level issue fields are still in public preview
+
+The documents recommend using organization-wide issue fields (Priority, Effort, Start/Target date) as the structured metadata layer. As of March 2026 these are in public preview and available only to select organizations. Building autonomous field-update automation on a preview API that could change schema, rate limits, or availability before GA is a stability risk for a deterministic system. The fallback is project-level custom fields (GA, stable), which are less ergonomic across repos but not subject to preview breakage.
+
+---
+
+## Gap 6 — The 13-step Python pipeline has no integration point with GitHub Projects
+
+The `Generic_Reusable_Automation_Pipeline` document (Trigger → Ingest → Stabilize → Classify → Identify → Lock → Validate → Process → Generate → Commit → Validate → Rollback → Complete) is described in complete isolation from the GitHub automation system. This is a significant design omission. In your architecture, this pipeline *is* what executes the step contracts. It should have an explicit mapping: which pipeline stage corresponds to which GitHub state transition? For example: Lock Acquisition → Issue assigned + Phase field = In Progress; Commit → PR merged; Post-Validate → Gate status field = Passed; Complete → Issue closed + auto-archive triggered. Without this bridge, you have two parallel frameworks that don't compose.
+
+---
+
+## Gap 7 — Sync direction and conflict resolution are undefined
+
+The documents treat GitHub Projects as a *mirror* of the template, but the sync direction is never formalized. When the Phase field is updated in GitHub (via a workflow), does that update propagate back to the plan JSON? When an issue is manually reopened, what happens to the step contract state? In your deterministic framework, the plan JSON must remain SSOT — GitHub is the execution surface, not the record of truth. But nothing in the documents enforces that constraint or handles conflict resolution when the two diverge. A governance rule is needed: GitHub Projects fields are write-once by automation only; manual edits to Phase/Gate fields are forbidden and detected by a nightly validation run.
+
+---
+
+## Recommendations, prioritized
+
+The most important immediate action is implementing the v3.3 CDD patch the evaluation document prescribes — specifically removing the `null pattern_id` escape hatch and making `fail_closed_create_pattern_task` the missing-pattern policy. That's the foundational fix.
+
+After that: replace PAT auth with a GitHub App; write a field ID bootstrapper; define explicit phase-exit criteria as a composite gate evaluator; add a sync-direction governance rule; and map each of the 13 Python pipeline stages to a concrete GitHub state transition. The Windows/self-hosted runner issue should be addressed as a constraint in the Actions workflow design from the start rather than retrofitted.
+
+The framework's bones are solid. The gaps are all in the determinism enforcement and operational hardening layer — which is exactly where your system's value proposition lives.

@@ -1,0 +1,1223 @@
+{
+  "patch_plan_id": "CLI-GH-HARDENING-PER-FILE-PATCH-PLAN-001",
+  "title": "Exact per-file patch plan for GitHub automation hardening",
+  "version": "1.0.0",
+  "status": "READY_FOR_CLI_APPLICATION",
+  "mode": "DETERMINISTIC_FILE_PATCH_PLAN",
+  "governing_basis": {
+    "ssot_design_doc": "PROC-DESIGN-GITHUB-AUTOMATION-SSOT.json",
+    "hardening_delta": "Second Architecture Delta for GitHub Hardening.md",
+    "subsystem_context": "CLAUDE.md",
+    "mapping_analysis": "Template to GitHub Mapping.md"
+  },
+  "rationale": "The subsystem docs already define GitHub as execution surface, require GitHub App auth, forbid inline field IDs, require a field bootstrap registry, require a composite phase evaluator, and require a reconciliation loop. This patch plan operationalizes those requirements as exact file-level changes. :contentReference[oaicite:0]{index=0} :contentReference[oaicite:1]{index=1} :contentReference[oaicite:2]{index=2} :contentReference[oaicite:3]{index=3}",
+  "global_rules": {
+    "patch_strategy": "CREATE_OR_REPLACE_WHOLE_FILE",
+    "no_inference_allowed": true,
+    "fail_closed": true,
+    "do_not_modify_unspecified_files": true,
+    "all_outputs_must_be_json_or_yaml_when_machine_consumed": true
+  },
+  "ordered_operations": [
+    {
+      "order": 1,
+      "file_path": "policies/github_sync_governance.yaml",
+      "operation": "create_or_replace",
+      "file_type": "yaml",
+      "purpose": "Define field ownership, drift taxonomy, single-writer rules, and override handling.",
+      "content": "version: 1.0.0\npolicy_id: GITHUB_SYNC_GOVERNANCE_001\nplan_authority:\n  ssot_source: plan_files\n  statement: \"Plan YAML/JSON files are the sole authority for decomposition, step contracts, phase structure, gate requirements, evidence requirements, and milestone groupings.\"\ngithub_authority:\n  statement: \"GitHub is the execution surface only.\"\n  github_owned_fields:\n    - assignees\n    - review_conversations\n    - comment_threads\nplan_owned_fields:\n  - phase_structure\n  - step_contracts\n  - gate_requirements\n  - evidence_requirements\n  - milestone_groupings\nautomation_only_fields:\n  Phase:\n    writer: GH_PHASE_ADVANCE_EVALUATE\n  Status:\n    writer: GH_PROJECT_ITEM_SYNC\n  StepID:\n    writer: GH_PROJECTION_APPLY\n  EvidenceState:\n    writer: GH_EVIDENCE_SEAL\n  DeterminismState:\n    writer: GH_RECONCILE_DRIFT\n  PlanHash:\n    writer: GH_PROJECTION_APPLY\n  ProjectionVersion:\n    writer: GH_PROJECTION_APPLY\n  GateStatus:\n    writer: GH_EVIDENCE_SEAL\ndrift_classes:\n  - CLEAN\n  - STALE\n  - VIOLATION\n  - ORPHAN\n  - MISSING\n  - OVERRIDE\n  - UNAUTHORIZED_UI_EDIT\nreconciliation:\n  trigger_model: level_triggered\n  cadence: \"*/15 * * * *\"\n  action_pattern:\n    - observe\n    - diff\n    - act\n    - report\noverrides:\n  registry_path: config/github_override_registry.json\n  expiry_required: true\n  approver_required: true\n  suppressible_classes:\n    - VIOLATION\n    - UNAUTHORIZED_UI_EDIT\n  non_suppressible_classes:\n    - ORPHAN\n    - MISSING\n",
+      "post_write_validation": [
+        "yaml_parse",
+        "must_contain_key:automation_only_fields",
+        "must_contain_key:drift_classes"
+      ]
+    },
+    {
+      "order": 2,
+      "file_path": "policies/runner_policy.yaml",
+      "operation": "create_or_replace",
+      "file_type": "yaml",
+      "purpose": "Define runner-class mapping and make runner selection explicit.",
+      "content": "version: 1.0.0\npolicy_id: RUNNER_POLICY_001\ndefault_runner_class: linux_hosted\nallowed_runner_classes:\n  - linux_hosted\n  - windows_hosted\n  - self_hosted_windows\n  - self_hosted_linux\n  - self_hosted_ephemeral\ncategory_to_runner:\n  graphql_rest_operations: linux_hosted\n  projection_generation: linux_hosted\n  projection_apply: linux_hosted\n  gate_evaluation: linux_hosted\n  reconciliation: linux_hosted\n  windows_toolchain_only: self_hosted_windows\nrequirements:\n  every_programspec_must_declare_runner_class: true\n  missing_runner_class_is_error: true\n",
+      "post_write_validation": [
+        "yaml_parse",
+        "must_contain_key:category_to_runner"
+      ]
+    },
+    {
+      "order": 3,
+      "file_path": "schemas/github_field_registry.schema.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "Schema for runtime field registry.",
+      "content": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "GitHub Field Registry",
+        "type": "object",
+        "required": [
+          "project_id",
+          "generated_at",
+          "generator_version",
+          "api_version",
+          "registry_fingerprint",
+          "fields"
+        ],
+        "properties": {
+          "project_id": {
+            "type": "string"
+          },
+          "generated_at": {
+            "type": "string"
+          },
+          "generator_version": {
+            "type": "string"
+          },
+          "api_version": {
+            "type": "string"
+          },
+          "registry_fingerprint": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "required": [
+                "id",
+                "type",
+                "options"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "text",
+                    "single_select",
+                    "iteration",
+                    "number",
+                    "date"
+                  ]
+                },
+                "options": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "name",
+                      "id"
+                    ],
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post_write_validation": [
+        "json_parse",
+        "json_schema_self_consistency"
+      ]
+    },
+    {
+      "order": 4,
+      "file_path": "schemas/github_projection_manifest.schema.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "Schema for desired GitHub projection state.",
+      "content": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "GitHub Projection Manifest",
+        "type": "object",
+        "required": [
+          "manifest_version",
+          "generated_at",
+          "plan_hash",
+          "projection_version",
+          "steps"
+        ],
+        "properties": {
+          "manifest_version": {
+            "type": "string"
+          },
+          "generated_at": {
+            "type": "string"
+          },
+          "plan_hash": {
+            "type": "string"
+          },
+          "projection_version": {
+            "type": [
+              "integer",
+              "string"
+            ]
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "step_id",
+                "title",
+                "body",
+                "phase",
+                "repo",
+                "plan_hash",
+                "projection_version"
+              ],
+              "properties": {
+                "step_id": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "body": {
+                  "type": "string"
+                },
+                "phase": {
+                  "type": "string"
+                },
+                "milestone_group": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "gate_requirements": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "repo": {
+                  "type": "string"
+                },
+                "labels": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "assignees": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "plan_hash": {
+                  "type": "string"
+                },
+                "projection_version": {
+                  "type": [
+                    "integer",
+                    "string"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 5,
+      "file_path": "schemas/step_issue_linkage.schema.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "Schema for StepID to issue/project linkage.",
+      "content": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "Step Issue Linkage",
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "required": [
+            "issue_number",
+            "issue_node_id",
+            "project_item_id",
+            "repo",
+            "plan_hash",
+            "projection_version",
+            "created_at",
+            "updated_at"
+          ],
+          "properties": {
+            "issue_number": {
+              "type": "integer"
+            },
+            "issue_node_id": {
+              "type": "string"
+            },
+            "project_item_id": {
+              "type": "string"
+            },
+            "repo": {
+              "type": "string"
+            },
+            "milestone_title": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "plan_hash": {
+              "type": "string"
+            },
+            "projection_version": {
+              "type": [
+                "integer",
+                "string"
+              ]
+            },
+            "created_at": {
+              "type": "string"
+            },
+            "updated_at": {
+              "type": "string"
+            },
+            "parent_step_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        }
+      },
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 6,
+      "file_path": "schemas/github_override_registry.schema.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "Schema for explicit override entries.",
+      "content": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "GitHub Override Registry",
+        "type": "object",
+        "required": [
+          "version",
+          "overrides"
+        ],
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "overrides": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "subject_id",
+                "scope",
+                "reason",
+                "approver",
+                "expires_at",
+                "suppressed_classes"
+              ],
+              "properties": {
+                "subject_id": {
+                  "type": "string"
+                },
+                "scope": {
+                  "type": "string"
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "approver": {
+                  "type": "string"
+                },
+                "expires_at": {
+                  "type": "string"
+                },
+                "suppressed_classes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 7,
+      "file_path": "schemas/reconciliation_report.schema.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "Schema for reconciliation outputs.",
+      "content": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "Reconciliation Report",
+        "type": "object",
+        "required": [
+          "run_id",
+          "generated_at",
+          "summary",
+          "items"
+        ],
+        "properties": {
+          "run_id": {
+            "type": "string"
+          },
+          "generated_at": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "object"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "subject_id",
+                "classification",
+                "action"
+              ],
+              "properties": {
+                "subject_id": {
+                  "type": "string"
+                },
+                "classification": {
+                  "type": "string",
+                  "enum": [
+                    "CLEAN",
+                    "STALE",
+                    "VIOLATION",
+                    "ORPHAN",
+                    "MISSING",
+                    "OVERRIDE",
+                    "UNAUTHORIZED_UI_EDIT"
+                  ]
+                },
+                "action": {
+                  "type": "string"
+                },
+                "details": {
+                  "type": [
+                    "object",
+                    "null"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 8,
+      "file_path": "schemas/phase_advancement_report.schema.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "Schema for phase evaluation output.",
+      "content": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "Phase Advancement Report",
+        "type": "object",
+        "required": [
+          "run_id",
+          "phase_from",
+          "phase_to",
+          "outcome",
+          "criteria"
+        ],
+        "properties": {
+          "run_id": {
+            "type": "string"
+          },
+          "phase_from": {
+            "type": "string"
+          },
+          "phase_to": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "ADVANCE",
+              "HOLD",
+              "BLOCKED"
+            ]
+          },
+          "criteria": {
+            "type": "object"
+          },
+          "generated_at": {
+            "type": "string"
+          }
+        }
+      },
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 9,
+      "file_path": "schemas/field_options_spec.schema.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "Schema for allowed field option sets.",
+      "content": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "Field Options Spec",
+        "type": "object",
+        "required": [
+          "version",
+          "fields"
+        ],
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 10,
+      "file_path": "config/github_field_registry.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "Bootstrap placeholder registry that forces explicit regeneration.",
+      "content": {
+        "project_id": "",
+        "generated_at": "",
+        "generator_version": "bootstrap_required",
+        "api_version": "",
+        "registry_fingerprint": "",
+        "fields": {}
+      },
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 11,
+      "file_path": "config/github_projection_registry.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "Projection registry placeholder.",
+      "content": {
+        "manifest_version": "1.0.0",
+        "generated_at": "",
+        "plan_hash": "",
+        "projection_version": 0,
+        "steps": []
+      },
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 12,
+      "file_path": "config/github_override_registry.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "Override registry initial file.",
+      "content": {
+        "version": "1.0.0",
+        "overrides": []
+      },
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 13,
+      "file_path": "config/step_issue_linkage.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "Stable step-to-issue linkage store.",
+      "content": {},
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 14,
+      "file_path": "config/field_options_spec.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "Allowed values for automation-owned single-select fields.",
+      "content": {
+        "version": "1.0.0",
+        "fields": {
+          "EvidenceState": [
+            "Pending",
+            "Sealed",
+            "Invalid"
+          ],
+          "GateStatus": [
+            "Pending",
+            "Passed",
+            "Failed"
+          ],
+          "Status": [
+            "Todo",
+            "In Progress",
+            "In Review",
+            "Blocked",
+            "Done"
+          ]
+        }
+      },
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 15,
+      "file_path": "config/github_api_runtime_policy.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "Rate-limit and retry policy.",
+      "content": {
+        "version": "1.0.0",
+        "rate_limit_budget": {
+          "min_remaining_before_sleep": 10,
+          "sleep_seconds_on_low_budget": 15
+        },
+        "backoff_policy": {
+          "strategy": "exponential_with_jitter",
+          "base_seconds": 2,
+          "max_seconds": 60,
+          "max_retries": 5
+        }
+      },
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 16,
+      "file_path": "config/phase_transition_decision.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "Phase decision placeholder file.",
+      "content": {
+        "run_id": "",
+        "phase_from": "",
+        "phase_to": null,
+        "outcome": "HOLD",
+        "generated_at": "",
+        "reason": "not_evaluated"
+      },
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 17,
+      "file_path": "config/phase_advancement_report.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "Phase advancement report placeholder file.",
+      "content": {
+        "run_id": "",
+        "phase_from": "",
+        "phase_to": null,
+        "outcome": "HOLD",
+        "criteria": {},
+        "generated_at": ""
+      },
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 18,
+      "file_path": "programs/GH_AUTH_ISSUE_INSTALLATION_TOKEN.spec.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "ProgramSpec for GitHub App token issuance.",
+      "content": {
+        "program_id": "GH_AUTH_ISSUE_INSTALLATION_TOKEN",
+        "version": "1.0.0",
+        "runner_class": "linux_hosted",
+        "category": "transport",
+        "inputs": [
+          "GH_APP_ID",
+          "GH_APP_PRIVATE_KEY",
+          "INSTALLATION_SCOPE"
+        ],
+        "outputs": [
+          "token_envelope.json"
+        ],
+        "preconditions": [
+          "GH_APP_ID present",
+          "GH_APP_PRIVATE_KEY present"
+        ],
+        "failure_codes": [
+          "AUTH_CONFIG_MISSING",
+          "AUTH_TOKEN_ISSUE_FAILED"
+        ]
+      },
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 19,
+      "file_path": "programs/GH_FIELDS_DISCOVER.spec.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "ProgramSpec for field discovery.",
+      "content": {
+        "program_id": "GH_FIELDS_DISCOVER",
+        "version": "1.0.0",
+        "runner_class": "linux_hosted",
+        "category": "gate",
+        "inputs": [
+          "token_envelope.json",
+          "ORG_NAME",
+          "PROJECT_NUMBER"
+        ],
+        "outputs": [
+          "raw_fields_response.json",
+          "config/github_field_registry.json"
+        ],
+        "preconditions": [
+          "valid token",
+          "project accessible"
+        ],
+        "failure_codes": [
+          "PROJECT_NOT_FOUND",
+          "FIELD_DISCOVERY_FAILED"
+        ]
+      },
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 20,
+      "file_path": "programs/GH_FIELDS_VALIDATE.spec.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "ProgramSpec for field registry validation.",
+      "content": {
+        "program_id": "GH_FIELDS_VALIDATE",
+        "version": "1.0.0",
+        "runner_class": "linux_hosted",
+        "category": "gate",
+        "inputs": [
+          "config/github_field_registry.json",
+          "schemas/github_field_registry.schema.json",
+          "config/field_options_spec.json"
+        ],
+        "outputs": [
+          "field_registry_validation_report.json"
+        ],
+        "preconditions": [
+          "registry file present"
+        ],
+        "failure_codes": [
+          "FIELD_REGISTRY_MISSING",
+          "FIELD_REGISTRY_SCHEMA_INVALID",
+          "FIELD_REGISTRY_COVERAGE_INVALID"
+        ]
+      },
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 21,
+      "file_path": "programs/GH_PROJECTION_GENERATE.spec.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "ProgramSpec for projection manifest generation.",
+      "content": {
+        "program_id": "GH_PROJECTION_GENERATE",
+        "version": "1.0.0",
+        "runner_class": "linux_hosted",
+        "category": "projection",
+        "inputs": [
+          "plan_package",
+          "config/step_issue_linkage.json"
+        ],
+        "outputs": [
+          "config/github_projection_registry.json"
+        ],
+        "preconditions": [
+          "plan_package schema valid"
+        ],
+        "failure_codes": [
+          "PLAN_INVALID",
+          "PROJECTION_MANIFEST_INVALID"
+        ]
+      },
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 22,
+      "file_path": "programs/GH_PROJECTION_APPLY.spec.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "ProgramSpec for projection apply.",
+      "content": {
+        "program_id": "GH_PROJECTION_APPLY",
+        "version": "1.0.0",
+        "runner_class": "linux_hosted",
+        "category": "projection",
+        "inputs": [
+          "token_envelope.json",
+          "config/github_projection_registry.json",
+          "config/github_field_registry.json",
+          "config/step_issue_linkage.json"
+        ],
+        "outputs": [
+          "config/step_issue_linkage.json",
+          "projection_apply_report.json"
+        ],
+        "preconditions": [
+          "field registry valid",
+          "projection manifest valid"
+        ],
+        "failure_codes": [
+          "FIELD_REGISTRY_INVALID",
+          "PROJECTION_APPLY_FAILED",
+          "LINKAGE_WRITE_FAILED"
+        ]
+      },
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 23,
+      "file_path": "programs/GH_RECONCILE_DRIFT.spec.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "ProgramSpec for reconciliation.",
+      "content": {
+        "program_id": "GH_RECONCILE_DRIFT",
+        "version": "1.0.0",
+        "runner_class": "linux_hosted",
+        "category": "reconciliation",
+        "inputs": [
+          "token_envelope.json",
+          "plan_package",
+          "config/github_field_registry.json",
+          "config/github_projection_registry.json",
+          "config/step_issue_linkage.json",
+          "config/github_override_registry.json",
+          "policies/github_sync_governance.yaml"
+        ],
+        "outputs": [
+          "reconciliation_report.json",
+          "config/step_issue_linkage.json"
+        ],
+        "preconditions": [
+          "field registry valid",
+          "governance policy present"
+        ],
+        "failure_codes": [
+          "RECONCILIATION_QUERY_FAILED",
+          "RECONCILIATION_CORRECTION_FAILED"
+        ]
+      },
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 24,
+      "file_path": "programs/GH_PHASE_ADVANCE_EVALUATE.spec.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "ProgramSpec for phase advancement evaluation.",
+      "content": {
+        "program_id": "GH_PHASE_ADVANCE_EVALUATE",
+        "version": "1.0.0",
+        "runner_class": "linux_hosted",
+        "category": "phase",
+        "inputs": [
+          "token_envelope.json",
+          "plan_package",
+          "config/step_issue_linkage.json",
+          "config/github_field_registry.json"
+        ],
+        "outputs": [
+          "config/phase_transition_decision.json",
+          "config/phase_advancement_report.json"
+        ],
+        "preconditions": [
+          "field registry valid"
+        ],
+        "failure_codes": [
+          "PHASE_EVALUATION_FAILED",
+          "PHASE_DECISION_WRITE_FAILED"
+        ]
+      },
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 25,
+      "file_path": "programs/GH_EVIDENCE_SEAL.spec.json",
+      "operation": "create_or_replace",
+      "file_type": "json",
+      "purpose": "ProgramSpec for evidence sealing.",
+      "content": {
+        "program_id": "GH_EVIDENCE_SEAL",
+        "version": "1.0.0",
+        "runner_class": "linux_hosted",
+        "category": "gate",
+        "inputs": [
+          "token_envelope.json",
+          "step_id",
+          "run_id",
+          "bundle_path",
+          "bundle_hash",
+          "config/step_issue_linkage.json",
+          "config/github_field_registry.json"
+        ],
+        "outputs": [
+          "evidence_seal_report.json"
+        ],
+        "preconditions": [
+          "all_required_checks_passed"
+        ],
+        "failure_codes": [
+          "EVIDENCE_SEAL_FAILED",
+          "ISSUE_LINKAGE_MISSING"
+        ]
+      },
+      "post_write_validation": [
+        "json_parse"
+      ]
+    },
+    {
+      "order": 26,
+      "file_path": "src/github_automation_cli/__init__.py",
+      "operation": "create_or_replace",
+      "file_type": "python",
+      "purpose": "Package initializer.",
+      "content": "__all__ = []\n",
+      "post_write_validation": [
+        "file_exists"
+      ]
+    },
+    {
+      "order": 27,
+      "file_path": "src/github_automation_cli/main.py",
+      "operation": "create_or_replace",
+      "file_type": "python",
+      "purpose": "Thin JSON CLI entrypoint.",
+      "content": "import json\nimport sys\n\n\ndef main() -> int:\n    if len(sys.argv) < 2:\n        print(json.dumps({\"status\": \"error\", \"error\": \"missing_command\"}))\n        return 2\n    command = sys.argv[1]\n    print(json.dumps({\"status\": \"not_implemented\", \"command\": command}))\n    return 1\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n",
+      "post_write_validation": [
+        "python_compile"
+      ]
+    },
+    {
+      "order": 28,
+      "file_path": "src/github_automation_cli/commands/projection_apply.py",
+      "operation": "create_or_replace",
+      "file_type": "python",
+      "purpose": "Projection apply command stub with explicit failure until implemented.",
+      "content": "def run() -> dict:\n    return {\n        \"status\": \"not_implemented\",\n        \"command\": \"projection_apply\"\n    }\n",
+      "post_write_validation": [
+        "python_compile"
+      ]
+    },
+    {
+      "order": 29,
+      "file_path": "src/github_automation_cli/commands/phase_advance_evaluate.py",
+      "operation": "create_or_replace",
+      "file_type": "python",
+      "purpose": "Phase evaluator stub.",
+      "content": "def run() -> dict:\n    return {\n        \"status\": \"not_implemented\",\n        \"command\": \"phase_advance_evaluate\"\n    }\n",
+      "post_write_validation": [
+        "python_compile"
+      ]
+    },
+    {
+      "order": 30,
+      "file_path": "src/github_automation_cli/commands/reconcile_drift.py",
+      "operation": "create_or_replace",
+      "file_type": "python",
+      "purpose": "Reconciliation stub.",
+      "content": "def run() -> dict:\n    return {\n        \"status\": \"not_implemented\",\n        \"command\": \"reconcile_drift\"\n    }\n",
+      "post_write_validation": [
+        "python_compile"
+      ]
+    },
+    {
+      "order": 31,
+      "file_path": "src/github_automation_cli/commands/evidence_seal.py",
+      "operation": "create_or_replace",
+      "file_type": "python",
+      "purpose": "Evidence sealing stub.",
+      "content": "def run() -> dict:\n    return {\n        \"status\": \"not_implemented\",\n        \"command\": \"evidence_seal\"\n    }\n",
+      "post_write_validation": [
+        "python_compile"
+      ]
+    },
+    {
+      "order": 32,
+      "file_path": "src/github_automation_cli/validators/pr_linkage.py",
+      "operation": "create_or_replace",
+      "file_type": "python",
+      "purpose": "PR linkage validator stub.",
+      "content": "def validate() -> dict:\n    return {\n        \"status\": \"not_implemented\",\n        \"validator\": \"pr_linkage\"\n    }\n",
+      "post_write_validation": [
+        "python_compile"
+      ]
+    },
+    {
+      "order": 33,
+      "file_path": "src/github_automation_cli/validators/issue_stepid.py",
+      "operation": "create_or_replace",
+      "file_type": "python",
+      "purpose": "Issue StepID validator stub.",
+      "content": "def validate() -> dict:\n    return {\n        \"status\": \"not_implemented\",\n        \"validator\": \"issue_stepid\"\n    }\n",
+      "post_write_validation": [
+        "python_compile"
+      ]
+    },
+    {
+      "order": 34,
+      "file_path": "scripts/lint_no_inline_github_ids.py",
+      "operation": "create_or_replace",
+      "file_type": "python",
+      "purpose": "Prevent inline GitHub field IDs from reappearing.",
+      "content": "import pathlib\nimport re\nimport sys\n\nPATTERN = re.compile(r\"\\b(PVTF_|PVTSSF_|PVTIF_)\\w+\")\nEXCLUDE = {\n    \"config/github_field_registry.json\"\n}\n\n\ndef main() -> int:\n    violations = []\n    for path in pathlib.Path('.').rglob('*'):\n        if not path.is_file():\n            continue\n        rel = path.as_posix()\n        if rel in EXCLUDE:\n            continue\n        try:\n            text = path.read_text(encoding='utf-8')\n        except Exception:\n            continue\n        if PATTERN.search(text):\n            violations.append(rel)\n    if violations:\n        print(\"INLINE_GITHUB_IDS_FOUND\")\n        for v in violations:\n            print(v)\n        return 1\n    return 0\n\n\nif __name__ == '__main__':\n    raise SystemExit(main())\n",
+      "post_write_validation": [
+        "python_compile"
+      ]
+    },
+    {
+      "order": 35,
+      "file_path": ".github/workflows/bootstrap-github-fields.yml",
+      "operation": "create_or_replace",
+      "file_type": "yaml",
+      "purpose": "Bootstrap registry before all other Project mutations.",
+      "content": "name: bootstrap-github-fields\non:\n  workflow_dispatch:\n  schedule:\n    - cron: '0 0 * * *'\njobs:\n  bootstrap:\n    runs-on: ubuntu-latest\n    permissions:\n      contents: write\n    steps:\n      - uses: actions/checkout@v4\n      - name: Generate GitHub App token\n        id: app-token\n        uses: actions/create-github-app-token@v2\n        with:\n          app-id: ${{ vars.APP_ID }}\n          private-key: ${{ secrets.APP_PEM }}\n      - name: Lint for inline GitHub IDs\n        run: python scripts/lint_no_inline_github_ids.py\n      - name: Run fields discover\n        run: python -m github_automation_cli.main fields-discover\n      - name: Run fields validate\n        run: python -m github_automation_cli.main fields-validate\n      - name: Commit registry if changed\n        uses: stefanzweifel/git-auto-commit-action@v5\n        with:\n          commit_message: 'chore(github-automation): refresh field registry [bootstrap]'\n          file_pattern: 'config/github_field_registry.json'\n",
+      "post_write_validation": [
+        "yaml_parse",
+        "must_contain:create-github-app-token@v2"
+      ]
+    },
+    {
+      "order": 36,
+      "file_path": ".github/workflows/gh-projection-generate.yml",
+      "operation": "create_or_replace",
+      "file_type": "yaml",
+      "purpose": "Generate deterministic projection manifest.",
+      "content": "name: gh-projection-generate\non:\n  workflow_dispatch:\n  push:\n    branches: [main]\n    paths:\n      - 'plans/**'\n      - 'phases/**'\njobs:\n  generate:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - name: Run projection generate\n        run: python -m github_automation_cli.main projection-generate\n      - name: Commit projection registry if changed\n        uses: stefanzweifel/git-auto-commit-action@v5\n        with:\n          commit_message: 'chore(github-automation): generate projection registry'\n          file_pattern: 'config/github_projection_registry.json'\n",
+      "post_write_validation": [
+        "yaml_parse"
+      ]
+    },
+    {
+      "order": 37,
+      "file_path": ".github/workflows/gh-projection-apply.yml",
+      "operation": "create_or_replace",
+      "file_type": "yaml",
+      "purpose": "Apply projection manifest with App auth and persist linkage.",
+      "content": "name: gh-projection-apply\non:\n  workflow_dispatch:\n  push:\n    branches: [main]\n    paths:\n      - 'config/github_projection_registry.json'\njobs:\n  apply:\n    runs-on: ubuntu-latest\n    permissions:\n      contents: write\n    steps:\n      - uses: actions/checkout@v4\n      - name: Generate GitHub App token\n        id: app-token\n        uses: actions/create-github-app-token@v2\n        with:\n          app-id: ${{ vars.APP_ID }}\n          private-key: ${{ secrets.APP_PEM }}\n      - name: Validate field registry present\n        run: python -m github_automation_cli.main fields-validate\n      - name: Apply projection\n        run: python -m github_automation_cli.main projection-apply\n      - name: Commit linkage updates if changed\n        uses: stefanzweifel/git-auto-commit-action@v5\n        with:\n          commit_message: 'chore(github-automation): update step-issue linkage after projection apply'\n          file_pattern: 'config/step_issue_linkage.json config/github_projection_registry.json'\n",
+      "post_write_validation": [
+        "yaml_parse",
+        "must_not_contain:if: false"
+      ]
+    },
+    {
+      "order": 38,
+      "file_path": ".github/workflows/ssot-drift-reconciliation.yml",
+      "operation": "create_or_replace",
+      "file_type": "yaml",
+      "purpose": "Level-triggered reconciliation loop.",
+      "content": "name: ssot-drift-reconciliation\non:\n  schedule:\n    - cron: '*/15 * * * *'\n  push:\n    branches: [main]\n  workflow_dispatch:\njobs:\n  reconcile:\n    runs-on: ubuntu-latest\n    permissions:\n      contents: write\n    steps:\n      - uses: actions/checkout@v4\n      - name: Generate GitHub App token\n        id: app-token\n        uses: actions/create-github-app-token@v2\n        with:\n          app-id: ${{ vars.APP_ID }}\n          private-key: ${{ secrets.APP_PEM }}\n      - name: Validate field registry\n        run: python -m github_automation_cli.main fields-validate\n      - name: Reconcile drift\n        run: python -m github_automation_cli.main reconcile-drift\n      - name: Commit linkage updates if changed\n        uses: stefanzweifel/git-auto-commit-action@v5\n        with:\n          commit_message: 'chore(github-automation): reconciliation updates'\n          file_pattern: 'config/step_issue_linkage.json config/phase_transition_decision.json config/phase_advancement_report.json'\n",
+      "post_write_validation": [
+        "yaml_parse",
+        "must_contain:cron: '*/15 * * * *'"
+      ]
+    },
+    {
+      "order": 39,
+      "file_path": ".github/workflows/phase-advancement-evaluator.yml",
+      "operation": "create_or_replace",
+      "file_type": "yaml",
+      "purpose": "Composite phase evaluator. Only writer of Phase field.",
+      "content": "name: phase-advancement-evaluator\non:\n  schedule:\n    - cron: '*/15 * * * *'\n  workflow_dispatch:\n  issues:\n    types: [closed]\n  pull_request:\n    types: [closed]\n  check_suite:\n    types: [completed]\njobs:\n  evaluate:\n    runs-on: ubuntu-latest\n    permissions:\n      contents: write\n    steps:\n      - uses: actions/checkout@v4\n      - name: Generate GitHub App token\n        id: app-token\n        uses: actions/create-github-app-token@v2\n        with:\n          app-id: ${{ vars.APP_ID }}\n          private-key: ${{ secrets.APP_PEM }}\n      - name: Validate field registry\n        run: python -m github_automation_cli.main fields-validate\n      - name: Evaluate phase advancement\n        run: python -m github_automation_cli.main phase-advance-evaluate\n      - name: Commit decision artifacts if changed\n        uses: stefanzweifel/git-auto-commit-action@v5\n        with:\n          commit_message: 'chore(github-automation): phase advancement decision'\n          file_pattern: 'config/phase_transition_decision.json config/phase_advancement_report.json'\n",
+      "post_write_validation": [
+        "yaml_parse"
+      ]
+    },
+    {
+      "order": 40,
+      "file_path": ".github/workflows/evidence-seal.yml",
+      "operation": "create_or_replace",
+      "file_type": "yaml",
+      "purpose": "Seal evidence after required gates pass.",
+      "content": "name: evidence-seal\non:\n  workflow_run:\n    workflows: ['CI']\n    types: [completed]\njobs:\n  seal:\n    if: ${{ github.event.workflow_run.conclusion == 'success' }}\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - name: Generate GitHub App token\n        id: app-token\n        uses: actions/create-github-app-token@v2\n        with:\n          app-id: ${{ vars.APP_ID }}\n          private-key: ${{ secrets.APP_PEM }}\n      - name: Seal evidence\n        run: python -m github_automation_cli.main evidence-seal\n",
+      "post_write_validation": [
+        "yaml_parse"
+      ]
+    },
+    {
+      "order": 41,
+      "file_path": ".github/workflows/branch-handler.yml",
+      "operation": "create_or_replace",
+      "file_type": "yaml",
+      "purpose": "PR linkage enforcement.",
+      "content": "name: branch-handler\non:\n  pull_request:\n    types: [opened, edited, reopened, ready_for_review]\njobs:\n  validate-linkage:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - name: Validate PR linkage\n        run: python -m github_automation_cli.main validate-pr-linkage\n",
+      "post_write_validation": [
+        "yaml_parse"
+      ]
+    },
+    {
+      "order": 42,
+      "file_path": "PROC-DESIGN-GITHUB-AUTOMATION-SSOT.json",
+      "operation": "patch_json_replace_paths",
+      "file_type": "json",
+      "purpose": "Lock architecture and governance rules into the SSOT design file.",
+      "patches": [
+        {
+          "op": "replace",
+          "path": "/governing_laws/0/statement",
+          "value": "All automation that reads or writes GitHub Projects must authenticate via a GitHub App installation token. GITHUB_TOKEN cannot access Projects. PATs are permitted only as an explicitly declared exception with a named owner and expiry date."
+        },
+        {
+          "op": "replace",
+          "path": "/governing_laws/1/statement",
+          "value": "No workflow, script, or ProgramSpec may hardcode a GitHub Project node ID, field ID, or option/iteration ID. All IDs must be resolved at runtime from config/github_field_registry.json."
+        },
+        {
+          "op": "replace",
+          "path": "/governing_laws/2/statement",
+          "value": "Phase transitions on the GitHub Project Phase field may only be made by the Phase Advancement Evaluator, backed by a stored phase_transition_decision.json artifact. No workflow may update the Phase field based on a single event."
+        },
+        {
+          "op": "replace",
+          "path": "/governing_laws/4/statement",
+          "value": "The plan SSOT is the sole authority for decomposition, step contracts, phase structure, gate requirements, and evidence requirements. GitHub is the execution surface. No automation may write plan-owned fields back from GitHub to the plan files."
+        }
+      ],
+      "post_write_validation": [
+        "json_parse",
+        "must_contain_string:execution surface"
+      ]
+    },
+    {
+      "order": 43,
+      "file_path": "Second Architecture Delta for GitHub Hardening.md",
+      "operation": "append_if_missing",
+      "file_type": "markdown",
+      "purpose": "Add explicit implementation note tying delta to file artifacts.",
+      "append_text": "\n## Implementation note\n\nThis delta is implemented by the following required machine-managed artifacts and wrappers:\n- policies/github_sync_governance.yaml\n- policies/runner_policy.yaml\n- config/github_field_registry.json\n- config/github_projection_registry.json\n- config/github_override_registry.json\n- config/step_issue_linkage.json\n- schemas/github_field_registry.schema.json\n- schemas/github_projection_manifest.schema.json\n- schemas/step_issue_linkage.schema.json\n- schemas/github_override_registry.schema.json\n- schemas/reconciliation_report.schema.json\n- schemas/phase_advancement_report.schema.json\n- programs/GH_AUTH_ISSUE_INSTALLATION_TOKEN.spec.json\n- programs/GH_FIELDS_DISCOVER.spec.json\n- programs/GH_FIELDS_VALIDATE.spec.json\n- programs/GH_PROJECTION_GENERATE.spec.json\n- programs/GH_PROJECTION_APPLY.spec.json\n- programs/GH_RECONCILE_DRIFT.spec.json\n- programs/GH_PHASE_ADVANCE_EVALUATE.spec.json\n- programs/GH_EVIDENCE_SEAL.spec.json\n",
+      "post_write_validation": [
+        "file_exists"
+      ]
+    },
+    {
+      "order": 44,
+      "file_path": "CLAUDE.md",
+      "operation": "append_if_missing",
+      "file_type": "markdown",
+      "purpose": "Update local repo guidance to reflect deterministic spine.",
+      "append_text": "\n## Deterministic GitHub automation constraints\n\n- GitHub is the execution surface, not the control plane.\n- All Project writes must use GitHub App installation tokens.\n- No inline Project field IDs are allowed.\n- Phase field writes may only occur through the Phase Advancement Evaluator.\n- Every execution issue must have a StepID and linkage entry.\n- Reconciliation is level-triggered and must self-heal drift.\n",
+      "post_write_validation": [
+        "file_exists"
+      ]
+    }
+  ],
+  "explicit_non_goals": [
+    "Do not add charts, views, or template polish in this patch plan.",
+    "Do not implement full business logic inside workflow YAML.",
+    "Do not add bidirectional writes from GitHub back into plan-owned fields."
+  ],
+  "final_validation_sequence": [
+    {
+      "step": 1,
+      "action": "Validate all created JSON files parse successfully."
+    },
+    {
+      "step": 2,
+      "action": "Validate all created YAML files parse successfully."
+    },
+    {
+      "step": 3,
+      "action": "Compile all created Python files."
+    },
+    {
+      "step": 4,
+      "action": "Run scripts/lint_no_inline_github_ids.py and require zero violations."
+    },
+    {
+      "step": 5,
+      "action": "Validate that no workflow except phase-advancement-evaluator.yml contains a write path to the Phase field."
+    },
+    {
+      "step": 6,
+      "action": "Validate that gh-projection-apply.yml commits linkage updates when files change."
+    }
+  ],
+  "cli_apply_contract": {
+    "per_file_result_fields": [
+      "file_path",
+      "operation",
+      "status",
+      "validation_status",
+      "backup_path",
+      "error"
+    ],
+    "abort_on_first_critical_failure": true,
+    "critical_files": [
+      "policies/github_sync_governance.yaml",
+      "schemas/github_field_registry.schema.json",
+      ".github/workflows/bootstrap-github-fields.yml",
+      ".github/workflows/gh-projection-apply.yml",
+      ".github/workflows/ssot-drift-reconciliation.yml",
+      ".github/workflows/phase-advancement-evaluator.yml",
+      "programs/GH_PROJECTION_APPLY.spec.json",
+      "programs/GH_PHASE_ADVANCE_EVALUATE.spec.json"
+    ]
+  }
+}

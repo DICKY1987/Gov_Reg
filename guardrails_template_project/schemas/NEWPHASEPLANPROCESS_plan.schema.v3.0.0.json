@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "NEWPHASEPLANPROCESS_plan.schema.v3.0.0.json",
+  "title": "NEWPHASEPLANPROCESS plan schema with v3.3.0 governance sections",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "template_metadata",
+    "critical_constraint",
+    "configuration_driven_development",
+    "pattern_governance",
+    "usage_instructions",
+    "v3_enhancements",
+    "task_analysis",
+    "assumptions_scope",
+    "file_manifest",
+    "phase_plan",
+    "self_healing",
+    "worktree_isolation",
+    "ground_truth_levels",
+    "phase_contracts",
+    "step_contracts",
+    "validation_gates",
+    "metrics",
+    "infrastructure",
+    "final_summary",
+    "ai_instructions",
+    "planning_hierarchy",
+    "pipeline_boundary_contract",
+    "execution_patterns",
+    "executor_registry",
+    "mutation_model",
+    "task_intake_model",
+    "traceability",
+    "execution_baseline",
+    "concurrency_control",
+    "rollback_plan",
+    "evidence_requirements",
+    "lifecycle_states",
+    "state_transitions",
+    "reconciliation_states",
+    "canonicalization_contract",
+    "merge_policy",
+    "platform_profile",
+    "protected_paths",
+    "run_artifact_policy",
+    "anti_pattern_detection",
+    "run_status_contract",
+    "mutation_ledger",
+    "referenced_context_artifacts",
+    "artifact_intent_manifest",
+    "planned_registry_projection"
+  ],
+  "properties": {
+    "template_metadata": {
+      "type": "object",
+      "required": [
+        "version",
+        "last_updated",
+        "breaking_changes"
+      ],
+      "properties": {
+        "version": {
+          "const": "3.3.0"
+        },
+        "breaking_changes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "assumptions_scope": {
+      "type": "object",
+      "properties": {
+        "definition_of_done": {
+          "type": "object",
+          "required": [
+            "criteria",
+            "artifact_requirements"
+          ],
+          "properties": {
+            "criteria": {
+              "type": "array"
+            },
+            "artifact_requirements": {
+              "type": "object",
+              "required": [
+                "require_named_output_artifacts",
+                "require_named_mutations",
+                "require_validation_sources"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "referenced_context_artifacts": {
+      "$ref": "#/$defs/referenced_context_artifacts"
+    },
+    "artifact_intent_manifest": {
+      "$ref": "#/$defs/artifact_intent_manifest"
+    },
+    "planned_registry_projection": {
+      "$ref": "#/$defs/planned_registry_projection"
+    },
+    "validation_gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "gate_id",
+          "phase",
+          "purpose",
+          "command",
+          "timeout_sec",
+          "retries",
+          "expect_exit_code",
+          "expect_stdout_regex",
+          "forbid_stdout_regex",
+          "expect_files",
+          "evidence"
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "referenced_context_artifacts": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "policy",
+        "artifacts",
+        "validation_command",
+        "expect_exit_code",
+        "evidence"
+      ],
+      "properties": {
+        "artifacts": {
+          "type": "array"
+        }
+      }
+    },
+    "artifact_intent_manifest": {
+      "type": "object",
+      "required": [
+        "description",
+        "records",
+        "checks",
+        "validation_command",
+        "expect_exit_code",
+        "evidence"
+      ],
+      "properties": {
+        "records": {
+          "type": "array"
+        }
+      }
+    },
+    "planned_registry_projection": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "projection_policy",
+        "allowed_projected_fields",
+        "forbidden_projected_fields",
+        "records",
+        "validation_command",
+        "expect_exit_code",
+        "evidence"
+      ],
+      "properties": {
+        "records": {
+          "type": "array"
+        }
+      }
+    }
+  }
+}

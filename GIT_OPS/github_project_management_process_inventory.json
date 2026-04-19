@@ -1,0 +1,246 @@
+{
+  "files": {
+    "TEMP_project_item_sync.yml": {
+      "arrays": [
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/on/issues/types",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/on/pull_request/types",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/jobs/sync-project-item/steps",
+          "reason": "default structural classification"
+        }
+      ],
+      "source_sha256": "8b96064054f11b8f53f4dbb1ea20e2a37e52a5eae0360dd6d809ec9193c10a7f"
+    },
+    "TEMP_milestone_completion.yml": {
+      "arrays": [
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/on/issues/types",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/on/pull_request/types",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/jobs/milestone-completion/steps",
+          "reason": "default structural classification"
+        }
+      ],
+      "source_sha256": "b276c1fba3b7afdf87d52f3e9a19cdaddbfb3bd7406f340787962dec58ace168"
+    },
+    "TEMP_splinter_phase_sync.yml": {
+      "arrays": [
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/on/push/paths",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/jobs/sync_phase_to_github/steps",
+          "reason": "default structural classification"
+        }
+      ],
+      "source_sha256": "139aa399212d7b50f1785006e73a03d3c9921b7281d9fbf41b66ef3278907e86"
+    },
+    "TEMP_scheduled-orchestrator.yml": {
+      "arrays": [
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/on/schedule",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/jobs/run-orchestrator/steps",
+          "reason": "default structural classification"
+        }
+      ],
+      "source_sha256": "e115ebe71c33c764c257d095dd23d16ada74640384465acb05aa9e73ff961dca"
+    },
+    "TEMP_remote-sync.yml": {
+      "arrays": [
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/on/push/branches",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/on/push/paths-ignore",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/jobs/check-sync-source/steps",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/jobs/notify-local-sync/steps",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/jobs/prevent-infinite-loop/steps",
+          "reason": "default structural classification"
+        }
+      ],
+      "source_sha256": "163b5976e46fca90efa02b0a764f51fc0b5352d7ea9f570582ba2badb5927c90"
+    },
+    "TEMP_triggerA-remote-to-local.yml": {
+      "arrays": [
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/on/push/branches",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/jobs/remote_to_local/runs-on",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/jobs/remote_to_local/steps",
+          "reason": "default structural classification"
+        }
+      ],
+      "source_sha256": "659d6781ec4eb6b080d2e1addd81a6f3f0950f0e715c74b2d63a904d0c6c509d"
+    },
+    "TEMP_branch-handler.yml": {
+      "arrays": [
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/on/create/branches",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/on/pull_request/types",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/on/pull_request/branches",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/jobs/notify-branch-creation/steps",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/jobs/pr-quality-checks/steps",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/jobs/prevent-auto-merge/steps",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/jobs/post-merge-sync/steps",
+          "reason": "default structural classification"
+        }
+      ],
+      "source_sha256": "073c0be356a1856e107a9557180fb12d0b8984ca9ceabae8a797be108dbf59fc"
+    },
+    "Template to GitHub Mapping.pdf": {
+      "arrays": [],
+      "source_sha256": "3383df29ef8fb8539b8514e82cc4a7d3880313d37889329f6d7aa0da69386aad",
+      "note": "non-structured reference artifact; no array inventory generated"
+    }
+  },
+  "inventory_version": "1.0.0",
+  "process_scope": "github_project_management"
+}

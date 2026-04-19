@@ -1,0 +1,164 @@
+I checked the current GitHub “About Projects” page and compared it to your GitHub automation plan.
+
+Verdict: **your plan is stronger than the website on governance, determinism, reconciliation, and automation safety — but it is missing a few GitHub-native product features that should be added explicitly if you want full coverage of what Projects can do today.** The GitHub page describes Projects as a flexible table/board/roadmap system tied to issues and pull requests, with saved views, custom fields, built-in automation, charts, templates, and status updates. ([GitHub Docs][1])
+
+## What your plan already covers well
+
+Your plan already covers the core control-plane mapping:
+
+* phases mapped to a Project Phase field,
+* steps mapped to issues,
+* gates mapped to required checks,
+* execution mapped to pull requests,
+* evidence linked back to GitHub,
+* and unidirectional SSOT → GitHub projection.   
+
+It also already covers the parts the GitHub page does **not** solve for you:
+
+* GitHub App auth instead of PAT fragility,
+* no inline field IDs,
+* field bootstrap registry,
+* phase advancement as a composite evaluator,
+* scheduled reconciliation,
+* single-writer ownership,
+* drift taxonomy,
+* and “no issue without step ID / no PR without issue / no merge without gate.”   
+
+So from an architecture standpoint, your plan is **not missing the hard parts**. It is ahead of the website there. The website is product-level guidance; your plan is control-plane design. ([GitHub Docs][1]) 
+
+## What the website includes that should be added more explicitly to your plan
+
+### 1. Saved views and layout strategy
+
+The GitHub page emphasizes that Projects supports multiple saved views and three layouts: table, board, and roadmap. It also frames views as a first-class way to manage backlog, iteration planning, roadmap planning, feature releases, and bug triage. ([GitHub Docs][1])
+
+Your plan talks a lot about fields, projection, and workflow mutation, but it does **not yet define a standard view set** as a required artifact. That is a real omission if GitHub is supposed to be the operational surface. Add a required `project_views` section to the spec with at minimum:
+
+* backlog table,
+* execution board,
+* roadmap,
+* blocked/escalation view,
+* review queue,
+* milestone delivery view.
+
+This is especially important because project templates can copy views, custom fields, draft issues, workflows except auto-add, and insights. ([GitHub Docs][1])
+
+### 2. Project templates as a governed deployment unit
+
+The GitHub page explicitly says project templates can include views, custom fields, draft issues and associated field values, configured workflows except auto-add workflows, and insights. ([GitHub Docs][1])
+
+Your plan discusses bootstrap, projection, and reconciliation, but it does **not clearly treat a project template as a first-class deployment artifact**. It should. Add:
+
+* a canonical organization project template,
+* template versioning,
+* template drift checks,
+* and a rule for when a new project is created from template vs copied vs bootstrapped from scratch.
+
+Without that, every repo/project rollout stays more manual than it needs to be. ([GitHub Docs][2])
+
+### 3. Draft issues as the GitHub-native intake surface
+
+The “About Projects” page explicitly includes draft issues as project items and says custom fields can be used on issues, pull requests, and draft issues. ([GitHub Docs][1])
+
+Your plan is strong on step issues and execution work, but it does **not clearly define whether early-stage intake should use draft issues before real issue creation**. If you want GitHub-native intake, add a rule:
+
+* raw idea = draft issue,
+* qualified idea = converted issue,
+* execution work = step issue with StepID.
+
+That would tighten the intake pipeline without weakening the SSOT model.
+
+### 4. Parent issue / sub-issue progress fields as required visibility fields
+
+GitHub now supports parent issue and sub-issue progress fields directly in Projects, and sub-issues can go up to 100 per parent and 8 nested levels. Those fields can also be used for grouping and filtering. ([GitHub Docs][3])
+
+Your plan already uses issue hierarchy conceptually, but it does **not explicitly require enabling the native `Parent issue` and `Sub-issue progress` fields** as part of the standard project setup. Add that. It gives you native rollup visibility for decomposition without extra custom work. ([GitHub Docs][4])
+
+### 5. Status updates as a formal operational artifact
+
+The GitHub page explicitly calls out project status updates: “On track,” “At risk,” start dates, target dates, and a Markdown message in the project side panel/header. ([GitHub Docs][1])
+
+Your plan has reporting, evidence, and phase advancement, but it does **not clearly define project status updates as an artifact**. That is a miss if executives or reviewers will use GitHub directly. Add:
+
+* `project_status_update_policy`,
+* who writes it,
+* cadence,
+* allowed statuses,
+* whether it is human-owned, orchestrator-generated, or AI-drafted/human-approved.
+
+### 6. Charts and insights as required operational outputs
+
+The GitHub page explicitly includes charts/insights as a native capability. ([GitHub Docs][1])
+
+Your plan references reporting and rollups, but it does **not specify a required insights pack**. Add a standard set of charts:
+
+* items by phase,
+* items by status,
+* milestone progress,
+* blocked items,
+* iteration load,
+* stale items.
+
+That turns GitHub into a real management surface instead of only a mutation target.
+
+### 7. Issue fields should be considered explicitly
+
+GitHub’s current docs say issue fields are organization-level, typed metadata across repositories, available in every issue and every project across the org, but currently only supported in private projects and still in public preview. ([GitHub Docs][5])
+
+Your plan is centered on project fields. That is still valid. But you should add a decision section:
+
+* whether `Priority`, `Effort`, `Start date`, `Target date`, etc. should live as issue fields,
+* versus project fields,
+* versus plan-only fields.
+
+Right now that split is implied, not decided. Since GitHub supports issue fields in projects, your spec should say whether you are adopting them or deliberately avoiding them. ([GitHub Docs][5])
+
+## What is **not** missing from your plan, despite being absent or lighter on the website
+
+These are not gaps in your plan. They are places where your plan is intentionally deeper than GitHub Docs:
+
+* GitHub App auth requirement. The “About Projects” page does not cover this, but your plan correctly requires it. ([GitHub Docs][1]) 
+* Field bootstrap registry. GitHub product docs do not give you this architecture; your plan correctly adds it.  
+* Level-triggered reconciliation. The website mentions automation, but not controller-style reconciliation; your plan correctly adds observe → diff → act → report. ([GitHub Docs][1]) 
+* Composite phase advancement. The website mentions built-in workflows; your plan correctly rejects simple event-based phase advancement. ([GitHub Docs][6]) 
+* Unidirectional projection and drift taxonomy. That is architecture-level and correctly lives in your plan, not the GitHub docs.  
+
+## The clean gap list
+
+So the plan is **not missing major control-plane logic**. It is missing mostly **GitHub-native operational surface definitions**.
+
+Add these explicitly:
+
+1. `project_views` standard
+2. `project_template` artifact and versioning
+3. `draft_issue_intake_policy`
+4. required native hierarchy fields: `Parent issue`, `Sub-issue progress`
+5. `project_status_update_policy`
+6. `insights_pack` / charts standard
+7. explicit decision on `issue_fields` adoption vs non-adoption
+
+That closes the gap between your deterministic plan and what GitHub Projects actually offers today. ([GitHub Docs][1])
+
+## Bottom line
+
+**Nothing critical from your plan is missing because of this website.**
+The opposite is closer to true: **the website is missing most of your hard-governance architecture.**
+
+But if the question is whether your plan fully incorporates the GitHub-native features described on that page, then **no, not completely**. The main missing pieces are:
+
+* views,
+* templates,
+* draft-issue intake,
+* native hierarchy visibility fields,
+* status updates,
+* insights/charts,
+* and a formal issue-fields decision. ([GitHub Docs][1]) 
+
+
+
+[1]: https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects "About Projects - GitHub Docs"
+[2]: https://docs.github.com/en/issues/planning-and-tracking-with-projects/managing-your-project/managing-project-templates-in-your-organization "Managing project templates in your organization - GitHub Docs"
+[3]: https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/adding-sub-issues "Adding sub-issues - GitHub Docs"
+[4]: https://docs.github.com/en/issues/planning-and-tracking-with-projects/understanding-fields/about-parent-issue-and-sub-issue-progress-fields "About parent issue and sub-issue progress fields - GitHub Docs"
+[5]: https://docs.github.com/en/issues/planning-and-tracking-with-projects/understanding-fields/about-issue-fields "About issue fields in projects - GitHub Docs"
+[6]: https://docs.github.com/en/issues/planning-and-tracking-with-projects/automating-your-project/using-the-built-in-automations "Using the built-in automations - GitHub Docs"

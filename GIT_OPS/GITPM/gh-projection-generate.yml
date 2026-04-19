@@ -1,0 +1,64 @@
+name: GH_PROJECTION_GENERATE
+
+# This workflow reads your canonical plan (for example, `plan.json`)
+# and produces a deterministic projection manifest.  The manifest
+# describes the issues, project items, fields and milestones that
+# need to exist for the plan to be represented in GitHub.  It is
+# intentionally separate from the application step which applies
+# the manifest because generation should be repeatable and idempotent.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Generate an installation token.  GraphQL operations against
+      # projects require an installation token because the default
+      # `GITHUB_TOKEN` cannot access organization projects【109688515925987†L540-L564】.
+      - name: Generate installation token
+        id: generate-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PEM }}
+
+      # Install any dependencies required to generate the projection.
+      # Adjust this step to match your implementation (Node.js, Python,
+      # etc.).  As a placeholder, this simply installs Node packages.
+      - name: Install dependencies
+        run: |
+          if [ -f package.json ]; then
+            npm ci
+          fi
+
+      # Generate the projection manifest.  Implement this step with
+      # your own generator script or CLI.  The generator should read
+      # `plan.json` (or equivalent) and write a file to
+      # `projections/projection_manifest.json` that enumerates each
+      # step, its target repository, issue title, description, fields,
+      # milestone and other metadata.  The structure of this file
+      # should align with the command specification defined in
+      # `command_spec.json`.
+      - name: Generate projection manifest
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          mkdir -p projections
+          # TODO: replace the following line with your real generator.
+          echo '{}' > projections/projection_manifest.json
+
+      # Commit the generated manifest.  Storing the manifest in the
+      # repository allows the apply phase to run in a separate job or
+      # workflow and keeps a history of generated projections.
+      - name: Commit projection manifest
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: generate projection manifest"
+          file_pattern: projections/projection_manifest.json

@@ -1,0 +1,55 @@
+The next step is to turn that patch plan into an **execution-ready implementation package**.
+
+Use this order:
+
+1. **Patch the three v3.2 files**
+   Apply the object-pointer operations first, then resolve the array instructions by ID/name and convert them into final RFC-6902 paths.
+
+2. **Upgrade the plan schema**
+   Add the new top-level sections and nested fields:
+
+   * `abstraction_governance`
+   * `abstraction_registry`
+   * `abstraction_decision_rules`
+   * `shared_core_allocation`
+   * `resolver_contracts`
+   * step-level `abstraction_contract`
+     Without schema support, the template changes are just prose.
+
+3. **Add the new validators**
+   Create the scripts listed in the JSON artifact:
+
+   * `validate_abstraction_governance.py`
+   * `validate_abstraction_registry.py`
+   * `validate_resolver_contracts.py`
+   * `validate_abstraction_coverage.py`
+   * `validate_resolver_completeness.py`
+   * `validate_direct_reference_violations.py`
+   * `validate_shared_core_duplication.py`
+   * `validate_identity_stability.py`
+   * `validate_step_abstraction_contract.py`
+
+4. **Register the new gates**
+   Wire `GATE-ABS-001` through `GATE-ABS-005` into the gate catalog and dependency flow so they actually run before execution.
+
+5. **Create one golden example plan**
+   Build a small sample plan that uses:
+
+   * one abstracted path
+   * one resolver contract
+   * one shared-core allocation
+   * one step-level abstraction contract
+     Then validate it end to end.
+
+6. **Create negative tests**
+   Add failing fixtures for:
+
+   * cross-module literal path
+   * missing resolver
+   * duplicated shared service
+   * unstable identity
+   * step uses abstraction but omits `abstraction_contract`
+
+The real blocker is step 2. Until the schema is updated, everything else is partial.
+
+The most productive immediate deliverable is a **CLI-ready implementation instructions JSON** that tells your app exactly how to patch the three files, update the schema, add the validator files, and wire the gates.
