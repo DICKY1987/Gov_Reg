@@ -1,0 +1,255 @@
+Let me read the docx before compiling, to make sure I have everything.Good. Now I have everything — all 7 workflows, `command_spec.json`, the ChatGPT pipeline conversation, the GitHub-native alternative design from the DOCX, and the gap analysis. Let me compile the full open questions list.
+
+---
+
+# Open Questions & Recommendations
+
+Organized by domain, with priority calls where it matters.
+
+---
+
+## GROUP 1 — Strategic / Architectural (Decide First)
+
+---
+
+**OQ-01: What is the canonical SSOT — JSON plan or GitHub?**
+
+The files present two competing models. The workflow stubs and `command_spec.json` treat the JSON plan as SSOT and GitHub as the execution surface (projection target). The DOCX (`Idea_to_JSON_Plan.docx`) proposes the inverse: GitHub Issues/Projects as SSOT, with JSON as an optional downstream export.
+
+**Recommendation:** Keep JSON plan as SSOT. The GitHub-native model described in the DOCX collapses governance — GitHub's UI allows anyone to freely edit fields, drag cards, and create issues without plan authorization. Your phase advancement evaluator, drift reconciliation, and gate enforcement only make sense when there's an authoritative external plan to reconcile against. The DOCX model is a reasonable lightweight alternative for teams without your governance requirements, but it isn't compatible with deterministic phase gates, PlanHash enforcement, or projection versioning. Document this decision explicitly so the DOCX isn't mistaken for the chosen architecture later.
+
+---
+
+**OQ-02: Shared CLI vs. per-workflow self-contained scripts?**
+
+All 7 workflows have empty `run:` blocks. They can be implemented as: (a) calls into a shared CLI tool that the workflows just invoke, or (b) self-contained shell/Python/Node scripts embedded in each workflow.
+
+**Recommendation:** Shared CLI. The `command_spec.json` was written as a CLI contract — it defines named commands with schemas, preconditions, and failure codes, not as individual scripts. A CLI aligns with your NPP pattern of canonical context files and deterministic execution. Each workflow becomes a thin harness: check out, mint token, call `npp-gh create-step`, done. This also means the logic is testable outside CI, versioned independently, and reusable by Claude Code or other agents.
+
+---
+
+**OQ-03: What language/runtime is the CLI written in?**
+
+Not specified anywhere in the files.
+
+**Recommendation:** Python. Your existing toolchain is Python-heavy (the PowerShell setup scripts install Python tools, your analysis scripts are Python). The GitHub GraphQL calls via `gh api` in the workflow stubs suggest the CLI could shell out to `gh`, or use `PyGithub`/`httpx` directly. Python also gives you the best testing story (pytest, schema validation with `jsonschema`). Avoid Node unless there's a specific reason — it introduces a second runtime dependency.
+
+---
+
+## GROUP 2 — Implementation Gaps in Workflow Stubs
+
+---
+
+**OQ-04: How does `evidence-seal.yml` identify which step/issue corresponds to a completed CI run?**
+
+The workflow triggers on `workflow_run: completed` but the step body has no mechanism to resolve which plan step or GitHub issue caused that CI run. There's no linkage between a workflow run and a StepID.
+
+**Recommendation:** At CI run start time, write the triggering StepID into the workflow's run name or a workflow output. Then `evidence-seal.yml` reads `workflow_run.name` or calls `gh run view` to extract it. Alternatively, require that every issue's branch name contains its StepID (e.g., `step/STEP-042/...`), and have `evidence-seal.yml` extract the StepID from the head branch name of the triggering run. The branch-naming approach is simpler and already consistent with your "no PR without issue" rule.
+
+---
+
+**OQ-05: What constitutes "all gates passed" for phase advancement?**
+
+`phase-advancement-evaluator.yml` says to check "gate states" but no formal gate completion criteria exist anywhere in the uploaded files. The `command_spec.json` references `GateStatus` and `EvidenceState` fields but doesn't define what values they accept or what combination means "ready to advance."
+
+**Recommendation:** Define a `gate_completion_spec` section in the plan JSON. Each phase should enumerate its required gates (e.g., `["CI_PASS", "CODE_REVIEW", "EVIDENCE_SEALED"]`). The evaluator queries all step project items in the current phase, checks that every item has `GateStatus = Passed` and `EvidenceState = Sealed`, and only then produces `phase_transition_decision.json` with `approved: true`. Make the gate list part of the plan contract, not hardcoded in the evaluator.
+
+---
+
+**OQ-06: What are the "stuck item" thresholds for backlog hygiene?**
+
+`backlog-hygiene.yml` mentions detecting items "in the same status for too long" but no thresholds are defined.
+
+**Recommendation:** Define a `hygiene_policy` config object (JSON or YAML in `config/`) with per-status maximum age in days: e.g., `In Progress: 5`, `In Review: 3`, `Blocked: 2`. The hygiene workflow reads this config and flags any item exceeding its threshold by posting a comment and adding a `stale` label. This makes the policy explicit, version-controlled, and adjustable without touching workflow code.
+
+---
+
+**OQ-07: The `commit linkage updates` step in `gh-projection-apply.yml` is permanently disabled (`if: false`)**
+
+This step is supposed to commit `config/step_issue_linkage.json` after the apply operation, but it'll never run as written.
+
+**Recommendation:** Enable it. The condition should be `if: success()`, not `if: false`. The linkage file is critical — it's the join table between plan StepIDs and GitHub issue numbers/node IDs. Every other workflow depends on it being current. The `if: false` was a placeholder during skeleton creation; it needs to become a real commit step once the apply logic writes the file.
+
+---
+
+## GROUP 3 — Undefined Data Schemas
+
+These are the files that multiple workflows and commands reference but whose schemas are nowhere defined.
+
+---
+
+**OQ-08: Schema of `projections/projection_manifest.json`?**
+
+Generated by `gh-projection-generate.yml`, consumed by `gh-projection-apply.yml`. No schema exists.
+
+**Recommendation:** Define it in `command_spec.json` as a top-level `manifest_schema` section. Minimum required fields per entry: `step_id`, `repo`, `title`, `body`, `phase_id`, `plan_hash`, `projection_version`, `milestone_group`, `assignees`, `labels`. This is essentially the `create_step` request schema — the manifest should be an array of those objects. Adding a `manifest_version` root field gives you a migration path when the schema evolves.
+
+---
+
+**OQ-09: Schema of `config/step_issue_linkage.json`?**
+
+Referenced by every command in `command_spec.json` as the source of truth for StepID → issue number mapping. No schema defined.
+
+**Recommendation:** Define it as a keyed object: `{ "STEP-001": { "issue_number": 42, "issue_node_id": "I_...", "project_item_id": "PVTI_...", "milestone_title": "M1", "plan_hash": "abc123", "projection_version": 3, "created_at": "...", "updated_at": "..." } }`. The key is always the StepID. This is a write-once-per-step file that gets updated on each `create_step` and `reconcile_drift` call.
+
+---
+
+**OQ-10: Valid option values for `EvidenceState`, `GateStatus`, `Phase`, and `Status` project fields?**
+
+The workflows and command spec reference these field names but only mention individual values (`Sealed`, `Passed`, `Todo`) in isolation. No complete enumeration exists.
+
+**Recommendation:** Define a `field_options` section in `command_spec.json` or a standalone `config/field_options_spec.json`:
+- `EvidenceState`: `["Pending", "In Progress", "Sealed", "Rejected"]`
+- `GateStatus`: `["Not Started", "Running", "Passed", "Failed", "Waived"]`
+- `Status`: `["Todo", "In Progress", "In Review", "Done", "Blocked"]`
+- `Phase`: derived from the plan — list `["PH-01", "PH-02", ...]` with human labels
+
+These must exactly match what `bootstrap-github-fields.yml` discovers in the registry, so the options need to exist in the GitHub project before bootstrap runs.
+
+---
+
+**OQ-11: Schema of `phase_transition_decision.json` and `phase_advancement_report.json`?**
+
+Both are referenced in `command_spec.json` sync_phase preconditions but never defined.
+
+**Recommendation:** `phase_transition_decision.json`: `{ "phase_id": "PH-01", "decision": "APPROVE|DENY", "reason": "...", "evaluated_at": "...", "criteria_results": [{ "gate": "CI_PASS", "result": "pass" }] }`. `phase_advancement_report.json`: `{ "phase_id": "PH-01", "total_steps": 10, "completed": 10, "gates_passed": 10, "gates_failed": 0, "evidence_sealed": 10, "recommendation": "ADVANCE" }`. Having both files allows humans to audit the recommendation before the decision executes.
+
+---
+
+**OQ-12: Schema of `reconciliation_report.json`?**
+
+Written by `reconcile_drift` but not defined.
+
+**Recommendation:** `{ "run_at": "...", "plan_hash": "...", "items_observed": 42, "drift_detected": [ { "step_id": "STEP-003", "classification": "FIELD_VIOLATION|ORPHAN|MISSING", "field": "Phase", "expected": "PH-02", "actual": "PH-01", "action": "CORRECTED|FLAGGED|SKIPPED" } ], "items_corrected": 2, "items_flagged_for_manual": 1 }`. The classification enum is important — `FIELD_VIOLATION` is auto-correctable, `ORPHAN` and `MISSING` may require human review.
+
+---
+
+## GROUP 4 — Configuration & Auth Setup
+
+---
+
+**OQ-13: How are `APP_ID`, `APP_PEM`, `ORGANIZATION`, `PROJECT_NUMBER` provisioned?**
+
+All 7 workflows assume these exist but there's no documentation or setup workflow for them.
+
+**Recommendation:** Add a `SETUP.md` to the repo with a step-by-step GitHub App creation checklist: (1) Create GitHub App at org level with `Projects: read/write`, `Issues: read/write`, `Metadata: read` permissions. (2) Install the app on the target repo. (3) Store `APP_ID` as an org variable, `APP_PEM` as an org secret. (4) Store `ORGANIZATION` and `PROJECT_NUMBER` as repo or org variables. Also add a `validate-setup.yml` workflow that can be run manually to verify all four values are present and the token minting works before any other workflow runs.
+
+---
+
+**OQ-14: Which fields are "automation-owned" vs "human-owned"?**
+
+`ssot-drift-reconciliation.yml` mentions correcting "automation-owned fields" but no definitive ownership table exists. `command_spec.json` also says "if the CLI is the writer for Status field" — implying it might not always be.
+
+**Recommendation:** Define a `field_ownership_registry` in `config/`. Automation-owned (CLI corrects on drift): `StepID`, `Phase`, `PlanHash`, `ProjectionVersion`, `EvidenceState`, `GateStatus`. Human-owned (CLI flags but never overwrites): `Status` (in some modes), `Assignees`, `Labels`. Shared/negotiated: `Status` in advancement mode. This table must be enforced by the reconciliation script — it should refuse to touch human-owned fields even when they drift.
+
+---
+
+**OQ-15: What is the format and governance of `override_registry_path` in `reconcile_drift`?**
+
+The `reconcile_drift` command accepts an optional override registry that exempts certain diffs from correction, but its format is undefined.
+
+**Recommendation:** Define it as a JSON file: `{ "overrides": [ { "step_id": "STEP-007", "field": "Phase", "approved_value": "PH-03", "reason": "...", "approved_by": "...", "expires_at": "2026-06-01" } ] }`. Overrides should be time-bounded and require a human-readable reason. The reconciliation script checks this file before flagging a diff as a violation — if a matching unexpired override exists, the diff is classified as `ALLOWED` and not corrected or flagged.
+
+---
+
+## GROUP 5 — GitHub-Native Surface Gaps (From Analysis Document)
+
+---
+
+**OQ-16: Standard project views not defined**
+
+No `project_views` spec exists. The operational surface for humans using the project board is undefined.
+
+**Recommendation:** Define a required views spec as part of the project template. Minimum set: (1) Backlog — table grouped by Phase, filtered to open items. (2) Execution Board — kanban grouped by Status. (3) Roadmap — timeline by milestone/iteration. (4) Blocked/Escalation — filtered to `Status=Blocked` or `GateStatus=Failed`. (5) Evidence Queue — filtered to `EvidenceState=Pending`. (6) Phase Gate Review — filtered to current phase, grouped by GateStatus. Store this as `config/project_views_spec.json` and include it in the bootstrap workflow.
+
+---
+
+**OQ-17: Project template not treated as a governed deployment artifact**
+
+New projects are presumably created manually or ad hoc. No template versioning or template drift detection exists.
+
+**Recommendation:** Designate one org-level project as the canonical template. Tag it with a `template_version` field (e.g., `v1.3`). Add a `validate-project-template.yml` workflow that runs weekly and checks active projects against the template's field set, view definitions, and workflow configuration, reporting drift. When the template is updated, increment the version and run the drift check to identify projects needing migration.
+
+---
+
+**OQ-18: Draft issue intake policy undefined**
+
+Early-stage ideas have no defined home in GitHub before they become plan steps.
+
+**Recommendation:** Adopt the three-tier intake model: Raw idea → draft issue on the project board (no StepID, no issue number). Qualified idea → converted to a real GitHub issue using the `Idea` issue type with qualification fields populated. Approved for execution → CLI `create_step` command assigns StepID and projects it into the execution workflow. The `ssot-drift-reconciliation.yml` should explicitly ignore draft issues — they are pre-plan and should not be flagged as orphans.
+
+---
+
+**OQ-19: Native hierarchy fields not required in bootstrap**
+
+`bootstrap-github-fields.yml` queries custom fields but doesn't explicitly require `Parent issue` and `Sub-issue progress` fields to exist.
+
+**Recommendation:** Add a validation step to bootstrap that checks for the presence of these two built-in fields in the project and fails with a clear error if they're missing or not enabled. These fields can't be created via API — they require org-level sub-issues to be enabled and then must be added to the project via the UI. Document this as a manual prerequisite in `SETUP.md`.
+
+---
+
+**OQ-20: Project status update policy undefined**
+
+No spec for who writes the project-level "On track"/"At risk" status, at what cadence, or whether it's human-generated or automation-generated.
+
+**Recommendation:** Make it automation-drafted, human-approved. The `phase-advancement-evaluator.yml` produces a summary after each evaluation. If the phase is on track (all items progressing normally), it drafts a status update comment on the project. A human then promotes it to an official status update via the UI. This keeps humans in the loop for executive-facing status while removing the burden of writing it from scratch.
+
+---
+
+**OQ-21: No standard insights/charts pack defined**
+
+No specification for which charts are required in the project.
+
+**Recommendation:** Define a minimum required chart set in `config/insights_spec.json`: (1) Items by Phase — current distribution. (2) Items by Status — pipeline health. (3) Milestone progress — % closed per milestone. (4) Blocked items over time — trend line. (5) Gate failure rate — GateStatus=Failed by phase. (6) Stale items — items unchanged > N days. Charts 1–3 are available natively via GitHub Insights. Charts 4–6 may need custom Actions to compute and post as comments.
+
+---
+
+**OQ-22: Issue fields vs. project fields — no formal decision**
+
+The `command_spec.json` uses exclusively project fields (`StepID`, `Phase`, `PlanHash`, `ProjectionVersion`, `EvidenceState`, `GateStatus`). The DOCX suggests using org-level issue fields for some of these. No decision has been documented.
+
+**Recommendation:** Keep governance metadata as project fields only. The reason: project fields are set via `updateProjectV2ItemFieldValue`, which your CLI already targets. Issue fields are org-level and writable from any issue — meaning any team member editing an issue can potentially change a governance field, breaking single-writer authority. The only fields worth considering as issue fields are human-assigned ones (Priority, Effort) that don't affect plan integrity. Document this decision explicitly to prevent future drift.
+
+---
+
+## GROUP 6 — Bidirectional Sync Risk
+
+---
+
+**OQ-23: GitHub's bidirectional field sync creates an unaddressed drift vector**
+
+GitHub Projects writes changes back to issues when project fields are modified in the UI (e.g., changing assignee via the board updates the issue). More critically, someone dragging a card to a different phase column in the board UI will update the Phase project field — which is supposed to be automation-owned. The reconciliation loop catches this, but the current spec doesn't explicitly classify this as a drift category.
+
+**Recommendation:** Add `UNAUTHORIZED_UI_EDIT` as an explicit drift classification in the reconciliation report. When the evaluator detects that an automation-owned field was changed outside the CLI (detectable by comparing `PlanHash`/`ProjectionVersion` against the expected value from the plan), it should: (1) log it as `UNAUTHORIZED_UI_EDIT`, (2) revert the field to the plan value, and (3) post a comment on the issue explaining the revert. Consider also configuring the GitHub project to hide the Phase field from the board drag-and-drop interface to remove the temptation entirely.
+
+---
+
+## Summary Table
+
+| # | Question | Priority | Impact |
+|---|---|---|---|
+| OQ-01 | JSON plan vs GitHub as SSOT | 🔴 Critical | Architecture |
+| OQ-02 | Shared CLI vs per-workflow scripts | 🔴 Critical | Implementation |
+| OQ-03 | CLI language/runtime | 🔴 Critical | Implementation |
+| OQ-04 | Evidence-seal step-to-issue resolution | 🔴 Critical | Workflow correctness |
+| OQ-05 | Gate completion criteria for phase advancement | 🔴 Critical | Governance |
+| OQ-06 | Stuck item thresholds | 🟡 Medium | Operations |
+| OQ-07 | Linkage commit step disabled | 🔴 Critical | Data integrity |
+| OQ-08 | Projection manifest schema | 🔴 Critical | Data contract |
+| OQ-09 | Step-issue linkage schema | 🔴 Critical | Data contract |
+| OQ-10 | Field option enumerations | 🔴 Critical | Bootstrap dependency |
+| OQ-11 | Phase transition/advancement report schemas | 🟡 Medium | Governance |
+| OQ-12 | Reconciliation report schema | 🟡 Medium | Auditability |
+| OQ-13 | GitHub App provisioning documentation | 🔴 Critical | Deployment blocker |
+| OQ-14 | Field ownership registry | 🔴 Critical | Single-writer authority |
+| OQ-15 | Override registry format | 🟡 Medium | Governance |
+| OQ-16 | Standard project views | 🟡 Medium | Operational surface |
+| OQ-17 | Project template governance | 🟡 Medium | Deployment repeatability |
+| OQ-18 | Draft issue intake policy | 🟡 Medium | Architecture boundary |
+| OQ-19 | Native hierarchy fields in bootstrap | 🟢 Low | Visibility |
+| OQ-20 | Project status update policy | 🟢 Low | Stakeholder comms |
+| OQ-21 | Insights/charts pack | 🟢 Low | Reporting |
+| OQ-22 | Issue fields vs project fields decision | 🟡 Medium | Field architecture |
+| OQ-23 | Bidirectional UI sync drift vector | 🔴 Critical | Governance integrity |
+
+The 🔴 Critical items are blockers — none of the workflows can run correctly until OQ-01 through OQ-05, OQ-07 through OQ-10, OQ-13, OQ-14, and OQ-23 are resolved. The 🟡 Medium items should be resolved before the system goes into regular operation. The 🟢 Low items can be deferred to a post-launch iteration.

@@ -1,5 +1,11 @@
 # Template to GitHub Mapping
 
+> Status note: this exported transcript is mixed-source material.
+> The active GitHub-native mapping extracted from it now lives in
+> `GIT_OPS/NPP_TO_GITHUB_ACTIVE_MAPPING.md`.
+> Later sections of this file drift into archived custom control-plane and
+> reconciliation proposals and should be treated as historical context only.
+
 **User:**   
 **Created:** 4/11/2026 0:09:20  
 **Updated:** 4/11/2026 7:55:36  
