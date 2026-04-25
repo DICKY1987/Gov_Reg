@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Implementation Behavior Contract",
+  "type": "object",
+  "required": [
+    "defaults_profile_id",
+    "profiles",
+    "situational_rules",
+    "validation"
+  ],
+  "properties": {
+    "defaults_profile_id": { "type": "string" },
+    "profiles": { "type": "array", "items": { "type": "object" } },
+    "situational_rules": { "type": "array", "items": { "type": "object" } },
+    "validation": { "type": "object" }
+  },
+  "additionalProperties": true
+}

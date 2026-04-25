@@ -216,11 +216,12 @@ def watch_governed_zones(
     with open(config_path, 'r', encoding='utf-8') as f:
         config = json.load(f)
     
-    project_root = Path(config.get('project_root', Path.cwd()))
+    project_root_value = config.get("project_root_path") or config.get("project_root") or Path.cwd()
+    project_root = Path(project_root_value)
     project_root_id = config.get('project_root_id', '01260207201000000000')
-    
+
     # Initialize components
-    zone_classifier = ZoneClassifier()
+    zone_classifier = ZoneClassifier(project_root=project_root)
     resolver = DirectoryIdentityResolver(project_root, project_root_id, zone_classifier)
     
     # Create event handler

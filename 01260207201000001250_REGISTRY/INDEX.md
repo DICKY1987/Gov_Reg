@@ -132,13 +132,22 @@ REMEDIATION_PLAN_SUMMARY.md - NOT CREATED; removed from delivery scope.
 |----------|---------|------|
 | `README.md` | Package overview | ~6.5KB |
 | `EXECUTION_COMPLETE.md` | Completion statement | ~5.6KB |
-| `EXECUTION_PROGRESS_REPORT.md` | Progress snapshot | ~6.3KB |
-| `FINAL_EXECUTION_REPORT.md` | Final execution summary | ~9.4KB |
+| `archive/analysis_reports/2026-04-24_root_cleanup/EXECUTION_PROGRESS_REPORT.md` | Archived progress snapshot | ~6.3KB |
+| `archive/analysis_reports/2026-04-24_root_cleanup/FINAL_EXECUTION_REPORT.md` | Archived final execution summary | ~9.4KB |
 | `BEFORE_AFTER_COMPARISON.md` | Before/after diff summary | ~11.5KB |
 | `IMPLEMENTATION_CHECKLIST.md` | Checklist status | ~9.0KB |
 | `ISSUE_REMEDIATION_PLAN.md` | Issue remediation plan | ~21.6KB |
 | `ACCEPTANCE_VALIDATION_REPORT.md` | Acceptance criteria results | ~13.0KB |
 | `CORRECTION_REPORT.md` | Correction details | ~9.3KB |
+
+---
+
+## Archived Auxiliary Analysis
+
+- `archive/analysis_reports/2026-04-24_root_cleanup/REGISTRY_AUTOMATION_AUDIT_REPORT.md`
+- `archive/analysis_reports/2026-04-24_root_cleanup/Remaining issues I still see.txt`
+- `archive/analysis_reports/2026-04-24_root_cleanup/Remaining issues I still see.1`
+- `archive/analysis_reports/2026-04-24_root_cleanup/lazy-questing-thompson.md`
 
 ---
 

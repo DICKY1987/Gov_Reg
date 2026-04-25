@@ -17,12 +17,15 @@ import hashlib
 import time
 from datetime import datetime, timezone
 
-repo_root = Path(__file__).parent.parent
-if str(repo_root) not in sys.path:
-    sys.path.insert(0, str(repo_root))
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+RUNTIME_ROOT = PROJECT_ROOT / "ID" / "1_runtime"
+WATCHERS_ROOT = RUNTIME_ROOT / "watchers"
+VALIDATORS_ROOT = RUNTIME_ROOT / "validators"
 
-# Import from same directory
-sys.path.insert(0, str(Path(__file__).parent))
+for import_path in (RUNTIME_ROOT, WATCHERS_ROOT, VALIDATORS_ROOT):
+    if str(import_path) not in sys.path:
+        sys.path.insert(0, str(import_path))
+
 from P_01260207233100000068_zone_classifier import ZoneClassifier
 from P_01260207233100000070_dir_identity_resolver import DirectoryIdentityResolver
 from P_01999000042260125104_dir_id_auto_repair import DirIdAutoRepair
@@ -236,7 +239,7 @@ class ScannerService:
         """
         self.project_root = project_root
         self.project_root_id = project_root_id
-        self.zone_classifier = zone_classifier or ZoneClassifier()
+        self.zone_classifier = zone_classifier or ZoneClassifier(project_root=project_root)
         self.resolver = resolver or DirectoryIdentityResolver(
             project_root=project_root,
             project_root_id=project_root_id,
@@ -483,7 +486,6 @@ class ScannerService:
     def _scan_files(self) -> FileScanMetrics:
         """Scan all files for ID format compliance."""
         try:
-            sys.path.insert(0, str(self.project_root / "01260207201000001276_scripts"))
             from P_01999000042260124521_id_format_scanner import IDFormatScanner
             
             scanner = IDFormatScanner(self.project_root)
@@ -736,16 +738,27 @@ class ScannerService:
                 duplicate_count=0,
                 duplicate_groups={},
                 total_affected_files=0
-            )
+        )
         
         try:
-            sys.path.insert(0, str(self.project_root / "01260207201000001173_govreg_core" / "01260207201000001174_geu_reconciliation"))
-            from P_01260207233100000154_id_normalizer import detect_duplicates
-            
             registry_data = json.loads(registry_path.read_text(encoding='utf-8'))
             records = registry_data.get('records', [])
-            
-            duplicates = detect_duplicates(records)
+
+            grouped_records = defaultdict(list)
+            for record in records:
+                canonical_id = (
+                    record.get("canonical_id")
+                    or record.get("file_id")
+                    or record.get("id")
+                )
+                if canonical_id:
+                    grouped_records[str(canonical_id)].append(record)
+
+            duplicates = {
+                canonical_id: group
+                for canonical_id, group in grouped_records.items()
+                if len(group) > 1
+            }
             
             total_affected = sum(len(group) for group in duplicates.values())
             
@@ -881,14 +894,14 @@ class ScannerService:
         templates = {
             'DIR-IDENTITY-004': ActionableRemediation(
                 violation_code='DIR-IDENTITY-004',
-                command='python -m govreg_core.P_01260207233100000071_scanner_service --fix',
+                command='python ID\\7_automation\\P_01260207233100000071_scanner_service.py --root . --root-id <PROJECT_ROOT_ID> --fix',
                 automated=True,
                 estimated_effort='1min',
                 description='Missing .dir_id - run scanner with --fix to allocate'
             ),
             'DIR-IDENTITY-005': ActionableRemediation(
                 violation_code='DIR-IDENTITY-005',
-                command='rm .dir_id && python -m govreg_core.P_01260207233100000071_scanner_service --fix',
+                command='del .dir_id && python ID\\7_automation\\P_01260207233100000071_scanner_service.py --root . --root-id <PROJECT_ROOT_ID> --fix',
                 automated=True,
                 estimated_effort='1min',
                 description='Invalid .dir_id format - delete and re-allocate'

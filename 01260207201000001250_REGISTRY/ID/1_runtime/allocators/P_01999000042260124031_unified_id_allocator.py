@@ -14,10 +14,9 @@ from dataclasses import dataclass
 import sys
 import os
 
-# Add scripts directory to path for shared_utils
-scripts_path = str(Path(__file__).parent.parent / "01260207201000001276_scripts")
-if scripts_path not in sys.path:
-    sys.path.insert(0, scripts_path)
+RUNTIME_ROOT = Path(__file__).resolve().parent.parent
+if str(RUNTIME_ROOT) not in sys.path:
+    sys.path.insert(0, str(RUNTIME_ROOT))
 
 from P_01999000042260124030_shared_utils import atomic_json_write, atomic_json_read, utc_timestamp
 

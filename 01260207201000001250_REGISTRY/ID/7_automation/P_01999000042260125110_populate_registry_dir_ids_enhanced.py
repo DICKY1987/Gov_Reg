@@ -15,12 +15,12 @@ from dataclasses import dataclass, asdict
 from collections import defaultdict
 import sys
 
-# Add parent to path for imports
-repo_root = Path(__file__).parent.parent.parent
-if str(repo_root) not in sys.path:
-    sys.path.insert(0, str(repo_root))
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+RUNTIME_ROOT = PROJECT_ROOT / "ID" / "1_runtime"
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "01260207201000001173_govreg_core"))
+if str(RUNTIME_ROOT) not in sys.path:
+    sys.path.insert(0, str(RUNTIME_ROOT))
+
 from P_01260207233100000069_dir_id_handler import DirIdManager
 from P_01260207233100000068_zone_classifier import ZoneClassifier
 
@@ -77,8 +77,8 @@ class EnhancedDirIdPopulator:
             evidence_dir: Directory for evidence artifacts
         """
         self.project_root = project_root
-        self.dir_id_manager = DirIdManager()
-        self.zone_classifier = ZoneClassifier()
+        self.dir_id_manager = DirIdManager(project_root=project_root)
+        self.zone_classifier = ZoneClassifier(project_root=project_root)
         
         if evidence_dir is None:
             evidence_dir = project_root / ".state" / "evidence" / "coverage"
@@ -315,7 +315,8 @@ def populate_registry_dir_ids_full(
     with open(config_path, 'r', encoding='utf-8') as f:
         config = json.load(f)
     
-    project_root = Path(config.get('project_root', Path.cwd()))
+    project_root_value = config.get("project_root_path") or config.get("project_root") or Path.cwd()
+    project_root = Path(project_root_value)
     
     populator = EnhancedDirIdPopulator(project_root)
     return populator.populate_registry_dir_ids_full(

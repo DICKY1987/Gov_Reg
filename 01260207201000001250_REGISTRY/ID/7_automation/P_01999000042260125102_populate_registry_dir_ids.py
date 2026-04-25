@@ -11,9 +11,13 @@ from pathlib import Path
 import sys
 from typing import Any, Dict, List, Optional
 
-CORE_PATH = Path(__file__).parent.parent / "01260207201000001173_govreg_core"
-if str(CORE_PATH) not in sys.path:
-    sys.path.insert(0, str(CORE_PATH))
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+RUNTIME_ROOT = PROJECT_ROOT / "ID" / "1_runtime"
+WATCHERS_PATH = RUNTIME_ROOT / "watchers"
+
+for import_path in (RUNTIME_ROOT, WATCHERS_PATH):
+    if str(import_path) not in sys.path:
+        sys.path.insert(0, str(import_path))
 
 from P_01999000042260126000__idpkg_runtime import IdpkgConfig
 from P_01260207233100000069_dir_id_handler import DirIdManager
@@ -58,7 +62,7 @@ def populate_dir_ids(config_path: Path) -> int:
     registry_path = config.registry_path
 
     registry = atomic_json_read(registry_path)
-    manager = DirIdManager()
+    manager = DirIdManager(project_root=config.project_root_path)
 
     patch_ops: List[Dict[str, Any]] = []
     stats = {

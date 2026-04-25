@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Path Abstraction Contract",
+  "type": "object",
+  "required": [
+    "registry",
+    "resolver",
+    "governed_path_classes",
+    "hardcoded_path_index_policy",
+    "validation"
+  ],
+  "properties": {
+    "registry": { "type": "object" },
+    "resolver": { "type": "object" },
+    "governed_path_classes": { "type": "array", "items": { "type": "string" } },
+    "hardcoded_path_index_policy": { "type": "object" },
+    "validation": { "type": "object" }
+  },
+  "additionalProperties": true
+}

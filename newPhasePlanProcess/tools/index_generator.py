@@ -60,17 +60,53 @@ ARRAY_RULES = {
         },
     },
     "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json": {
+        "/abstraction_governance/boundary_contracts": {
+            "classification": "index_eligible",
+            "identity_field": "contract_id",
+            "identity_pattern": r"^ABS-[A-Z0-9-]+$",
+            "index_output": "by_abstraction_contract_id",
+        },
         "/execution_patterns/task_pattern_mappings": {
             "classification": "index_eligible",
             "identity_field": "pattern_id",
             "identity_pattern": r"^PAT-[A-Z0-9-]+$",
             "index_output": "by_pattern_id",
         },
+        "/implementation_behavior_contract/profiles": {
+            "classification": "index_eligible",
+            "identity_field": "behavior_profile_id",
+            "identity_pattern": r"^[A-Z0-9_]+$",
+            "index_output": "by_behavior_profile_id",
+        },
+        "/implementation_behavior_contract/situational_rules": {
+            "classification": "index_eligible",
+            "identity_field": "rule_id",
+            "identity_pattern": r"^BEH-[A-Z0-9-]+$",
+            "index_output": "by_behavior_rule_id",
+        },
         "/executor_registry/registered_executors": {
             "classification": "index_eligible",
             "identity_field": "executor_id",
             "identity_pattern": r"^EXEC-[A-Z0-9-]+$",
             "index_output": "by_executor_id",
+        },
+        "/reusable_program_contract/program_taxonomy": {
+            "classification": "index_eligible",
+            "identity_field": "program_type",
+            "identity_pattern": r"^(Gate|Phase|Transport|Mutation|Executor)$",
+            "index_output": "by_program_type",
+        },
+        "/artifact_intent_manifest/records": {
+            "classification": "index_eligible",
+            "identity_field": "artifact_intent_id",
+            "identity_pattern": r"^AINT-\d{3,}$",
+            "index_output": "by_artifact_intent_id",
+        },
+        "/planned_registry_projection/records": {
+            "classification": "index_eligible",
+            "identity_field": "projection_id",
+            "identity_pattern": r"^REGPROJ-\d{3,}$",
+            "index_output": "by_projection_id",
         },
         "/final_summary/what_was_delivered/enhancements": {
             "classification": "index_eligible",

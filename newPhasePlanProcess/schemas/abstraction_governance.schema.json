@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Abstraction Governance",
+  "type": "object",
+  "required": [
+    "enabled",
+    "enforcement_mode",
+    "core_law",
+    "mandatory_boundary_types",
+    "required_contract_surfaces",
+    "validation"
+  ],
+  "properties": {
+    "enabled": { "type": "boolean" },
+    "enforcement_mode": { "type": "string" },
+    "core_law": { "type": "string" },
+    "mandatory_boundary_types": { "type": "array", "items": { "type": "string" } },
+    "required_contract_surfaces": { "type": "array", "items": { "type": "string" } },
+    "validation": { "type": "object" }
+  },
+  "additionalProperties": true
+}

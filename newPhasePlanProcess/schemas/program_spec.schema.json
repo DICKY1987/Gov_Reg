@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Program Spec",
+  "type": "object",
+  "required": ["program_type", "spec_type"],
+  "properties": {
+    "program_type": { "type": "string" },
+    "spec_type": { "type": "string" }
+  },
+  "additionalProperties": true
+}

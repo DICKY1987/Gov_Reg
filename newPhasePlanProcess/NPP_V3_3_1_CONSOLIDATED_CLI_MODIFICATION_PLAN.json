@@ -1,0 +1,2370 @@
+{
+  "patch_plan_metadata": {
+    "plan_id": "NPP-V3_3_1-CONSOLIDATED-CLI-MODIFICATION-PLAN",
+    "version": "1.1.0",
+    "created_at": "2026-04-24",
+    "target_release": "3.3.1",
+    "purpose": "Single CLI-executable modification document for adding mandatory abstraction/reuse controls plus v3.3 cleanup fixes: MCP ID compatibility, phase-scoped step identity, index-eligible v3.3 arrays, stale gate-count drift removal, template-placeholder semantics, and referenced-validator existence checks.",
+    "mutation_style": "additive_json_patch_plus_markdown_string_patch_plus_conditional_file_patch",
+    "primary_goal": "Make v3.3.1 both governance-complete and execution-compatible while reducing future file-load growth through reusable specs/runners and eliminating source-set drift.",
+    "scope_rule": "Mandatory only for governed boundaries, important/shared paths, reusable automation, pattern/executor handoffs, and CLI/tool integrations. Not mandatory for private single-module helper logic or throwaway experiments.",
+    "consolidates": [
+      "NPP-V3_3_1-ABSTRACTION-REUSE-INTEGRATION",
+      "v3.3 current-state cleanup and compatibility findings from changed source-set analysis"
+    ],
+    "execution_policy": "Apply operations in declared order. Treat generated artifacts as rebuild targets, not manual patch targets. Fail closed on unresolved JSON Pointer, missing target file when required_if_exists is true and file exists, duplicate IDs, invalid JSON, or missing validator scripts."
+  },
+  "source_basis": [
+    {
+      "source_file": "ChatGPT-Reusable Governance Components.json",
+      "used_for": "Reusable governance kernel and policy-pack split.",
+      "citation": "fileciteturn13file0"
+    },
+    {
+      "source_file": "Applying CDD File Reuse to the NPP System.md",
+      "used_for": "CDD file-count reduction model, ProgramSpec/GateSpec/PassSpec taxonomy, and reusable runner architecture.",
+      "citation": "fileciteturn13file1"
+    },
+    {
+      "source_file": "Reusable gates and automation.txt",
+      "used_for": "Binary Gate + Deterministic Remediation Loop and shared GateRunner pattern.",
+      "citation": "fileciteturn13file2"
+    },
+    {
+      "source_file": "01260207201000000465_ChatGPT-Reusable Pattern Programs (1).json",
+      "used_for": "Reusable Program Taxonomy: Gate, Phase, Mutation, Transport, Executor.",
+      "citation": "fileciteturn13file3"
+    },
+    {
+      "source_file": "Generic Reusable Automation Pipeline in Python.txt",
+      "used_for": "13-stage automation lifecycle spine.",
+      "citation": "fileciteturn13file4"
+    },
+    {
+      "source_file": "01260207201000000474_Gate‑Specific Files, Reusable Compo.txt",
+      "used_for": "Gate-specific files versus reusable components and new-gate process.",
+      "citation": "fileciteturn13file5"
+    },
+    {
+      "source_file": "01260207201000000669_PATH ABSTRACTION & INDIRECTION LAYER.md",
+      "used_for": "Path keys, path registry, resolver, and hardcoded path index enforcement.",
+      "citation": "fileciteturn6file1"
+    },
+    {
+      "source_file": "SSOT-UET-PATH-ABSTRACTION.MD",
+      "used_for": "Contracts are abstractions law and mandatory boundary abstraction rules.",
+      "citation": "fileciteturn6file2"
+    },
+    {
+      "source_file": "ChatGPT-AI CLI Code Style.json",
+      "used_for": "Deterministic implementation behavior profiles and situational rules.",
+      "citation": "fileciteturn6file0"
+    },
+    {
+      "source_file": "user_pasted_v3_3_changed_source_set_analysis",
+      "used_for": "Cleanup layer: active v3.3 source-set alignment, MCP ID patterns, phase-scoped step identity decision, index eligibility for new arrays, stale gate-count wording, placeholder semantics, and validator existence checks.",
+      "citation": "user_provided_current_turn_text"
+    }
+  ],
+  "integration_concepts": {
+    "contracts_as_mandatory_abstractions": {
+      "mandatory": true,
+      "scope": [
+        "orchestrator_to_worker",
+        "domain_to_environment",
+        "pattern_to_executor",
+        "error_producer_to_error_engine",
+        "logical_resource_to_physical_path",
+        "cli_to_cli",
+        "phase_to_phase",
+        "registry_mutation"
+      ],
+      "not_required_for": [
+        "private single-module helper functions",
+        "throwaway experiments",
+        "tiny stable local utilities with no external caller"
+      ],
+      "template_integration": [
+        "new top-level abstraction_governance section",
+        "step-level abstraction_binding object",
+        "traceability maps for requirement/module/component/step to abstraction contract",
+        "GATE-ABS-* validation gates"
+      ]
+    },
+    "path_keys_instead_of_hardcoded_paths": {
+      "mandatory": true,
+      "scope": [
+        "governance documents",
+        "schemas",
+        "templates",
+        "instruction docs",
+        "pattern files",
+        "executor configs",
+        "state directories",
+        "evidence paths",
+        "registry files",
+        "scripts used by more than one tool",
+        "paths referenced by prompts, plans, automation, or CI"
+      ],
+      "template_integration": [
+        "new path_abstraction_contract section",
+        "path_key fields in artifact intent and registry projection records",
+        "file_manifest path_key_policy",
+        "GATE-PATH-* validation gates"
+      ]
+    },
+    "path_registry_resolver_usage": {
+      "mandatory": true,
+      "registry_default": "config/path_index.yaml",
+      "resolver_module_default": "src/path_registry.py",
+      "resolver_cli_default": "scripts/paths_resolve.py",
+      "unknown_key_policy": "fail_closed",
+      "template_integration": [
+        "path registry declared as authoritative",
+        "resolver required for governed paths",
+        "path resolution evidence required per governed step"
+      ]
+    },
+    "hardcoded_path_index_enforcement": {
+      "mandatory": true,
+      "rollout_mode": "phased",
+      "phases": [
+        "report_only",
+        "fail_on_new_governed_hardcoded_paths",
+        "fail_on_deprecated_registered_paths",
+        "require_migration_plan_for_legacy_pending_occurrences"
+      ],
+      "template_integration": [
+        "hardcoded_path_index_policy under path_abstraction_contract",
+        "GATE-PATH-003 blocks new governed literals",
+        "migration-progress validation for legacy hardcoded paths is added only when a concrete GATE-PATH-004 definition exists"
+      ]
+    },
+    "contracts_are_abstractions_law": {
+      "mandatory": true,
+      "law_text": "Contracts are the only valid abstractions at governed boundaries; raw tool calls, raw physical paths, informal prose handoffs, and hidden prompt behavior are not valid boundary abstractions.",
+      "template_integration": [
+        "critical_constraint rule",
+        "abstraction_governance.core_law",
+        "technical spec design principle",
+        "instruction document general principle"
+      ]
+    },
+    "cdd_file_load_reduction": {
+      "mandatory": true,
+      "law_text": "A new feature may add specs/configs/schemas/tests, but may not add new execution machinery unless the plan proves no reusable runner, pattern, or program type can support it.",
+      "template_integration": [
+        "new reusable_program_contract section",
+        "new reusable_machinery_policy under abstraction_governance",
+        "GATE-RPROG-* validation gates",
+        "new manual exception policy for new runners/executors"
+      ]
+    }
+  },
+  "target_files": [
+    "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+    "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_3.json",
+    "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_3.json"
+  ],
+  "secondary_targets": [
+    {
+      "file": "01260207201000000512_npp_mcp_tool_contracts.v1.json",
+      "required_if_exists": true,
+      "reason": "Compatibility patch is required when the MCP contract file is present because old phase_id/step_id patterns reject valid v3.3 identifiers."
+    },
+    {
+      "file": "tools/index_generator.py",
+      "required_if_exists": true,
+      "reason": "Generator must be patched so inventory/index outputs classify new v3.3 arrays and new v3.3.1 arrays as index_eligible. Do not manually patch generated inventory.json."
+    }
+  ],
+  "global_patch_order": [
+    "patch_template_json",
+    "patch_technical_spec_json",
+    "patch_instruction_document_json",
+    "patch_mcp_contract_if_present",
+    "patch_index_generator_if_present",
+    "create_supporting_schema_runtime_and_validator_artifacts",
+    "run_validator_existence_audit",
+    "rerun_index_generator",
+    "run_post_patch_validation"
+  ],
+  "template_patch": {
+    "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+    "operation_mode": "RFC6902-compatible JSON Patch where possible",
+    "operations": [
+      {
+        "op": "add",
+        "path": "/template_metadata/breaking_changes/-",
+        "value": "Added abstraction_governance as a mandatory scoped control surface for contract-first boundaries and the contracts-are-abstractions law."
+      },
+      {
+        "op": "add",
+        "path": "/template_metadata/breaking_changes/-",
+        "value": "Added path_abstraction_contract requiring governed paths to use path keys, path registry resolution, and hardcoded-path index enforcement."
+      },
+      {
+        "op": "add",
+        "path": "/template_metadata/breaking_changes/-",
+        "value": "Added reusable_program_contract to reduce file-load growth by requiring reusable runners/program specs before bespoke execution machinery."
+      },
+      {
+        "op": "add",
+        "path": "/template_metadata/breaking_changes/-",
+        "value": "Added implementation_behavior_contract for deterministic CLI/code-generation defaults and machine-resolved situational behavior rules."
+      },
+      {
+        "op": "add",
+        "path": "/critical_constraint/rules/-",
+        "value": "Contracts are the mandatory abstraction mechanism at governed boundaries; raw tool calls, raw physical paths, informal handoffs, and hidden prompt behavior are not valid boundary abstractions."
+      },
+      {
+        "op": "add",
+        "path": "/critical_constraint/rules/-",
+        "value": "Important or shared repo paths MUST be referenced by registered path keys and resolved through the declared path resolver."
+      },
+      {
+        "op": "add",
+        "path": "/critical_constraint/rules/-",
+        "value": "New bespoke runners, validators, orchestration scripts, report parsers, or healing scripts are forbidden unless reusable_program_contract proves no existing reusable program type can support the work."
+      },
+      {
+        "op": "add",
+        "path": "/critical_constraint/rules/-",
+        "value": "Every governed boundary MUST declare an abstraction_binding that identifies input contracts, output contracts, path keys, resolver usage, and validation evidence."
+      },
+      {
+        "op": "add",
+        "path": "/critical_constraint/rules/-",
+        "value": "Every governed path mutation MUST declare whether path abstraction is required, the path_key when required, and the resolver evidence used to prove resolution."
+      },
+      {
+        "op": "add",
+        "path": "/critical_constraint/rules/-",
+        "value": "If abstraction, path resolution, or reusable-program applicability cannot be mechanically verified, the step MUST fail closed or be marked NOT_AUTOMATABLE with manual review evidence."
+      },
+      {
+        "op": "add",
+        "path": "/abstraction_governance",
+        "value": {
+          "enabled": true,
+          "enforcement_mode": "fail_closed",
+          "core_law": "contracts_are_abstractions",
+          "law_statement": "Contracts are the only valid abstraction at governed boundaries. Boundary behavior must be expressed through versioned input/output contracts, path keys, schema-backed envelopes, and registered executors rather than raw calls or prose.",
+          "mandatory_boundary_types": [
+            "orchestrator_to_worker",
+            "domain_to_environment",
+            "pattern_to_executor",
+            "error_producer_to_error_engine",
+            "logical_resource_to_physical_path",
+            "cli_to_cli",
+            "phase_to_phase",
+            "registry_mutation",
+            "artifact_transport",
+            "evidence_publication"
+          ],
+          "non_applicable_scope": [
+            "single_module_private_logic",
+            "throwaway_experiment",
+            "tiny_non_shared_helper",
+            "local_test_fixture_without_external_consumers"
+          ],
+          "required_contract_surfaces": [
+            "input_contract",
+            "output_contract",
+            "artifact_envelope",
+            "error_event_contract",
+            "path_key_contract",
+            "executor_contract",
+            "result_envelope",
+            "evidence_contract"
+          ],
+          "boundary_contract_record_schema": {
+            "required_fields": [
+              "contract_id",
+              "boundary_type",
+              "producer",
+              "consumer",
+              "input_contract_ref",
+              "output_contract_ref",
+              "schema_refs",
+              "version",
+              "compatibility_policy",
+              "validation_command",
+              "evidence"
+            ],
+            "contract_id_pattern": "^ABS-[A-Z0-9-]+$"
+          },
+          "reusable_machinery_policy": {
+            "no_new_execution_machinery_by_default": true,
+            "allowed_new_files_without_exception": [
+              "spec",
+              "config",
+              "schema",
+              "golden_fixture",
+              "test",
+              "catalog_entry",
+              "documentation_generated_from_spec"
+            ],
+            "restricted_new_file_kinds": [
+              "runner",
+              "orchestrator",
+              "validator",
+              "report_parser",
+              "heal_script",
+              "merge_engine",
+              "transport_adapter"
+            ],
+            "exception_requires": [
+              "manual_exception_id",
+              "missing_reusable_program_analysis",
+              "reuse_options_considered",
+              "approval_evidence",
+              "sunset_or_generalization_plan"
+            ]
+          },
+          "validation": {
+            "command": "python scripts/validate_abstraction_governance.py --plan-file {plan_file}",
+            "expect_exit_code": 0,
+            "evidence": ".state/evidence/GATE-ABS-001/abstraction_governance.json"
+          }
+        }
+      },
+      {
+        "op": "add",
+        "path": "/path_abstraction_contract",
+        "value": {
+          "enabled": true,
+          "enforcement_mode": "fail_closed",
+          "registry": {
+            "authoritative_registry_path": "config/path_index.yaml",
+            "registry_schema_ref": "schemas/path_registry.schema.json",
+            "key_pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$",
+            "duplicate_key_policy": "fail_closed",
+            "missing_key_policy": "fail_closed"
+          },
+          "resolver": {
+            "resolver_module": "src/path_registry.py",
+            "resolver_cli": "scripts/paths_resolve.py",
+            "required_for_governed_paths": true,
+            "resolver_failure_policy": "fail_closed",
+            "no_fuzzy_matching": true,
+            "no_implicit_fallback_paths": true
+          },
+          "governed_path_classes": [
+            "governance_document",
+            "schema",
+            "template",
+            "instruction_document",
+            "pattern_file",
+            "executor_config",
+            "registry_file",
+            "state_directory",
+            "evidence_directory",
+            "shared_script",
+            "prompt_asset",
+            "ci_workflow",
+            "multi_tool_resource"
+          ],
+          "non_governed_path_classes": [
+            "temporary_scratch_file",
+            "local_private_module_file",
+            "test_tmp_dir",
+            "generated_cache_file"
+          ],
+          "artifact_record_requirements": {
+            "governed_artifacts_require_path_key": true,
+            "ungoverned_artifacts_must_state_reason": true,
+            "path_resolution_evidence_required": true
+          },
+          "hardcoded_path_index_policy": {
+            "enabled": true,
+            "index_source": "refactor_paths.db",
+            "rollout_stage": "fail_on_new_governed_hardcoded_paths",
+            "allowlist_path": "config/hardcoded_path_allowlist.yaml",
+            "deprecated_pattern_policy": "fail_closed_when_registered_key_exists",
+            "legacy_occurrence_policy": "require_migration_plan"
+          },
+          "validation": {
+            "registry_validation_command": "python scripts/validate_path_registry.py --registry config/path_index.yaml",
+            "resolver_validation_command": "python scripts/validate_path_resolution.py --plan-file {plan_file}",
+            "hardcoded_path_validation_command": "python scripts/validate_no_new_hardcoded_governed_paths.py --plan-file {plan_file}",
+            "expect_exit_code": 0,
+            "evidence": ".state/evidence/path_abstraction/validation.json"
+          }
+        }
+      },
+      {
+        "op": "add",
+        "path": "/reusable_program_contract",
+        "value": {
+          "enabled": true,
+          "enforcement_mode": "fail_closed",
+          "purpose": "Prevent file-load growth by requiring reusable deterministic program types and data-only specs before new execution machinery is introduced.",
+          "program_taxonomy": [
+            {
+              "program_type": "Gate",
+              "canonical_pattern": "Binary Gate + Deterministic Remediation Loop",
+              "spec_type": "GateSpec",
+              "shared_runner": "scripts/gate_runner.py",
+              "result_envelope": "GateResult",
+              "customization_surface": [
+                "inputs",
+                "commands",
+                "evidence_contract",
+                "error_code_normalization",
+                "pass_criteria"
+              ]
+            },
+            {
+              "program_type": "Phase",
+              "canonical_pattern": "Deterministic Phase Runner",
+              "spec_type": "PhaseContract",
+              "shared_runner": "scripts/phase_runner.py",
+              "result_envelope": "PhaseResult",
+              "customization_surface": [
+                "requires",
+                "commands",
+                "produces",
+                "advance_rule",
+                "write_policy"
+              ]
+            },
+            {
+              "program_type": "Transport",
+              "canonical_pattern": "Artifact Envelope + Handoff Contract",
+              "spec_type": "HandoffContract",
+              "shared_runner": "scripts/handoff_runner.py",
+              "result_envelope": "HandoffReport",
+              "customization_surface": [
+                "artifact_kinds",
+                "schema_ids",
+                "producer",
+                "consumer",
+                "routing_rule"
+              ]
+            },
+            {
+              "program_type": "Mutation",
+              "canonical_pattern": "Controlled Registry Mutation Program",
+              "spec_type": "MutationSpec",
+              "shared_runner": "scripts/mutation_runner.py",
+              "result_envelope": "MutationResult",
+              "customization_surface": [
+                "target_registry",
+                "allowed_patch_ops",
+                "schemas",
+                "rollback_policy",
+                "write_set"
+              ]
+            },
+            {
+              "program_type": "Executor",
+              "canonical_pattern": "Registered Executor + Schema-Validated Config",
+              "spec_type": "ExecutorSpec",
+              "shared_runner": "scripts/executor_dispatcher.py",
+              "result_envelope": "ToolResultEnvelope",
+              "customization_surface": [
+                "executor_id",
+                "supported_pattern_ids",
+                "config_schema_versions",
+                "parameter_schema_versions",
+                "output_contract_refs"
+              ]
+            }
+          ],
+          "new_behavior_policy": {
+            "default_addition_type": "spec_or_config",
+            "forbid_new_runner_by_default": true,
+            "allowed_spec_families": [
+              "ProgramSpec",
+              "GateSpec",
+              "PassSpec",
+              "MergeSpec",
+              "MutationSpec",
+              "TransportSpec",
+              "ExecutorSpec"
+            ],
+            "new_runner_exception_requires": [
+              "proof_existing_program_types_insufficient",
+              "new_program_type_proposal",
+              "schema_contract",
+              "runner_contract_tests",
+              "deprecation_plan_for_duplicate_scripts"
+            ]
+          },
+          "automation_lifecycle_spine": [
+            "trigger",
+            "ingest",
+            "stabilize",
+            "classify",
+            "identify",
+            "lock",
+            "pre_validate",
+            "process",
+            "generate",
+            "commit",
+            "post_validate",
+            "rollback_if_needed",
+            "complete"
+          ],
+          "validation": {
+            "command": "python scripts/validate_reusable_program_contract.py --plan-file {plan_file}",
+            "expect_exit_code": 0,
+            "evidence": ".state/evidence/GATE-RPROG-001/reusable_program_contract.json"
+          }
+        }
+      },
+      {
+        "op": "add",
+        "path": "/implementation_behavior_contract",
+        "value": {
+          "enabled": true,
+          "enforcement_mode": "fail_closed",
+          "defaults_profile_id": "PYTHON_CLI_DEFAULTS_V1",
+          "profiles": [
+            {
+              "behavior_profile_id": "PYTHON_CLI_DEFAULTS_V1",
+              "language": "python",
+              "naming_convention": "snake_case",
+              "path_handling": "pathlib_plus_path_registry_for_governed_paths",
+              "machine_output": "json",
+              "logging_mode": "structured",
+              "cli_wrapper_policy": "thin_wrapper_over_shared_core",
+              "shared_core_required": true,
+              "type_hints_required": true,
+              "docstring_policy": "public_api_only",
+              "error_handling": "typed_errors_plus_result_envelope",
+              "state_coordination_default": "sqlite_or_declared_lock_manager_for_concurrent_runs"
+            }
+          ],
+          "situational_rules": [
+            {
+              "rule_id": "BEH-CLI-001",
+              "condition": "artifact_kind == 'cli_command' OR task_kind == 'python_cli_command'",
+              "required_behavior": {
+                "thin_cli_wrapper_required": true,
+                "shared_core_required": true,
+                "machine_output": "json"
+              },
+              "validation_command": "python scripts/validate_behavior_rule.py --rule BEH-CLI-001 --plan-file {plan_file}",
+              "evidence": ".state/evidence/behavior/BEH-CLI-001.json",
+              "violation_action": "fail_closed"
+            },
+            {
+              "rule_id": "BEH-PATH-001",
+              "condition": "uses_governed_path == true",
+              "required_behavior": {
+                "path_registry_resolution_required": true,
+                "raw_physical_path_forbidden": true
+              },
+              "validation_command": "python scripts/validate_behavior_rule.py --rule BEH-PATH-001 --plan-file {plan_file}",
+              "evidence": ".state/evidence/behavior/BEH-PATH-001.json",
+              "violation_action": "fail_closed"
+            },
+            {
+              "rule_id": "BEH-CONCURRENT-001",
+              "condition": "concurrent_writers_possible == true",
+              "required_behavior": {
+                "lock_required": true,
+                "state_coordination_required": true,
+                "flat_file_state_without_lock_forbidden": true
+              },
+              "validation_command": "python scripts/validate_behavior_rule.py --rule BEH-CONCURRENT-001 --plan-file {plan_file}",
+              "evidence": ".state/evidence/behavior/BEH-CONCURRENT-001.json",
+              "violation_action": "fail_closed"
+            }
+          ],
+          "validation": {
+            "command": "python scripts/validate_implementation_behavior_contract.py --plan-file {plan_file}",
+            "expect_exit_code": 0,
+            "evidence": ".state/evidence/GATE-BEH-001/implementation_behavior_contract.json"
+          }
+        }
+      },
+      {
+        "op": "add",
+        "path": "/file_manifest/path_key_policy",
+        "value": {
+          "governed_paths_require_path_key": true,
+          "path_key_required_fields": [
+            "path_key",
+            "path_abstraction_required",
+            "path_resolution_evidence"
+          ],
+          "ungoverned_path_requires_reason": true,
+          "hardcoded_governed_path_policy": "forbid_new"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/file_manifest/bridge_fields/-",
+        "value": "path_key"
+      },
+      {
+        "op": "add",
+        "path": "/file_manifest/bridge_fields/-",
+        "value": "abstraction_contract_ref"
+      },
+      {
+        "op": "add",
+        "path": "/file_manifest/bridge_fields/-",
+        "value": "reusable_program_ref"
+      },
+      {
+        "op": "add",
+        "path": "/artifact_intent_manifest/record_extensions",
+        "value": {
+          "path_key": {
+            "required_when": "path_abstraction_required == true",
+            "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"
+          },
+          "path_abstraction_required": {
+            "type": "boolean",
+            "default": false
+          },
+          "path_abstraction_reason": {
+            "required_when": "path_abstraction_required == false"
+          },
+          "path_resolution_evidence": {
+            "required_when": "path_abstraction_required == true"
+          },
+          "abstraction_contract_ref": {
+            "required_when": "mutation crosses governed boundary"
+          },
+          "reusable_program_ref": {
+            "required_when": "artifact is produced by reusable program"
+          }
+        }
+      },
+      {
+        "op": "add",
+        "path": "/artifact_intent_manifest/checks/all_governed_artifacts_have_path_keys",
+        "value": true
+      },
+      {
+        "op": "add",
+        "path": "/artifact_intent_manifest/checks/all_boundary_artifacts_have_abstraction_contracts",
+        "value": true
+      },
+      {
+        "op": "add",
+        "path": "/planned_registry_projection/allowed_projected_fields/-",
+        "value": "planned_path_key"
+      },
+      {
+        "op": "add",
+        "path": "/planned_registry_projection/allowed_projected_fields/-",
+        "value": "planned_abstraction_contract_ref"
+      },
+      {
+        "op": "add",
+        "path": "/planned_registry_projection/allowed_projected_fields/-",
+        "value": "planned_reusable_program_ref"
+      },
+      {
+        "op": "add",
+        "path": "/planned_registry_projection/forbidden_projected_fields/-",
+        "value": "observed_resolved_path"
+      },
+      {
+        "op": "add",
+        "path": "/planned_registry_projection/forbidden_projected_fields/-",
+        "value": "runtime_path_resolution_result"
+      },
+      {
+        "op": "add",
+        "path": "/pipeline_boundary_contract/validation_required_before_execution/-",
+        "value": "GATE-ABS-001"
+      },
+      {
+        "op": "add",
+        "path": "/pipeline_boundary_contract/validation_required_before_execution/-",
+        "value": "GATE-ABS-002"
+      },
+      {
+        "op": "add",
+        "path": "/pipeline_boundary_contract/validation_required_before_execution/-",
+        "value": "GATE-PATH-001"
+      },
+      {
+        "op": "add",
+        "path": "/pipeline_boundary_contract/validation_required_before_execution/-",
+        "value": "GATE-PATH-002"
+      },
+      {
+        "op": "add",
+        "path": "/pipeline_boundary_contract/validation_required_before_execution/-",
+        "value": "GATE-PATH-003"
+      },
+      {
+        "op": "add",
+        "path": "/pipeline_boundary_contract/validation_required_before_execution/-",
+        "value": "GATE-RPROG-001"
+      },
+      {
+        "op": "add",
+        "path": "/pipeline_boundary_contract/validation_required_before_execution/-",
+        "value": "GATE-RPROG-002"
+      },
+      {
+        "op": "add",
+        "path": "/pipeline_boundary_contract/validation_required_before_execution/-",
+        "value": "GATE-BEH-001"
+      },
+      {
+        "op": "add",
+        "path": "/traceability/requirement_to_abstraction_contract",
+        "value": {}
+      },
+      {
+        "op": "add",
+        "path": "/traceability/module_to_abstraction_contract",
+        "value": {}
+      },
+      {
+        "op": "add",
+        "path": "/traceability/component_to_abstraction_contract",
+        "value": {}
+      },
+      {
+        "op": "add",
+        "path": "/traceability/step_to_abstraction_contract",
+        "value": {}
+      },
+      {
+        "op": "add",
+        "path": "/traceability/path_key_to_artifact_intent",
+        "value": {}
+      },
+      {
+        "op": "add",
+        "path": "/traceability/reusable_program_to_step",
+        "value": {}
+      },
+      {
+        "op": "add",
+        "path": "/traceability/behavior_profile_to_step",
+        "value": {}
+      },
+      {
+        "op": "add",
+        "path": "/template_metadata/breaking_changes/-",
+        "value": "Added execution identity policy declaring phase-scoped step_id values and globally unique phase_step_key references."
+      },
+      {
+        "op": "add",
+        "path": "/template_metadata/breaking_changes/-",
+        "value": "Added template placeholder policy separating reusable template scaffold placeholders from concrete plan-instance validity rules."
+      },
+      {
+        "op": "add",
+        "path": "/template_metadata/breaking_changes/-",
+        "value": "Added generated-artifact rebuild rule requiring inventory, indexes, and evidence to be regenerated from source documents rather than manually patched."
+      },
+      {
+        "op": "add",
+        "path": "/critical_constraint/rules/-",
+        "value": "step_id values are phase-scoped; global execution references MUST use phase_step_key formatted as {phase_id}/{step_id}."
+      },
+      {
+        "op": "add",
+        "path": "/critical_constraint/rules/-",
+        "value": "Blank/null scaffold placeholders are allowed only in reusable template mode when explicitly covered by template_placeholder_policy; concrete plan instances MUST resolve or mark each such field NOT_AUTOMATABLE with evidence."
+      },
+      {
+        "op": "add",
+        "path": "/critical_constraint/rules/-",
+        "value": "Generated artifacts such as inventory.json, semantic indexes, and evidence reports MUST be rebuilt from source documents; manual mutation of generated artifacts is forbidden unless the generator is unavailable and the exception is recorded."
+      },
+      {
+        "op": "add",
+        "path": "/template_metadata/template_placeholder_policy",
+        "value": {
+          "template_placeholder_allowed": true,
+          "applies_only_to_document_role": "reusable_template_scaffold",
+          "concrete_plan_instance_rule": "fail_closed_if_blank_null_or_unresolved_unless_field_allows_NOT_AUTOMATABLE_with_manual_evidence",
+          "placeholder_marker_required_for_new_blank_fields": true,
+          "allowed_placeholder_values": [
+            "",
+            null,
+            [],
+            {}
+          ],
+          "must_not_be_interpreted_as_execution_ready": true,
+          "validator_rule": "template validators may allow declared scaffold placeholders; plan-instance validators must reject unresolved placeholders.",
+          "evidence": ".state/evidence/template_placeholder_policy_validation.json"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/pipeline_boundary_contract/execution_identity_policy",
+        "value": {
+          "phase_id_pattern": "^(PH-\\d{2,4}[A-Z]?|PRE-EXECUTION|POST-EXECUTION)$",
+          "step_id_pattern": "^STEP-\\d{3,}$",
+          "step_id_scope": "phase_scoped",
+          "phase_step_key_required": true,
+          "phase_step_key_format": "{phase_id}/{step_id}",
+          "global_step_reference_field": "phase_step_key",
+          "global_uniqueness_rule": "phase_step_key values must be globally unique across the plan; bare step_id values must be unique only within their parent phase_id.",
+          "gate_execution_stage_separation": {
+            "required": true,
+            "field": "gate_execution_stage",
+            "allowed_values": [
+              "PRE-EXECUTION",
+              "CORE-VALIDATION",
+              "POST-EXECUTION"
+            ],
+            "rule": "Do not overload phase_id with execution-stage labels when a gate is not bound to a concrete phase."
+          },
+          "validation_command": "python scripts/validate_execution_identity_policy.py --plan-file {plan_file}",
+          "expect_exit_code": 0,
+          "evidence": ".state/evidence/execution_identity_policy_validation.json"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/artifact_intent_manifest/record_identity_policy",
+        "value": {
+          "identity_field": "artifact_intent_id",
+          "identity_pattern": "^AINT-\\d{3,}$",
+          "index_required": true,
+          "patch_mode": "element_by_identity",
+          "generator_rule": "tools/index_generator.py must classify /artifact_intent_manifest/records as index_eligible."
+        }
+      },
+      {
+        "op": "add",
+        "path": "/planned_registry_projection/record_identity_policy",
+        "value": {
+          "identity_field": "projection_id",
+          "identity_pattern": "^REGPROJ-\\d{3,}$",
+          "index_required": true,
+          "patch_mode": "element_by_identity",
+          "generator_rule": "tools/index_generator.py must classify /planned_registry_projection/records as index_eligible."
+        }
+      },
+      {
+        "op": "add",
+        "path": "/run_artifact_policy/generated_artifact_rebuild_rule",
+        "value": {
+          "generated_artifacts": [
+            "inventory.json",
+            "indexes/*_V3_3.index.json",
+            "evidence/PH-*"
+          ],
+          "authoritative_sources": [
+            "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+            "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_3.json",
+            "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_3.json"
+          ],
+          "rebuild_command": "python .\\tools\\index_generator.py",
+          "manual_patch_policy": "forbidden_except_recorded_tooling_failure_exception"
+        }
+      }
+    ],
+    "step_contract_extension_operations": [
+      {
+        "op": "add",
+        "path": "/step_contracts/PH-00/STEP-001/abstraction_binding",
+        "value": {
+          "required": true,
+          "boundary_type": "artifact_production",
+          "input_contract_refs": [
+            "RepoRootRefV1"
+          ],
+          "output_contract_refs": [
+            "PlanDocumentV1"
+          ],
+          "path_keys_used": [],
+          "resolver_required": false,
+          "abstraction_contract_ref": "ABS-EXAMPLE-PLAN-DOC",
+          "validation_evidence": ".state/evidence/PH-00/STEP-001/abstraction_binding.json"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/step_contracts/PH-00/STEP-001/reusable_program_binding",
+        "value": {
+          "program_type": "Executor",
+          "program_spec_ref": "ExecutorSpec:EXEC-PLAN-DOC-WRITER",
+          "shared_runner_ref": "scripts/executor_dispatcher.py",
+          "new_execution_machinery_created": false,
+          "validation_evidence": ".state/evidence/PH-00/STEP-001/reusable_program_binding.json"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/step_contracts/PH-00/STEP-001/behavior_binding",
+        "value": {
+          "defaults_profile_id": "PYTHON_CLI_DEFAULTS_V1",
+          "triggered_rule_ids": [],
+          "resolved_behavior": {
+            "machine_output": "json",
+            "path_handling": "pathlib_plus_path_registry_for_governed_paths"
+          },
+          "override_used": false,
+          "validation_evidence": ".state/evidence/PH-00/STEP-001/behavior_binding.json"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/step_contracts/PH-02/STEP-001/abstraction_binding",
+        "value": {
+          "required": true,
+          "boundary_type": "artifact_transport",
+          "input_contract_refs": [
+            "PlanDocumentV1"
+          ],
+          "output_contract_refs": [
+            "GateDraftV1"
+          ],
+          "path_keys_used": [],
+          "resolver_required": false,
+          "abstraction_contract_ref": "ABS-EXAMPLE-GATE-EXTRACTION",
+          "validation_evidence": ".state/evidence/PH-02/STEP-001/abstraction_binding.json"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/step_contracts/PH-02/STEP-001/reusable_program_binding",
+        "value": {
+          "program_type": "Executor",
+          "program_spec_ref": "ExecutorSpec:EXEC-GATE-EXTRACTOR",
+          "shared_runner_ref": "scripts/executor_dispatcher.py",
+          "new_execution_machinery_created": false,
+          "validation_evidence": ".state/evidence/PH-02/STEP-001/reusable_program_binding.json"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/step_contracts/PH-02/STEP-001/behavior_binding",
+        "value": {
+          "defaults_profile_id": "PYTHON_CLI_DEFAULTS_V1",
+          "triggered_rule_ids": [],
+          "resolved_behavior": {
+            "machine_output": "json",
+            "path_handling": "pathlib_plus_path_registry_for_governed_paths"
+          },
+          "override_used": false,
+          "validation_evidence": ".state/evidence/PH-02/STEP-001/behavior_binding.json"
+        }
+      }
+    ],
+    "validation_gate_additions": [
+      {
+        "op": "add",
+        "path": "/validation_gates/-",
+        "value": {
+          "gate_id": "GATE-ABS-001",
+          "phase": "PH-02",
+          "step_id": null,
+          "purpose": "Abstraction governance contract is present, scoped, and valid.",
+          "command": "python scripts/validate_abstraction_governance.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-ABS-001",
+          "timeout_sec": 120,
+          "retries": 0,
+          "expect_exit_code": 0,
+          "expect_stdout_regex": [
+            "/GATE-ABS-001 PASSED/"
+          ],
+          "forbid_stdout_regex": [
+            "/GATE-ABS-001 FAILED/",
+            "/raw boundary/i"
+          ],
+          "expect_files": [
+            {
+              "path": ".state/evidence/GATE-ABS-001/abstraction_governance.json",
+              "content_regex": [
+                "/\"passed\": true/"
+              ]
+            }
+          ],
+          "evidence": ".state/evidence/GATE-ABS-001"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/validation_gates/-",
+        "value": {
+          "gate_id": "GATE-ABS-002",
+          "phase": "PH-02",
+          "step_id": null,
+          "purpose": "Every governed step has a valid abstraction_binding.",
+          "command": "python scripts/validate_step_abstraction_bindings.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-ABS-002",
+          "timeout_sec": 120,
+          "retries": 0,
+          "expect_exit_code": 0,
+          "expect_stdout_regex": [
+            "/GATE-ABS-002 PASSED/"
+          ],
+          "forbid_stdout_regex": [
+            "/GATE-ABS-002 FAILED/",
+            "/missing abstraction_binding/i"
+          ],
+          "expect_files": [
+            {
+              "path": ".state/evidence/GATE-ABS-002/step_abstraction_bindings.json",
+              "content_regex": [
+                "/\"passed\": true/"
+              ]
+            }
+          ],
+          "evidence": ".state/evidence/GATE-ABS-002"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/validation_gates/-",
+        "value": {
+          "gate_id": "GATE-PATH-001",
+          "phase": "PH-02",
+          "step_id": null,
+          "purpose": "Governed artifact paths use registered path keys.",
+          "command": "python scripts/validate_path_key_coverage.py --plan-file {plan_file} --registry config/path_index.yaml --evidence-dir .state/evidence/GATE-PATH-001",
+          "timeout_sec": 120,
+          "retries": 0,
+          "expect_exit_code": 0,
+          "expect_stdout_regex": [
+            "/GATE-PATH-001 PASSED/"
+          ],
+          "forbid_stdout_regex": [
+            "/GATE-PATH-001 FAILED/",
+            "/missing path_key/i"
+          ],
+          "expect_files": [
+            {
+              "path": ".state/evidence/GATE-PATH-001/path_key_coverage.json",
+              "content_regex": [
+                "/\"passed\": true/"
+              ]
+            }
+          ],
+          "evidence": ".state/evidence/GATE-PATH-001"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/validation_gates/-",
+        "value": {
+          "gate_id": "GATE-PATH-002",
+          "phase": "PH-02",
+          "step_id": null,
+          "purpose": "All declared path keys resolve through the configured resolver.",
+          "command": "python scripts/validate_path_resolution.py --plan-file {plan_file} --resolver scripts/paths_resolve.py --evidence-dir .state/evidence/GATE-PATH-002",
+          "timeout_sec": 120,
+          "retries": 0,
+          "expect_exit_code": 0,
+          "expect_stdout_regex": [
+            "/GATE-PATH-002 PASSED/"
+          ],
+          "forbid_stdout_regex": [
+            "/GATE-PATH-002 FAILED/",
+            "/unknown key/i"
+          ],
+          "expect_files": [
+            {
+              "path": ".state/evidence/GATE-PATH-002/path_resolution.json",
+              "content_regex": [
+                "/\"passed\": true/"
+              ]
+            }
+          ],
+          "evidence": ".state/evidence/GATE-PATH-002"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/validation_gates/-",
+        "value": {
+          "gate_id": "GATE-PATH-003",
+          "phase": "PH-02",
+          "step_id": null,
+          "purpose": "No new hard-coded governed paths are introduced.",
+          "command": "python scripts/validate_no_new_hardcoded_governed_paths.py --plan-file {plan_file} --index refactor_paths.db --evidence-dir .state/evidence/GATE-PATH-003",
+          "timeout_sec": 180,
+          "retries": 0,
+          "expect_exit_code": 0,
+          "expect_stdout_regex": [
+            "/GATE-PATH-003 PASSED/"
+          ],
+          "forbid_stdout_regex": [
+            "/GATE-PATH-003 FAILED/",
+            "/new hardcoded governed path/i"
+          ],
+          "expect_files": [
+            {
+              "path": ".state/evidence/GATE-PATH-003/hardcoded_path_index_report.json",
+              "content_regex": [
+                "/\"passed\": true/"
+              ]
+            }
+          ],
+          "evidence": ".state/evidence/GATE-PATH-003"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/validation_gates/-",
+        "value": {
+          "gate_id": "GATE-RPROG-001",
+          "phase": "PH-02",
+          "step_id": null,
+          "purpose": "Reusable program contract blocks new bespoke execution machinery unless an exception is approved.",
+          "command": "python scripts/validate_reusable_program_contract.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-RPROG-001",
+          "timeout_sec": 120,
+          "retries": 0,
+          "expect_exit_code": 0,
+          "expect_stdout_regex": [
+            "/GATE-RPROG-001 PASSED/"
+          ],
+          "forbid_stdout_regex": [
+            "/GATE-RPROG-001 FAILED/",
+            "/bespoke runner/i"
+          ],
+          "expect_files": [
+            {
+              "path": ".state/evidence/GATE-RPROG-001/reusable_program_contract.json",
+              "content_regex": [
+                "/\"passed\": true/"
+              ]
+            }
+          ],
+          "evidence": ".state/evidence/GATE-RPROG-001"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/validation_gates/-",
+        "value": {
+          "gate_id": "GATE-RPROG-002",
+          "phase": "PH-02",
+          "step_id": null,
+          "purpose": "Every automation step maps to a reusable program type or approved exception.",
+          "command": "python scripts/validate_step_reusable_program_bindings.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-RPROG-002",
+          "timeout_sec": 120,
+          "retries": 0,
+          "expect_exit_code": 0,
+          "expect_stdout_regex": [
+            "/GATE-RPROG-002 PASSED/"
+          ],
+          "forbid_stdout_regex": [
+            "/GATE-RPROG-002 FAILED/",
+            "/missing reusable_program_binding/i"
+          ],
+          "expect_files": [
+            {
+              "path": ".state/evidence/GATE-RPROG-002/step_reusable_program_bindings.json",
+              "content_regex": [
+                "/\"passed\": true/"
+              ]
+            }
+          ],
+          "evidence": ".state/evidence/GATE-RPROG-002"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/validation_gates/-",
+        "value": {
+          "gate_id": "GATE-BEH-001",
+          "phase": "PH-02",
+          "step_id": null,
+          "purpose": "Implementation behavior defaults and situational rules resolve deterministically.",
+          "command": "python scripts/validate_implementation_behavior_contract.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-BEH-001",
+          "timeout_sec": 120,
+          "retries": 0,
+          "expect_exit_code": 0,
+          "expect_stdout_regex": [
+            "/GATE-BEH-001 PASSED/"
+          ],
+          "forbid_stdout_regex": [
+            "/GATE-BEH-001 FAILED/",
+            "/ambiguous behavior/i"
+          ],
+          "expect_files": [
+            {
+              "path": ".state/evidence/GATE-BEH-001/implementation_behavior_contract.json",
+              "content_regex": [
+                "/\"passed\": true/"
+              ]
+            }
+          ],
+          "evidence": ".state/evidence/GATE-BEH-001"
+        }
+      }
+    ]
+  },
+  "technical_spec_patch": {
+    "file": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_3.json",
+    "operation_mode": "RFC6902-compatible JSON Patch",
+    "operations": [
+      {
+        "op": "add",
+        "path": "/executive_summary/key_capabilities/-",
+        "value": "Contract-first abstraction governance for all governed module, tool, path, executor, phase, transport, and registry mutation boundaries"
+      },
+      {
+        "op": "add",
+        "path": "/executive_summary/key_capabilities/-",
+        "value": "Path-key indirection with registry-backed resolver enforcement and hardcoded-path index gates"
+      },
+      {
+        "op": "add",
+        "path": "/executive_summary/key_capabilities/-",
+        "value": "Reusable program contract preventing bespoke execution machinery when Gate, Phase, Mutation, Transport, or Executor programs can express the work"
+      },
+      {
+        "op": "add",
+        "path": "/executive_summary/key_capabilities/-",
+        "value": "Deterministic implementation behavior profiles for CLI/code-generation defaults and situational behavior resolution"
+      },
+      {
+        "op": "add",
+        "path": "/executive_summary/design_principles/-",
+        "value": "CONTRACTS ARE ABSTRACTIONS: governed boundaries must communicate through versioned contracts, path keys, envelopes, and registered executors rather than raw calls or prose"
+      },
+      {
+        "op": "add",
+        "path": "/executive_summary/design_principles/-",
+        "value": "PATHS ARE SEMANTIC KEYS: important/shared repo resources must be referenced by stable path keys and resolved through the path registry"
+      },
+      {
+        "op": "add",
+        "path": "/executive_summary/design_principles/-",
+        "value": "REUSE BEFORE MACHINERY: new behavior should be expressed as specs/configs/schemas/tests before adding new runners, validators, or orchestration scripts"
+      },
+      {
+        "op": "add",
+        "path": "/data_structures/plan_document/root_structure/required_sections/-",
+        "value": "abstraction_governance"
+      },
+      {
+        "op": "add",
+        "path": "/data_structures/plan_document/root_structure/required_sections/-",
+        "value": "path_abstraction_contract"
+      },
+      {
+        "op": "add",
+        "path": "/data_structures/plan_document/root_structure/required_sections/-",
+        "value": "reusable_program_contract"
+      },
+      {
+        "op": "add",
+        "path": "/data_structures/plan_document/root_structure/required_sections/-",
+        "value": "implementation_behavior_contract"
+      },
+      {
+        "op": "add",
+        "path": "/data_structures/plan_document/section_purpose_map/sections/-",
+        "value": {
+          "section": "abstraction_governance",
+          "purpose": "Defines contract-first abstraction law, governed boundary types, required contract surfaces, and exceptions that prevent over-abstraction.",
+          "example": "\"abstraction_governance\": {\"enabled\": true, \"core_law\": \"contracts_are_abstractions\"}",
+          "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json#/abstraction_governance"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/data_structures/plan_document/section_purpose_map/sections/-",
+        "value": {
+          "section": "path_abstraction_contract",
+          "purpose": "Declares path registry, resolver, governed path classes, hardcoded-path index policy, and fail-closed path-key enforcement.",
+          "example": "\"path_abstraction_contract\": {\"registry\": {\"authoritative_registry_path\": \"config/path_index.yaml\"}}",
+          "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json#/path_abstraction_contract"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/data_structures/plan_document/section_purpose_map/sections/-",
+        "value": {
+          "section": "reusable_program_contract",
+          "purpose": "Defines reusable program taxonomy and blocks new bespoke execution machinery unless a governed exception proves reuse is impossible.",
+          "example": "\"reusable_program_contract\": {\"program_taxonomy\": [{\"program_type\": \"Gate\"}]}",
+          "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json#/reusable_program_contract"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/data_structures/plan_document/section_purpose_map/sections/-",
+        "value": {
+          "section": "implementation_behavior_contract",
+          "purpose": "Defines deterministic implementation defaults, behavior profiles, situational rules, and behavior binding validation for CLI/code-generation work.",
+          "example": "\"implementation_behavior_contract\": {\"defaults_profile_id\": \"PYTHON_CLI_DEFAULTS_V1\"}",
+          "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json#/implementation_behavior_contract"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/data_structures/plan_document/abstraction_governance",
+        "value": {
+          "description": "Top-level governance section requiring versioned contracts at all governed boundaries.",
+          "required_fields": [
+            "enabled",
+            "enforcement_mode",
+            "core_law",
+            "mandatory_boundary_types",
+            "non_applicable_scope",
+            "required_contract_surfaces",
+            "validation"
+          ],
+          "validation_gate_ids": [
+            "GATE-ABS-001",
+            "GATE-ABS-002"
+          ]
+        }
+      },
+      {
+        "op": "add",
+        "path": "/data_structures/plan_document/path_abstraction_contract",
+        "value": {
+          "description": "Top-level governance section requiring path keys and resolver-backed path resolution for governed resources.",
+          "required_fields": [
+            "enabled",
+            "registry",
+            "resolver",
+            "governed_path_classes",
+            "hardcoded_path_index_policy",
+            "validation"
+          ],
+          "validation_gate_ids": [
+            "GATE-PATH-001",
+            "GATE-PATH-002",
+            "GATE-PATH-003"
+          ]
+        }
+      },
+      {
+        "op": "add",
+        "path": "/data_structures/plan_document/reusable_program_contract",
+        "value": {
+          "description": "Top-level governance section that makes reusable deterministic program types mandatory before new bespoke execution machinery.",
+          "required_fields": [
+            "enabled",
+            "program_taxonomy",
+            "new_behavior_policy",
+            "automation_lifecycle_spine",
+            "validation"
+          ],
+          "validation_gate_ids": [
+            "GATE-RPROG-001",
+            "GATE-RPROG-002"
+          ]
+        }
+      },
+      {
+        "op": "add",
+        "path": "/data_structures/plan_document/implementation_behavior_contract",
+        "value": {
+          "description": "Top-level governance section for deterministic code-generation and CLI implementation defaults.",
+          "required_fields": [
+            "enabled",
+            "defaults_profile_id",
+            "profiles",
+            "situational_rules",
+            "validation"
+          ],
+          "validation_gate_ids": [
+            "GATE-BEH-001"
+          ]
+        }
+      },
+      {
+        "op": "replace",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/total_gates",
+        "value": 42
+      },
+      {
+        "op": "replace",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/mandatory_gates",
+        "value": 42
+      },
+      {
+        "op": "replace",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/template_defaults/count",
+        "value": 28
+      },
+      {
+        "op": "add",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/execution_phases/-",
+        "value": "abstraction governance (GATE-ABS-001 to GATE-ABS-002)"
+      },
+      {
+        "op": "add",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/execution_phases/-",
+        "value": "path abstraction and hardcoded-path control (GATE-PATH-001 to GATE-PATH-003)"
+      },
+      {
+        "op": "add",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/execution_phases/-",
+        "value": "reusable program enforcement (GATE-RPROG-001 to GATE-RPROG-002)"
+      },
+      {
+        "op": "add",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/execution_phases/-",
+        "value": "implementation behavior determinism (GATE-BEH-001)"
+      },
+      {
+        "op": "add",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/template_defaults/gate_ids/-",
+        "value": "GATE-ABS-001"
+      },
+      {
+        "op": "add",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/template_defaults/gate_ids/-",
+        "value": "GATE-ABS-002"
+      },
+      {
+        "op": "add",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/template_defaults/gate_ids/-",
+        "value": "GATE-PATH-001"
+      },
+      {
+        "op": "add",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/template_defaults/gate_ids/-",
+        "value": "GATE-PATH-002"
+      },
+      {
+        "op": "add",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/template_defaults/gate_ids/-",
+        "value": "GATE-PATH-003"
+      },
+      {
+        "op": "add",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/template_defaults/gate_ids/-",
+        "value": "GATE-RPROG-001"
+      },
+      {
+        "op": "add",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/template_defaults/gate_ids/-",
+        "value": "GATE-RPROG-002"
+      },
+      {
+        "op": "add",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/template_defaults/gate_ids/-",
+        "value": "GATE-BEH-001"
+      },
+      {
+        "op": "add",
+        "path": "/executive_summary/key_capabilities/-",
+        "value": "Execution identity policy using phase-scoped step_id values and globally unique phase_step_key joins"
+      },
+      {
+        "op": "add",
+        "path": "/executive_summary/key_capabilities/-",
+        "value": "Template-placeholder semantics that distinguish reusable scaffold documents from executable plan instances"
+      },
+      {
+        "op": "add",
+        "path": "/executive_summary/key_capabilities/-",
+        "value": "Generated artifact rebuild discipline for inventory, indexes, and evidence outputs"
+      },
+      {
+        "op": "add",
+        "path": "/executive_summary/design_principles/-",
+        "value": "PHASE-SCOPED STEP IDENTITY: step_id is local to a phase; phase_step_key is the global execution join key"
+      },
+      {
+        "op": "add",
+        "path": "/executive_summary/design_principles/-",
+        "value": "GENERATED ARTIFACTS ARE PROJECTIONS: inventory, indexes, and evidence must be rebuilt from authoritative sources, not treated as hand-authored state"
+      },
+      {
+        "op": "add",
+        "path": "/data_structures/plan_document/section_purpose_map/sections/-",
+        "value": {
+          "section": "pipeline_boundary_contract.execution_identity_policy",
+          "purpose": "Defines phase_id and step_id patterns, phase-scoped step identity, globally unique phase_step_key construction, and gate execution-stage separation.",
+          "example": "\"execution_identity_policy\": {\"step_id_scope\": \"phase_scoped\", \"phase_step_key_format\": \"{phase_id}/{step_id}\"}",
+          "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json#/pipeline_boundary_contract/execution_identity_policy"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/data_structures/plan_document/section_purpose_map/sections/-",
+        "value": {
+          "section": "template_metadata.template_placeholder_policy",
+          "purpose": "Defines which blank/null scaffold values are allowed in the reusable template and forbids unresolved placeholders in concrete plan instances.",
+          "example": "\"template_placeholder_policy\": {\"template_placeholder_allowed\": true, \"concrete_plan_instance_rule\": \"fail_closed_if_blank_null_or_unresolved\"}",
+          "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json#/template_metadata/template_placeholder_policy"
+        }
+      },
+      {
+        "op": "semantic_replace_text",
+        "json_pointer": "/architecture/system_layers/layer_2_validation/components/1",
+        "match": "Total gates: 19",
+        "replace": "Total gates: computed from validation_gates.length",
+        "if_match_missing": "warn_and_continue"
+      },
+      {
+        "op": "semantic_replace_text",
+        "json_pointer": "/architecture/system_layers/layer_2_validation/components/1",
+        "match": "19 gates",
+        "replace": "computed gate count",
+        "if_match_missing": "warn_and_continue"
+      },
+      {
+        "op": "add",
+        "path": "/data_structures/plan_document/execution_identity_policy",
+        "value": {
+          "description": "Canonical identity policy for executable steps and gate bindings.",
+          "rules": [
+            "step_id values are unique within a phase_id, not necessarily globally unique alone.",
+            "phase_step_key = {phase_id}/{step_id} is the global join key for execution, traceability, evidence, and MCP requests.",
+            "gate_execution_stage should represent PRE-EXECUTION/CORE-VALIDATION/POST-EXECUTION stage labels rather than overloading phase_id when no concrete phase applies.",
+            "Validators must detect duplicate phase_step_key values and duplicate step_id values within the same phase_id."
+          ],
+          "validation_command": "python scripts/validate_execution_identity_policy.py --plan-file {plan_file}"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/data_structures/generated_artifact_policy",
+        "value": {
+          "description": "inventory.json, indexes, and evidence reports are generated projections and must be rebuilt from authoritative source documents.",
+          "source_documents": [
+            "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+            "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_3.json",
+            "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_3.json"
+          ],
+          "generator": "tools/index_generator.py",
+          "manual_edit_policy": "forbidden_except_recorded_tooling_failure_exception"
+        }
+      }
+    ],
+    "gate_registry_additions": [
+      {
+        "op": "add",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+        "value": {
+          "id": "GATE-ABS-001",
+          "name": "Abstraction Governance Valid",
+          "script": "validate_abstraction_governance.py",
+          "purpose": "Ensure abstraction_governance exists, uses fail-closed semantics, declares mandatory boundary types, and defines scoped exceptions.",
+          "critical_rule": "Contracts are mandatory abstractions at governed boundaries.",
+          "failure_impact": "Boundary behavior may become raw, implicit, or untestable."
+        }
+      },
+      {
+        "op": "add",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+        "value": {
+          "id": "GATE-ABS-002",
+          "name": "Step Abstraction Bindings Complete",
+          "script": "validate_step_abstraction_bindings.py",
+          "purpose": "Verify every governed step declares abstraction_binding with input/output contracts and evidence.",
+          "critical_rule": "No governed step may rely on unstated module/tool/path contracts.",
+          "failure_impact": "Module handoff and CLI/tool behavior may drift."
+        }
+      },
+      {
+        "op": "add",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+        "value": {
+          "id": "GATE-PATH-001",
+          "name": "Governed Path Key Coverage",
+          "script": "validate_path_key_coverage.py",
+          "purpose": "Ensure all governed paths in file_manifest, artifact_intent_manifest, and planned_registry_projection have path keys.",
+          "critical_rule": "Important/shared repo resources must use stable path keys.",
+          "failure_impact": "File moves can break scripts, prompts, plans, and automation."
+        }
+      },
+      {
+        "op": "add",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+        "value": {
+          "id": "GATE-PATH-002",
+          "name": "Path Resolver Valid",
+          "script": "validate_path_resolution.py",
+          "purpose": "Resolve all declared path keys through the configured resolver and fail on unknown keys.",
+          "critical_rule": "Path keys must resolve through the path registry without fuzzy matching or fallback.",
+          "failure_impact": "Path abstraction becomes advisory instead of enforceable."
+        }
+      },
+      {
+        "op": "add",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+        "value": {
+          "id": "GATE-PATH-003",
+          "name": "No New Hardcoded Governed Paths",
+          "script": "validate_no_new_hardcoded_governed_paths.py",
+          "purpose": "Use hardcoded-path index enforcement to block newly introduced governed literal paths.",
+          "critical_rule": "New governed path literals must be registered and referenced by key.",
+          "failure_impact": "Path abstraction erodes and file-load refactors become brittle."
+        }
+      },
+      {
+        "op": "add",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+        "value": {
+          "id": "GATE-RPROG-001",
+          "name": "Reusable Program Contract Valid",
+          "script": "validate_reusable_program_contract.py",
+          "purpose": "Ensure the plan uses reusable program types and blocks new bespoke execution machinery unless approved.",
+          "critical_rule": "Feature work should add specs/configs/schemas/tests, not new machinery.",
+          "failure_impact": "File count increases through duplicated runners, validators, parsers, and orchestration scripts."
+        }
+      },
+      {
+        "op": "add",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+        "value": {
+          "id": "GATE-RPROG-002",
+          "name": "Step Reusable Program Bindings Complete",
+          "script": "validate_step_reusable_program_bindings.py",
+          "purpose": "Verify every automation step maps to Gate, Phase, Transport, Mutation, Executor, or approved exception.",
+          "critical_rule": "Every automatable step must use a reusable deterministic program type.",
+          "failure_impact": "Execution logic fragments across special-case scripts."
+        }
+      },
+      {
+        "op": "add",
+        "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+        "value": {
+          "id": "GATE-BEH-001",
+          "name": "Implementation Behavior Determinism",
+          "script": "validate_implementation_behavior_contract.py",
+          "purpose": "Ensure behavior profiles and situational rules resolve to deterministic implementation behavior.",
+          "critical_rule": "Implementation behavior cannot be chosen implicitly by AI or prompt prose.",
+          "failure_impact": "Generated code style, I/O, path handling, state handling, and CLI behavior drift."
+        }
+      },
+      {
+        "id": "GATE-ID-001",
+        "name": "Execution Identity Policy Valid",
+        "script": "validate_execution_identity_policy.py",
+        "purpose": "Verify phase_id, step_id, phase_step_key, and gate_execution_stage semantics are consistent.",
+        "critical_rule": "phase_step_key is globally unique; step_id is phase-scoped; stage labels are not confused with concrete phase IDs.",
+        "failure_impact": "MCP tools, traceability joins, and evidence paths can reference the wrong execution unit."
+      },
+      {
+        "id": "GATE-IDX-001",
+        "name": "Index Eligibility Drift Check",
+        "script": "validate_index_generator_rules.py",
+        "purpose": "Verify index generator classifies identity-bearing arrays as index_eligible and does not require whole-array replacement for semantic records.",
+        "critical_rule": "artifact_intent_manifest.records and planned_registry_projection.records must be patchable by stable identity.",
+        "failure_impact": "RFC-6902 patches become fragile and can corrupt array ordering or unrelated records."
+      },
+      {
+        "id": "GATE-TOOLS-001",
+        "name": "Referenced Tooling Exists",
+        "script": "validate_referenced_tooling_exists.py",
+        "purpose": "Verify all scripts, validators, schemas, generator tools, and resolver tools referenced by the three v3.3 documents exist or are explicitly marked planned artifacts.",
+        "critical_rule": "A governance document may not claim executable enforcement unless the referenced tooling exists or is declared in artifact_intent_manifest.",
+        "failure_impact": "Execution readiness is overstated and gates become documentation-only."
+      }
+    ],
+    "workflow_additions": [
+      {
+        "op": "add",
+        "path": "/workflows/abstraction_governance_workflow",
+        "value": {
+          "description": "Resolve whether work crosses a governed boundary, bind the required contracts, validate abstraction bindings, and block execution if any governed boundary is raw or implicit.",
+          "steps": [
+            "classify_boundary_type",
+            "determine_if_abstraction_required",
+            "bind_input_and_output_contracts",
+            "bind_path_keys_when logical resources are physical paths",
+            "validate_step_abstraction_binding",
+            "emit abstraction evidence"
+          ]
+        }
+      },
+      {
+        "op": "add",
+        "path": "/workflows/path_abstraction_workflow",
+        "value": {
+          "description": "Convert governed physical paths into semantic keys, resolve them through the path registry, and reject new governed hard-coded literals.",
+          "steps": [
+            "classify path as governed or ungoverned",
+            "require path_key for governed paths",
+            "validate path_key in config/path_index.yaml",
+            "resolve key through the declared resolver CLI",
+            "scan hardcoded path index for new violations",
+            "emit resolver and index evidence"
+          ]
+        }
+      },
+      {
+        "op": "add",
+        "path": "/workflows/reusable_program_workflow",
+        "value": {
+          "description": "Classify automatable work into reusable program type before allowing new code files.",
+          "steps": [
+            "classify work as Gate, Phase, Transport, Mutation, Executor, or non-automatable",
+            "search existing reusable runner/pattern",
+            "create or update spec/config when runner exists",
+            "require exception package before new runner machinery",
+            "validate reusable_program_binding on each step"
+          ]
+        }
+      }
+    ]
+  },
+  "instruction_document_patch": {
+    "file": "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_3.json",
+    "operation_mode": "JSON string patch using deterministic markdown insertion rules",
+    "operations": [
+      {
+        "op": "markdown_insert_after_heading",
+        "json_pointer": "/content",
+        "heading": "## Overview",
+        "text": "\nVersion 3.3.1 adds mandatory scoped abstraction and reusable-program controls. Agents must treat contracts as the only valid abstraction at governed boundaries, use path keys for governed paths, resolve keys through the declared path registry/resolver, and prefer reusable program specs over new bespoke execution machinery. These rules are mandatory for governed boundaries and important/shared paths, but must not be used to over-abstract private single-module logic.\n"
+      },
+      {
+        "op": "markdown_insert_after_heading",
+        "json_pointer": "/content",
+        "heading": "## General principles",
+        "text": "\n- **Contracts are abstractions** – At governed boundaries, abstraction means versioned input/output contracts, schema-backed envelopes, path keys, registered executors, and evidence. Do not use raw tool calls, raw physical paths, informal prose, or hidden prompt behavior as boundary contracts.\n- **Path keys before physical paths** – Important or shared repo resources must be referenced by stable semantic path keys and resolved through the path registry. New governed hard-coded paths are prohibited.\n- **Reuse before machinery** – A feature may add specs, configs, schemas, catalog entries, tests, and fixtures. It may not add new runners, validators, report parsers, heal scripts, or orchestration machinery unless an approved exception proves no reusable program type can support the work.\n- **Scoped abstraction** – Do not create abstraction layers for private single-module helper logic, throwaway experiments, or tiny stable local utilities unless they become shared, externally invoked, or part of a governed artifact flow.\n"
+      },
+      {
+        "op": "markdown_insert_before_heading",
+        "json_pointer": "/content",
+        "heading": "### `referenced_context_artifacts`",
+        "text": "\n### `abstraction_governance`\nPopulate this section before step decomposition. Declare the core law `contracts_are_abstractions`, the governed boundary types, the required contract surfaces, and the non-applicable scopes. Every step crossing a governed boundary must include an `abstraction_binding` that names the boundary type, input/output contract refs, path keys if applicable, resolver requirement, and evidence path. If the agent cannot determine whether a boundary is governed, classify it as governed and fail closed unless a manual exception is provided.\n\n### `path_abstraction_contract`\nPopulate the authoritative path registry path, resolver module, resolver CLI, governed path classes, and hardcoded-path index policy. Governed paths in `file_manifest`, `artifact_intent_manifest`, `planned_registry_projection`, step file scopes, validation gates, and evidence paths must use a path key or declare why they are not governed. Unknown keys, fuzzy resolution, and fallback physical paths are prohibited.\n\n### `reusable_program_contract`\nClassify every automatable step as one reusable program type: Gate, Phase, Transport, Mutation, or Executor. New behavior should be represented as a spec/config/schema/test/catalog change. Do not create new execution machinery unless the plan includes a reusable-program exception with proof that no existing runner or program type can support the work.\n\n### `implementation_behavior_contract`\nDeclare deterministic behavior profiles and situational rules for CLI/code-generation work. Every executable step must resolve its behavior through a defaults profile plus triggered situational rules. If behavior resolution is ambiguous, planning fails. Prompt prose may not decide implementation behavior.\n"
+      },
+      {
+        "op": "markdown_append_to_heading_section",
+        "json_pointer": "/content",
+        "heading": "### `file_manifest`",
+        "text": "\nEach file entry must identify whether the path is governed. If governed, include `path_key`, `path_abstraction_required: true`, and `path_resolution_evidence`. If not governed, include a reason. The manifest must also link files to `artifact_intent_ref`, `planned_registry_projection_ref`, `abstraction_contract_ref`, and `reusable_program_ref` when applicable.\n"
+      },
+      {
+        "op": "markdown_append_to_heading_section",
+        "json_pointer": "/content",
+        "heading": "### `artifact_intent_manifest`",
+        "text": "\nEach intent record must include path abstraction metadata. Governed artifacts require a stable `path_key`. Artifact intent is not allowed to imply a physical path dependency that bypasses the path registry. Any done-critical artifact that crosses a module/tool/phase boundary must also reference an abstraction contract.\n"
+      },
+      {
+        "op": "markdown_append_to_heading_section",
+        "json_pointer": "/content",
+        "heading": "### `planned_registry_projection`",
+        "text": "\nRegistry projections may include `planned_path_key`, `planned_abstraction_contract_ref`, and `planned_reusable_program_ref` because these are stable pre-execution intent fields. They must not include observed resolved paths, runtime resolver outputs, file hashes, or hardcoded-path scan results before execution.\n"
+      },
+      {
+        "op": "markdown_append_to_heading_section",
+        "json_pointer": "/content",
+        "heading": "### `step_contracts`",
+        "text": "\nEvery executable or artifact-producing step must include `abstraction_binding`, `reusable_program_binding`, and `behavior_binding` unless explicitly marked non-governed with justification. The `abstraction_binding` declares contracts and path keys. The `reusable_program_binding` proves the step uses a shared runner/program type or an approved exception. The `behavior_binding` records the resolved behavior profile and triggered rules.\n"
+      },
+      {
+        "op": "markdown_append_to_heading_section",
+        "json_pointer": "/content",
+        "heading": "### `validation_gates`",
+        "text": "\nAdd and enforce GATE-ABS-001, GATE-ABS-002, GATE-PATH-001, GATE-PATH-002, GATE-PATH-003, GATE-RPROG-001, GATE-RPROG-002, and GATE-BEH-001 before execution. These gates are mandatory and fail closed.\n"
+      },
+      {
+        "op": "semantic_replace_text",
+        "json_pointer": "/content",
+        "match": "These gates are mandatory; do not introduce `GATE-BEH-*` or `GATE-CFGCTX-*` in this version.",
+        "replace": "These gates are mandatory. In v3.3.1, also add GATE-ABS-001, GATE-ABS-002, GATE-PATH-001, GATE-PATH-002, GATE-PATH-003, GATE-RPROG-001, GATE-RPROG-002, and GATE-BEH-001 before execution; continue to reject ad hoc `GATE-CFGCTX-*` families in this version.",
+        "if_match_missing": "warn_and_continue"
+      },
+      {
+        "op": "markdown_insert_after_heading",
+        "json_pointer": "/content",
+        "heading": "## General principles",
+        "text": "\n- **Execution identity discipline** – Treat `step_id` as phase-scoped. Use `phase_step_key` formatted as `{phase_id}/{step_id}` for global references, evidence paths, traceability joins, MCP requests, and cross-phase handoffs. Do not require bare `step_id` to be globally unique unless a specific project override says so.\n- **Template placeholders are not execution readiness** – Blank/null scaffold fields are allowed only in reusable template mode when covered by `template_placeholder_policy`. A concrete plan instance must resolve each placeholder or mark it `NOT_AUTOMATABLE` with manual evidence.\n- **Generated projections are rebuilt** – Do not manually edit generated inventory, semantic indexes, or evidence reports. Update source documents or the generator, then rebuild.\n"
+      },
+      {
+        "op": "markdown_append_to_heading_section",
+        "json_pointer": "/content",
+        "heading": "### `pipeline_boundary_contract`",
+        "text": "\nPopulate `execution_identity_policy`. Use phase-scoped step IDs and `phase_step_key` as the global execution key. If a gate is pre/post execution and not bound to a concrete phase, represent the stage in `gate_execution_stage` instead of forcing a non-phase label into `phase_id`.\n"
+      },
+      {
+        "op": "markdown_append_to_heading_section",
+        "json_pointer": "/content",
+        "heading": "### `template_metadata`",
+        "text": "\nPopulate `template_placeholder_policy` in reusable templates. The policy must clearly state that placeholders are scaffold-only and must fail concrete plan-instance validation unless resolved or marked `NOT_AUTOMATABLE` with evidence.\n"
+      },
+      {
+        "op": "markdown_append_to_heading_section",
+        "json_pointer": "/content",
+        "heading": "### `artifact_intent_manifest`",
+        "text": "\nEvery record must have stable identity using `artifact_intent_id`; generated indexes must support patching records by identity. Do not rely on array position for RFC-6902 modifications.\n"
+      },
+      {
+        "op": "markdown_append_to_heading_section",
+        "json_pointer": "/content",
+        "heading": "### `planned_registry_projection`",
+        "text": "\nEvery record must have stable identity using `projection_id`; generated indexes must support patching records by identity. Do not rely on array position for RFC-6902 modifications.\n"
+      }
+    ]
+  },
+  "mcp_contract_patch_optional": {
+    "file": "01260207201000000512_npp_mcp_tool_contracts.v1.json",
+    "required": false,
+    "reason": "Required when this MCP contract file is present. The old patterns reject valid v3.3 IDs and must be patched for CLI/MCP compatibility.",
+    "operations": [
+      {
+        "op": "replace",
+        "path": "/shared/defs/RunContext/properties/phase_id/pattern",
+        "value": "^(PH-\\d{2,4}[A-Z]?|PRE-EXECUTION|POST-EXECUTION)$"
+      },
+      {
+        "op": "replace",
+        "path": "/shared/defs/RunContext/properties/step_id/pattern",
+        "value": "^STEP-\\d{3,}$"
+      },
+      {
+        "op": "add",
+        "path": "/shared/defs/RunContext/properties/gate_execution_stage",
+        "value": {
+          "type": "string",
+          "enum": [
+            "PRE-EXECUTION",
+            "CORE-VALIDATION",
+            "POST-EXECUTION"
+          ],
+          "description": "Optional gate-stage label used when a gate is not bound to a concrete phase_id. Prevents PRE-EXECUTION/POST-EXECUTION from being overloaded as phase IDs in newer clients."
+        }
+      },
+      {
+        "op": "add",
+        "path": "/shared/defs/RunContext/properties/phase_step_key",
+        "value": {
+          "type": "string",
+          "pattern": "^(PH-\\d{2,4}[A-Z]?|PRE-EXECUTION|POST-EXECUTION)/STEP-\\d{3,}$",
+          "description": "Canonical global execution reference formatted as {phase_id}/{step_id}. Required by higher-level validators when both phase_id and step_id are present."
+        }
+      }
+    ],
+    "required_if_exists": true
+  },
+  "supporting_artifacts_to_create": [
+    {
+      "path": "schemas/abstraction_governance.schema.json",
+      "kind": "json_schema",
+      "required": true,
+      "minimum_required_properties": [
+        "enabled",
+        "enforcement_mode",
+        "core_law",
+        "mandatory_boundary_types",
+        "required_contract_surfaces",
+        "validation"
+      ]
+    },
+    {
+      "path": "schemas/path_abstraction_contract.schema.json",
+      "kind": "json_schema",
+      "required": true,
+      "minimum_required_properties": [
+        "registry",
+        "resolver",
+        "governed_path_classes",
+        "hardcoded_path_index_policy",
+        "validation"
+      ]
+    },
+    {
+      "path": "schemas/reusable_program_contract.schema.json",
+      "kind": "json_schema",
+      "required": true,
+      "minimum_required_properties": [
+        "program_taxonomy",
+        "new_behavior_policy",
+        "automation_lifecycle_spine",
+        "validation"
+      ]
+    },
+    {
+      "path": "schemas/implementation_behavior_contract.schema.json",
+      "kind": "json_schema",
+      "required": true,
+      "minimum_required_properties": [
+        "defaults_profile_id",
+        "profiles",
+        "situational_rules",
+        "validation"
+      ]
+    },
+    {
+      "path": "schemas/path_registry.schema.json",
+      "kind": "json_schema",
+      "required": true,
+      "purpose": "Validates config/path_index.yaml structure and key format."
+    },
+    {
+      "path": "schemas/artifact_envelope.schema.json",
+      "kind": "json_schema",
+      "required": true,
+      "purpose": "Standardizes phase/step artifact transport."
+    },
+    {
+      "path": "schemas/handoff_report.schema.json",
+      "kind": "json_schema",
+      "required": true,
+      "purpose": "Standardizes deterministic phase-to-phase handoff."
+    },
+    {
+      "path": "schemas/program_spec.schema.json",
+      "kind": "json_schema",
+      "required": true,
+      "purpose": "Superset schema for GateSpec, PassSpec, MutationSpec, TransportSpec, and ExecutorSpec."
+    },
+    {
+      "path": "config/path_index.yaml",
+      "kind": "config_registry",
+      "required": true,
+      "purpose": "Authoritative semantic path-key registry referenced by path_abstraction_contract."
+    },
+    {
+      "path": "config/hardcoded_path_allowlist.yaml",
+      "kind": "config_allowlist",
+      "required": true,
+      "purpose": "Allowlist for legacy governed hardcoded-path occurrences tracked during phased rollout."
+    },
+    {
+      "path": "refactor_paths.db",
+      "kind": "path_index_store",
+      "required": true,
+      "purpose": "Source database used by hardcoded-path validation to detect new governed literals."
+    },
+    {
+      "path": "src/path_registry.py",
+      "kind": "resolver_module",
+      "required": true,
+      "purpose": "Implements semantic path-key lookup and fail-closed resolution behavior."
+    },
+    {
+      "path": "scripts/paths_resolve.py",
+      "kind": "cli_entrypoint",
+      "required": true,
+      "purpose": "CLI entrypoint for path resolution used by validators and governed execution steps."
+    },
+    {
+      "path": "scripts/gate_runner.py",
+      "kind": "shared_runner",
+      "required": true,
+      "purpose": "Shared Gate runner required by reusable_program_contract program taxonomy."
+    },
+    {
+      "path": "scripts/phase_runner.py",
+      "kind": "shared_runner",
+      "required": true,
+      "purpose": "Shared Phase runner required by reusable_program_contract program taxonomy."
+    },
+    {
+      "path": "scripts/handoff_runner.py",
+      "kind": "shared_runner",
+      "required": true,
+      "purpose": "Shared Transport/Handoff runner required by reusable_program_contract program taxonomy."
+    },
+    {
+      "path": "scripts/mutation_runner.py",
+      "kind": "shared_runner",
+      "required": true,
+      "purpose": "Shared Mutation runner required by reusable_program_contract program taxonomy."
+    },
+    {
+      "path": "scripts/executor_dispatcher.py",
+      "kind": "shared_runner",
+      "required": true,
+      "purpose": "Shared Executor dispatcher required by reusable_program_contract and step-level reusable_program_binding refs."
+    },
+    {
+      "path": "scripts/validate_path_registry.py",
+      "kind": "validator_script",
+      "required": true,
+      "purpose": "Validate config/path_index.yaml structure, duplicate keys, and key-pattern compliance."
+    },
+    {
+      "path": "scripts/validate_abstraction_governance.py",
+      "kind": "validator",
+      "required": true,
+      "must_emit": ".state/evidence/GATE-ABS-001/abstraction_governance.json"
+    },
+    {
+      "path": "scripts/validate_step_abstraction_bindings.py",
+      "kind": "validator",
+      "required": true,
+      "must_emit": ".state/evidence/GATE-ABS-002/step_abstraction_bindings.json"
+    },
+    {
+      "path": "scripts/validate_path_key_coverage.py",
+      "kind": "validator",
+      "required": true,
+      "must_emit": ".state/evidence/GATE-PATH-001/path_key_coverage.json"
+    },
+    {
+      "path": "scripts/validate_path_resolution.py",
+      "kind": "validator",
+      "required": true,
+      "must_emit": ".state/evidence/GATE-PATH-002/path_resolution.json"
+    },
+    {
+      "path": "scripts/validate_no_new_hardcoded_governed_paths.py",
+      "kind": "validator",
+      "required": true,
+      "must_emit": ".state/evidence/GATE-PATH-003/hardcoded_path_index_report.json"
+    },
+    {
+      "path": "scripts/validate_reusable_program_contract.py",
+      "kind": "validator",
+      "required": true,
+      "must_emit": ".state/evidence/GATE-RPROG-001/reusable_program_contract.json"
+    },
+    {
+      "path": "scripts/validate_step_reusable_program_bindings.py",
+      "kind": "validator",
+      "required": true,
+      "must_emit": ".state/evidence/GATE-RPROG-002/step_reusable_program_bindings.json"
+    },
+    {
+      "path": "scripts/validate_implementation_behavior_contract.py",
+      "kind": "validator",
+      "required": true,
+      "must_emit": ".state/evidence/GATE-BEH-001/implementation_behavior_contract.json"
+    },
+    {
+      "path": "scripts/validate_execution_identity_policy.py",
+      "kind": "validator_script",
+      "required": true,
+      "purpose": "Validate phase-scoped step IDs, global phase_step_key uniqueness, phase_id patterns, step_id patterns, and gate_execution_stage separation."
+    },
+    {
+      "path": "scripts/validate_index_generator_rules.py",
+      "kind": "validator_script",
+      "required": true,
+      "purpose": "Validate generated inventory/indexes classify identity-bearing arrays as index_eligible and patchable by identity."
+    },
+    {
+      "path": "scripts/validate_referenced_tooling_exists.py",
+      "kind": "validator_script",
+      "required": true,
+      "purpose": "Verify all scripts/schemas/tools referenced by template/spec/instruction docs exist or are declared as planned artifacts."
+    },
+    {
+      "path": "scripts/validate_path_abstraction_contract.py",
+      "kind": "validator_script",
+      "required": true,
+      "purpose": "Composite validator that checks registry validity, resolver wiring, governed path-key coverage, and hardcoded-path enforcement."
+    },
+    {
+      "path": "scripts/validate_template_spec_section_alignment.py",
+      "kind": "validator_script",
+      "required": true,
+      "purpose": "Validate template/spec section alignment for newly added governance surfaces and required roots."
+    },
+    {
+      "path": "scripts/validate_gate_ids_unique.py",
+      "kind": "validator_script",
+      "required": true,
+      "purpose": "Validate that gate identifiers remain unique after v3.3.1 gate additions."
+    },
+    {
+      "path": "schemas/execution_identity_policy.schema.json",
+      "kind": "json_schema",
+      "required": true,
+      "minimum_required_properties": [
+        "phase_id_pattern",
+        "step_id_pattern",
+        "step_id_scope",
+        "phase_step_key_required",
+        "phase_step_key_format",
+        "global_uniqueness_rule"
+      ]
+    },
+    {
+      "path": "schemas/template_placeholder_policy.schema.json",
+      "kind": "json_schema",
+      "required": true,
+      "minimum_required_properties": [
+        "template_placeholder_allowed",
+        "applies_only_to_document_role",
+        "concrete_plan_instance_rule",
+        "must_not_be_interpreted_as_execution_ready"
+      ]
+    }
+  ],
+  "index_generator_required_updates": {
+    "do_not_patch_generated_inventory_directly": true,
+    "update_tooling_instead": [
+      "tools/index_generator.py"
+    ],
+    "new_index_eligible_arrays": [
+      {
+        "document": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+        "path": "/abstraction_governance/boundary_contracts",
+        "identity_field": "contract_id",
+        "identity_pattern": "^ABS-[A-Z0-9-]+$",
+        "index_output": "by_abstraction_contract_id",
+        "patch_mode": "element_by_identity"
+      },
+      {
+        "document": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+        "path": "/implementation_behavior_contract/profiles",
+        "identity_field": "behavior_profile_id",
+        "identity_pattern": "^[A-Z0-9_]+$",
+        "index_output": "by_behavior_profile_id",
+        "patch_mode": "element_by_identity"
+      },
+      {
+        "document": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+        "path": "/implementation_behavior_contract/situational_rules",
+        "identity_field": "rule_id",
+        "identity_pattern": "^BEH-[A-Z0-9-]+$",
+        "index_output": "by_behavior_rule_id",
+        "patch_mode": "element_by_identity"
+      },
+      {
+        "document": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+        "path": "/reusable_program_contract/program_taxonomy",
+        "identity_field": "program_type",
+        "identity_pattern": "^(Gate|Phase|Transport|Mutation|Executor)$",
+        "index_output": "by_program_type",
+        "patch_mode": "element_by_identity"
+      },
+      {
+        "document": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+        "path": "/artifact_intent_manifest/records",
+        "identity_field": "artifact_intent_id",
+        "identity_pattern": "^AINT-\\d{3,}$",
+        "index_output": "by_artifact_intent_id",
+        "patch_mode": "element_by_identity"
+      },
+      {
+        "document": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+        "path": "/planned_registry_projection/records",
+        "identity_field": "projection_id",
+        "identity_pattern": "^REGPROJ-\\d{3,}$",
+        "index_output": "by_projection_id",
+        "patch_mode": "element_by_identity"
+      }
+    ],
+    "generator_validation_required": true,
+    "generator_patch_requirements": [
+      "Classify identity-bearing arrays as index_eligible based on exact path rules before default structural fallback.",
+      "Emit duplicate_identity_action=fail_closed and missing_identity_action=fail_closed for index_eligible arrays.",
+      "Emit index maps by identity and stable JSON Pointers for artifact_intent_manifest.records and planned_registry_projection.records.",
+      "Do not require CLI app to manually patch inventory.json; inventory must be regenerated."
+    ],
+    "post_rebuild_checks": [
+      "inventory.json contains /artifact_intent_manifest/records with classification=index_eligible and patch_mode=element_by_identity.",
+      "inventory.json contains /planned_registry_projection/records with classification=index_eligible and patch_mode=element_by_identity.",
+      "indexes/NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.index.json contains by_artifact_intent_id and by_projection_id maps."
+    ]
+  },
+  "post_patch_validation": {
+    "commands": [
+      {
+        "id": "json_parse_template",
+        "command": "python -m json.tool NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json > NUL",
+        "expect_exit_code": 0
+      },
+      {
+        "id": "json_parse_tech_spec",
+        "command": "python -m json.tool NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_3.json > NUL",
+        "expect_exit_code": 0
+      },
+      {
+        "id": "json_parse_instruction_doc",
+        "command": "python -m json.tool NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_3.json > NUL",
+        "expect_exit_code": 0
+      },
+      {
+        "id": "root_section_alignment",
+        "command": "python scripts/validate_template_spec_section_alignment.py --template NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json --spec NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_3.json",
+        "expect_exit_code": 0
+      },
+      {
+        "id": "gate_uniqueness",
+        "command": "python scripts/validate_gate_ids_unique.py --template NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json --spec NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_3.json",
+        "expect_exit_code": 0
+      },
+      {
+        "id": "rerun_indexes",
+        "command": "python .\\tools\\index_generator.py",
+        "expect_exit_code": 0
+      },
+      {
+        "id": "path_abstraction_validation",
+        "command": "python scripts/validate_path_abstraction_contract.py --plan-file NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+        "expect_exit_code": 0
+      },
+      {
+        "id": "reusable_program_validation",
+        "command": "python scripts/validate_reusable_program_contract.py --plan-file NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+        "expect_exit_code": 0
+      },
+      {
+        "id": "execution_identity_policy_validation",
+        "command": "python scripts/validate_execution_identity_policy.py --plan-file NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+        "expect_exit_code": 0
+      },
+      {
+        "id": "index_generator_rule_validation",
+        "command": "python scripts/validate_index_generator_rules.py --inventory inventory.json --index-dir indexes",
+        "expect_exit_code": 0
+      },
+      {
+        "id": "referenced_tooling_exists",
+        "command": "python scripts/validate_referenced_tooling_exists.py --template NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json --spec NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_3.json --instructions NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_3.json",
+        "expect_exit_code": 0
+      },
+      {
+        "id": "mcp_contract_json_parse_if_present",
+        "command": "if (Test-Path .\\01260207201000000512_npp_mcp_tool_contracts.v1.json) { python -m json.tool .\\01260207201000000512_npp_mcp_tool_contracts.v1.json > NUL }",
+        "expect_exit_code": 0,
+        "shell": "powershell"
+      }
+    ],
+    "must_check": [
+      "Template root contains abstraction_governance, path_abstraction_contract, reusable_program_contract, and implementation_behavior_contract.",
+      "Technical spec required_sections contains the same four new sections.",
+      "Instruction document content contains section instructions for all four new sections.",
+      "validation_gates contains no duplicate gate_id.",
+      "pipeline_boundary_contract.validation_required_before_execution includes all new mandatory gates.",
+      "Generated inventory/index files are rebuilt rather than manually edited.",
+      "MCP contract patterns accept PH-03A, PRE-EXECUTION, POST-EXECUTION, and STEP-001 when the MCP contract file is present.",
+      "pipeline_boundary_contract.execution_identity_policy exists and declares phase-scoped step_id plus phase_step_key global uniqueness.",
+      "template_metadata.template_placeholder_policy exists and prevents scaffold placeholders from being treated as execution-ready plan values.",
+      "Technical spec no longer hardcodes stale fixed gate-count text such as Total gates: 19; gate count is computed or explicitly derived.",
+      "Generated inventory/index artifacts classify artifact_intent_manifest.records and planned_registry_projection.records as index_eligible.",
+      "Referenced validator scripts for context/artifact/registry/reconciliation/abstraction/reuse/identity exist or are declared in artifact_intent_manifest as planned creates."
+    ]
+  },
+  "expected_effect": {
+    "short_term": "File count increases because schemas, validators, and reusable framework artifacts are added.",
+    "long_term": "Per-feature file growth decreases because most future additions become specs/configs/schema/test/catalog entries instead of new runners, validators, parsers, reports, and orchestration scripts.",
+    "enforcement_requirement": "The file-load reduction only happens if GATE-RPROG-* gates are mandatory. If reusable-program enforcement is optional, the repo will accumulate both the framework files and bespoke feature files.",
+    "consolidated_effect": "One CLI document now covers both major v3.3.1 governance integration and cleanup/compatibility patches needed to make the changed v3.3 source set executable and drift-resistant."
+  },
+  "non_goals": [
+    "Do not manually edit generated inventory.json unless the generator cannot be updated.",
+    "Do not require contracts for private local helper functions.",
+    "Do not convert every path in the repository into a path key; only governed important/shared paths require keys.",
+    "Do not allow path resolver fuzzy matching or fallback physical paths.",
+    "Do not leave one validator script per gate as the steady state when the GateSpec/shared runner model can consolidate those checks."
+  ],
+  "current_state_cleanup_integration": {
+    "layer_id": "LAYER-V3_3_1-CLEANUP-COMPATIBILITY",
+    "goal": "Merge post-migration compatibility and drift fixes into the same CLI modification plan as abstraction/reuse governance.",
+    "applies_after": "LAYER-V3_3_1-ABSTRACTION-REUSE-INTEGRATION",
+    "cleanup_findings": [
+      {
+        "finding_id": "CLEANUP-001",
+        "title": "MCP contract ID patterns reject valid v3.3 identifiers",
+        "problem": "RunContext.phase_id only accepts PH-#### and RunContext.step_id only accepts S###, while v3.3 uses PH-03A, PRE-EXECUTION, POST-EXECUTION, and STEP-001 forms.",
+        "resolution": "Patch MCP patterns and introduce gate_execution_stage separation guidance."
+      },
+      {
+        "finding_id": "CLEANUP-002",
+        "title": "Step identity ambiguity",
+        "problem": "Template uses duplicate local step IDs across phases while some wording implies global step_id uniqueness.",
+        "resolution": "Adopt phase-scoped step_id and canonical phase_step_key = {phase_id}/{step_id}. Validators must check phase_step_key uniqueness, not bare step_id uniqueness."
+      },
+      {
+        "finding_id": "CLEANUP-003",
+        "title": "New v3.3 arrays need identity-based indexing",
+        "problem": "artifact_intent_manifest.records and planned_registry_projection.records are generated as structural arrays despite having stable identity fields.",
+        "resolution": "Update index generator classification rules to mark both arrays index_eligible and patchable by identity."
+      },
+      {
+        "finding_id": "CLEANUP-004",
+        "title": "Stale hardcoded gate-count wording",
+        "problem": "Technical spec still references a stale fixed total such as Total gates: 19 even though template defaults have changed.",
+        "resolution": "Replace hardcoded gate counts with computed counts from validation_gates.length, or with explicit template default count when generated."
+      },
+      {
+        "finding_id": "CLEANUP-005",
+        "title": "Template placeholders conflict with no-blank plan-instance rules",
+        "problem": "The reusable template intentionally contains blank/null scaffold fields, while plan-instance instructions forbid blank/null contract fields.",
+        "resolution": "Add template_placeholder_policy so scaffold placeholders are allowed only in template mode and forbidden in concrete plan instances."
+      },
+      {
+        "finding_id": "CLEANUP-006",
+        "title": "Execution readiness not proven by source JSON alone",
+        "problem": "README references tools, indexes, evidence, and validator scripts that were not all proven present/executable.",
+        "resolution": "Add validator/tool existence audit and make it a post-patch acceptance check."
+      }
+    ],
+    "identity_decision": {
+      "step_id_scope": "phase_scoped",
+      "canonical_execution_key": "phase_step_key",
+      "phase_step_key_format": "{phase_id}/{step_id}",
+      "bare_step_id_uniqueness": "required_only_within_same_phase_id",
+      "global_uniqueness_required_for": "phase_step_key",
+      "rationale": "Keeps local step numbering readable while providing deterministic global joins."
+    },
+    "generated_artifact_rule": {
+      "inventory_json": "generated_not_manually_patched",
+      "indexes_directory": "generated_not_manually_patched",
+      "evidence_directory": "generated_not_manually_patched",
+      "tool_to_patch": "tools/index_generator.py",
+      "rebuild_command": "python .\\tools\\index_generator.py"
+    }
+  },
+  "index_generator_patch_if_present": {
+    "file": "tools/index_generator.py",
+    "required_if_exists": true,
+    "operation_mode": "semantic_code_patch",
+    "instructions": [
+      "Find the array classification rule table or equivalent logic.",
+      "Add exact path rules for /artifact_intent_manifest/records and /planned_registry_projection/records before generic structural fallback.",
+      "Add rules for v3.3.1 abstraction/reuse arrays if the abstraction patch adds them.",
+      "Ensure duplicate and missing identity actions fail closed.",
+      "Regenerate inventory and indexes after patching."
+    ],
+    "rules_to_add": [
+      {
+        "document": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+        "path": "/abstraction_governance/boundary_contracts",
+        "identity_field": "contract_id",
+        "identity_pattern": "^ABS-[A-Z0-9-]+$",
+        "index_output": "by_abstraction_contract_id",
+        "patch_mode": "element_by_identity"
+      },
+      {
+        "document": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+        "path": "/implementation_behavior_contract/profiles",
+        "identity_field": "behavior_profile_id",
+        "identity_pattern": "^[A-Z0-9_]+$",
+        "index_output": "by_behavior_profile_id",
+        "patch_mode": "element_by_identity"
+      },
+      {
+        "document": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+        "path": "/implementation_behavior_contract/situational_rules",
+        "identity_field": "rule_id",
+        "identity_pattern": "^BEH-[A-Z0-9-]+$",
+        "index_output": "by_behavior_rule_id",
+        "patch_mode": "element_by_identity"
+      },
+      {
+        "document": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+        "path": "/reusable_program_contract/program_taxonomy",
+        "identity_field": "program_type",
+        "identity_pattern": "^(Gate|Phase|Transport|Mutation|Executor)$",
+        "index_output": "by_program_type",
+        "patch_mode": "element_by_identity"
+      },
+      {
+        "document": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+        "path": "/artifact_intent_manifest/records",
+        "identity_field": "artifact_intent_id",
+        "identity_pattern": "^AINT-\\d{3,}$",
+        "index_output": "by_artifact_intent_id",
+        "patch_mode": "element_by_identity"
+      },
+      {
+        "document": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+        "path": "/planned_registry_projection/records",
+        "identity_field": "projection_id",
+        "identity_pattern": "^REGPROJ-\\d{3,}$",
+        "index_output": "by_projection_id",
+        "patch_mode": "element_by_identity"
+      }
+    ]
+  },
+  "consolidated_acceptance_criteria": {
+    "json_validity": "All modified JSON files parse with python -m json.tool.",
+    "source_alignment": "Template, technical spec, and instruction document agree on new abstraction/reuse and cleanup concepts.",
+    "identity_compatibility": "phase_step_key is the global execution join key; bare step_id is phase-scoped; MCP schema accepts v3.3 IDs.",
+    "indexing_safety": "Identity-bearing arrays are patchable by semantic identity, not array index.",
+    "generated_artifact_discipline": "inventory, indexes, and evidence are rebuilt from sources, not hand-edited.",
+    "placeholder_safety": "Template placeholders are legal only in scaffold mode and fail in concrete plan instances unless resolved or explicitly marked NOT_AUTOMATABLE.",
+    "tooling_readiness": "Every referenced validator/tool is present or declared as a planned artifact with an artifact intent record."
+  }
+}

@@ -13,24 +13,55 @@ import subprocess
 from pathlib import Path
 from typing import List, Tuple
 
-# Add parent to path for imports
-repo_root = Path(__file__).parent.parent.parent
-if str(repo_root) not in sys.path:
-    sys.path.insert(0, str(repo_root))
+SCRIPT_ROOT = Path(__file__).resolve().parents[3]
+RUNTIME_ROOT = SCRIPT_ROOT / "ID" / "1_runtime"
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "01260207201000001173_govreg_core"))
+if str(RUNTIME_ROOT) not in sys.path:
+    sys.path.insert(0, str(RUNTIME_ROOT))
+
 from P_01260207233100000069_dir_id_handler import DirIdManager
 from P_01260207233100000068_zone_classifier import ZoneClassifier
 
 
-def get_staged_files() -> List[str]:
+def _detect_project_root() -> Path:
+    cwd = Path.cwd().resolve()
+    for candidate in (cwd, SCRIPT_ROOT):
+        if (candidate / ".idpkg" / "config.json").exists():
+            return candidate
+    return SCRIPT_ROOT
+
+
+def _detect_git_root(project_root: Path) -> Path:
+    result = subprocess.run(
+        ["git", "rev-parse", "--show-toplevel"],
+        capture_output=True,
+        text=True,
+        cwd=project_root,
+    )
+    if result.returncode == 0 and result.stdout.strip():
+        return Path(result.stdout.strip())
+    return project_root
+
+
+def get_staged_files(project_root: Path) -> List[str]:
     """Get list of staged files."""
+    git_root = _detect_git_root(project_root)
     result = subprocess.run(
         ["git", "diff", "--cached", "--name-only", "--diff-filter=ACMR"],
         capture_output=True,
-        text=True
+        text=True,
+        cwd=git_root,
     )
-    return result.stdout.strip().split('\n') if result.stdout.strip() else []
+
+    staged_files: List[str] = []
+    for file_path in result.stdout.strip().split('\n') if result.stdout.strip() else []:
+        abs_path = (git_root / file_path).resolve()
+        try:
+            relative_path = abs_path.relative_to(project_root.resolve())
+        except ValueError:
+            continue
+        staged_files.append(str(relative_path).replace("\\", "/"))
+    return staged_files
 
 
 def check_new_governed_directories_have_dir_id(
@@ -39,7 +70,7 @@ def check_new_governed_directories_have_dir_id(
 ) -> List[Tuple[str, str]]:
     """Check that new governed directories have .dir_id."""
     errors = []
-    zone_classifier = ZoneClassifier()
+    zone_classifier = ZoneClassifier(project_root=project_root)
     
     # Find new directories
     new_dirs = set()
@@ -68,7 +99,7 @@ def check_modified_dir_id_files_are_valid(
 ) -> List[Tuple[str, str]]:
     """Check that modified .dir_id files are valid."""
     errors = []
-    dir_id_manager = DirIdManager()
+    dir_id_manager = DirIdManager(project_root=project_root)
     
     for file_path in staged_files:
         if not file_path.endswith(".dir_id"):
@@ -102,7 +133,7 @@ def check_no_duplicate_dir_ids(
 ) -> List[Tuple[str, str]]:
     """Check for duplicate dir_id allocations."""
     errors = []
-    dir_id_manager = DirIdManager()
+    dir_id_manager = DirIdManager(project_root=project_root)
     seen_dir_ids = {}
     
     for file_path in staged_files:
@@ -131,8 +162,8 @@ def check_no_duplicate_dir_ids(
 
 def main() -> int:
     """Main pre-commit hook."""
-    project_root = Path.cwd()
-    staged_files = get_staged_files()
+    project_root = _detect_project_root()
+    staged_files = get_staged_files(project_root)
     
     if not staged_files:
         return 0

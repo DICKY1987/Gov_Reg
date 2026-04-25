@@ -9,9 +9,13 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 
-CORE_PATH = Path(__file__).parent.parent / "01260207201000001173_govreg_core"
-if str(CORE_PATH) not in sys.path:
-    sys.path.insert(0, str(CORE_PATH))
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+RUNTIME_ROOT = PROJECT_ROOT / "ID" / "1_runtime"
+WATCHERS_PATH = RUNTIME_ROOT / "watchers"
+
+for import_path in (RUNTIME_ROOT, WATCHERS_PATH):
+    if str(import_path) not in sys.path:
+        sys.path.insert(0, str(import_path))
 
 from P_01999000042260126000__idpkg_runtime import IdpkgEngine
 

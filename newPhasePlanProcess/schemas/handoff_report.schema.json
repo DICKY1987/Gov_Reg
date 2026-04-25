@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Handoff Report",
+  "type": "object",
+  "required": ["producer", "consumer", "artifacts"],
+  "properties": {
+    "producer": { "type": "string" },
+    "consumer": { "type": "string" },
+    "artifacts": { "type": "array", "items": { "type": "object" } }
+  },
+  "additionalProperties": true
+}

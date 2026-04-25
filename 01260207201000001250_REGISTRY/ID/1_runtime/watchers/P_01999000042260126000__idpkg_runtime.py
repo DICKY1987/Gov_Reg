@@ -16,15 +16,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
-MODULE_DIR = Path(__file__).parent
-REPO_ROOT = MODULE_DIR.parent
+MODULE_DIR = Path(__file__).resolve().parent
+RUNTIME_ROOT = MODULE_DIR.parent
+PROJECT_ROOT = MODULE_DIR.parents[2]
 
-if str(MODULE_DIR) not in sys.path:
-    sys.path.insert(0, str(MODULE_DIR))
-
-SCRIPTS_PATH = REPO_ROOT / "01260207201000001276_scripts"
-if SCRIPTS_PATH.exists() and str(SCRIPTS_PATH) not in sys.path:
-    sys.path.insert(0, str(SCRIPTS_PATH))
+for import_path in (MODULE_DIR, RUNTIME_ROOT, RUNTIME_ROOT / "allocators"):
+    if str(import_path) not in sys.path:
+        sys.path.insert(0, str(import_path))
 
 from P_01999000042260124030_shared_utils import atomic_json_write, atomic_json_read, utc_timestamp
 from P_01260207233100000068_zone_classifier import ZoneClassifier
@@ -170,7 +168,10 @@ class IdpkgContracts:
                 return json.load(f)
 
         config_schema = load_json(contracts_dir / "IDPKG_CONFIG.schema.json")
-        dir_id_schema = load_json(contracts_dir / ".dir_id.schema.json")
+        dir_id_schema_path = contracts_dir / ".dir_id.schema.json"
+        if not dir_id_schema_path.exists():
+            dir_id_schema_path = PROJECT_ROOT / "ID" / "3_schemas" / ".dir_id.schema.json"
+        dir_id_schema = load_json(dir_id_schema_path)
         ingest_schema = load_json(contracts_dir / "UNIFIED_INGEST_ENVELOPE.schema.json")
         prefix_policy = load_json(contracts_dir / "PREFIX_POLICY.json")
         gate_catalog = load_json(contracts_dir / "GATE_CATALOG.json")
@@ -727,12 +728,15 @@ class GateRunner:
 class IdpkgEngine:
     def __init__(self, config_path: Optional[Path] = None):
         if config_path is None:
-            config_path = REPO_ROOT / ".idpkg" / "config.json"
+            config_path = PROJECT_ROOT / ".idpkg" / "config.json"
         self.config = IdpkgConfig.load(config_path)
         self.contracts = IdpkgContracts.load(self.config.contracts_dir)
 
-        self.zone_classifier = ZoneClassifier(exclusions=self.config.exclusions)
-        self.dir_manager = DirIdManager()
+        self.zone_classifier = ZoneClassifier(
+            project_root=self.config.project_root_path,
+            exclusions=self.config.exclusions,
+        )
+        self.dir_manager = DirIdManager(project_root=self.config.project_root_path)
         self.dir_resolver = DirectoryIdentityResolver(
             project_root=self.config.project_root_path,
             project_root_id=self.config.project_root_id,

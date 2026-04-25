@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Reusable Program Contract",
+  "type": "object",
+  "required": [
+    "program_taxonomy",
+    "new_behavior_policy",
+    "automation_lifecycle_spine",
+    "validation"
+  ],
+  "properties": {
+    "program_taxonomy": { "type": "array", "items": { "type": "object" } },
+    "new_behavior_policy": { "type": "object" },
+    "automation_lifecycle_spine": { "type": "array", "items": { "type": "string" } },
+    "validation": { "type": "object" }
+  },
+  "additionalProperties": true
+}

@@ -15,13 +15,20 @@ import json
 import os
 import sys
 
-# Ensure govreg_core is importable
-repo_root = Path(__file__).parent.parent
-if str(repo_root) not in sys.path:
-    sys.path.insert(0, str(repo_root))
+MODULE_DIR = Path(__file__).resolve().parent
+RUNTIME_ROOT = MODULE_DIR.parent
+PROJECT_ROOT = MODULE_DIR.parents[2]
+VALIDATORS_DIR = RUNTIME_ROOT / "validators"
+
+if str(RUNTIME_ROOT) not in sys.path:
+    sys.path.insert(0, str(RUNTIME_ROOT))
+if str(VALIDATORS_DIR) not in sys.path:
+    sys.path.insert(0, str(VALIDATORS_DIR))
+
+repo_root = PROJECT_ROOT
 
 # Import from same directory
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(MODULE_DIR))
 from P_01999000042260124031_unified_id_allocator import UnifiedIDAllocator
 
 
@@ -145,7 +152,7 @@ class IDAllocatorFacade:
                 "numeric_id": str (20-digit file_id)
             }
         """
-        from govreg_core.P_01999000042260125002_canonical_id_patterns import (
+        from P_01999000042260125002_canonical_id_patterns import (
             detect_id_type, normalize_to_file_id
         )
         

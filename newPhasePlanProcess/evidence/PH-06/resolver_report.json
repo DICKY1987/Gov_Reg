@@ -1,6 +1,6 @@
 {
   "cross_file_integrity": {
-    "checked_count": 48,
+    "checked_count": 64,
     "checks": [
       {
         "id": "PAT-EXAMPLE-PLAN-DOC",
@@ -159,6 +159,46 @@
         "type": "boundary_gate"
       },
       {
+        "id": "GATE-ABS-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/34",
+        "type": "boundary_gate"
+      },
+      {
+        "id": "GATE-ABS-002",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/35",
+        "type": "boundary_gate"
+      },
+      {
+        "id": "GATE-PATH-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/36",
+        "type": "boundary_gate"
+      },
+      {
+        "id": "GATE-PATH-002",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/37",
+        "type": "boundary_gate"
+      },
+      {
+        "id": "GATE-PATH-003",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/38",
+        "type": "boundary_gate"
+      },
+      {
+        "id": "GATE-RPROG-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/39",
+        "type": "boundary_gate"
+      },
+      {
+        "id": "GATE-RPROG-002",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/40",
+        "type": "boundary_gate"
+      },
+      {
+        "id": "GATE-BEH-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/41",
+        "type": "boundary_gate"
+      },
+      {
         "id": "GATE-001",
         "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/1",
         "type": "template_gate"
@@ -257,6 +297,46 @@
         "id": "GATE-RECON-002",
         "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/33",
         "type": "template_gate"
+      },
+      {
+        "id": "GATE-ABS-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/34",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-ABS-002",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/35",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-PATH-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/36",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-PATH-002",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/37",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-PATH-003",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/38",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-RPROG-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/39",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-RPROG-002",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/40",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-BEH-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/41",
+        "type": "template_gate"
       }
     ],
     "errors": [],
@@ -279,9 +359,9 @@
   },
   "resolver_module": "tools/resolver.py",
   "roundtrip_counts": {
-    "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json": 36,
+    "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json": 59,
     "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_3.json": 0,
-    "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_3.json": 51
+    "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_3.json": 62
   },
   "status": "PASS"
 }

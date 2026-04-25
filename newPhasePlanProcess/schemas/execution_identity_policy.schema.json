@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Execution Identity Policy",
+  "type": "object",
+  "required": [
+    "phase_id_pattern",
+    "step_id_pattern",
+    "step_id_scope",
+    "phase_step_key_required",
+    "phase_step_key_format",
+    "global_uniqueness_rule"
+  ],
+  "properties": {
+    "phase_id_pattern": { "type": "string" },
+    "step_id_pattern": { "type": "string" },
+    "step_id_scope": { "type": "string" },
+    "phase_step_key_required": { "type": "boolean" },
+    "phase_step_key_format": { "type": "string" },
+    "global_uniqueness_rule": { "type": "string" }
+  },
+  "additionalProperties": true
+}

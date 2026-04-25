@@ -2,6 +2,22 @@
   "canonical_locator_type": "json_pointer",
   "index_version": "1.1.0",
   "maps": {
+    "by_abstraction_contract_id": {
+      "ABS-EXAMPLE-GATE-EXTRACTION": "/abstraction_governance/boundary_contracts/1",
+      "ABS-EXAMPLE-PLAN-DOC": "/abstraction_governance/boundary_contracts/0"
+    },
+    "by_artifact_intent_id": {
+      "AINT-001": "/artifact_intent_manifest/records/0",
+      "AINT-002": "/artifact_intent_manifest/records/1"
+    },
+    "by_behavior_profile_id": {
+      "PYTHON_CLI_DEFAULTS_V1": "/implementation_behavior_contract/profiles/0"
+    },
+    "by_behavior_rule_id": {
+      "BEH-CLI-001": "/implementation_behavior_contract/situational_rules/0",
+      "BEH-CONCURRENT-001": "/implementation_behavior_contract/situational_rules/2",
+      "BEH-PATH-001": "/implementation_behavior_contract/situational_rules/1"
+    },
     "by_enhancement_id": {
       "ENH-001": "/final_summary/what_was_delivered/enhancements/0",
       "ENH-002": "/final_summary/what_was_delivered/enhancements/1",
@@ -25,8 +41,11 @@
       "GATE-004": "/validation_gates/3",
       "GATE-005": "/validation_gates/4",
       "GATE-006": "/validation_gates/5",
+      "GATE-ABS-001": "/validation_gates/20",
+      "GATE-ABS-002": "/validation_gates/21",
       "GATE-ARTIFACT-001": "/validation_gates/15",
       "GATE-ARTIFACT-002": "/validation_gates/16",
+      "GATE-BEH-001": "/validation_gates/27",
       "GATE-CFG-001": "/validation_gates/7",
       "GATE-CFG-002": "/validation_gates/8",
       "GATE-CFG-003": "/validation_gates/9",
@@ -36,13 +55,29 @@
       "GATE-CONTEXT-001": "/validation_gates/13",
       "GATE-CONTEXT-002": "/validation_gates/14",
       "GATE-FILE-MUTATIONS": "/validation_gates/6",
+      "GATE-PATH-001": "/validation_gates/22",
+      "GATE-PATH-002": "/validation_gates/23",
+      "GATE-PATH-003": "/validation_gates/24",
       "GATE-RECON-001": "/validation_gates/18",
       "GATE-RECON-002": "/validation_gates/19",
-      "GATE-REGISTRY-001": "/validation_gates/17"
+      "GATE-REGISTRY-001": "/validation_gates/17",
+      "GATE-RPROG-001": "/validation_gates/25",
+      "GATE-RPROG-002": "/validation_gates/26"
     },
     "by_pattern_id": {
       "PAT-EXAMPLE-GATE-EXTRACTION": "/execution_patterns/task_pattern_mappings/1",
       "PAT-EXAMPLE-PLAN-DOC": "/execution_patterns/task_pattern_mappings/0"
+    },
+    "by_program_type": {
+      "Executor": "/reusable_program_contract/program_taxonomy/4",
+      "Gate": "/reusable_program_contract/program_taxonomy/0",
+      "Mutation": "/reusable_program_contract/program_taxonomy/3",
+      "Phase": "/reusable_program_contract/program_taxonomy/1",
+      "Transport": "/reusable_program_contract/program_taxonomy/2"
+    },
+    "by_projection_id": {
+      "REGPROJ-001": "/planned_registry_projection/records/0",
+      "REGPROJ-002": "/planned_registry_projection/records/1"
     },
     "by_step_id": {
       "PH-00/STEP-001": "/step_contracts/PH-00/STEP-001",
@@ -50,5 +85,5 @@
     }
   },
   "source_file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
-  "source_sha256": "eb47d02a0f1ce2ac5362a948230f13598cffc14048e3f197c0abd8b195d6e51a"
+  "source_sha256": "9c09d33e28865d9d2c444a5d2d95a7af99f3823850581556c73b4f8acbb3fa1d"
 }

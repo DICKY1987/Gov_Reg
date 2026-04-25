@@ -277,7 +277,7 @@ modules:
           type: "bool"
     
     configuration:
-      config_file: "4_config/idpkg_active_config.json"
+      config_file: ".idpkg/config.json"
       config_keys:
         - key: "governance.staging_depth"
           type: "integer"

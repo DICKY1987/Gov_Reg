@@ -1,0 +1,12 @@
+{
+  "gates": [
+    { "id": "GATE-ABS-001", "depends_on": [] },
+    { "id": "GATE-ABS-002", "depends_on": ["GATE-ABS-001"] },
+    { "id": "GATE-PATH-001", "depends_on": [] },
+    { "id": "GATE-PATH-002", "depends_on": ["GATE-PATH-001"] },
+    { "id": "GATE-PATH-003", "depends_on": ["GATE-PATH-002"] },
+    { "id": "GATE-RPROG-001", "depends_on": [] },
+    { "id": "GATE-RPROG-002", "depends_on": ["GATE-RPROG-001"] },
+    { "id": "GATE-BEH-001", "depends_on": [] }
+  ]
+}

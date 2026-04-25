@@ -1,8 +1,8 @@
 {
   "document_metadata": {
     "document_id": "DOC-TECH-SPEC-NEWPHASEPLAN-002",
-    "title": "newPhasePlanProcess v3.3.0 - Technical Specification & Architecture",
-    "version": "3.3.0",
+    "title": "newPhasePlanProcess v3.3.1 - Technical Specification & Architecture",
+    "version": "3.3.1",
     "created_at": "2026-04-04T03:08:44.753530Z",
     "status": "AUTHORITATIVE",
     "purpose": "Comprehensive technical documentation describing the newPhasePlanProcess system architecture, components, workflows, and integration points for feature development",
@@ -15,7 +15,7 @@
     "scope": "Complete system specification covering data structures, validation gates, execution flow, and extension points"
   },
   "executive_summary": {
-    "system_name": "newPhasePlanProcess v3.3.0",
+    "system_name": "newPhasePlanProcess v3.3.1",
     "system_type": "Autonomous Project Planning & Execution Framework",
     "core_purpose": "Generate, validate, and execute deterministic, mechanically-verifiable project plans with step-level contracts and evidence chains",
     "key_capabilities": [
@@ -49,7 +49,14 @@
       "Artifact intent declaration before execution",
       "Constrained pre-execution registry projection",
       "Planned-vs-observed artifact reconciliation",
-      "Planned-vs-observed registry reconciliation"
+      "Planned-vs-observed registry reconciliation",
+      "Contract-first abstraction governance for all governed module, tool, path, executor, phase, transport, and registry mutation boundaries",
+      "Path-key indirection with registry-backed resolver enforcement and hardcoded-path index gates",
+      "Reusable program contract preventing bespoke execution machinery when Gate, Phase, Mutation, Transport, or Executor programs can express the work",
+      "Deterministic implementation behavior profiles for CLI/code-generation defaults and situational behavior resolution",
+      "Execution identity policy using phase-scoped step_id values and globally unique phase_step_key joins",
+      "Template-placeholder semantics that distinguish reusable scaffold documents from executable plan instances",
+      "Generated artifact rebuild discipline for inventory, indexes, and evidence outputs"
     ],
     "design_principles": [
       "NO IMPLIED BEHAVIOR: Every rule must be expressible as config + command + evidence + pass/fail",
@@ -62,7 +69,12 @@
       "DECLARED CONTEXT ONLY: implementation may rely only on plan-bound context artifacts",
       "ARTIFACT INTENT BEFORE EXECUTION: every planned file mutation must be declared before execution",
       "INTENT IS NOT REALITY: planned metadata must remain distinct from observed execution facts",
-      "MINIMAL PREDECLARATION: only stable pre-execution-known metadata may be projected into registry planning"
+      "MINIMAL PREDECLARATION: only stable pre-execution-known metadata may be projected into registry planning",
+      "CONTRACTS ARE ABSTRACTIONS: governed boundaries must communicate through versioned contracts, path keys, envelopes, and registered executors rather than raw calls or prose",
+      "PATHS ARE SEMANTIC KEYS: important/shared repo resources must be referenced by stable path keys and resolved through the path registry",
+      "REUSE BEFORE MACHINERY: new behavior should be expressed as specs/configs/schemas/tests before adding new runners, validators, or orchestration scripts",
+      "PHASE-SCOPED STEP IDENTITY: step_id is local to a phase; phase_step_key is the global execution join key",
+      "GENERATED ARTIFACTS ARE PROJECTIONS: inventory, indexes, and evidence must be rebuilt from authoritative sources, not treated as hand-authored state"
     ],
     "primary_use_cases": [
       "AI-driven software project planning and execution",
@@ -200,8 +212,8 @@
           {
             "component_id": "COMP-L2-02",
             "name": "Validation Gate System",
-            "total_gates": 34,
-            "mandatory_gates": 34,
+            "total_gates": 42,
+            "mandatory_gates": 42,
             "optional_gates": 0,
             "gate_dependency_graph": "scripts/gate_dependencies.json",
             "execution_phases": [
@@ -216,10 +228,14 @@
               "context binding (GATE-CONTEXT-001 to GATE-CONTEXT-002)",
               "artifact intent (GATE-ARTIFACT-001 to GATE-ARTIFACT-002)",
               "registry projection (GATE-REGISTRY-001)",
-              "planned-vs-observed reconciliation (GATE-RECON-001 to GATE-RECON-002)"
+              "planned-vs-observed reconciliation (GATE-RECON-001 to GATE-RECON-002)",
+              "abstraction governance (GATE-ABS-001 to GATE-ABS-002)",
+              "path abstraction and hardcoded-path control (GATE-PATH-001 to GATE-PATH-003)",
+              "reusable program enforcement (GATE-RPROG-001 to GATE-RPROG-002)",
+              "implementation behavior determinism (GATE-BEH-001)"
             ],
             "template_defaults": {
-              "count": 20,
+              "count": 28,
               "gate_ids": [
                 "GATE-001",
                 "GATE-002",
@@ -240,7 +256,15 @@
                 "GATE-ARTIFACT-002",
                 "GATE-REGISTRY-001",
                 "GATE-RECON-001",
-                "GATE-RECON-002"
+                "GATE-RECON-002",
+                "GATE-ABS-001",
+                "GATE-ABS-002",
+                "GATE-PATH-001",
+                "GATE-PATH-002",
+                "GATE-PATH-003",
+                "GATE-RPROG-001",
+                "GATE-RPROG-002",
+                "GATE-BEH-001"
               ],
               "description": "Gates pre-populated in NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json."
             },
@@ -539,6 +563,94 @@
                 "critical_rule": "Observed registry facts must reconcile before final commit.",
                 "failure_impact": "Registry facts can drift from planned scope.",
                 "execution_phase": "post-execution reconciliation"
+              },
+              {
+                "id": "GATE-ABS-001",
+                "name": "Abstraction Governance Valid",
+                "script": "validate_abstraction_governance.py",
+                "purpose": "Ensure abstraction_governance exists, uses fail-closed semantics, declares mandatory boundary types, and defines scoped exceptions.",
+                "critical_rule": "Contracts are mandatory abstractions at governed boundaries.",
+                "failure_impact": "Boundary behavior may become raw, implicit, or untestable."
+              },
+              {
+                "id": "GATE-ABS-002",
+                "name": "Step Abstraction Bindings Complete",
+                "script": "validate_step_abstraction_bindings.py",
+                "purpose": "Verify every governed step declares abstraction_binding with input/output contracts and evidence.",
+                "critical_rule": "No governed step may rely on unstated module/tool/path contracts.",
+                "failure_impact": "Module handoff and CLI/tool behavior may drift."
+              },
+              {
+                "id": "GATE-PATH-001",
+                "name": "Governed Path Key Coverage",
+                "script": "validate_path_key_coverage.py",
+                "purpose": "Ensure all governed paths in file_manifest, artifact_intent_manifest, and planned_registry_projection have path keys.",
+                "critical_rule": "Important/shared repo resources must use stable path keys.",
+                "failure_impact": "File moves can break scripts, prompts, plans, and automation."
+              },
+              {
+                "id": "GATE-PATH-002",
+                "name": "Path Resolver Valid",
+                "script": "validate_path_resolution.py",
+                "purpose": "Resolve all declared path keys through the configured resolver and fail on unknown keys.",
+                "critical_rule": "Path keys must resolve through the path registry without fuzzy matching or fallback.",
+                "failure_impact": "Path abstraction becomes advisory instead of enforceable."
+              },
+              {
+                "id": "GATE-PATH-003",
+                "name": "No New Hardcoded Governed Paths",
+                "script": "validate_no_new_hardcoded_governed_paths.py",
+                "purpose": "Use hardcoded-path index enforcement to block newly introduced governed literal paths.",
+                "critical_rule": "New governed path literals must be registered and referenced by key.",
+                "failure_impact": "Path abstraction erodes and file-load refactors become brittle."
+              },
+              {
+                "id": "GATE-RPROG-001",
+                "name": "Reusable Program Contract Valid",
+                "script": "validate_reusable_program_contract.py",
+                "purpose": "Ensure the plan uses reusable program types and blocks new bespoke execution machinery unless approved.",
+                "critical_rule": "Feature work should add specs/configs/schemas/tests, not new machinery.",
+                "failure_impact": "File count increases through duplicated runners, validators, parsers, and orchestration scripts."
+              },
+              {
+                "id": "GATE-RPROG-002",
+                "name": "Step Reusable Program Bindings Complete",
+                "script": "validate_step_reusable_program_bindings.py",
+                "purpose": "Verify every automation step maps to Gate, Phase, Transport, Mutation, Executor, or approved exception.",
+                "critical_rule": "Every automatable step must use a reusable deterministic program type.",
+                "failure_impact": "Execution logic fragments across special-case scripts."
+              },
+              {
+                "id": "GATE-BEH-001",
+                "name": "Implementation Behavior Determinism",
+                "script": "validate_implementation_behavior_contract.py",
+                "purpose": "Ensure behavior profiles and situational rules resolve to deterministic implementation behavior.",
+                "critical_rule": "Implementation behavior cannot be chosen implicitly by AI or prompt prose.",
+                "failure_impact": "Generated code style, I/O, path handling, state handling, and CLI behavior drift."
+              },
+              {
+                "id": "GATE-ID-001",
+                "name": "Execution Identity Policy Valid",
+                "script": "validate_execution_identity_policy.py",
+                "purpose": "Verify phase_id, step_id, phase_step_key, and gate_execution_stage semantics are consistent.",
+                "critical_rule": "phase_step_key is globally unique; step_id is phase-scoped; stage labels are not confused with concrete phase IDs.",
+                "failure_impact": "MCP tools, traceability joins, and evidence paths can reference the wrong execution unit."
+              },
+              {
+                "id": "GATE-IDX-001",
+                "name": "Index Eligibility Drift Check",
+                "script": "validate_index_generator_rules.py",
+                "purpose": "Verify index generator classifies identity-bearing arrays as index_eligible and does not require whole-array replacement for semantic records.",
+                "critical_rule": "artifact_intent_manifest.records and planned_registry_projection.records must be patchable by stable identity.",
+                "failure_impact": "RFC-6902 patches become fragile and can corrupt array ordering or unrelated records."
+              },
+              {
+                "id": "GATE-TOOLS-001",
+                "name": "Referenced Tooling Exists",
+                "script": "validate_referenced_tooling_exists.py",
+                "purpose": "Verify all scripts, validators, schemas, generator tools, and resolver tools referenced by the three v3.3 documents exist or are explicitly marked planned artifacts.",
+                "critical_rule": "A governance document may not claim executable enforcement unless the referenced tooling exists or is declared in artifact_intent_manifest.",
+                "failure_impact": "Execution readiness is overstated and gates become documentation-only."
               }
             ]
           },
@@ -974,7 +1086,11 @@
           "mutation_ledger",
           "referenced_context_artifacts",
           "artifact_intent_manifest",
-          "planned_registry_projection"
+          "planned_registry_projection",
+          "abstraction_governance",
+          "path_abstraction_contract",
+          "reusable_program_contract",
+          "implementation_behavior_contract"
         ]
       },
       "section_purpose_map": {
@@ -1249,6 +1365,42 @@
             "purpose": "Declare safe pre-execution-known registry metadata for planned artifacts.",
             "example": "\"planned_registry_projection\": {\"records\": []}",
             "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json#/planned_registry_projection"
+          },
+          {
+            "section": "abstraction_governance",
+            "purpose": "Defines contract-first abstraction law, governed boundary types, required contract surfaces, and exceptions that prevent over-abstraction.",
+            "example": "\"abstraction_governance\": {\"enabled\": true, \"core_law\": \"contracts_are_abstractions\"}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json#/abstraction_governance"
+          },
+          {
+            "section": "path_abstraction_contract",
+            "purpose": "Declares path registry, resolver, governed path classes, hardcoded-path index policy, and fail-closed path-key enforcement.",
+            "example": "\"path_abstraction_contract\": {\"registry\": {\"authoritative_registry_path\": \"config/path_index.yaml\"}}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json#/path_abstraction_contract"
+          },
+          {
+            "section": "reusable_program_contract",
+            "purpose": "Defines reusable program taxonomy and blocks new bespoke execution machinery unless a governed exception proves reuse is impossible.",
+            "example": "\"reusable_program_contract\": {\"program_taxonomy\": [{\"program_type\": \"Gate\"}]}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json#/reusable_program_contract"
+          },
+          {
+            "section": "implementation_behavior_contract",
+            "purpose": "Defines deterministic implementation defaults, behavior profiles, situational rules, and behavior binding validation for CLI/code-generation work.",
+            "example": "\"implementation_behavior_contract\": {\"defaults_profile_id\": \"PYTHON_CLI_DEFAULTS_V1\"}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json#/implementation_behavior_contract"
+          },
+          {
+            "section": "pipeline_boundary_contract.execution_identity_policy",
+            "purpose": "Defines phase_id and step_id patterns, phase-scoped step identity, globally unique phase_step_key construction, and gate execution-stage separation.",
+            "example": "\"execution_identity_policy\": {\"step_id_scope\": \"phase_scoped\", \"phase_step_key_format\": \"{phase_id}/{step_id}\"}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json#/pipeline_boundary_contract/execution_identity_policy"
+          },
+          {
+            "section": "template_metadata.template_placeholder_policy",
+            "purpose": "Defines which blank/null scaffold values are allowed in the reusable template and forbids unresolved placeholders in concrete plan instances.",
+            "example": "\"template_placeholder_policy\": {\"template_placeholder_allowed\": true, \"concrete_plan_instance_rule\": \"fail_closed_if_blank_null_or_unresolved\"}",
+            "template_path": "newPhasePlanProcess\\NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json#/template_metadata/template_placeholder_policy"
           }
         ]
       },
@@ -1481,6 +1633,75 @@
           "forbidden_field_classes": "Runtime observations, content hashes, actual timestamps, derived memberships, and computed rollups are forbidden before execution.",
           "reconciliation_rules": "After execution, projected values are compared to observed registry facts and mismatches must be reconciled or explained."
         }
+      },
+      "abstraction_governance": {
+        "description": "Top-level governance section requiring versioned contracts at all governed boundaries.",
+        "required_fields": [
+          "enabled",
+          "enforcement_mode",
+          "core_law",
+          "mandatory_boundary_types",
+          "non_applicable_scope",
+          "required_contract_surfaces",
+          "validation"
+        ],
+        "validation_gate_ids": [
+          "GATE-ABS-001",
+          "GATE-ABS-002"
+        ]
+      },
+      "path_abstraction_contract": {
+        "description": "Top-level governance section requiring path keys and resolver-backed path resolution for governed resources.",
+        "required_fields": [
+          "enabled",
+          "registry",
+          "resolver",
+          "governed_path_classes",
+          "hardcoded_path_index_policy",
+          "validation"
+        ],
+        "validation_gate_ids": [
+          "GATE-PATH-001",
+          "GATE-PATH-002",
+          "GATE-PATH-003"
+        ]
+      },
+      "reusable_program_contract": {
+        "description": "Top-level governance section that makes reusable deterministic program types mandatory before new bespoke execution machinery.",
+        "required_fields": [
+          "enabled",
+          "program_taxonomy",
+          "new_behavior_policy",
+          "automation_lifecycle_spine",
+          "validation"
+        ],
+        "validation_gate_ids": [
+          "GATE-RPROG-001",
+          "GATE-RPROG-002"
+        ]
+      },
+      "implementation_behavior_contract": {
+        "description": "Top-level governance section for deterministic code-generation and CLI implementation defaults.",
+        "required_fields": [
+          "enabled",
+          "defaults_profile_id",
+          "profiles",
+          "situational_rules",
+          "validation"
+        ],
+        "validation_gate_ids": [
+          "GATE-BEH-001"
+        ]
+      },
+      "execution_identity_policy": {
+        "description": "Canonical identity policy for executable steps and gate bindings.",
+        "rules": [
+          "step_id values are unique within a phase_id, not necessarily globally unique alone.",
+          "phase_step_key = {phase_id}/{step_id} is the global join key for execution, traceability, evidence, and MCP requests.",
+          "gate_execution_stage should represent PRE-EXECUTION/CORE-VALIDATION/POST-EXECUTION stage labels rather than overloading phase_id when no concrete phase applies.",
+          "Validators must detect duplicate phase_step_key values and duplicate step_id values within the same phase_id."
+        ],
+        "validation_command": "python scripts/validate_execution_identity_policy.py --plan-file {plan_file}"
       }
     },
     "file_mutation_set": {
@@ -1779,6 +2000,16 @@
         "expect_exit_code": "Expected exit code from validation command"
       },
       "purpose": "Ensure tamper-proof tracking of patch states and enforce consistent progress through the change pipeline."
+    },
+    "generated_artifact_policy": {
+      "description": "inventory.json, indexes, and evidence reports are generated projections and must be rebuilt from authoritative source documents.",
+      "source_documents": [
+        "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+        "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_3.json",
+        "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_3.json"
+      ],
+      "generator": "tools/index_generator.py",
+      "manual_edit_policy": "forbidden_except_recorded_tooling_failure_exception"
     }
   },
   "workflows": {
@@ -2207,7 +2438,7 @@
           "step": 4,
           "action": "Generate validation report",
           "aggregate": [
-            "Total gates: 19",
+            "Total gates: computed from validation_gates.length",
             "Gates passed: X",
             "Gates failed: Y",
             "FM checks passed: Z",
@@ -2229,6 +2460,38 @@
         "Run artifact reconciliation against artifact_intent_manifest.",
         "Run registry reconciliation against planned_registry_projection.",
         "Commit observed registry facts only after reconciliation succeeds or records an explicit exception."
+      ]
+    },
+    "abstraction_governance_workflow": {
+      "description": "Resolve whether work crosses a governed boundary, bind the required contracts, validate abstraction bindings, and block execution if any governed boundary is raw or implicit.",
+      "steps": [
+        "classify_boundary_type",
+        "determine_if_abstraction_required",
+        "bind_input_and_output_contracts",
+        "bind_path_keys_when logical resources are physical paths",
+        "validate_step_abstraction_binding",
+        "emit abstraction evidence"
+      ]
+    },
+    "path_abstraction_workflow": {
+      "description": "Convert governed physical paths into semantic keys, resolve them through the path registry, and reject new governed hard-coded literals.",
+      "steps": [
+        "classify path as governed or ungoverned",
+        "require path_key for governed paths",
+        "validate path_key in config/path_index.yaml",
+        "resolve key through the declared resolver CLI",
+        "scan hardcoded path index for new violations",
+        "emit resolver and index evidence"
+      ]
+    },
+    "reusable_program_workflow": {
+      "description": "Classify automatable work into reusable program type before allowing new code files.",
+      "steps": [
+        "classify work as Gate, Phase, Transport, Mutation, Executor, or non-automatable",
+        "search existing reusable runner/pattern",
+        "create or update spec/config when runner exists",
+        "require exception package before new runner machinery",
+        "validate reusable_program_binding on each step"
       ]
     }
   },

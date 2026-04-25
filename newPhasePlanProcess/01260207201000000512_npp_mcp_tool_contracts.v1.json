@@ -16,7 +16,11 @@
     "defs": {
       "RunContext": {
         "type": "object",
-        "required": ["repo_root", "run_id", "invoker"],
+        "required": [
+          "repo_root",
+          "run_id",
+          "invoker"
+        ],
         "additionalProperties": false,
         "properties": {
           "repo_root": {
@@ -31,7 +35,11 @@
           },
           "invoker": {
             "type": "string",
-            "enum": ["human", "ai", "ci"],
+            "enum": [
+              "human",
+              "ai",
+              "ci"
+            ],
             "description": "Who initiated the tool call."
           },
           "plan_id": {
@@ -41,24 +49,49 @@
           },
           "phase_id": {
             "type": "string",
-            "pattern": "^PH-\\d{2,4}$",
+            "pattern": "^(PH-\\d{2,4}[A-Z]?|PRE-EXECUTION|POST-EXECUTION)$",
             "description": "Optional phase identifier for correlation."
           },
           "step_id": {
             "type": "string",
-            "pattern": "^S\\d{3}$",
+            "pattern": "^STEP-\\d{3,}$",
             "description": "Optional step identifier for correlation."
+          },
+          "gate_execution_stage": {
+            "type": "string",
+            "enum": [
+              "PRE-EXECUTION",
+              "CORE-VALIDATION",
+              "POST-EXECUTION"
+            ],
+            "description": "Optional gate-stage label used when a gate is not bound to a concrete phase_id. Prevents PRE-EXECUTION/POST-EXECUTION from being overloaded as phase IDs in newer clients."
+          },
+          "phase_step_key": {
+            "type": "string",
+            "pattern": "^(PH-\\d{2,4}[A-Z]?|PRE-EXECUTION|POST-EXECUTION)/STEP-\\d{3,}$",
+            "description": "Canonical global execution reference formatted as {phase_id}/{step_id}. Required by higher-level validators when both phase_id and step_id are present."
           }
         }
       },
       "Defect": {
         "type": "object",
-        "required": ["severity", "code", "location", "message"],
+        "required": [
+          "severity",
+          "code",
+          "location",
+          "message"
+        ],
         "additionalProperties": false,
         "properties": {
           "severity": {
             "type": "string",
-            "enum": ["info", "low", "medium", "high", "critical"]
+            "enum": [
+              "info",
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
           },
           "code": {
             "type": "string",
@@ -83,7 +116,14 @@
       },
       "ToolResultEnvelope": {
         "type": "object",
-        "required": ["tool", "tool_version", "status", "exit_code", "run_id", "evidence_paths"],
+        "required": [
+          "tool",
+          "tool_version",
+          "status",
+          "exit_code",
+          "run_id",
+          "evidence_paths"
+        ],
         "additionalProperties": false,
         "properties": {
           "tool": {
@@ -96,7 +136,12 @@
           },
           "status": {
             "type": "string",
-            "enum": ["pass", "fail", "error", "not_automatable"]
+            "enum": [
+              "pass",
+              "fail",
+              "error",
+              "not_automatable"
+            ]
           },
           "exit_code": {
             "type": "integer",
@@ -127,24 +172,32 @@
           },
           "defects": {
             "type": "array",
-            "items": { "$ref": "#/shared/defs/Defect" },
+            "items": {
+              "$ref": "#/shared/defs/Defect"
+            },
             "default": []
           },
           "hashes": {
             "type": "object",
-            "additionalProperties": { "type": "string" },
+            "additionalProperties": {
+              "type": "string"
+            },
             "default": {}
           },
           "metrics": {
             "type": "object",
-            "additionalProperties": { "type": "number" },
+            "additionalProperties": {
+              "type": "number"
+            },
             "default": {}
           }
         }
       },
       "ServerLevelDefectCodes": {
         "type": "array",
-        "items": { "type": "string" },
+        "items": {
+          "type": "string"
+        },
         "default": [
           "REPO_ROOT_VIOLATION",
           "INPUT_FILE_NOT_FOUND",
@@ -168,10 +221,15 @@
       "default_evidence_path_template": ".state/evidence/mcp/{run_id}/plan_validate_structure.json",
       "input_schema": {
         "type": "object",
-        "required": ["context", "plan_path"],
+        "required": [
+          "context",
+          "plan_path"
+        ],
         "additionalProperties": false,
         "properties": {
-          "context": { "$ref": "#/shared/defs/RunContext" },
+          "context": {
+            "$ref": "#/shared/defs/RunContext"
+          },
           "plan_path": {
             "type": "string",
             "minLength": 1,
@@ -194,7 +252,9 @@
           }
         }
       },
-      "output_schema": { "$ref": "#/shared/defs/ToolResultEnvelope" },
+      "output_schema": {
+        "$ref": "#/shared/defs/ToolResultEnvelope"
+      },
       "defect_codes_minimum": [
         "MISSING_SECTION",
         "MISSING_FIELD",
@@ -231,17 +291,25 @@
       "default_evidence_path_template": ".state/evidence/mcp/{run_id}/plan_validate_step_contracts.json",
       "input_schema": {
         "type": "object",
-        "required": ["context", "plan_path"],
+        "required": [
+          "context",
+          "plan_path"
+        ],
         "additionalProperties": false,
         "properties": {
-          "context": { "$ref": "#/shared/defs/RunContext" },
+          "context": {
+            "$ref": "#/shared/defs/RunContext"
+          },
           "plan_path": {
             "type": "string",
             "minLength": 1
           },
           "phase_filter": {
             "type": "array",
-            "items": { "type": "string", "pattern": "^PH-\\d{2,4}$" },
+            "items": {
+              "type": "string",
+              "pattern": "^PH-\\d{2,4}$"
+            },
             "default": [],
             "description": "Optional list of phase_ids to validate. Empty means validate all."
           },
@@ -262,7 +330,9 @@
           }
         }
       },
-      "output_schema": { "$ref": "#/shared/defs/ToolResultEnvelope" },
+      "output_schema": {
+        "$ref": "#/shared/defs/ToolResultEnvelope"
+      },
       "defect_codes_minimum": [
         "NO_PHASES_DEFINED",
         "PHASE_HAS_NO_STEPS",
@@ -304,18 +374,32 @@
       "default_evidence_path_template": ".state/evidence/mcp/{run_id}/plan_validate_ssot.json",
       "input_schema": {
         "type": "object",
-        "required": ["context", "plan_path"],
+        "required": [
+          "context",
+          "plan_path"
+        ],
         "additionalProperties": false,
         "properties": {
-          "context": { "$ref": "#/shared/defs/RunContext" },
+          "context": {
+            "$ref": "#/shared/defs/RunContext"
+          },
           "plan_path": {
             "type": "string",
             "minLength": 1
           },
           "ignore_common_paths": {
             "type": "array",
-            "items": { "type": "string" },
-            "default": [".", "..", "/", "scripts", "schemas", ".state"],
+            "items": {
+              "type": "string"
+            },
+            "default": [
+              ".",
+              "..",
+              "/",
+              "scripts",
+              "schemas",
+              ".state"
+            ],
             "description": "Paths that are considered common and may be ignored for duplication warnings."
           },
           "write_evidence": {
@@ -335,7 +419,9 @@
           }
         }
       },
-      "output_schema": { "$ref": "#/shared/defs/ToolResultEnvelope" },
+      "output_schema": {
+        "$ref": "#/shared/defs/ToolResultEnvelope"
+      },
       "defect_codes_minimum": [
         "SSOT_MISSING_PHASES",
         "SSOT_DUPLICATE_PATH_FACT",
@@ -369,10 +455,17 @@
       "default_evidence_path_template": ".state/evidence/mcp/{run_id}/registry_snapshot_query.json",
       "input_schema": {
         "type": "object",
-        "required": ["context", "registry_path", "fields", "output_path"],
+        "required": [
+          "context",
+          "registry_path",
+          "fields",
+          "output_path"
+        ],
         "additionalProperties": false,
         "properties": {
-          "context": { "$ref": "#/shared/defs/RunContext" },
+          "context": {
+            "$ref": "#/shared/defs/RunContext"
+          },
           "registry_path": {
             "type": "string",
             "minLength": 1,
@@ -380,14 +473,19 @@
           },
           "filter": {
             "type": "object",
-            "additionalProperties": { "type": "string" },
+            "additionalProperties": {
+              "type": "string"
+            },
             "default": {},
             "description": "Key/value filter terms applied to registry query (implementation-defined)."
           },
           "fields": {
             "type": "array",
             "minItems": 1,
-            "items": { "type": "string", "minLength": 1 },
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
             "description": "Field names to include in snapshot records."
           },
           "output_path": {
@@ -397,7 +495,9 @@
           },
           "hash_algo": {
             "type": "string",
-            "enum": ["sha256"],
+            "enum": [
+              "sha256"
+            ],
             "default": "sha256"
           },
           "write_evidence": {
@@ -417,7 +517,9 @@
           }
         }
       },
-      "output_schema": { "$ref": "#/shared/defs/ToolResultEnvelope" },
+      "output_schema": {
+        "$ref": "#/shared/defs/ToolResultEnvelope"
+      },
       "defect_codes_minimum": [
         "REGISTRY_QUERY_NOT_IMPLEMENTED",
         "REGISTRY_NOT_FOUND",
@@ -433,16 +535,50 @@
       ],
       "snapshot_output_contract": {
         "type": "object",
-        "required": ["snapshot_id", "created_at", "registry_path", "filters_applied", "fields", "records", "snapshot_hash"],
+        "required": [
+          "snapshot_id",
+          "created_at",
+          "registry_path",
+          "filters_applied",
+          "fields",
+          "records",
+          "snapshot_hash"
+        ],
         "additionalProperties": false,
         "properties": {
-          "snapshot_id": { "type": "string", "pattern": "^SNAP-[A-Z0-9_-]{6,64}$" },
-          "created_at": { "type": "string", "format": "date-time" },
-          "registry_path": { "type": "string" },
-          "filters_applied": { "type": "object", "additionalProperties": { "type": "string" } },
-          "fields": { "type": "array", "items": { "type": "string" } },
-          "records": { "type": "array", "items": { "type": "object" } },
-          "snapshot_hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+          "snapshot_id": {
+            "type": "string",
+            "pattern": "^SNAP-[A-Z0-9_-]{6,64}$"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "registry_path": {
+            "type": "string"
+          },
+          "filters_applied": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "records": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "snapshot_hash": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          }
         }
       },
       "evidence_requirements": {
@@ -470,11 +606,20 @@
       "default_mutation_set_path": ".state/planning/{plan_id}/file_mutations.json",
       "input_schema": {
         "type": "object",
-        "required": ["context", "plan_path", "mutation_set_path"],
+        "required": [
+          "context",
+          "plan_path",
+          "mutation_set_path"
+        ],
         "additionalProperties": false,
         "properties": {
-          "context": { "$ref": "#/shared/defs/RunContext" },
-          "plan_path": { "type": "string", "minLength": 1 },
+          "context": {
+            "$ref": "#/shared/defs/RunContext"
+          },
+          "plan_path": {
+            "type": "string",
+            "minLength": 1
+          },
           "mutation_set_path": {
             "type": "string",
             "minLength": 1,
@@ -483,15 +628,22 @@
           },
           "mode": {
             "type": "string",
-            "enum": ["proposed"],
+            "enum": [
+              "proposed"
+            ],
             "default": "proposed"
           },
           "hash_algo": {
             "type": "string",
-            "enum": ["sha256"],
+            "enum": [
+              "sha256"
+            ],
             "default": "sha256"
           },
-          "write_evidence": { "type": "boolean", "default": true },
+          "write_evidence": {
+            "type": "boolean",
+            "default": true
+          },
           "evidence_path": {
             "type": "string",
             "minLength": 1,
@@ -505,7 +657,9 @@
           }
         }
       },
-      "output_schema": { "$ref": "#/shared/defs/ToolResultEnvelope" },
+      "output_schema": {
+        "$ref": "#/shared/defs/ToolResultEnvelope"
+      },
       "defect_codes_minimum": [
         "PFMS_EXTRACTOR_NOT_IMPLEMENTED",
         "PLAN_NOT_FOUND",
@@ -521,44 +675,116 @@
       ],
       "pfms_output_contract": {
         "type": "object",
-        "required": ["pfms_id", "created_at", "status", "source_plan", "mutations", "provenance", "pfms_hash"],
+        "required": [
+          "pfms_id",
+          "created_at",
+          "status",
+          "source_plan",
+          "mutations",
+          "provenance",
+          "pfms_hash"
+        ],
         "additionalProperties": false,
         "properties": {
-          "pfms_id": { "type": "string", "pattern": "^PFMS-[A-Z0-9_-]{6,64}$" },
-          "created_at": { "type": "string", "format": "date-time" },
-          "status": { "type": "string", "enum": ["proposed"] },
+          "pfms_id": {
+            "type": "string",
+            "pattern": "^PFMS-[A-Z0-9_-]{6,64}$"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "proposed"
+            ]
+          },
           "source_plan": {
             "type": "object",
-            "required": ["plan_path", "plan_sha256"],
+            "required": [
+              "plan_path",
+              "plan_sha256"
+            ],
             "additionalProperties": false,
             "properties": {
-              "plan_path": { "type": "string" },
-              "plan_sha256": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+              "plan_path": {
+                "type": "string"
+              },
+              "plan_sha256": {
+                "type": "string",
+                "pattern": "^sha256:[a-f0-9]{64}$"
+              }
             }
           },
           "mutations": {
             "type": "object",
-            "required": ["created_files", "modified_files", "deleted_files", "moved_files"],
+            "required": [
+              "created_files",
+              "modified_files",
+              "deleted_files",
+              "moved_files"
+            ],
             "additionalProperties": false,
             "properties": {
-              "created_files": { "type": "array", "items": { "$ref": "#/$defs/MutationRecord" } },
-              "modified_files": { "type": "array", "items": { "$ref": "#/$defs/MutationRecord" } },
-              "deleted_files": { "type": "array", "items": { "$ref": "#/$defs/MutationRecord" } },
-              "moved_files": { "type": "array", "items": { "$ref": "#/$defs/MoveRecord" } }
+              "created_files": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/MutationRecord"
+                }
+              },
+              "modified_files": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/MutationRecord"
+                }
+              },
+              "deleted_files": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/MutationRecord"
+                }
+              },
+              "moved_files": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/MoveRecord"
+                }
+              }
             }
           },
           "provenance": {
             "type": "object",
-            "required": ["run_id", "tool", "tool_version", "evidence_paths"],
+            "required": [
+              "run_id",
+              "tool",
+              "tool_version",
+              "evidence_paths"
+            ],
             "additionalProperties": false,
             "properties": {
-              "run_id": { "type": "string" },
-              "tool": { "type": "string" },
-              "tool_version": { "type": "string" },
-              "evidence_paths": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+              "run_id": {
+                "type": "string"
+              },
+              "tool": {
+                "type": "string"
+              },
+              "tool_version": {
+                "type": "string"
+              },
+              "evidence_paths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1
+              }
             }
           },
-          "pfms_hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+          "pfms_hash": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          }
         }
       },
       "evidence_requirements": {
@@ -580,24 +806,58 @@
   "$defs": {
     "MutationRecord": {
       "type": "object",
-      "required": ["path", "kind"],
+      "required": [
+        "path",
+        "kind"
+      ],
       "additionalProperties": false,
       "properties": {
-        "path": { "type": "string", "minLength": 1 },
-        "kind": { "type": "string", "enum": ["file", "directory", "json", "yaml", "md", "txt", "other"] },
-        "reason": { "type": "string" },
-        "artifact_id": { "type": "string" }
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "file",
+            "directory",
+            "json",
+            "yaml",
+            "md",
+            "txt",
+            "other"
+          ]
+        },
+        "reason": {
+          "type": "string"
+        },
+        "artifact_id": {
+          "type": "string"
+        }
       }
     },
     "MoveRecord": {
       "type": "object",
-      "required": ["from_path", "to_path"],
+      "required": [
+        "from_path",
+        "to_path"
+      ],
       "additionalProperties": false,
       "properties": {
-        "from_path": { "type": "string", "minLength": 1 },
-        "to_path": { "type": "string", "minLength": 1 },
-        "reason": { "type": "string" },
-        "artifact_id": { "type": "string" }
+        "from_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "to_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string"
+        },
+        "artifact_id": {
+          "type": "string"
+        }
       }
     }
   }

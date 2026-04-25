@@ -1,191 +1,76 @@
 # Registry Automation Script Index
 
-**Total Scripts:** 18  
-**Last Updated:** 2026-03-06 18:57:20
+Current inventory for `REGISTRY_AUTOMATION\scripts\`.
 
----
+## Validation and Gating
 
-## Phase 0: Pre-Flight Stabilization (1 script)
+- `P_01999000042260305000_enum_drift_gate.py`
+  - Build canonical enum definitions, detect drift, and optionally normalize registry values.
+- `P_01999000042260305019_preflight_checker.py`
+  - Fail-closed validation for required `.state\` inputs, file-id uniqueness, and sha256 shape before mutations.
+- `P_01999000042260305020_registry_path_cleaner.py`
+  - Remove `FILE WATCHER` pollution from registry paths and verify cleanup.
 
-### P_01999000042260305000_enum_drift_gate.py
-**Purpose:** Validates and normalizes enum values in registry  
-**Input:** REGISTRY_file.json  
-**Output:** REGISTRY_ENUMS_CANON.json, normalized registry  
-**Usage:** `python P_01999000042260305000_enum_drift_gate.py [--fix]`  
-**Lines:** ~381
+## Mapping, Transformation, and Patch Application
 
----
+- `P_01999000042260305001_file_id_reconciler.py`
+  - Build `sha256 -> file_id` and `file_id -> sha256` mappings for downstream consumers.
+- `P_01999000042260305002_phase_a_transformer.py`
+  - Transform Phase A analyzer output into registry-shaped records.
+- `P_01999000042260305003_run_metadata_collector.py`
+  - Record run metadata, script execution, timing, and status for audit trails.
+- `P_01999000042260305004_patch_generator.py`
+  - Generate, validate, and apply RFC-6902 patches to the registry.
 
-## Week 1: Tactical Wins (4 scripts)
+## Column Runtime Helpers
 
-### P_01999000042260305001_file_id_reconciler.py
-**Purpose:** Builds file_id ↔ sha256 bidirectional mappings  
-**Input:** REGISTRY_file.json  
-**Output:** SHA256_TO_FILE_ID.json  
-**Usage:** `python P_01999000042260305001_file_id_reconciler.py`  
-**Lines:** ~186
+- `P_01999000042260305005_column_loader.py`
+  - Load and cache column definitions from the registry column dictionary.
+- `P_01999000042260305006_column_validator.py`
+  - Validate record values against the loaded column definitions.
+- `P_01999000042260305007_default_injector.py`
+  - Inject defaults for missing columns.
+- `P_01999000042260305008_null_coalescer.py`
+  - Replace nullable values with configured defaults where applicable.
+- `P_01999000042260305009_phase_selector.py`
+  - Extract phase-specific slices from a registry record.
+- `P_01999000042260305010_missing_reporter.py`
+  - Report columns defined in the dictionary but absent from records.
+- `P_01999000042260305011_column_introspector.py`
+  - Inspect real column usage across the registry.
 
-### P_01999000042260305002_phase_a_transformer.py
-**Purpose:** Transforms Phase A analyzer output to registry schema  
-**Input:** analysis.json  
-**Output:** transformed.json  
-**Usage:** `python P_01999000042260305002_phase_a_transformer.py --input IN --output OUT`  
-**Lines:** ~214
+## Entity Resolution and Pipeline Orchestration
 
-### P_01999000042260305003_run_metadata_collector.py
-**Purpose:** Tracks analysis run metadata for audit trail  
-**Input:** Run commands (start/script/finish)  
-**Output:** ANALYSIS_RUNS.json, RUN_{id}.json  
-**Usage:** `python P_01999000042260305003_run_metadata_collector.py --run-id ID --action ACTION`  
-**Lines:** ~224
+- `P_01999000042260305012_doc_id_resolver.py`
+  - Resolve `doc_id` collisions and build canonical mappings.
+- `P_01999000042260305013_module_dedup.py`
+  - Deduplicate module names and flag cross-repo ambiguities.
+- `P_01999000042260305014_intake_orchestrator.py`
+  - Run the single-file intake pipeline across the analyzer stages.
+- `P_01999000042260305015_timestamp_clusterer.py`
+  - Group files by timestamp proximity for watcher-driven batches.
+- `P_01999000042260305016_e2e_validator.py`
+  - Validate registry structure and record content end to end.
+- `P_01999000042260305017_pipeline_runner.py`
+  - Run the batch pipeline and consolidate registry updates.
+- `P_01999000042260305018_sha256_backfill.py`
+  - Compute and backfill missing sha256 values with backup support.
 
-### P_01999000042260305004_patch_generator.py
-**Purpose:** Generates and applies RFC-6902 JSON Patches  
-**Input:** Analysis results, existing registry  
-**Output:** registry_patches.json, patched registry  
-**Usage:** `python P_01999000042260305004_patch_generator.py --mode {generate|validate|apply}`  
-**Lines:** ~317
+## Common Commands
 
----
-
-## Week 2 Track A: Column Runtime Engine (7 scripts)
-
-### P_01999000042260305005_column_loader.py
-**Purpose:** Runtime loader for COLUMN_DICTIONARY definitions  
-**Input:** COLUMN_DICTIONARY.json  
-**Output:** In-memory column metadata  
-**Usage:** `python P_01999000042260305005_column_loader.py --list-phases`  
-**Lines:** ~266
-
-### P_01999000042260305006_column_validator.py
-**Purpose:** Validates column types and constraints  
-**Input:** file_record.json  
-**Output:** Validation report  
-**Usage:** `python P_01999000042260305006_column_validator.py --record-json FILE`  
-**Lines:** ~57
-
-### P_01999000042260305007_default_injector.py
-**Purpose:** Injects default values for missing columns  
-**Input:** record.json  
-**Output:** record_with_defaults.json  
-**Usage:** `python P_01999000042260305007_default_injector.py --input IN --output OUT`  
-**Lines:** ~45
-
-### P_01999000042260305008_null_coalescer.py
-**Purpose:** Replaces NULL values with defaults  
-**Input:** record.json  
-**Output:** coalesced.json  
-**Usage:** `python P_01999000042260305008_null_coalescer.py --input IN --output OUT`  
-**Lines:** ~46
-
-### P_01999000042260305009_phase_selector.py
-**Purpose:** Extracts phase-specific columns  
-**Input:** record.json, phase name  
-**Output:** phase_subset.json  
-**Usage:** `python P_01999000042260305009_phase_selector.py --input IN --phase PHASE_A --output OUT`  
-**Lines:** ~53
-
-### P_01999000042260305010_missing_reporter.py
-**Purpose:** Generates missing column coverage report  
-**Input:** REGISTRY_file.json  
-**Output:** missing_columns_report.json  
-**Usage:** `python P_01999000042260305010_missing_reporter.py --registry REG --output OUT`  
-**Lines:** ~70
-
-### P_01999000042260305011_column_introspector.py
-**Purpose:** Analyzes actual column usage patterns  
-**Input:** REGISTRY_file.json  
-**Output:** introspection_report.json  
-**Usage:** `python P_01999000042260305011_column_introspector.py --registry REG --output OUT`  
-**Lines:** ~85
-
----
-
-## Week 2 Track B: Entity Canonicalization (2 scripts)
-
-### P_01999000042260305012_doc_id_resolver.py
-**Purpose:** Resolves doc_id collisions and ambiguities  
-**Input:** REGISTRY_file.json  
-**Output:** DOC_ID_RESOLUTION.json  
-**Usage:** `python P_01999000042260305012_doc_id_resolver.py`  
-**Lines:** ~162
-
-### P_01999000042260305013_module_dedup.py
-**Purpose:** Deduplicates Python module names  
-**Input:** REGISTRY_file.json  
-**Output:** MODULE_NAME_RESOLUTION.json  
-**Usage:** `python P_01999000042260305013_module_dedup.py`  
-**Lines:** ~174
-
----
-
-## Week 3: Pipeline Integration (4 scripts)
-
-### P_01999000042260305014_intake_orchestrator.py
-**Purpose:** Orchestrates Phase A/B/C analyzers for single file  
-**Input:** Python file  
-**Output:** unified_analysis.json  
-**Usage:** `python P_01999000042260305014_intake_orchestrator.py --file FILE --output OUT`  
-**Lines:** ~199
-
-### P_01999000042260305015_timestamp_clusterer.py
-**Purpose:** Groups files by timestamp proximity  
-**Input:** REGISTRY_file.json  
-**Output:** cluster_report.json  
-**Usage:** `python P_01999000042260305015_timestamp_clusterer.py --registry REG --output OUT --window 300`  
-**Lines:** ~61
-
-### P_01999000042260305016_e2e_validator.py
-**Purpose:** End-to-end registry validation  
-**Input:** REGISTRY_file.json  
-**Output:** Validation pass/fail report  
-**Usage:** `python P_01999000042260305016_e2e_validator.py --registry REG`  
-**Lines:** ~70
-
-### P_01999000042260305017_pipeline_runner.py
-**Purpose:** Complete pipeline for batch file processing  
-**Input:** Directory of files  
-**Output:** pipeline_results_{run_id}.json  
-**Usage:** `python P_01999000042260305017_pipeline_runner.py --input-dir DIR --output-dir OUT`  
-**Lines:** ~128
-
----
-
-## Summary Statistics
-
-| Category | Scripts | Total Lines | Avg Lines/Script |
-|----------|---------|-------------|------------------|
-| Phase 0 | 1 | 381 | 381 |
-| Week 1 | 4 | 941 | 235 |
-| Week 2A | 7 | 622 | 89 |
-| Week 2B | 2 | 336 | 168 |
-| Week 3 | 4 | 458 | 115 |
-| **Total** | **18** | **~2,738** | **~152** |
-
----
-
-## Quick Reference: Common Tasks
-
-### Task 1: Fix Enum Drift
-```bash
-python P_01999000042260305000_enum_drift_gate.py --fix
+```powershell
+python .\REGISTRY_AUTOMATION\scripts\P_01999000042260305019_preflight_checker.py
+python .\REGISTRY_AUTOMATION\scripts\P_01999000042260305000_enum_drift_gate.py --fix
+python .\REGISTRY_AUTOMATION\scripts\P_01999000042260305018_sha256_backfill.py --registry .\01260207201000001250_REGISTRY\01999000042260124503_REGISTRY_file.json --dry-run
+python .\REGISTRY_AUTOMATION\scripts\P_01999000042260305017_pipeline_runner.py --input-dir .\01260207201000001313_capability_mapping_system\01260207220000001318_mapp_py --output-dir .\tmp\pipeline
 ```
 
-### Task 2: Validate Registry
-```bash
-python P_01999000042260305016_e2e_validator.py --registry ../../01999000042260124503_REGISTRY_file.json
-```
+## Test Inventory
 
-### Task 3: Analyze Directory
-```bash
-python P_01999000042260305017_pipeline_runner.py --input-dir src/ --output-dir results/
-```
-
-### Task 4: Check Missing Columns
-```bash
-python P_01999000042260305010_missing_reporter.py --registry ../../01999000042260124503_REGISTRY_file.json --output missing.json
-```
-
----
-
-**Generated:** 2026-03-06 18:57:20
+- `tests\conftest.py`
+- `tests\integration\test_entity_resolution.py`
+- `tests\integration\test_sha256_promotion.py`
+- `tests\unit\test_default_injector.py`
+- `tests\unit\test_enum_drift_gate_smoke.py`
+- `tests\unit\test_phase_a_transformer_smoke.py`
+- `tests\unit\test_pipeline_runner_smoke.py`

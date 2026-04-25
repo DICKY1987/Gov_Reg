@@ -6,8 +6,10 @@ from pathlib import Path
 from collections import defaultdict
 
 # Import the ID allocator
-sys.path.insert(0, str(Path(__file__).parent))
-from govreg_core.P_01999000042260124031_unified_id_allocator import UnifiedIDAllocator
+ALLOCATORS_ROOT = Path(__file__).resolve().parents[2] / "1_runtime" / "allocators"
+if str(ALLOCATORS_ROOT) not in sys.path:
+    sys.path.insert(0, str(ALLOCATORS_ROOT))
+from P_01999000042260124031_unified_id_allocator import UnifiedIDAllocator
 
 def get_file_id_from_name(filename: str) -> str | None:
     """Extract file_id from filename."""

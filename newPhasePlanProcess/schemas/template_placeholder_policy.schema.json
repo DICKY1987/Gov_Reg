@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Template Placeholder Policy",
+  "type": "object",
+  "required": [
+    "template_placeholder_allowed",
+    "applies_only_to_document_role",
+    "concrete_plan_instance_rule",
+    "must_not_be_interpreted_as_execution_ready"
+  ],
+  "properties": {
+    "template_placeholder_allowed": { "type": "boolean" },
+    "applies_only_to_document_role": { "type": "string" },
+    "concrete_plan_instance_rule": { "type": "string" },
+    "must_not_be_interpreted_as_execution_ready": { "type": "boolean" }
+  },
+  "additionalProperties": true
+}

@@ -31,21 +31,17 @@
 ## File System Structure
 
 ```
-ID/
-├── 1_runtime/              → Core modules (14 files)
-│   ├── allocators/         → ID generation (4)
-│   ├── handlers/           → File/dir operations (2)
-│   ├── validators/         → Validation & checks (4)
-│   └── watchers/           → Monitoring & repair (4)
-├── 2_cli_tools/            → CLI utilities (9 files)
-│   ├── dir_id/             → Directory tools (3)
-│   ├── file_id/            → File tools (2)
-│   ├── hooks/              → Git hooks (2)
-│   └── maintenance/        → Health & install (2)
-├── 3_schemas/              → JSON schemas (6 files)
-├── 4_config/               → Configuration (4 files)
-├── 5_tests/                → Tests (4 files)
-└── 6_docs/                 → This documentation
+01260207201000001250_REGISTRY/
+├── .idpkg/                 → Runtime config + contract bundle
+│   ├── config.json
+│   └── contracts/
+├── ID/
+│   ├── 1_runtime/          → Core modules (14 files)
+│   ├── 2_cli_tools/        → CLI utilities (6 files)
+│   ├── 3_schemas/          → Anchor/example schemas (3 files)
+│   ├── 6_docs/             → Maintained documentation
+│   └── 7_automation/       → Higher-level automation scripts (12 files)
+└── .state/                 → Evidence, patches, and operational outputs
 ```
 
 ---
@@ -54,7 +50,7 @@ ID/
 
 | Task | Entry Point |
 |------|-------------|
-| Generate dir IDs | `2_cli_tools/dir_id/P_01999000042260125100_generate_dir_ids_gov_reg.py` |
+| Generate dir IDs | `7_automation/P_01999000042260125100_generate_dir_ids_gov_reg.py` |
 | Allocate new ID | `1_runtime/allocators/P_01999000042260124031_unified_id_allocator.py::allocate_id()` |
 | Validate system | `2_cli_tools/maintenance/P_01999000042260125113_healthcheck.py` |
 | Repair corrupted .dir_id | `1_runtime/watchers/P_01999000042260125104_dir_id_auto_repair.py` |
@@ -68,10 +64,11 @@ ID/
 - **Counter Store:** `%APPDATA%\GovReg\IdAllocator\COUNTER_STORE.json`
 - **Lock Mechanism:** File locks with 5000ms timeout
 - **Configuration:** `.idpkg\config.json` (project root)
+- **Runtime Contracts:** `.idpkg\contracts\`
 
 ### Per-Directory State
 - **Directory ID:** `.dir_id` JSON file in each governed directory
-- **Schema:** `3_schemas/.dir_id.schema.json`
+- **Anchor Schema:** `3_schemas/.dir_id.schema.json`
 
 ### External Dependencies
 - **Registry:** `../../01260207201000001250_REGISTRY/`
@@ -99,7 +96,7 @@ ID/
 4. **Troubleshooting** → `operations/troubleshooting.yaml` - Error resolution
 
 ### Reference
-5. **Schemas** → `schemas/*.json` - Data structure definitions
+5. **Schemas / Contracts** → `3_schemas/.dir_id.schema.json` and `.idpkg/contracts/`
 6. **History** → `history/` - Project completion reports (low priority)
 
 ---

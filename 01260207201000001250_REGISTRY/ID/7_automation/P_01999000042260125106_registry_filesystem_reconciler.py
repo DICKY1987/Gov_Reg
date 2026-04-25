@@ -21,12 +21,13 @@ from dataclasses import dataclass, asdict, field
 from collections import defaultdict
 import sys
 
-# Add parent to path for imports
-repo_root = Path(__file__).parent.parent
-if str(repo_root) not in sys.path:
-    sys.path.insert(0, str(repo_root))
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+RUNTIME_ROOT = PROJECT_ROOT / "ID" / "1_runtime"
 
-sys.path.insert(0, str(Path(__file__).parent))
+for import_path in (RUNTIME_ROOT,):
+    if str(import_path) not in sys.path:
+        sys.path.insert(0, str(import_path))
+
 from P_01260207233100000068_zone_classifier import ZoneClassifier
 from P_01260207233100000070_dir_identity_resolver import DirectoryIdentityResolver
 
@@ -102,7 +103,7 @@ class RegistryFilesystemReconciler:
         self.registry_path = registry_path
         
         if zone_classifier is None:
-            zone_classifier = ZoneClassifier()
+            zone_classifier = ZoneClassifier(project_root=project_root)
         self.zone_classifier = zone_classifier
         
         if evidence_dir is None:

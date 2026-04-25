@@ -40,13 +40,27 @@
       "path": "schemas/",
       "priority": "HIGH",
       "load_order": 3,
-      "description": "JSON schema definitions for data structures",
+      "description": "JSON schema definitions for anchor files and references into the runtime contract bundle",
+      "note": "The runtime-owned IDPKG contract bundle lives at ../../.idpkg/contracts/",
       
       "files": {
         ".dir_id.schema.json": {
           "purpose": "Schema for .dir_id anchor files",
           "validates": "Directory ID JSON files",
+          "source": "../3_schemas/.dir_id.schema.json",
           "token_estimate": 200
+        },
+        "contract_bundle": {
+          "purpose": "Runtime-owned contract bundle loaded by idpkg_runtime",
+          "location": "../../.idpkg/contracts/",
+          "files": [
+            "IDPKG_CONFIG.schema.json",
+            "GATE_CATALOG.json",
+            "PREFIX_POLICY.json",
+            "UNIFIED_INGEST_ENVELOPE.schema.json",
+            "WRITE_POLICY_IDPKG.yaml"
+          ],
+          "status": "EXTERNAL_RUNTIME_SOURCE"
         }
       }
     },
@@ -149,6 +163,18 @@
           ],
           "token_estimate": 500,
           "status": "COMPLETE"
+        },
+        "DUPLICATE_ID_PREVENTION.md": {
+          "purpose": "Operational duplicate-prevention model across allocator, hooks, reconciler, and health checks",
+          "covers": [
+            "duplicate_id_prevention_layers",
+            "allocation_locking",
+            "reservation_ledger",
+            "pre_commit_guardrails",
+            "registry_reconciliation"
+          ],
+          "token_estimate": 700,
+          "status": "REFERENCE"
         }
       }
     },
@@ -173,6 +199,12 @@
           "purpose": "ID automation implementation report",
           "date": "2026-02-17",
           "token_estimate": 1200
+        },
+        "P_01999000042260125105_README_ENHANCED_SCANNER.md": {
+          "purpose": "Historical scanner-service design and usage notes",
+          "date": "2026-02-14",
+          "token_estimate": 1800,
+          "status": "HISTORICAL_REFERENCE"
         }
       }
     },
@@ -322,7 +354,8 @@
       "health_checks.yaml": "COMPLETE"
     },
     "schemas": {
-      ".dir_id.schema.json": "EXISTS (from 3_schemas/)"
+      ".dir_id.schema.json": "EXISTS (from 3_schemas/)",
+      "contract_bundle": "RUNTIME_OWNED (.idpkg/contracts/)"
     },
     "documentation_complete": true,
     "completion_date": "2026-02-22"

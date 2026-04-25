@@ -104,6 +104,9 @@ The counter is atomically incremented for each new ID allocation.
 ```
 Gov_Reg/
 ├── 01260207201000001250_REGISTRY/
+│   ├── .idpkg/
+│   │   └── config.json  ← Runtime IDPKG configuration
+│   │   └── contracts/   ← Runtime contract bundle
 │   └── ID/
 │       ├── 1_runtime/
 │       │   ├── allocators/
@@ -118,8 +121,6 @@ Gov_Reg/
 │       │   └── hooks/
 │       ├── 3_schemas/
 │       │   └── 01260207201000000877_DIR_ID_ANCHOR.schema.json  ← .dir_id schema
-│       ├── 4_config/
-│       │   └── idpkg_active_config.json  ← System configuration
 │       ├── 7_automation/
 │       │   ├── P_01999000042260125100_generate_dir_ids_gov_reg.py  ← Dir ID generator
 │       │   ├── P_01999000042260125101_validate_dir_ids.py  ← Dir ID validator
@@ -235,7 +236,7 @@ from govreg_core.P_01999000042260126000__idpkg_runtime import IdpkgConfig
 
 ### 3. Configuration File
 
-Location: `01260207201000001250_REGISTRY/ID/4_config/idpkg_active_config.json`
+Location: `01260207201000001250_REGISTRY/.idpkg/config.json`
 
 Contains:
 - Project root path
@@ -270,7 +271,7 @@ from P_01260207233100000068_zone_classifier import ZoneClassifier
 
 ```python
 # Load IDPKG config
-config_path = Path("01260207201000001250_REGISTRY/ID/4_config/idpkg_active_config.json")
+config_path = Path("01260207201000001250_REGISTRY/.idpkg/config.json")
 config = IdpkgConfig.load(config_path)
 
 print(f"Project root: {config.project_root_path}")
@@ -513,7 +514,7 @@ import subprocess
 result = subprocess.run([
     "python",
     "01260207201000001250_REGISTRY/ID/7_automation/P_01999000042260125102_populate_registry_dir_ids.py",
-    "--config", "01260207201000001250_REGISTRY/ID/4_config/idpkg_active_config.json"
+    "--config", "01260207201000001250_REGISTRY/.idpkg/config.json"
 ], capture_output=True, text=True)
 
 print(result.stdout)
@@ -541,8 +542,9 @@ import subprocess
 
 # Setup paths
 repo_root = Path(__file__).resolve().parent
-registry_id = repo_root / "01260207201000001250_REGISTRY" / "ID"
-config_file = registry_id / "4_config" / "idpkg_active_config.json"
+registry_root = repo_root / "01260207201000001250_REGISTRY"
+registry_id = registry_root / "ID"
+config_file = registry_root / ".idpkg" / "config.json"
 
 if not config_file.exists():
     print(f"❌ Config not found: {config_file}")
@@ -717,7 +719,7 @@ if errors:
 
 ```bash
 python 01260207201000001250_REGISTRY/ID/7_automation/P_01999000042260125101_validate_dir_ids.py \
-  --config 01260207201000001250_REGISTRY/ID/4_config/idpkg_active_config.json
+  --config 01260207201000001250_REGISTRY/.idpkg/config.json
 ```
 
 **Expected output:**
@@ -826,7 +828,7 @@ for parent in [Path('.'), Path('..'), Path('../..')]:
 
 **Solution:**
 ```python
-config_path = Path("01260207201000001250_REGISTRY/ID/4_config/idpkg_active_config.json")
+config_path = Path("01260207201000001250_REGISTRY/.idpkg/config.json")
 if not config_path.exists():
     print(f"❌ Config not found at: {config_path}")
     print("Available configs:")
@@ -904,7 +906,8 @@ if dir_id_file.exists():
 
 | File | Location | Purpose |
 |------|----------|---------|
-| **IDPKG Config** | `ID/4_config/idpkg_active_config.json` | System configuration |
+| **IDPKG Config** | `.idpkg/config.json` | System configuration |
+| **Runtime Contracts** | `.idpkg/contracts/` | Runtime-owned IDPKG contract bundle |
 | **Counter Store** | `*COUNTER_STORE.json` (root) | ID counter SSOT |
 | **Dir ID Schema** | `ID/3_schemas/01260207201000000877_DIR_ID_ANCHOR.schema.json` | .dir_id validation |
 
@@ -1000,7 +1003,7 @@ Get-ChildItem -Recurse -Filter ".dir_id" | ForEach-Object {
 For additional help, consult:
 - Full documentation: `01260207201000000122_DIR_ID_SYSTEM_DOCUMENTATION.md`
 - Quick reference: `ID/00_README.md`
-- Schema definitions: `ID/3_schemas/`
+- Schema definitions: `ID/3_schemas/` for `.dir_id` anchors and `.idpkg/contracts/` for runtime contracts
 
 **Last Updated:** 2026-03-09T19:30:00Z  
 **Document Status:** ACTIVE - Ready for AI CLI integration
