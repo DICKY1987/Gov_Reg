@@ -1,0 +1,373 @@
+[
+  {
+    "op": "test",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/component_id",
+    "value": "COMP-L2-02"
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-DET-001",
+      "name": "Situational Determinism Contract Valid",
+      "script": "validate_situational_determinism_contract.py",
+      "purpose": "situational_determinism_contract is present with fail-closed resolution_order.",
+      "critical_rule": "Execution branching must follow a declared deterministic resolution order.",
+      "failure_impact": "Ambiguous situational resolution produces non-reproducible execution."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-GOV-001",
+      "name": "Governance Precedence Valid",
+      "script": "validate_governance_precedence.py",
+      "purpose": "governance_precedence declares a non-empty precedence_levels list.",
+      "critical_rule": "Rule conflicts must be resolved by declared precedence, not implicit ordering.",
+      "failure_impact": "Conflicting rules produce non-deterministic governance outcomes."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-ROUT-001",
+      "name": "Executor Routing Policy Valid",
+      "script": "validate_executor_routing_policy.py",
+      "purpose": "executor_routing_policy provides a non-empty routing_rules list.",
+      "critical_rule": "Executor selection must follow a declared, auditable routing contract.",
+      "failure_impact": "Arbitrary executor selection breaks traceability and reproducibility."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-HERM-001",
+      "name": "Hermetic Step Contract Valid",
+      "script": "validate_hermetic_step_contract.py",
+      "purpose": "hermetic_step_contract declares isolation_requirements for reproducible execution.",
+      "critical_rule": "Steps must declare all inputs, outputs, and environment pins.",
+      "failure_impact": "Undeclared dependencies cause irreproducible step outputs."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-LOG-001",
+      "name": "Decision Logging Policy Valid",
+      "script": "validate_decision_logging_policy.py",
+      "purpose": "decision_logging_policy specifies at least one log_targets path.",
+      "critical_rule": "Every consequential decision must be logged for audit and replay.",
+      "failure_impact": "Missing decision logs prevent post-hoc audit and debugging."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-DUR-001",
+      "name": "Durable Execution Contract Valid",
+      "script": "validate_durable_execution_contract.py",
+      "purpose": "durable_execution_contract declares a checkpoint_policy for resumable runs.",
+      "critical_rule": "Executions must be resumable from verified checkpoints after failure.",
+      "failure_impact": "Non-durable execution loses progress and breaks audit continuity."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-AMUT-001",
+      "name": "Array Mutation Policy Valid",
+      "script": "validate_array_mutation_policy.py",
+      "purpose": "array_mutation_policy bans positional array-index edits and requires identity-key mutations.",
+      "critical_rule": "Array mutations must use stable identity keys, never positional indexes.",
+      "failure_impact": "Positional array edits silently corrupt documents when order changes."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-PRES-001",
+      "name": "Path Resolution Policy Valid",
+      "script": "validate_path_resolution_policy.py",
+      "purpose": "path_resolution_policy references a resolver script for governed path lookups.",
+      "critical_rule": "Governed paths must be resolved through the declared resolver, never hardcoded.",
+      "failure_impact": "Hardcoded paths break when the filesystem layout changes."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-CDOC-001",
+      "name": "Canonical Document Resolution Valid",
+      "script": "validate_canonical_document_resolution.py",
+      "purpose": "canonical_document_resolution names the authoritative V3_3 files.",
+      "critical_rule": "Only the declared canonical filenames are authoritative sources of truth.",
+      "failure_impact": "Ambiguous document identity causes divergent governance state."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-CMD-001",
+      "name": "Command Object Schema Valid",
+      "script": "validate_command_object_schema.py",
+      "purpose": "command_object_schema declares required fields for executable commands.",
+      "critical_rule": "All executable commands must declare shell, cwd, timeout, failure mode, and evidence path.",
+      "failure_impact": "Under-specified commands cannot be deterministically replayed or audited."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-PATT-001",
+      "name": "Pattern Resolution Policy Valid",
+      "script": "validate_pattern_resolution_policy.py",
+      "purpose": "pattern_resolution_policy provides approved_patterns with fail-closed fallback.",
+      "critical_rule": "Tasks without an approved pattern must fail closed, not improvise execution.",
+      "failure_impact": "Unapproved execution patterns bypass governance and audit controls."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-FALL-001",
+      "name": "Fallback Policy Valid",
+      "script": "validate_fallback_policy.py",
+      "purpose": "fallback_policy declares at least one authorized fallback outcome.",
+      "critical_rule": "Fallback behavior must be pre-authorized; ad-hoc fallbacks are forbidden.",
+      "failure_impact": "Unauthorized fallbacks produce unauditable and potentially unsafe outcomes."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-PERM-001",
+      "name": "Permission Tiers Valid",
+      "script": "validate_permission_tiers.py",
+      "purpose": "permission_tiers declares the four capability tiers.",
+      "critical_rule": "Operations must be classified into a declared permission tier before execution.",
+      "failure_impact": "Unclassified operations bypass capability controls."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-PROV-001",
+      "name": "Provenance Contract Valid",
+      "script": "validate_provenance_contract.py",
+      "purpose": "provenance_contract requires producer, sha256, and timestamp_utc on all outputs.",
+      "critical_rule": "All artifact outputs must carry traceable provenance metadata.",
+      "failure_impact": "Missing provenance breaks audit chains and prevents tamper detection."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-ARCH-001",
+      "name": "Change Archival Policy Valid",
+      "script": "validate_change_archival_policy.py",
+      "purpose": "change_archival_policy lists directories that must be archived before destructive changes.",
+      "critical_rule": "Evidence and patch artifacts must be archived before any destructive operation.",
+      "failure_impact": "Unarchived evidence cannot support rollback or compliance review."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-AFF-001",
+      "name": "Affected Execution Policy Valid",
+      "script": "validate_affected_execution_policy.py",
+      "purpose": "affected_execution_policy references a dependency graph for affected-only gate execution.",
+      "critical_rule": "Selective gate execution must be driven by a declared dependency graph.",
+      "failure_impact": "Arbitrary gate skipping misses required checks and invalidates the evidence chain."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-POL-001",
+      "name": "Policy As Code Valid",
+      "script": "validate_policy_as_code.py",
+      "purpose": "policy_as_code declares a machine-evaluable policy_engine and policy_dir.",
+      "critical_rule": "Acceptance rules must be expressed as machine-evaluable policies over structured input.",
+      "failure_impact": "Prose-only acceptance rules cannot be mechanically enforced."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-GH-001",
+      "name": "GitHub Enforcement Mapping Valid",
+      "script": "validate_github_enforcement_mapping.py",
+      "purpose": "github_enforcement_mapping declares merge_protection binding NPP gates to branch rules.",
+      "critical_rule": "NPP validation must be bound to GitHub merge protection before PR merges.",
+      "failure_impact": "Unbound gates allow merges that bypass governance checks."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/-",
+    "value": {
+      "id": "GATE-CTX-001",
+      "name": "Tool Context Generation Valid",
+      "script": "validate_tool_context_generation.py",
+      "purpose": "tool_context_generation declares output_files generated from the NPP source of truth.",
+      "critical_rule": "Tool context files must be generated from the NPP source of truth, not hand-authored.",
+      "failure_impact": "Manually authored tool context diverges from the authoritative governance documents."
+    }
+  },
+  {
+    "op": "add",
+    "path": "/mechanism_registry",
+    "value": {
+      "registry_version": "1.0.0",
+      "mechanisms": {
+        "situational_determinism_contract": {
+          "owner_doc": "template",
+          "gate_id": "GATE-DET-001",
+          "validator": "validate_situational_determinism_contract.py"
+        },
+        "governance_precedence": {
+          "owner_doc": "template",
+          "gate_id": "GATE-GOV-001",
+          "validator": "validate_governance_precedence.py"
+        },
+        "executor_routing_policy": {
+          "owner_doc": "template",
+          "gate_id": "GATE-ROUT-001",
+          "validator": "validate_executor_routing_policy.py"
+        },
+        "hermetic_step_contract": {
+          "owner_doc": "template",
+          "gate_id": "GATE-HERM-001",
+          "validator": "validate_hermetic_step_contract.py"
+        },
+        "decision_logging_policy": {
+          "owner_doc": "template",
+          "gate_id": "GATE-LOG-001",
+          "validator": "validate_decision_logging_policy.py"
+        },
+        "durable_execution_contract": {
+          "owner_doc": "template",
+          "gate_id": "GATE-DUR-001",
+          "validator": "validate_durable_execution_contract.py"
+        },
+        "array_mutation_policy": {
+          "owner_doc": "template",
+          "gate_id": "GATE-AMUT-001",
+          "validator": "validate_array_mutation_policy.py"
+        },
+        "path_resolution_policy": {
+          "owner_doc": "template",
+          "gate_id": "GATE-PRES-001",
+          "validator": "validate_path_resolution_policy.py"
+        },
+        "canonical_document_resolution": {
+          "owner_doc": "template",
+          "gate_id": "GATE-CDOC-001",
+          "validator": "validate_canonical_document_resolution.py"
+        },
+        "command_object_schema": {
+          "owner_doc": "template",
+          "gate_id": "GATE-CMD-001",
+          "validator": "validate_command_object_schema.py"
+        },
+        "pattern_resolution_policy": {
+          "owner_doc": "template",
+          "gate_id": "GATE-PATT-001",
+          "validator": "validate_pattern_resolution_policy.py"
+        },
+        "fallback_policy": {
+          "owner_doc": "template",
+          "gate_id": "GATE-FALL-001",
+          "validator": "validate_fallback_policy.py"
+        },
+        "permission_tiers": {
+          "owner_doc": "template",
+          "gate_id": "GATE-PERM-001",
+          "validator": "validate_permission_tiers.py"
+        },
+        "provenance_contract": {
+          "owner_doc": "template",
+          "gate_id": "GATE-PROV-001",
+          "validator": "validate_provenance_contract.py"
+        },
+        "change_archival_policy": {
+          "owner_doc": "template",
+          "gate_id": "GATE-ARCH-001",
+          "validator": "validate_change_archival_policy.py"
+        },
+        "affected_execution_policy": {
+          "owner_doc": "template",
+          "gate_id": "GATE-AFF-001",
+          "validator": "validate_affected_execution_policy.py"
+        },
+        "policy_as_code": {
+          "owner_doc": "spec",
+          "gate_id": "GATE-POL-001",
+          "validator": "validate_policy_as_code.py"
+        },
+        "github_enforcement_mapping": {
+          "owner_doc": "spec",
+          "gate_id": "GATE-GH-001",
+          "validator": "validate_github_enforcement_mapping.py"
+        },
+        "tool_context_generation": {
+          "owner_doc": "spec",
+          "gate_id": "GATE-CTX-001",
+          "validator": "validate_tool_context_generation.py"
+        }
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/policy_as_code",
+    "value": {
+      "enabled": true,
+      "enforcement_mode": "fail_closed",
+      "policy_engine": "python",
+      "validator_ref": "scripts/validate_policy_as_code.py",
+      "policy_dir": "scripts"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/github_enforcement_mapping",
+    "value": {
+      "enabled": true,
+      "enforcement_mode": "fail_closed",
+      "merge_protection": "ruleset",
+      "validator_ref": "scripts/validate_github_enforcement_mapping.py"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/tool_context_generation",
+    "value": {
+      "enabled": true,
+      "enforcement_mode": "fail_closed",
+      "output_files": [
+        "AGENTS.md",
+        "CLAUDE.md"
+      ],
+      "validator_ref": "scripts/validate_tool_context_generation.py"
+    }
+  }
+]

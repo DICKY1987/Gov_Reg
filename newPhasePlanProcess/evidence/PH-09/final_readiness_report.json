@@ -1,6 +1,6 @@
 {
   "cross_file_integrity": {
-    "checked_count": 64,
+    "checked_count": 83,
     "checks": [
       {
         "id": "PAT-EXAMPLE-PLAN-DOC",
@@ -336,6 +336,101 @@
       {
         "id": "GATE-BEH-001",
         "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/41",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-DET-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/45",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-GOV-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/46",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-ROUT-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/47",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-HERM-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/48",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-LOG-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/49",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-DUR-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/50",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-AMUT-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/51",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-PRES-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/52",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-CDOC-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/53",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-CMD-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/54",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-PATT-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/55",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-FALL-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/56",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-PERM-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/57",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-PROV-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/58",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-ARCH-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/59",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-AFF-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/60",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-POL-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/61",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-GH-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/62",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-CTX-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/63",
         "type": "template_gate"
       }
     ],

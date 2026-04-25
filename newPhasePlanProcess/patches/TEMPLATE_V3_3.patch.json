@@ -1,0 +1,774 @@
+[
+  {
+    "op": "add",
+    "path": "/situational_determinism_contract",
+    "value": {
+      "enabled": true,
+      "enforcement_mode": "fail_closed",
+      "resolution_order": [
+        "invariants",
+        "phase_contracts",
+        "step_contracts",
+        "runtime_defaults"
+      ],
+      "validator_ref": "scripts/validate_situational_determinism_contract.py"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/governance_precedence",
+    "value": {
+      "enabled": true,
+      "enforcement_mode": "fail_closed",
+      "precedence_levels": [
+        "invariants",
+        "step_contracts",
+        "pattern_defaults",
+        "template_defaults"
+      ],
+      "validator_ref": "scripts/validate_governance_precedence.py"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/executor_routing_policy",
+    "value": {
+      "enabled": true,
+      "enforcement_mode": "fail_closed",
+      "routing_rules": [
+        {
+          "condition": "default",
+          "executor": "EXEC-PYTHON-CLI-V1"
+        }
+      ],
+      "validator_ref": "scripts/validate_executor_routing_policy.py"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/hermetic_step_contract",
+    "value": {
+      "enabled": true,
+      "enforcement_mode": "fail_closed",
+      "isolation_requirements": [
+        "declare_inputs",
+        "declare_outputs",
+        "pin_env_hash"
+      ],
+      "validator_ref": "scripts/validate_hermetic_step_contract.py"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/decision_logging_policy",
+    "value": {
+      "enabled": true,
+      "enforcement_mode": "fail_closed",
+      "log_targets": [
+        ".state/evidence/decisions/decision_log.jsonl"
+      ],
+      "validator_ref": "scripts/validate_decision_logging_policy.py"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/durable_execution_contract",
+    "value": {
+      "enabled": true,
+      "enforcement_mode": "fail_closed",
+      "checkpoint_policy": {
+        "enabled": true,
+        "checkpoint_dir": ".state/checkpoints"
+      },
+      "validator_ref": "scripts/validate_durable_execution_contract.py"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/array_mutation_policy",
+    "value": {
+      "enabled": true,
+      "enforcement_mode": "fail_closed",
+      "mutation_rules": [
+        "identity_key_only",
+        "no_positional_index",
+        "fail_closed_on_missing_id"
+      ],
+      "validator_ref": "scripts/validate_array_mutation_policy.py"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/path_resolution_policy",
+    "value": {
+      "enabled": true,
+      "enforcement_mode": "fail_closed",
+      "resolver_ref": "scripts/paths_resolve.py",
+      "validator_ref": "scripts/validate_path_resolution_policy.py"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/canonical_document_resolution",
+    "value": {
+      "enabled": true,
+      "enforcement_mode": "fail_closed",
+      "canonical_files": [
+        "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+        "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_3.json",
+        "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_3.json"
+      ],
+      "validator_ref": "scripts/validate_canonical_document_resolution.py"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/command_object_schema",
+    "value": {
+      "enabled": true,
+      "enforcement_mode": "fail_closed",
+      "required_fields": [
+        "shell",
+        "cwd",
+        "timeout_sec",
+        "failure_mode",
+        "evidence_path"
+      ],
+      "validator_ref": "scripts/validate_command_object_schema.py"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/pattern_resolution_policy",
+    "value": {
+      "enabled": true,
+      "enforcement_mode": "fail_closed",
+      "approved_patterns": [
+        {
+          "condition": "has_approved_pattern",
+          "action": "use_pattern"
+        },
+        {
+          "condition": "no_pattern",
+          "action": "fail_closed"
+        }
+      ],
+      "validator_ref": "scripts/validate_pattern_resolution_policy.py"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/fallback_policy",
+    "value": {
+      "enabled": true,
+      "enforcement_mode": "fail_closed",
+      "authorized_fallbacks": [
+        "FALLBACK-ESCALATE-001"
+      ],
+      "validator_ref": "scripts/validate_fallback_policy.py"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/permission_tiers",
+    "value": {
+      "enabled": true,
+      "enforcement_mode": "fail_closed",
+      "tiers": [
+        "read_only",
+        "safe_edit",
+        "trusted",
+        "destructive"
+      ],
+      "validator_ref": "scripts/validate_permission_tiers.py"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/provenance_contract",
+    "value": {
+      "enabled": true,
+      "enforcement_mode": "fail_closed",
+      "required_provenance_fields": [
+        "producer",
+        "sha256",
+        "timestamp_utc"
+      ],
+      "validator_ref": "scripts/validate_provenance_contract.py"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/change_archival_policy",
+    "value": {
+      "enabled": true,
+      "enforcement_mode": "fail_closed",
+      "archive_targets": [
+        ".state/evidence",
+        "patches"
+      ],
+      "validator_ref": "scripts/validate_change_archival_policy.py"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/affected_execution_policy",
+    "value": {
+      "enabled": true,
+      "enforcement_mode": "fail_closed",
+      "dependency_graph_ref": "scripts/gate_dependencies.json",
+      "validator_ref": "scripts/validate_affected_execution_policy.py"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-DET-001",
+      "phase": "PH-03",
+      "step_id": null,
+      "purpose": "situational_determinism_contract is present with fail-closed resolution_order.",
+      "command": "python scripts/validate_situational_determinism_contract.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-DET-001",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "GATE-DET-001 PASSED"
+      ],
+      "forbid_stdout_regex": [
+        "GATE-DET-001 FAILED"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-DET-001/validation.json",
+          "content_regex": [
+            "\"passed\": true"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-DET-001"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-GOV-001",
+      "phase": "PH-03",
+      "step_id": null,
+      "purpose": "governance_precedence declares a non-empty precedence_levels list.",
+      "command": "python scripts/validate_governance_precedence.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-GOV-001",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "GATE-GOV-001 PASSED"
+      ],
+      "forbid_stdout_regex": [
+        "GATE-GOV-001 FAILED"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-GOV-001/validation.json",
+          "content_regex": [
+            "\"passed\": true"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-GOV-001"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-ROUT-001",
+      "phase": "PH-03",
+      "step_id": null,
+      "purpose": "executor_routing_policy provides a non-empty routing_rules list.",
+      "command": "python scripts/validate_executor_routing_policy.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-ROUT-001",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "GATE-ROUT-001 PASSED"
+      ],
+      "forbid_stdout_regex": [
+        "GATE-ROUT-001 FAILED"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-ROUT-001/validation.json",
+          "content_regex": [
+            "\"passed\": true"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-ROUT-001"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-HERM-001",
+      "phase": "PH-03",
+      "step_id": null,
+      "purpose": "hermetic_step_contract declares isolation_requirements for reproducible execution.",
+      "command": "python scripts/validate_hermetic_step_contract.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-HERM-001",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "GATE-HERM-001 PASSED"
+      ],
+      "forbid_stdout_regex": [
+        "GATE-HERM-001 FAILED"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-HERM-001/validation.json",
+          "content_regex": [
+            "\"passed\": true"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-HERM-001"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-LOG-001",
+      "phase": "PH-03",
+      "step_id": null,
+      "purpose": "decision_logging_policy specifies at least one log_targets path.",
+      "command": "python scripts/validate_decision_logging_policy.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-LOG-001",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "GATE-LOG-001 PASSED"
+      ],
+      "forbid_stdout_regex": [
+        "GATE-LOG-001 FAILED"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-LOG-001/validation.json",
+          "content_regex": [
+            "\"passed\": true"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-LOG-001"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-DUR-001",
+      "phase": "PH-03",
+      "step_id": null,
+      "purpose": "durable_execution_contract declares a checkpoint_policy for resumable runs.",
+      "command": "python scripts/validate_durable_execution_contract.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-DUR-001",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "GATE-DUR-001 PASSED"
+      ],
+      "forbid_stdout_regex": [
+        "GATE-DUR-001 FAILED"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-DUR-001/validation.json",
+          "content_regex": [
+            "\"passed\": true"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-DUR-001"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-AMUT-001",
+      "phase": "PH-03",
+      "step_id": null,
+      "purpose": "array_mutation_policy bans positional array-index edits and requires identity-key mutations.",
+      "command": "python scripts/validate_array_mutation_policy.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-AMUT-001",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "GATE-AMUT-001 PASSED"
+      ],
+      "forbid_stdout_regex": [
+        "GATE-AMUT-001 FAILED"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-AMUT-001/validation.json",
+          "content_regex": [
+            "\"passed\": true"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-AMUT-001"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-PRES-001",
+      "phase": "PH-03",
+      "step_id": null,
+      "purpose": "path_resolution_policy references a resolver script for governed path lookups.",
+      "command": "python scripts/validate_path_resolution_policy.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-PRES-001",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "GATE-PRES-001 PASSED"
+      ],
+      "forbid_stdout_regex": [
+        "GATE-PRES-001 FAILED"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-PRES-001/validation.json",
+          "content_regex": [
+            "\"passed\": true"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-PRES-001"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-CDOC-001",
+      "phase": "PH-03",
+      "step_id": null,
+      "purpose": "canonical_document_resolution names the authoritative V3_3 files.",
+      "command": "python scripts/validate_canonical_document_resolution.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-CDOC-001",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "GATE-CDOC-001 PASSED"
+      ],
+      "forbid_stdout_regex": [
+        "GATE-CDOC-001 FAILED"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-CDOC-001/validation.json",
+          "content_regex": [
+            "\"passed\": true"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-CDOC-001"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-CMD-001",
+      "phase": "PH-03",
+      "step_id": null,
+      "purpose": "command_object_schema declares required fields for executable commands.",
+      "command": "python scripts/validate_command_object_schema.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-CMD-001",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "GATE-CMD-001 PASSED"
+      ],
+      "forbid_stdout_regex": [
+        "GATE-CMD-001 FAILED"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-CMD-001/validation.json",
+          "content_regex": [
+            "\"passed\": true"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-CMD-001"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-PATT-001",
+      "phase": "PH-03",
+      "step_id": null,
+      "purpose": "pattern_resolution_policy provides approved_patterns with fail-closed fallback.",
+      "command": "python scripts/validate_pattern_resolution_policy.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-PATT-001",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "GATE-PATT-001 PASSED"
+      ],
+      "forbid_stdout_regex": [
+        "GATE-PATT-001 FAILED"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-PATT-001/validation.json",
+          "content_regex": [
+            "\"passed\": true"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-PATT-001"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-FALL-001",
+      "phase": "PH-03",
+      "step_id": null,
+      "purpose": "fallback_policy declares at least one authorized fallback outcome.",
+      "command": "python scripts/validate_fallback_policy.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-FALL-001",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "GATE-FALL-001 PASSED"
+      ],
+      "forbid_stdout_regex": [
+        "GATE-FALL-001 FAILED"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-FALL-001/validation.json",
+          "content_regex": [
+            "\"passed\": true"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-FALL-001"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-PERM-001",
+      "phase": "PH-03",
+      "step_id": null,
+      "purpose": "permission_tiers declares the four capability tiers.",
+      "command": "python scripts/validate_permission_tiers.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-PERM-001",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "GATE-PERM-001 PASSED"
+      ],
+      "forbid_stdout_regex": [
+        "GATE-PERM-001 FAILED"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-PERM-001/validation.json",
+          "content_regex": [
+            "\"passed\": true"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-PERM-001"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-PROV-001",
+      "phase": "PH-03",
+      "step_id": null,
+      "purpose": "provenance_contract requires producer, sha256, and timestamp_utc on all outputs.",
+      "command": "python scripts/validate_provenance_contract.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-PROV-001",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "GATE-PROV-001 PASSED"
+      ],
+      "forbid_stdout_regex": [
+        "GATE-PROV-001 FAILED"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-PROV-001/validation.json",
+          "content_regex": [
+            "\"passed\": true"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-PROV-001"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-ARCH-001",
+      "phase": "PH-03",
+      "step_id": null,
+      "purpose": "change_archival_policy lists directories that must be archived before destructive changes.",
+      "command": "python scripts/validate_change_archival_policy.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-ARCH-001",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "GATE-ARCH-001 PASSED"
+      ],
+      "forbid_stdout_regex": [
+        "GATE-ARCH-001 FAILED"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-ARCH-001/validation.json",
+          "content_regex": [
+            "\"passed\": true"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-ARCH-001"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-AFF-001",
+      "phase": "PH-03",
+      "step_id": null,
+      "purpose": "affected_execution_policy references a dependency graph for affected-only gate execution.",
+      "command": "python scripts/validate_affected_execution_policy.py --plan-file {plan_file} --evidence-dir .state/evidence/GATE-AFF-001",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "GATE-AFF-001 PASSED"
+      ],
+      "forbid_stdout_regex": [
+        "GATE-AFF-001 FAILED"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-AFF-001/validation.json",
+          "content_regex": [
+            "\"passed\": true"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-AFF-001"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-POL-001",
+      "phase": "PH-03",
+      "step_id": null,
+      "purpose": "policy_as_code declares a machine-evaluable policy_engine and policy_dir.",
+      "command": "python scripts/validate_policy_as_code.py --spec {spec_file} --evidence-dir .state/evidence/GATE-POL-001",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "GATE-POL-001 PASSED"
+      ],
+      "forbid_stdout_regex": [
+        "GATE-POL-001 FAILED"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-POL-001/validation.json",
+          "content_regex": [
+            "\"passed\": true"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-POL-001"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-GH-001",
+      "phase": "PH-03",
+      "step_id": null,
+      "purpose": "github_enforcement_mapping declares merge_protection binding NPP gates to branch rules.",
+      "command": "python scripts/validate_github_enforcement_mapping.py --spec {spec_file} --evidence-dir .state/evidence/GATE-GH-001",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "GATE-GH-001 PASSED"
+      ],
+      "forbid_stdout_regex": [
+        "GATE-GH-001 FAILED"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-GH-001/validation.json",
+          "content_regex": [
+            "\"passed\": true"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-GH-001"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-CTX-001",
+      "phase": "PH-03",
+      "step_id": null,
+      "purpose": "tool_context_generation declares output_files generated from the NPP source of truth.",
+      "command": "python scripts/validate_tool_context_generation.py --spec {spec_file} --evidence-dir .state/evidence/GATE-CTX-001",
+      "timeout_sec": 120,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": [
+        "GATE-CTX-001 PASSED"
+      ],
+      "forbid_stdout_regex": [
+        "GATE-CTX-001 FAILED"
+      ],
+      "expect_files": [
+        {
+          "path": ".state/evidence/GATE-CTX-001/validation.json",
+          "content_regex": [
+            "\"passed\": true"
+          ]
+        }
+      ],
+      "evidence": ".state/evidence/GATE-CTX-001"
+    }
+  }
+]

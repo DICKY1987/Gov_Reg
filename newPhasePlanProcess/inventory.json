@@ -126,6 +126,14 @@
           "reason": "default structural classification"
         },
         {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/array_mutation_policy/mutation_rules",
+          "reason": "default structural classification"
+        },
+        {
           "classification": "index_eligible",
           "duplicate_identity_action": "fail_closed",
           "element_type": "object",
@@ -218,10 +226,34 @@
         },
         {
           "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/canonical_document_resolution/canonical_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
           "element_type": "empty",
           "index_output": null,
           "patch_mode": "replace_whole_array",
           "path": "/canonicalization_contract/rules",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/change_archival_policy/archive_targets",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/command_object_schema/required_fields",
           "reason": "default structural classification"
         },
         {
@@ -270,6 +302,14 @@
           "index_output": null,
           "patch_mode": "replace_whole_array",
           "path": "/critical_constraint/rules",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/decision_logging_policy/log_targets",
           "reason": "default structural classification"
         },
         {
@@ -456,6 +496,22 @@
         },
         {
           "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/executor_routing_policy/routing_rules",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/fallback_policy/authorized_fallbacks",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
           "element_type": "str",
           "index_output": null,
           "patch_mode": "replace_whole_array",
@@ -543,6 +599,14 @@
           "index_output": null,
           "patch_mode": "replace_whole_array",
           "path": "/final_summary/what_was_delivered/enhancements/8/details/os_support",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/governance_precedence/precedence_levels",
           "reason": "default structural classification"
         },
         {
@@ -639,6 +703,14 @@
           "index_output": null,
           "patch_mode": "replace_whole_array",
           "path": "/ground_truth_levels/level_definitions/L5/evidence",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/hermetic_step_contract/isolation_requirements",
           "reason": "default structural classification"
         },
         {
@@ -925,6 +997,22 @@
           "index_output": null,
           "patch_mode": "replace_whole_array",
           "path": "/pattern_governance/required_step_fields",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/pattern_resolution_policy/approved_patterns",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/permission_tiers/tiers",
           "reason": "default structural classification"
         },
         {
@@ -1295,6 +1383,14 @@
           "element_type": "str",
           "index_output": null,
           "patch_mode": "replace_whole_array",
+          "path": "/provenance_contract/required_provenance_fields",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
           "path": "/reconciliation_states/states",
           "reason": "default structural classification"
         },
@@ -1547,6 +1643,14 @@
           "index_output": null,
           "patch_mode": "replace_whole_array",
           "path": "/self_healing/failure_types/4/allowed_actions",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/situational_determinism_contract/resolution_order",
           "reason": "default structural classification"
         },
         {
@@ -2845,6 +2949,70 @@
           "element_type": "object",
           "index_output": null,
           "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/28/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/28/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/28/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/28/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/29/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/29/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/29/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/29/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
           "path": "/validation_gates/3/expect_files",
           "reason": "default structural classification"
         },
@@ -2877,6 +3045,326 @@
           "element_type": "object",
           "index_output": null,
           "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/30/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/30/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/30/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/30/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/31/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/31/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/31/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/31/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/32/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/32/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/32/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/32/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/33/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/33/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/33/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/33/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/34/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/34/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/34/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/34/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/35/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/35/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/35/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/35/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/36/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/36/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/36/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/36/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/37/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/37/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/37/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/37/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/38/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/38/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/38/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/38/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/39/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/39/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/39/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/39/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
           "path": "/validation_gates/4/expect_files",
           "reason": "default structural classification"
         },
@@ -2902,6 +3390,230 @@
           "index_output": null,
           "patch_mode": "replace_whole_array",
           "path": "/validation_gates/4/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/40/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/40/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/40/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/40/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/41/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/41/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/41/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/41/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/42/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/42/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/42/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/42/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/43/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/43/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/43/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/43/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/44/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/44/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/44/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/44/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/45/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/45/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/45/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/45/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "object",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/46/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/46/expect_files/0/content_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/46/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/46/forbid_stdout_regex",
           "reason": "default structural classification"
         },
         {
@@ -3121,11 +3833,11 @@
           "reason": "default structural classification"
         }
       ],
-      "source_sha256": "9c09d33e28865d9d2c444a5d2d95a7af99f3823850581556c73b4f8acbb3fa1d"
+      "source_sha256": "b5d536d58d89409e59f2f221bf0e39d03d3dd36da67ed2fdbc5c05aecb05e56e"
     },
     "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_3.json": {
       "arrays": [],
-      "source_sha256": "1cadcff452a8421a3b199dbead729ea9578a3e36a0875e692ba98cdd7487ff03"
+      "source_sha256": "8e6665bcee3cbbcc111bd905d4b1481e740948e5ad31435e6eee9e6633749c75"
     },
     "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_3.json": {
       "arrays": [
@@ -4181,6 +4893,14 @@
           "element_type": "str",
           "index_output": null,
           "patch_mode": "replace_whole_array",
+          "path": "/tool_context_generation/output_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
           "path": "/workflows/abstraction_governance_workflow/steps",
           "reason": "default structural classification"
         },
@@ -4609,7 +5329,7 @@
           "reason": "default structural classification"
         }
       ],
-      "source_sha256": "f7550850e4f44fb69f86a05811a713af981bbb085f334567f5b0e2a183d7f5af"
+      "source_sha256": "40645d3d2eceb6d9c8d2c8262e619c06245215a48211a831faf959eeb17732d6"
     }
   },
   "inventory_version": "1.1.0"

@@ -78,6 +78,25 @@ def default_evidence(args: argparse.Namespace, fallback: str | None) -> str | No
             "GATE-RPROG-001": "reusable_program_contract.json",
             "GATE-RPROG-002": "step_reusable_program_bindings.json",
             "GATE-BEH-001": "implementation_behavior_contract.json",
+            "GATE-DET-001": "validation.json",
+            "GATE-GOV-001": "validation.json",
+            "GATE-ROUT-001": "validation.json",
+            "GATE-HERM-001": "validation.json",
+            "GATE-LOG-001": "validation.json",
+            "GATE-DUR-001": "validation.json",
+            "GATE-AMUT-001": "validation.json",
+            "GATE-PRES-001": "validation.json",
+            "GATE-CDOC-001": "validation.json",
+            "GATE-CMD-001": "validation.json",
+            "GATE-PATT-001": "validation.json",
+            "GATE-FALL-001": "validation.json",
+            "GATE-PERM-001": "validation.json",
+            "GATE-PROV-001": "validation.json",
+            "GATE-ARCH-001": "validation.json",
+            "GATE-AFF-001": "validation.json",
+            "GATE-POL-001": "validation.json",
+            "GATE-GH-001": "validation.json",
+            "GATE-CTX-001": "validation.json",
         }
         gate_id = evidence_dir.rstrip("/\\").split("/")[-1].split("\\")[-1]
         filename = mapping.get(gate_id, "validation.json")
@@ -403,6 +422,232 @@ def validate_path_registry(args: argparse.Namespace) -> int:
     return finish("validate_path_registry", True)
 
 
+def validate_situational_determinism_contract(args: argparse.Namespace) -> int:
+    plan = load_json(args.plan_file)
+    section = plan.get("situational_determinism_contract", {})
+    passed = (
+        section.get("enabled") is True
+        and section.get("enforcement_mode") == "fail_closed"
+        and bool(section.get("resolution_order"))
+    )
+    evidence = default_evidence(args, ".state/evidence/GATE-DET-001/validation.json")
+    return finish("GATE-DET-001", passed, evidence)
+
+
+def validate_governance_precedence(args: argparse.Namespace) -> int:
+    plan = load_json(args.plan_file)
+    section = plan.get("governance_precedence", {})
+    passed = (
+        section.get("enabled") is True
+        and section.get("enforcement_mode") == "fail_closed"
+        and bool(section.get("precedence_levels"))
+    )
+    evidence = default_evidence(args, ".state/evidence/GATE-GOV-001/validation.json")
+    return finish("GATE-GOV-001", passed, evidence)
+
+
+def validate_executor_routing_policy(args: argparse.Namespace) -> int:
+    plan = load_json(args.plan_file)
+    section = plan.get("executor_routing_policy", {})
+    passed = (
+        section.get("enabled") is True
+        and section.get("enforcement_mode") == "fail_closed"
+        and bool(section.get("routing_rules"))
+    )
+    evidence = default_evidence(args, ".state/evidence/GATE-ROUT-001/validation.json")
+    return finish("GATE-ROUT-001", passed, evidence)
+
+
+def validate_hermetic_step_contract(args: argparse.Namespace) -> int:
+    plan = load_json(args.plan_file)
+    section = plan.get("hermetic_step_contract", {})
+    passed = (
+        section.get("enabled") is True
+        and section.get("enforcement_mode") == "fail_closed"
+        and bool(section.get("isolation_requirements"))
+    )
+    evidence = default_evidence(args, ".state/evidence/GATE-HERM-001/validation.json")
+    return finish("GATE-HERM-001", passed, evidence)
+
+
+def validate_decision_logging_policy(args: argparse.Namespace) -> int:
+    plan = load_json(args.plan_file)
+    section = plan.get("decision_logging_policy", {})
+    passed = (
+        section.get("enabled") is True
+        and section.get("enforcement_mode") == "fail_closed"
+        and bool(section.get("log_targets"))
+    )
+    evidence = default_evidence(args, ".state/evidence/GATE-LOG-001/validation.json")
+    return finish("GATE-LOG-001", passed, evidence)
+
+
+def validate_durable_execution_contract(args: argparse.Namespace) -> int:
+    plan = load_json(args.plan_file)
+    section = plan.get("durable_execution_contract", {})
+    passed = (
+        section.get("enabled") is True
+        and section.get("enforcement_mode") == "fail_closed"
+        and bool(section.get("checkpoint_policy"))
+    )
+    evidence = default_evidence(args, ".state/evidence/GATE-DUR-001/validation.json")
+    return finish("GATE-DUR-001", passed, evidence)
+
+
+def validate_array_mutation_policy(args: argparse.Namespace) -> int:
+    plan = load_json(args.plan_file)
+    section = plan.get("array_mutation_policy", {})
+    passed = (
+        section.get("enabled") is True
+        and section.get("enforcement_mode") == "fail_closed"
+        and bool(section.get("mutation_rules"))
+    )
+    evidence = default_evidence(args, ".state/evidence/GATE-AMUT-001/validation.json")
+    return finish("GATE-AMUT-001", passed, evidence)
+
+
+def validate_path_resolution_policy(args: argparse.Namespace) -> int:
+    plan = load_json(args.plan_file)
+    section = plan.get("path_resolution_policy", {})
+    passed = (
+        section.get("enabled") is True
+        and section.get("enforcement_mode") == "fail_closed"
+        and bool(section.get("resolver_ref"))
+    )
+    evidence = default_evidence(args, ".state/evidence/GATE-PRES-001/validation.json")
+    return finish("GATE-PRES-001", passed, evidence)
+
+
+def validate_canonical_document_resolution(args: argparse.Namespace) -> int:
+    plan = load_json(args.plan_file)
+    section = plan.get("canonical_document_resolution", {})
+    passed = (
+        section.get("enabled") is True
+        and section.get("enforcement_mode") == "fail_closed"
+        and bool(section.get("canonical_files"))
+    )
+    evidence = default_evidence(args, ".state/evidence/GATE-CDOC-001/validation.json")
+    return finish("GATE-CDOC-001", passed, evidence)
+
+
+def validate_command_object_schema(args: argparse.Namespace) -> int:
+    plan = load_json(args.plan_file)
+    section = plan.get("command_object_schema", {})
+    passed = (
+        section.get("enabled") is True
+        and section.get("enforcement_mode") == "fail_closed"
+        and bool(section.get("required_fields"))
+    )
+    evidence = default_evidence(args, ".state/evidence/GATE-CMD-001/validation.json")
+    return finish("GATE-CMD-001", passed, evidence)
+
+
+def validate_pattern_resolution_policy(args: argparse.Namespace) -> int:
+    plan = load_json(args.plan_file)
+    section = plan.get("pattern_resolution_policy", {})
+    passed = (
+        section.get("enabled") is True
+        and section.get("enforcement_mode") == "fail_closed"
+        and bool(section.get("approved_patterns"))
+    )
+    evidence = default_evidence(args, ".state/evidence/GATE-PATT-001/validation.json")
+    return finish("GATE-PATT-001", passed, evidence)
+
+
+def validate_fallback_policy(args: argparse.Namespace) -> int:
+    plan = load_json(args.plan_file)
+    section = plan.get("fallback_policy", {})
+    passed = (
+        section.get("enabled") is True
+        and section.get("enforcement_mode") == "fail_closed"
+        and bool(section.get("authorized_fallbacks"))
+    )
+    evidence = default_evidence(args, ".state/evidence/GATE-FALL-001/validation.json")
+    return finish("GATE-FALL-001", passed, evidence)
+
+
+def validate_permission_tiers(args: argparse.Namespace) -> int:
+    plan = load_json(args.plan_file)
+    section = plan.get("permission_tiers", {})
+    passed = (
+        section.get("enabled") is True
+        and section.get("enforcement_mode") == "fail_closed"
+        and bool(section.get("tiers"))
+    )
+    evidence = default_evidence(args, ".state/evidence/GATE-PERM-001/validation.json")
+    return finish("GATE-PERM-001", passed, evidence)
+
+
+def validate_provenance_contract(args: argparse.Namespace) -> int:
+    plan = load_json(args.plan_file)
+    section = plan.get("provenance_contract", {})
+    passed = (
+        section.get("enabled") is True
+        and section.get("enforcement_mode") == "fail_closed"
+        and bool(section.get("required_provenance_fields"))
+    )
+    evidence = default_evidence(args, ".state/evidence/GATE-PROV-001/validation.json")
+    return finish("GATE-PROV-001", passed, evidence)
+
+
+def validate_change_archival_policy(args: argparse.Namespace) -> int:
+    plan = load_json(args.plan_file)
+    section = plan.get("change_archival_policy", {})
+    passed = (
+        section.get("enabled") is True
+        and section.get("enforcement_mode") == "fail_closed"
+        and bool(section.get("archive_targets"))
+    )
+    evidence = default_evidence(args, ".state/evidence/GATE-ARCH-001/validation.json")
+    return finish("GATE-ARCH-001", passed, evidence)
+
+
+def validate_affected_execution_policy(args: argparse.Namespace) -> int:
+    plan = load_json(args.plan_file)
+    section = plan.get("affected_execution_policy", {})
+    passed = (
+        section.get("enabled") is True
+        and section.get("enforcement_mode") == "fail_closed"
+        and bool(section.get("dependency_graph_ref"))
+    )
+    evidence = default_evidence(args, ".state/evidence/GATE-AFF-001/validation.json")
+    return finish("GATE-AFF-001", passed, evidence)
+
+
+def validate_policy_as_code(args: argparse.Namespace) -> int:
+    spec = load_json(args.spec)
+    section = spec.get("policy_as_code", {})
+    passed = (
+        section.get("enabled") is True
+        and bool(section.get("policy_engine"))
+        and bool(section.get("policy_dir"))
+    )
+    evidence = default_evidence(args, ".state/evidence/GATE-POL-001/validation.json")
+    return finish("GATE-POL-001", passed, evidence)
+
+
+def validate_github_enforcement_mapping(args: argparse.Namespace) -> int:
+    spec = load_json(args.spec)
+    section = spec.get("github_enforcement_mapping", {})
+    passed = (
+        section.get("enabled") is True
+        and bool(section.get("merge_protection"))
+    )
+    evidence = default_evidence(args, ".state/evidence/GATE-GH-001/validation.json")
+    return finish("GATE-GH-001", passed, evidence)
+
+
+def validate_tool_context_generation(args: argparse.Namespace) -> int:
+    spec = load_json(args.spec)
+    section = spec.get("tool_context_generation", {})
+    passed = (
+        section.get("enabled") is True
+        and bool(section.get("output_files"))
+    )
+    evidence = default_evidence(args, ".state/evidence/GATE-CTX-001/validation.json")
+    return finish("GATE-CTX-001", passed, evidence)
+
+
 def parse_plan_file(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--plan-file", required=True)
     parser.add_argument("--evidence-dir")
@@ -508,4 +753,41 @@ def main(command: str) -> int:
         parser.add_argument("--registry", required=True)
         args = parser.parse_args()
         return validate_path_registry(args)
+    if command in {
+        "GATE-DET-001", "GATE-GOV-001", "GATE-ROUT-001", "GATE-HERM-001",
+        "GATE-LOG-001", "GATE-DUR-001", "GATE-AMUT-001", "GATE-PRES-001",
+        "GATE-CDOC-001", "GATE-CMD-001", "GATE-PATT-001", "GATE-FALL-001",
+        "GATE-PERM-001", "GATE-PROV-001", "GATE-ARCH-001", "GATE-AFF-001",
+    }:
+        parse_plan_file(parser)
+        args = parser.parse_args()
+        _dispatch = {
+            "GATE-DET-001":  validate_situational_determinism_contract,
+            "GATE-GOV-001":  validate_governance_precedence,
+            "GATE-ROUT-001": validate_executor_routing_policy,
+            "GATE-HERM-001": validate_hermetic_step_contract,
+            "GATE-LOG-001":  validate_decision_logging_policy,
+            "GATE-DUR-001":  validate_durable_execution_contract,
+            "GATE-AMUT-001": validate_array_mutation_policy,
+            "GATE-PRES-001": validate_path_resolution_policy,
+            "GATE-CDOC-001": validate_canonical_document_resolution,
+            "GATE-CMD-001":  validate_command_object_schema,
+            "GATE-PATT-001": validate_pattern_resolution_policy,
+            "GATE-FALL-001": validate_fallback_policy,
+            "GATE-PERM-001": validate_permission_tiers,
+            "GATE-PROV-001": validate_provenance_contract,
+            "GATE-ARCH-001": validate_change_archival_policy,
+            "GATE-AFF-001":  validate_affected_execution_policy,
+        }
+        return _dispatch[command](args)
+    if command in {"GATE-POL-001", "GATE-GH-001", "GATE-CTX-001"}:
+        parser.add_argument("--spec", required=True)
+        parser.add_argument("--evidence-dir")
+        args = parser.parse_args()
+        _dispatch = {
+            "GATE-POL-001": validate_policy_as_code,
+            "GATE-GH-001":  validate_github_enforcement_mapping,
+            "GATE-CTX-001": validate_tool_context_generation,
+        }
+        return _dispatch[command](args)
     raise ValueError(f"Unsupported command: {command}")

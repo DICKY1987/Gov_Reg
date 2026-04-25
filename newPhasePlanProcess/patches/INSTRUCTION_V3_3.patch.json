@@ -1,0 +1,117 @@
+[
+  {
+    "op": "add",
+    "path": "/instruction_rule_index",
+    "value": {
+      "version": "1.0.0",
+      "mechanisms": {
+        "situational_determinism_contract": {
+          "rule_text": "Execution branching must follow a declared deterministic resolution order.",
+          "gate_id": "GATE-DET-001",
+          "owner_doc": "template"
+        },
+        "governance_precedence": {
+          "rule_text": "Rule conflicts must be resolved by declared precedence, not implicit ordering.",
+          "gate_id": "GATE-GOV-001",
+          "owner_doc": "template"
+        },
+        "executor_routing_policy": {
+          "rule_text": "Executor selection must follow a declared, auditable routing contract.",
+          "gate_id": "GATE-ROUT-001",
+          "owner_doc": "template"
+        },
+        "hermetic_step_contract": {
+          "rule_text": "Steps must declare all inputs, outputs, and environment pins.",
+          "gate_id": "GATE-HERM-001",
+          "owner_doc": "template"
+        },
+        "decision_logging_policy": {
+          "rule_text": "Every consequential decision must be logged for audit and replay.",
+          "gate_id": "GATE-LOG-001",
+          "owner_doc": "template"
+        },
+        "durable_execution_contract": {
+          "rule_text": "Executions must be resumable from verified checkpoints after failure.",
+          "gate_id": "GATE-DUR-001",
+          "owner_doc": "template"
+        },
+        "array_mutation_policy": {
+          "rule_text": "Array mutations must use stable identity keys, never positional indexes.",
+          "gate_id": "GATE-AMUT-001",
+          "owner_doc": "template"
+        },
+        "path_resolution_policy": {
+          "rule_text": "Governed paths must be resolved through the declared resolver, never hardcoded.",
+          "gate_id": "GATE-PRES-001",
+          "owner_doc": "template"
+        },
+        "canonical_document_resolution": {
+          "rule_text": "Only the declared canonical filenames are authoritative sources of truth.",
+          "gate_id": "GATE-CDOC-001",
+          "owner_doc": "template"
+        },
+        "command_object_schema": {
+          "rule_text": "All executable commands must declare shell, cwd, timeout, failure mode, and evidence path.",
+          "gate_id": "GATE-CMD-001",
+          "owner_doc": "template"
+        },
+        "pattern_resolution_policy": {
+          "rule_text": "Tasks without an approved pattern must fail closed, not improvise execution.",
+          "gate_id": "GATE-PATT-001",
+          "owner_doc": "template"
+        },
+        "fallback_policy": {
+          "rule_text": "Fallback behavior must be pre-authorized; ad-hoc fallbacks are forbidden.",
+          "gate_id": "GATE-FALL-001",
+          "owner_doc": "template"
+        },
+        "permission_tiers": {
+          "rule_text": "Operations must be classified into a declared permission tier before execution.",
+          "gate_id": "GATE-PERM-001",
+          "owner_doc": "template"
+        },
+        "provenance_contract": {
+          "rule_text": "All artifact outputs must carry traceable provenance metadata.",
+          "gate_id": "GATE-PROV-001",
+          "owner_doc": "template"
+        },
+        "change_archival_policy": {
+          "rule_text": "Evidence and patch artifacts must be archived before any destructive operation.",
+          "gate_id": "GATE-ARCH-001",
+          "owner_doc": "template"
+        },
+        "affected_execution_policy": {
+          "rule_text": "Selective gate execution must be driven by a declared dependency graph.",
+          "gate_id": "GATE-AFF-001",
+          "owner_doc": "template"
+        },
+        "policy_as_code": {
+          "rule_text": "Acceptance rules must be expressed as machine-evaluable policies over structured input.",
+          "gate_id": "GATE-POL-001",
+          "owner_doc": "spec"
+        },
+        "github_enforcement_mapping": {
+          "rule_text": "NPP validation must be bound to GitHub merge protection before PR merges.",
+          "gate_id": "GATE-GH-001",
+          "owner_doc": "spec"
+        },
+        "tool_context_generation": {
+          "rule_text": "Tool context files must be generated from the NPP source of truth, not hand-authored.",
+          "gate_id": "GATE-CTX-001",
+          "owner_doc": "spec"
+        }
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/cross_document_pointers",
+    "value": {
+      "template_mechanism_root": "/<mechanism_key> (16 root keys)",
+      "spec_mechanism_registry": "/mechanism_registry",
+      "spec_gate_registry": "/architecture/system_layers/layer_2_validation/components/1/gate_registry",
+      "template_validation_gates": "/validation_gates",
+      "instruction_rule_index": "/instruction_rule_index"
+    }
+  }
+]
