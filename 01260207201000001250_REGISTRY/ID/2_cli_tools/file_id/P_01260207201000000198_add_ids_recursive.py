@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """Add 20-digit IDs to all files recursively that need them."""
 
+import argparse
 import sys
 from pathlib import Path
 from collections import defaultdict
 
-# Import the ID allocator
+# Import via facade (per allocator package policy)
 ALLOCATORS_ROOT = Path(__file__).resolve().parents[2] / "1_runtime" / "allocators"
 if str(ALLOCATORS_ROOT) not in sys.path:
     sys.path.insert(0, str(ALLOCATORS_ROOT))
-from P_01999000042260124031_unified_id_allocator import UnifiedIDAllocator
+from P_01999000042260125006_id_allocator_facade import IDAllocatorFacade
 
 def get_file_id_from_name(filename: str) -> str | None:
     """Extract file_id from filename."""
@@ -20,20 +21,21 @@ def get_file_id_from_name(filename: str) -> str | None:
     return None
 
 def main():
-    # Find counter store
-    counter_store_files = list(Path('.').glob('*COUNTER_STORE.json'))
-    counter_store_files = [f for f in counter_store_files if not f.name.endswith('.lock')]
-    
-    if not counter_store_files:
-        print("ERROR: COUNTER_STORE.json not found")
-        return 1
-    
-    counter_store = counter_store_files[0]
-    print(f"Using counter store: {counter_store.name}\n")
-    allocator = UnifiedIDAllocator(counter_store)
+    parser = argparse.ArgumentParser(description="Add 20-digit IDs to files recursively.")
+    parser.add_argument(
+        "--ext",
+        nargs="+",
+        default=[".md", ".txt", ".py", ".ps1", ".yaml", ".json"],
+        metavar="EXT",
+        help="File extensions to process (default: .md .txt .py .ps1 .yaml .json)",
+    )
+    args = parser.parse_args()
+
+    # Use facade with default external counter store (APPDATA/GovReg/IdAllocator/)
+    allocator = IDAllocatorFacade()
     
     # Find all files recursively that need IDs
-    target_extensions = {'.md', '.txt', '.py', '.ps1', '.yaml', '.json'}
+    target_extensions = {ext if ext.startswith(".") else f".{ext}" for ext in args.ext}
     files_to_rename = []
     
     for file_path in Path('.').rglob('*'):
@@ -80,9 +82,9 @@ def main():
     for i, file_path in enumerate(sorted(files_to_rename), 1):
         try:
             # Get new ID
-            new_id = allocator.allocate_single_id(
-                purpose="recursive_file_id_assignment", 
-                allocated_by="batch_script"
+            new_id = allocator.allocate_file_id(
+                context="recursive_file_id_assignment",
+                metadata={"allocated_by": "batch_script"},
             )
             
             # Determine prefix based on extension

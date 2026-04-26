@@ -1,0 +1,9 @@
+# Re-include poetry.lock which is excluded by root *.lock pattern
+!poetry.lock
+
+# Pytest temp dirs and cache
+.pytest_tmp/
+.coverage
+.pytest_cache/
+__pycache__/
+*.pyc

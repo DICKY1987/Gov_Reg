@@ -80,11 +80,13 @@ class OrphanedEntriesPruner:
             entry_id = entry.get("entry_id")
             edges = entry.get("edges", [])
             
-            # Check if entry has any incoming edges from other entries
+            # An entry has a parent if it has any outgoing edge pointing to another
+            # known entry (child→parent convention). The original incoming-only check
+            # failed when children store their parent reference in their own edge list
+            # (e.g. {"source": child_id, "target": parent_id, "relationship": "child_of"}).
             has_parent = any(
-                other_entry.get("entry_id") != entry_id
-                and entry_id in [edge.get("target") for edge in other_entry.get("edges", [])]
-                for other_entry in entries
+                edge.get("target") in entry_ids and edge.get("target") != entry_id
+                for edge in edges
             )
             
             if not has_parent:
