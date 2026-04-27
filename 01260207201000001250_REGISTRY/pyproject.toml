@@ -1,0 +1,45 @@
+[tool.poetry]
+name = "registry"
+version = "0.1.0"
+description = "Unified SSOT Registry — governance automation framework"
+authors = ["DICKY1987"]
+packages = [{ include = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pyyaml = ">=6.0"
+jsonschema = ">=4.0"
+jsonpatch = ">=1.33"
+click = ">=8.0"
+rich = ">=13.0"
+watchdog = ">=3.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=8.0"
+pytest-cov = ">=4.0"
+pytest-asyncio = "*"
+pytest-mock = "*"
+pytest-benchmark = "*"
+mypy = ">=1.0"
+nox = ">=2024.0"
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "REGISTRY_AUTOMATION/tests"]
+addopts = "-p no:cacheprovider"
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["tests/*", "REGISTRY_AUTOMATION/*"]
+
+[tool.coverage.report]
+fail_under = 70
+show_missing = true
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+ignore_missing_imports = true
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
