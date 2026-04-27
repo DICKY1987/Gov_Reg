@@ -658,7 +658,11 @@
                 "script": "validate_situational_determinism_contract.py",
                 "purpose": "situational_determinism_contract is present with fail-closed resolution_order.",
                 "critical_rule": "Execution branching must follow a declared deterministic resolution order.",
-                "failure_impact": "Ambiguous situational resolution produces non-reproducible execution."
+                "failure_impact": "Ambiguous situational resolution produces non-reproducible execution.",
+                "execution_stage": "pre_execution",
+                "status": "REGISTERED",
+                "evidence_path": ".state/evidence/GATE-DET-001/validation.json",
+                "mechanism_id": "situational_determinism_contract"
               },
               {
                 "id": "GATE-GOV-001",
@@ -666,7 +670,11 @@
                 "script": "validate_governance_precedence.py",
                 "purpose": "governance_precedence declares a non-empty precedence_levels list.",
                 "critical_rule": "Rule conflicts must be resolved by declared precedence, not implicit ordering.",
-                "failure_impact": "Conflicting rules produce non-deterministic governance outcomes."
+                "failure_impact": "Conflicting rules produce non-deterministic governance outcomes.",
+                "execution_stage": "pre_execution",
+                "status": "REGISTERED",
+                "evidence_path": ".state/evidence/GATE-GOV-001/validation.json",
+                "mechanism_id": "governance_precedence"
               },
               {
                 "id": "GATE-ROUT-001",
@@ -674,7 +682,11 @@
                 "script": "validate_executor_routing_policy.py",
                 "purpose": "executor_routing_policy provides a non-empty routing_rules list.",
                 "critical_rule": "Executor selection must follow a declared, auditable routing contract.",
-                "failure_impact": "Arbitrary executor selection breaks traceability and reproducibility."
+                "failure_impact": "Arbitrary executor selection breaks traceability and reproducibility.",
+                "execution_stage": "pre_execution",
+                "status": "REGISTERED",
+                "evidence_path": ".state/evidence/GATE-ROUT-001/validation.json",
+                "mechanism_id": "executor_routing_policy"
               },
               {
                 "id": "GATE-HERM-001",
@@ -682,7 +694,11 @@
                 "script": "validate_hermetic_step_contract.py",
                 "purpose": "hermetic_step_contract declares isolation_requirements for reproducible execution.",
                 "critical_rule": "Steps must declare all inputs, outputs, and environment pins.",
-                "failure_impact": "Undeclared dependencies cause irreproducible step outputs."
+                "failure_impact": "Undeclared dependencies cause irreproducible step outputs.",
+                "execution_stage": "pre_execution",
+                "status": "REGISTERED",
+                "evidence_path": ".state/evidence/GATE-HERM-001/validation.json",
+                "mechanism_id": "hermetic_step_contract"
               },
               {
                 "id": "GATE-LOG-001",
@@ -690,7 +706,11 @@
                 "script": "validate_decision_logging_policy.py",
                 "purpose": "decision_logging_policy specifies at least one log_targets path.",
                 "critical_rule": "Every consequential decision must be logged for audit and replay.",
-                "failure_impact": "Missing decision logs prevent post-hoc audit and debugging."
+                "failure_impact": "Missing decision logs prevent post-hoc audit and debugging.",
+                "execution_stage": "pre_execution",
+                "status": "REGISTERED",
+                "evidence_path": ".state/evidence/GATE-LOG-001/validation.json",
+                "mechanism_id": "decision_logging_policy"
               },
               {
                 "id": "GATE-DUR-001",
@@ -698,7 +718,11 @@
                 "script": "validate_durable_execution_contract.py",
                 "purpose": "durable_execution_contract declares a checkpoint_policy for resumable runs.",
                 "critical_rule": "Executions must be resumable from verified checkpoints after failure.",
-                "failure_impact": "Non-durable execution loses progress and breaks audit continuity."
+                "failure_impact": "Non-durable execution loses progress and breaks audit continuity.",
+                "execution_stage": "pre_execution",
+                "status": "REGISTERED",
+                "evidence_path": ".state/evidence/GATE-DUR-001/validation.json",
+                "mechanism_id": "durable_execution_contract"
               },
               {
                 "id": "GATE-AMUT-001",
@@ -706,7 +730,11 @@
                 "script": "validate_array_mutation_policy.py",
                 "purpose": "array_mutation_policy bans positional array-index edits and requires identity-key mutations.",
                 "critical_rule": "Array mutations must use stable identity keys, never positional indexes.",
-                "failure_impact": "Positional array edits silently corrupt documents when order changes."
+                "failure_impact": "Positional array edits silently corrupt documents when order changes.",
+                "execution_stage": "pre_execution",
+                "status": "REGISTERED",
+                "evidence_path": ".state/evidence/GATE-AMUT-001/validation.json",
+                "mechanism_id": "array_mutation_policy"
               },
               {
                 "id": "GATE-PRES-001",
@@ -714,7 +742,11 @@
                 "script": "validate_path_resolution_policy.py",
                 "purpose": "path_resolution_policy references a resolver script for governed path lookups.",
                 "critical_rule": "Governed paths must be resolved through the declared resolver, never hardcoded.",
-                "failure_impact": "Hardcoded paths break when the filesystem layout changes."
+                "failure_impact": "Hardcoded paths break when the filesystem layout changes.",
+                "execution_stage": "pre_execution",
+                "status": "REGISTERED",
+                "evidence_path": ".state/evidence/GATE-PRES-001/validation.json",
+                "mechanism_id": "path_resolution_policy"
               },
               {
                 "id": "GATE-CDOC-001",
@@ -3582,97 +3614,306 @@
       "situational_determinism_contract": {
         "owner_doc": "template",
         "gate_id": "GATE-DET-001",
-        "validator": "validate_situational_determinism_contract.py"
+        "validator": "validate_situational_determinism_contract.py",
+        "template_pointer": "/situational_determinism_contract",
+        "required_fields": [
+          "enabled",
+          "enforcement_mode",
+          "resolution_order",
+          "validator_ref"
+        ],
+        "evidence_path": ".state/evidence/GATE-DET-001/validation.json",
+        "execution_stage": "pre_execution",
+        "component_owner": "COMP-L2-02",
+        "status": "REGISTERED"
       },
       "governance_precedence": {
         "owner_doc": "template",
         "gate_id": "GATE-GOV-001",
-        "validator": "validate_governance_precedence.py"
+        "validator": "validate_governance_precedence.py",
+        "template_pointer": "/governance_precedence",
+        "required_fields": [
+          "enabled",
+          "enforcement_mode",
+          "precedence_levels",
+          "validator_ref"
+        ],
+        "evidence_path": ".state/evidence/GATE-GOV-001/validation.json",
+        "execution_stage": "pre_execution",
+        "component_owner": "COMP-L2-02",
+        "status": "REGISTERED"
       },
       "executor_routing_policy": {
         "owner_doc": "template",
         "gate_id": "GATE-ROUT-001",
-        "validator": "validate_executor_routing_policy.py"
+        "validator": "validate_executor_routing_policy.py",
+        "template_pointer": "/executor_routing_policy",
+        "required_fields": [
+          "enabled",
+          "enforcement_mode",
+          "routing_rules",
+          "validator_ref"
+        ],
+        "evidence_path": ".state/evidence/GATE-ROUT-001/validation.json",
+        "execution_stage": "pre_execution",
+        "component_owner": "COMP-L2-02",
+        "status": "REGISTERED"
       },
       "hermetic_step_contract": {
         "owner_doc": "template",
         "gate_id": "GATE-HERM-001",
-        "validator": "validate_hermetic_step_contract.py"
+        "validator": "validate_hermetic_step_contract.py",
+        "template_pointer": "/hermetic_step_contract",
+        "required_fields": [
+          "enabled",
+          "enforcement_mode",
+          "isolation_requirements",
+          "validator_ref"
+        ],
+        "evidence_path": ".state/evidence/GATE-HERM-001/validation.json",
+        "execution_stage": "pre_execution",
+        "component_owner": "COMP-L2-02",
+        "status": "REGISTERED"
       },
       "decision_logging_policy": {
         "owner_doc": "template",
         "gate_id": "GATE-LOG-001",
-        "validator": "validate_decision_logging_policy.py"
+        "validator": "validate_decision_logging_policy.py",
+        "template_pointer": "/decision_logging_policy",
+        "required_fields": [
+          "enabled",
+          "enforcement_mode",
+          "log_targets",
+          "validator_ref"
+        ],
+        "evidence_path": ".state/evidence/GATE-LOG-001/validation.json",
+        "execution_stage": "pre_execution",
+        "component_owner": "COMP-L2-02",
+        "status": "REGISTERED"
       },
       "durable_execution_contract": {
         "owner_doc": "template",
         "gate_id": "GATE-DUR-001",
-        "validator": "validate_durable_execution_contract.py"
+        "validator": "validate_durable_execution_contract.py",
+        "template_pointer": "/durable_execution_contract",
+        "required_fields": [
+          "enabled",
+          "enforcement_mode",
+          "checkpoint_policy",
+          "validator_ref"
+        ],
+        "evidence_path": ".state/evidence/GATE-DUR-001/validation.json",
+        "execution_stage": "pre_execution",
+        "component_owner": "COMP-L2-02",
+        "status": "REGISTERED"
       },
       "array_mutation_policy": {
         "owner_doc": "template",
         "gate_id": "GATE-AMUT-001",
-        "validator": "validate_array_mutation_policy.py"
+        "validator": "validate_array_mutation_policy.py",
+        "template_pointer": "/array_mutation_policy",
+        "required_fields": [
+          "enabled",
+          "enforcement_mode",
+          "mutation_rules",
+          "validator_ref"
+        ],
+        "evidence_path": ".state/evidence/GATE-AMUT-001/validation.json",
+        "execution_stage": "pre_execution",
+        "component_owner": "COMP-L2-02",
+        "status": "REGISTERED"
       },
       "path_resolution_policy": {
         "owner_doc": "template",
         "gate_id": "GATE-PRES-001",
-        "validator": "validate_path_resolution_policy.py"
+        "validator": "validate_path_resolution_policy.py",
+        "template_pointer": "/path_resolution_policy",
+        "required_fields": [
+          "enabled",
+          "enforcement_mode",
+          "resolver_ref",
+          "validator_ref"
+        ],
+        "evidence_path": ".state/evidence/GATE-PRES-001/validation.json",
+        "execution_stage": "pre_execution",
+        "component_owner": "COMP-L2-02",
+        "status": "REGISTERED"
       },
       "canonical_document_resolution": {
         "owner_doc": "template",
         "gate_id": "GATE-CDOC-001",
-        "validator": "validate_canonical_document_resolution.py"
+        "validator": "validate_canonical_document_resolution.py",
+        "template_pointer": "/canonical_document_resolution",
+        "required_fields": [
+          "enabled",
+          "enforcement_mode",
+          "canonical_files",
+          "validator_ref"
+        ],
+        "evidence_path": ".state/evidence/GATE-CDOC-001/validation.json",
+        "execution_stage": "pre_execution",
+        "component_owner": "COMP-L2-02",
+        "status": "REGISTERED"
       },
       "command_object_schema": {
         "owner_doc": "template",
         "gate_id": "GATE-CMD-001",
-        "validator": "validate_command_object_schema.py"
+        "validator": "validate_command_object_schema.py",
+        "template_pointer": "/command_object_schema",
+        "required_fields": [
+          "enabled",
+          "enforcement_mode",
+          "required_fields",
+          "validator_ref"
+        ],
+        "evidence_path": ".state/evidence/GATE-CMD-001/validation.json",
+        "execution_stage": "pre_execution",
+        "component_owner": "COMP-L2-02",
+        "status": "REGISTERED"
       },
       "pattern_resolution_policy": {
         "owner_doc": "template",
         "gate_id": "GATE-PATT-001",
-        "validator": "validate_pattern_resolution_policy.py"
+        "validator": "validate_pattern_resolution_policy.py",
+        "template_pointer": "/pattern_resolution_policy",
+        "required_fields": [
+          "enabled",
+          "enforcement_mode",
+          "approved_patterns",
+          "validator_ref"
+        ],
+        "evidence_path": ".state/evidence/GATE-PATT-001/validation.json",
+        "execution_stage": "pre_execution",
+        "component_owner": "COMP-L2-02",
+        "status": "REGISTERED"
       },
       "fallback_policy": {
         "owner_doc": "template",
         "gate_id": "GATE-FALL-001",
-        "validator": "validate_fallback_policy.py"
+        "validator": "validate_fallback_policy.py",
+        "template_pointer": "/fallback_policy",
+        "required_fields": [
+          "enabled",
+          "enforcement_mode",
+          "authorized_fallbacks",
+          "validator_ref"
+        ],
+        "evidence_path": ".state/evidence/GATE-FALL-001/validation.json",
+        "execution_stage": "pre_execution",
+        "component_owner": "COMP-L2-02",
+        "status": "REGISTERED"
       },
       "permission_tiers": {
         "owner_doc": "template",
         "gate_id": "GATE-PERM-001",
-        "validator": "validate_permission_tiers.py"
+        "validator": "validate_permission_tiers.py",
+        "template_pointer": "/permission_tiers",
+        "required_fields": [
+          "enabled",
+          "enforcement_mode",
+          "tiers",
+          "validator_ref"
+        ],
+        "evidence_path": ".state/evidence/GATE-PERM-001/validation.json",
+        "execution_stage": "pre_execution",
+        "component_owner": "COMP-L2-02",
+        "status": "REGISTERED"
       },
       "provenance_contract": {
         "owner_doc": "template",
         "gate_id": "GATE-PROV-001",
-        "validator": "validate_provenance_contract.py"
+        "validator": "validate_provenance_contract.py",
+        "template_pointer": "/provenance_contract",
+        "required_fields": [
+          "enabled",
+          "enforcement_mode",
+          "required_provenance_fields",
+          "validator_ref"
+        ],
+        "evidence_path": ".state/evidence/GATE-PROV-001/validation.json",
+        "execution_stage": "pre_execution",
+        "component_owner": "COMP-L2-02",
+        "status": "REGISTERED"
       },
       "change_archival_policy": {
         "owner_doc": "template",
         "gate_id": "GATE-ARCH-001",
-        "validator": "validate_change_archival_policy.py"
+        "validator": "validate_change_archival_policy.py",
+        "template_pointer": "/change_archival_policy",
+        "required_fields": [
+          "enabled",
+          "enforcement_mode",
+          "archive_targets",
+          "validator_ref"
+        ],
+        "evidence_path": ".state/evidence/GATE-ARCH-001/validation.json",
+        "execution_stage": "pre_execution",
+        "component_owner": "COMP-L2-02",
+        "status": "REGISTERED"
       },
       "affected_execution_policy": {
         "owner_doc": "template",
         "gate_id": "GATE-AFF-001",
-        "validator": "validate_affected_execution_policy.py"
+        "validator": "validate_affected_execution_policy.py",
+        "template_pointer": "/affected_execution_policy",
+        "required_fields": [
+          "enabled",
+          "enforcement_mode",
+          "dependency_graph_ref",
+          "validator_ref"
+        ],
+        "evidence_path": ".state/evidence/GATE-AFF-001/validation.json",
+        "execution_stage": "pre_execution",
+        "component_owner": "COMP-L2-02",
+        "status": "REGISTERED"
       },
       "policy_as_code": {
         "owner_doc": "spec",
         "gate_id": "GATE-POL-001",
-        "validator": "validate_policy_as_code.py"
+        "validator": "validate_policy_as_code.py",
+        "template_pointer": "/policy_as_code",
+        "required_fields": [
+          "enabled",
+          "enforcement_mode",
+          "policy_engine",
+          "validator_ref"
+        ],
+        "evidence_path": ".state/evidence/GATE-POL-001/validation.json",
+        "execution_stage": "pre_execution",
+        "component_owner": "COMP-L2-02",
+        "status": "REGISTERED"
       },
       "github_enforcement_mapping": {
         "owner_doc": "spec",
         "gate_id": "GATE-GH-001",
-        "validator": "validate_github_enforcement_mapping.py"
+        "validator": "validate_github_enforcement_mapping.py",
+        "template_pointer": "/github_enforcement_mapping",
+        "required_fields": [
+          "enabled",
+          "enforcement_mode",
+          "merge_protection",
+          "validator_ref"
+        ],
+        "evidence_path": ".state/evidence/GATE-GH-001/validation.json",
+        "execution_stage": "pre_execution",
+        "component_owner": "COMP-L2-02",
+        "status": "REGISTERED"
       },
       "tool_context_generation": {
         "owner_doc": "spec",
         "gate_id": "GATE-CTX-001",
-        "validator": "validate_tool_context_generation.py"
+        "validator": "validate_tool_context_generation.py",
+        "template_pointer": "/tool_context_generation",
+        "required_fields": [
+          "enabled",
+          "enforcement_mode",
+          "output_files",
+          "validator_ref"
+        ],
+        "evidence_path": ".state/evidence/GATE-CTX-001/validation.json",
+        "execution_stage": "pre_execution",
+        "component_owner": "COMP-L2-02",
+        "status": "REGISTERED"
       }
     }
   },
@@ -3697,5 +3938,476 @@
       "CLAUDE.md"
     ],
     "validator_ref": "scripts/validate_tool_context_generation.py"
+  },
+  "validator_inventory": {
+    "version": "1.0.0",
+    "validators": {
+      "VAL-DET-001": {
+        "validator_id": "VAL-DET-001",
+        "script_path": "scripts/validate_situational_determinism_contract.py",
+        "validates_mechanism": "situational_determinism_contract",
+        "validates_gate": "GATE-DET-001",
+        "evidence_path": ".state/evidence/GATE-DET-001/validation.json",
+        "tool_existence_status": "REQUIRED",
+        "status": "DECLARED"
+      },
+      "VAL-GOV-001": {
+        "validator_id": "VAL-GOV-001",
+        "script_path": "scripts/validate_governance_precedence.py",
+        "validates_mechanism": "governance_precedence",
+        "validates_gate": "GATE-GOV-001",
+        "evidence_path": ".state/evidence/GATE-GOV-001/validation.json",
+        "tool_existence_status": "REQUIRED",
+        "status": "DECLARED"
+      },
+      "VAL-ROUT-001": {
+        "validator_id": "VAL-ROUT-001",
+        "script_path": "scripts/validate_executor_routing_policy.py",
+        "validates_mechanism": "executor_routing_policy",
+        "validates_gate": "GATE-ROUT-001",
+        "evidence_path": ".state/evidence/GATE-ROUT-001/validation.json",
+        "tool_existence_status": "REQUIRED",
+        "status": "DECLARED"
+      },
+      "VAL-HERM-001": {
+        "validator_id": "VAL-HERM-001",
+        "script_path": "scripts/validate_hermetic_step_contract.py",
+        "validates_mechanism": "hermetic_step_contract",
+        "validates_gate": "GATE-HERM-001",
+        "evidence_path": ".state/evidence/GATE-HERM-001/validation.json",
+        "tool_existence_status": "REQUIRED",
+        "status": "DECLARED"
+      },
+      "VAL-LOG-001": {
+        "validator_id": "VAL-LOG-001",
+        "script_path": "scripts/validate_decision_logging_policy.py",
+        "validates_mechanism": "decision_logging_policy",
+        "validates_gate": "GATE-LOG-001",
+        "evidence_path": ".state/evidence/GATE-LOG-001/validation.json",
+        "tool_existence_status": "REQUIRED",
+        "status": "DECLARED"
+      },
+      "VAL-DUR-001": {
+        "validator_id": "VAL-DUR-001",
+        "script_path": "scripts/validate_durable_execution_contract.py",
+        "validates_mechanism": "durable_execution_contract",
+        "validates_gate": "GATE-DUR-001",
+        "evidence_path": ".state/evidence/GATE-DUR-001/validation.json",
+        "tool_existence_status": "REQUIRED",
+        "status": "DECLARED"
+      },
+      "VAL-AMUT-001": {
+        "validator_id": "VAL-AMUT-001",
+        "script_path": "scripts/validate_array_mutation_policy.py",
+        "validates_mechanism": "array_mutation_policy",
+        "validates_gate": "GATE-AMUT-001",
+        "evidence_path": ".state/evidence/GATE-AMUT-001/validation.json",
+        "tool_existence_status": "REQUIRED",
+        "status": "DECLARED"
+      },
+      "VAL-PRES-001": {
+        "validator_id": "VAL-PRES-001",
+        "script_path": "scripts/validate_path_resolution_policy.py",
+        "validates_mechanism": "path_resolution_policy",
+        "validates_gate": "GATE-PRES-001",
+        "evidence_path": ".state/evidence/GATE-PRES-001/validation.json",
+        "tool_existence_status": "REQUIRED",
+        "status": "DECLARED"
+      },
+      "VAL-CDOC-001": {
+        "validator_id": "VAL-CDOC-001",
+        "script_path": "scripts/validate_canonical_document_resolution.py",
+        "validates_mechanism": "canonical_document_resolution",
+        "validates_gate": "GATE-CDOC-001",
+        "evidence_path": ".state/evidence/GATE-CDOC-001/validation.json",
+        "tool_existence_status": "REQUIRED",
+        "status": "DECLARED"
+      },
+      "VAL-CMD-001": {
+        "validator_id": "VAL-CMD-001",
+        "script_path": "scripts/validate_command_object_schema.py",
+        "validates_mechanism": "command_object_schema",
+        "validates_gate": "GATE-CMD-001",
+        "evidence_path": ".state/evidence/GATE-CMD-001/validation.json",
+        "tool_existence_status": "REQUIRED",
+        "status": "DECLARED"
+      },
+      "VAL-PATT-001": {
+        "validator_id": "VAL-PATT-001",
+        "script_path": "scripts/validate_pattern_resolution_policy.py",
+        "validates_mechanism": "pattern_resolution_policy",
+        "validates_gate": "GATE-PATT-001",
+        "evidence_path": ".state/evidence/GATE-PATT-001/validation.json",
+        "tool_existence_status": "REQUIRED",
+        "status": "DECLARED"
+      },
+      "VAL-FALL-001": {
+        "validator_id": "VAL-FALL-001",
+        "script_path": "scripts/validate_fallback_policy.py",
+        "validates_mechanism": "fallback_policy",
+        "validates_gate": "GATE-FALL-001",
+        "evidence_path": ".state/evidence/GATE-FALL-001/validation.json",
+        "tool_existence_status": "REQUIRED",
+        "status": "DECLARED"
+      },
+      "VAL-PERM-001": {
+        "validator_id": "VAL-PERM-001",
+        "script_path": "scripts/validate_permission_tiers.py",
+        "validates_mechanism": "permission_tiers",
+        "validates_gate": "GATE-PERM-001",
+        "evidence_path": ".state/evidence/GATE-PERM-001/validation.json",
+        "tool_existence_status": "REQUIRED",
+        "status": "DECLARED"
+      },
+      "VAL-PROV-001": {
+        "validator_id": "VAL-PROV-001",
+        "script_path": "scripts/validate_provenance_contract.py",
+        "validates_mechanism": "provenance_contract",
+        "validates_gate": "GATE-PROV-001",
+        "evidence_path": ".state/evidence/GATE-PROV-001/validation.json",
+        "tool_existence_status": "REQUIRED",
+        "status": "DECLARED"
+      },
+      "VAL-ARCH-001": {
+        "validator_id": "VAL-ARCH-001",
+        "script_path": "scripts/validate_change_archival_policy.py",
+        "validates_mechanism": "change_archival_policy",
+        "validates_gate": "GATE-ARCH-001",
+        "evidence_path": ".state/evidence/GATE-ARCH-001/validation.json",
+        "tool_existence_status": "REQUIRED",
+        "status": "DECLARED"
+      },
+      "VAL-AFF-001": {
+        "validator_id": "VAL-AFF-001",
+        "script_path": "scripts/validate_affected_execution_policy.py",
+        "validates_mechanism": "affected_execution_policy",
+        "validates_gate": "GATE-AFF-001",
+        "evidence_path": ".state/evidence/GATE-AFF-001/validation.json",
+        "tool_existence_status": "REQUIRED",
+        "status": "DECLARED"
+      },
+      "VAL-POL-001": {
+        "validator_id": "VAL-POL-001",
+        "script_path": "scripts/validate_policy_as_code.py",
+        "validates_mechanism": "policy_as_code",
+        "validates_gate": "GATE-POL-001",
+        "evidence_path": ".state/evidence/GATE-POL-001/validation.json",
+        "tool_existence_status": "REQUIRED",
+        "status": "DECLARED"
+      },
+      "VAL-GH-001": {
+        "validator_id": "VAL-GH-001",
+        "script_path": "scripts/validate_github_enforcement_mapping.py",
+        "validates_mechanism": "github_enforcement_mapping",
+        "validates_gate": "GATE-GH-001",
+        "evidence_path": ".state/evidence/GATE-GH-001/validation.json",
+        "tool_existence_status": "REQUIRED",
+        "status": "DECLARED"
+      },
+      "VAL-CTX-001": {
+        "validator_id": "VAL-CTX-001",
+        "script_path": "scripts/validate_tool_context_generation.py",
+        "validates_mechanism": "tool_context_generation",
+        "validates_gate": "GATE-CTX-001",
+        "evidence_path": ".state/evidence/GATE-CTX-001/validation.json",
+        "tool_existence_status": "REQUIRED",
+        "status": "DECLARED"
+      }
+    }
+  },
+  "evidence_contracts": {
+    "version": "1.0.0",
+    "contracts": {
+      "EVID-DET-001": {
+        "contract_id": "EVID-DET-001",
+        "gate_id": "GATE-DET-001",
+        "mechanism_id": "situational_determinism_contract",
+        "expected_path": ".state/evidence/GATE-DET-001/validation.json",
+        "required_fields": [
+          "passed",
+          "gate_id",
+          "timestamp_utc",
+          "errors"
+        ],
+        "success_condition": "passed == true",
+        "observed_evidence_allowed_in_spec": false
+      },
+      "EVID-GOV-001": {
+        "contract_id": "EVID-GOV-001",
+        "gate_id": "GATE-GOV-001",
+        "mechanism_id": "governance_precedence",
+        "expected_path": ".state/evidence/GATE-GOV-001/validation.json",
+        "required_fields": [
+          "passed",
+          "gate_id",
+          "timestamp_utc",
+          "errors"
+        ],
+        "success_condition": "passed == true",
+        "observed_evidence_allowed_in_spec": false
+      },
+      "EVID-ROUT-001": {
+        "contract_id": "EVID-ROUT-001",
+        "gate_id": "GATE-ROUT-001",
+        "mechanism_id": "executor_routing_policy",
+        "expected_path": ".state/evidence/GATE-ROUT-001/validation.json",
+        "required_fields": [
+          "passed",
+          "gate_id",
+          "timestamp_utc",
+          "errors"
+        ],
+        "success_condition": "passed == true",
+        "observed_evidence_allowed_in_spec": false
+      },
+      "EVID-HERM-001": {
+        "contract_id": "EVID-HERM-001",
+        "gate_id": "GATE-HERM-001",
+        "mechanism_id": "hermetic_step_contract",
+        "expected_path": ".state/evidence/GATE-HERM-001/validation.json",
+        "required_fields": [
+          "passed",
+          "gate_id",
+          "timestamp_utc",
+          "errors"
+        ],
+        "success_condition": "passed == true",
+        "observed_evidence_allowed_in_spec": false
+      },
+      "EVID-LOG-001": {
+        "contract_id": "EVID-LOG-001",
+        "gate_id": "GATE-LOG-001",
+        "mechanism_id": "decision_logging_policy",
+        "expected_path": ".state/evidence/GATE-LOG-001/validation.json",
+        "required_fields": [
+          "passed",
+          "gate_id",
+          "timestamp_utc",
+          "errors"
+        ],
+        "success_condition": "passed == true",
+        "observed_evidence_allowed_in_spec": false
+      },
+      "EVID-DUR-001": {
+        "contract_id": "EVID-DUR-001",
+        "gate_id": "GATE-DUR-001",
+        "mechanism_id": "durable_execution_contract",
+        "expected_path": ".state/evidence/GATE-DUR-001/validation.json",
+        "required_fields": [
+          "passed",
+          "gate_id",
+          "timestamp_utc",
+          "errors"
+        ],
+        "success_condition": "passed == true",
+        "observed_evidence_allowed_in_spec": false
+      },
+      "EVID-AMUT-001": {
+        "contract_id": "EVID-AMUT-001",
+        "gate_id": "GATE-AMUT-001",
+        "mechanism_id": "array_mutation_policy",
+        "expected_path": ".state/evidence/GATE-AMUT-001/validation.json",
+        "required_fields": [
+          "passed",
+          "gate_id",
+          "timestamp_utc",
+          "errors"
+        ],
+        "success_condition": "passed == true",
+        "observed_evidence_allowed_in_spec": false
+      },
+      "EVID-PRES-001": {
+        "contract_id": "EVID-PRES-001",
+        "gate_id": "GATE-PRES-001",
+        "mechanism_id": "path_resolution_policy",
+        "expected_path": ".state/evidence/GATE-PRES-001/validation.json",
+        "required_fields": [
+          "passed",
+          "gate_id",
+          "timestamp_utc",
+          "errors"
+        ],
+        "success_condition": "passed == true",
+        "observed_evidence_allowed_in_spec": false
+      },
+      "EVID-CDOC-001": {
+        "contract_id": "EVID-CDOC-001",
+        "gate_id": "GATE-CDOC-001",
+        "mechanism_id": "canonical_document_resolution",
+        "expected_path": ".state/evidence/GATE-CDOC-001/validation.json",
+        "required_fields": [
+          "passed",
+          "gate_id",
+          "timestamp_utc",
+          "errors"
+        ],
+        "success_condition": "passed == true",
+        "observed_evidence_allowed_in_spec": false
+      },
+      "EVID-CMD-001": {
+        "contract_id": "EVID-CMD-001",
+        "gate_id": "GATE-CMD-001",
+        "mechanism_id": "command_object_schema",
+        "expected_path": ".state/evidence/GATE-CMD-001/validation.json",
+        "required_fields": [
+          "passed",
+          "gate_id",
+          "timestamp_utc",
+          "errors"
+        ],
+        "success_condition": "passed == true",
+        "observed_evidence_allowed_in_spec": false
+      },
+      "EVID-PATT-001": {
+        "contract_id": "EVID-PATT-001",
+        "gate_id": "GATE-PATT-001",
+        "mechanism_id": "pattern_resolution_policy",
+        "expected_path": ".state/evidence/GATE-PATT-001/validation.json",
+        "required_fields": [
+          "passed",
+          "gate_id",
+          "timestamp_utc",
+          "errors"
+        ],
+        "success_condition": "passed == true",
+        "observed_evidence_allowed_in_spec": false
+      },
+      "EVID-FALL-001": {
+        "contract_id": "EVID-FALL-001",
+        "gate_id": "GATE-FALL-001",
+        "mechanism_id": "fallback_policy",
+        "expected_path": ".state/evidence/GATE-FALL-001/validation.json",
+        "required_fields": [
+          "passed",
+          "gate_id",
+          "timestamp_utc",
+          "errors"
+        ],
+        "success_condition": "passed == true",
+        "observed_evidence_allowed_in_spec": false
+      },
+      "EVID-PERM-001": {
+        "contract_id": "EVID-PERM-001",
+        "gate_id": "GATE-PERM-001",
+        "mechanism_id": "permission_tiers",
+        "expected_path": ".state/evidence/GATE-PERM-001/validation.json",
+        "required_fields": [
+          "passed",
+          "gate_id",
+          "timestamp_utc",
+          "errors"
+        ],
+        "success_condition": "passed == true",
+        "observed_evidence_allowed_in_spec": false
+      },
+      "EVID-PROV-001": {
+        "contract_id": "EVID-PROV-001",
+        "gate_id": "GATE-PROV-001",
+        "mechanism_id": "provenance_contract",
+        "expected_path": ".state/evidence/GATE-PROV-001/validation.json",
+        "required_fields": [
+          "passed",
+          "gate_id",
+          "timestamp_utc",
+          "errors"
+        ],
+        "success_condition": "passed == true",
+        "observed_evidence_allowed_in_spec": false
+      },
+      "EVID-ARCH-001": {
+        "contract_id": "EVID-ARCH-001",
+        "gate_id": "GATE-ARCH-001",
+        "mechanism_id": "change_archival_policy",
+        "expected_path": ".state/evidence/GATE-ARCH-001/validation.json",
+        "required_fields": [
+          "passed",
+          "gate_id",
+          "timestamp_utc",
+          "errors"
+        ],
+        "success_condition": "passed == true",
+        "observed_evidence_allowed_in_spec": false
+      },
+      "EVID-AFF-001": {
+        "contract_id": "EVID-AFF-001",
+        "gate_id": "GATE-AFF-001",
+        "mechanism_id": "affected_execution_policy",
+        "expected_path": ".state/evidence/GATE-AFF-001/validation.json",
+        "required_fields": [
+          "passed",
+          "gate_id",
+          "timestamp_utc",
+          "errors"
+        ],
+        "success_condition": "passed == true",
+        "observed_evidence_allowed_in_spec": false
+      },
+      "EVID-POL-001": {
+        "contract_id": "EVID-POL-001",
+        "gate_id": "GATE-POL-001",
+        "mechanism_id": "policy_as_code",
+        "expected_path": ".state/evidence/GATE-POL-001/validation.json",
+        "required_fields": [
+          "passed",
+          "gate_id",
+          "timestamp_utc",
+          "errors"
+        ],
+        "success_condition": "passed == true",
+        "observed_evidence_allowed_in_spec": false
+      },
+      "EVID-GH-001": {
+        "contract_id": "EVID-GH-001",
+        "gate_id": "GATE-GH-001",
+        "mechanism_id": "github_enforcement_mapping",
+        "expected_path": ".state/evidence/GATE-GH-001/validation.json",
+        "required_fields": [
+          "passed",
+          "gate_id",
+          "timestamp_utc",
+          "errors"
+        ],
+        "success_condition": "passed == true",
+        "observed_evidence_allowed_in_spec": false
+      },
+      "EVID-CTX-001": {
+        "contract_id": "EVID-CTX-001",
+        "gate_id": "GATE-CTX-001",
+        "mechanism_id": "tool_context_generation",
+        "expected_path": ".state/evidence/GATE-CTX-001/validation.json",
+        "required_fields": [
+          "passed",
+          "gate_id",
+          "timestamp_utc",
+          "errors"
+        ],
+        "success_condition": "passed == true",
+        "observed_evidence_allowed_in_spec": false
+      }
+    }
+  },
+  "cross_document_index": {
+    "version": "1.0.0",
+    "authority": "This index is owned by the technical specification and is authoritative.",
+    "documents": {
+      "template": {
+        "filename": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+        "mechanism_root_pattern": "/<mechanism_key>",
+        "validation_gates": "/validation_gates",
+        "executor_registry": "/executor_registry"
+      },
+      "technical_spec": {
+        "filename": "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_3.json",
+        "mechanism_registry": "/mechanism_registry",
+        "validator_inventory": "/validator_inventory",
+        "evidence_contracts": "/evidence_contracts",
+        "gate_registry": "/architecture/system_layers/layer_2_validation/components/1/gate_registry"
+      },
+      "instruction_document": {
+        "filename": "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_3.json",
+        "rule_index": "/instruction_rule_index/mechanisms",
+        "cross_document_pointers": "/cross_document_pointers"
+      }
+    }
   }
 }

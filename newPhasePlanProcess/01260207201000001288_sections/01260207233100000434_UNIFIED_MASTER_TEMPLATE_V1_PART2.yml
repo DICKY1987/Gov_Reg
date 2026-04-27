@@ -487,7 +487,7 @@ decision_ledger:
   
   storage:
     format: "jsonl"
-    path: ".state/decisions.jsonl"
+    path: ".state/evidence/decisions/decision_log.jsonl"
     rotation_policy: "append_only"
   
   decisions:
@@ -520,7 +520,7 @@ decision_ledger:
     - "quality"            # Quality gate selections
   
   ledger_validation:
-    command: "python scripts/validate_decision_ledger.py .state/decisions.jsonl"
+    command: "python scripts/validate_decision_ledger.py .state/evidence/decisions/decision_log.jsonl"
     expect_exit_code: 0
     checks:
       - "All decisions have rationale"
@@ -1025,7 +1025,7 @@ runbooks:
         command: "sqlite3 .state/pipeline.db '.backup .state/backups/pipeline_$(date +%Y%m%d_%H%M%S).db'"
       
       - step: "Backup decision ledger"
-        command: "cp .state/decisions.jsonl .state/backups/decisions_$(date +%Y%m%d_%H%M%S).jsonl"
+        command: "cp .state/evidence/decisions/decision_log.jsonl .state/backups/decisions_$(date +%Y%m%d_%H%M%S).jsonl"
     
     restore:
       - step: "Restore state database"

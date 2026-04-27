@@ -264,7 +264,7 @@
           "command": {
             "exe": "cp",
             "args": [
-              ".state/decisions.jsonl",
+              ".state/evidence/decisions/decision_log.jsonl",
               ".state/backups/decisions_$(date",
               "+%Y%m%d_%H%M%S).jsonl"
             ],

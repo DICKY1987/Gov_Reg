@@ -7,7 +7,7 @@
     "description": "Append-only log of all decisions made during planning and execution. Every decision must have: context, options, selected, rationale.",
     "storage": {
       "format": "jsonl",
-      "path": ".state/decisions.jsonl",
+      "path": ".state/evidence/decisions/decision_log.jsonl",
       "rotation_policy": "append_only"
     },
     "decisions": [
@@ -55,7 +55,7 @@
         "exe": "python",
         "args": [
           "scripts/validate_decision_ledger.py",
-          ".state/decisions.jsonl"
+          ".state/evidence/decisions/decision_log.jsonl"
         ],
         "timeout_seconds": 600,
         "expected_exit_codes": [

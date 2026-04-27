@@ -21,7 +21,7 @@ This causes execution failures as gate runners don't know which definition to fo
 
 ## Decision
 
-**`NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3.json` is the authoritative source for gate definitions.**
+**`NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_3.json` is the authoritative source for gate definitions.**
 
 All other sources (template, MCP contracts, scripts) MUST align to it.
 
@@ -68,3 +68,12 @@ All other sources (template, MCP contracts, scripts) MUST align to it.
 ---
 
 *Phase 1 Complete*
+
+---
+
+## Amendment — 2026-04-26
+
+**Amended by:** Claude Code (claude-sonnet-4-6)  
+**Reason:** Stale filename reference in the Decision section  
+**Change:** `NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3.json` renamed to `NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_3.json` — the file was superseded during the v3.3 migration. The policy (spec is SSOT) is unchanged; only the canonical filename is corrected.  
+**Evidence:** `NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_3.json` exists at repo root with `document_metadata.status: "AUTHORITATIVE"` (line 7).
