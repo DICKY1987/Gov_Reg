@@ -212,8 +212,8 @@
           {
             "component_id": "COMP-L2-02",
             "name": "Validation Gate System",
-            "total_gates": 42,
-            "mandatory_gates": 42,
+            "total_gates": 50,
+            "mandatory_gates": 50,
             "optional_gates": 0,
             "gate_dependency_graph": "scripts/gate_dependencies.json",
             "execution_phases": [
@@ -275,7 +275,8 @@
                 "script": "validate_plan_structure.py",
                 "purpose": "Ensure no TODO/TBD/FIXME placeholders exist",
                 "critical_rule": "Every field must have real, specific content",
-                "failure_impact": "Plan is incomplete and cannot be executed"
+                "failure_impact": "Plan is incomplete and cannot be executed",
+                "status": "retired"
               },
               {
                 "id": "GATE-001",
@@ -361,19 +362,22 @@
                 "id": "GATE-007",
                 "name": "Automation Spec",
                 "script": "validate_automation_spec.py",
-                "purpose": "Validate automation configuration"
+                "purpose": "Validate automation configuration",
+                "status": "retired"
               },
               {
                 "id": "GATE-008",
                 "name": "Automation Index",
                 "script": "build_automation_index.py",
-                "purpose": "Build searchable index of automation elements"
+                "purpose": "Build searchable index of automation elements",
+                "status": "retired"
               },
               {
                 "id": "GATE-009",
                 "name": "Automation Diagrams",
                 "script": "generate_automation_diagrams.py",
-                "purpose": "Generate DAG visualization of phase dependencies"
+                "purpose": "Generate DAG visualization of phase dependencies",
+                "status": "retired"
               },
               {
                 "id": "GATE-010",
@@ -384,25 +388,29 @@
                   "All artifacts have producers",
                   "All artifacts have consumers (except final deliverables)",
                   "No circular artifact dependencies"
-                ]
+                ],
+                "status": "retired"
               },
               {
                 "id": "GATE-011",
                 "name": "Artifact Registry",
                 "script": "validate_artifact_registry.py",
-                "purpose": "Validate artifact metadata completeness"
+                "purpose": "Validate artifact metadata completeness",
+                "status": "retired"
               },
               {
                 "id": "GATE-012",
                 "name": "Failure Modes Audit",
                 "script": "wiring/audit_failure_modes.py",
-                "purpose": "Enumerate and validate all failure modes"
+                "purpose": "Enumerate and validate all failure modes",
+                "status": "retired"
               },
               {
                 "id": "GATE-013",
                 "name": "E2E Wiring Validation",
                 "script": "wiring/validate_e2e_proof_linkage.py",
-                "purpose": "End-to-end artifact flow validation"
+                "purpose": "End-to-end artifact flow validation",
+                "status": "retired"
               },
               {
                 "id": "GATE-014",
@@ -410,7 +418,8 @@
                 "script": "validate_artifact_closure.py",
                 "purpose": "Ensure all artifacts close (no orphans or dead ends)",
                 "critical_rule": "Every input needs producer, every output needs consumer",
-                "failure_impact": "Broken data flow, missing dependencies"
+                "failure_impact": "Broken data flow, missing dependencies",
+                "status": "retired"
               },
               {
                 "id": "GATE-015",
@@ -423,7 +432,8 @@
                   "Rollback evidence path"
                 ],
                 "critical_rule": "Every step must be reversible",
-                "failure_impact": "Cannot safely undo failed steps"
+                "failure_impact": "Cannot safely undo failed steps",
+                "status": "retired"
               },
               {
                 "id": "GATE-016",
@@ -431,7 +441,8 @@
                 "script": "validate_verification_completeness.py",
                 "purpose": "Ensure all steps have postconditions with evidence",
                 "critical_rule": "Every step must have verification method",
-                "failure_impact": "Cannot mechanically verify step success"
+                "failure_impact": "Cannot mechanically verify step success",
+                "status": "retired"
               },
               {
                 "id": "GATE-017",
@@ -439,7 +450,8 @@
                 "script": "validate_single_source_of_truth.py",
                 "purpose": "Verify no duplicate IDs (step_id, artifact_id, assumption_id)",
                 "critical_rule": "All IDs must be globally unique",
-                "failure_impact": "Ambiguous references, broken traceability"
+                "failure_impact": "Ambiguous references, broken traceability",
+                "status": "retired"
               },
               {
                 "id": "GATE-CFG-001",
@@ -493,13 +505,15 @@
                 "id": "GATE-998",
                 "name": "Automation Audit",
                 "script": "validate_automation_audit.py",
-                "purpose": "Meta-validation of automation completeness"
+                "purpose": "Meta-validation of automation completeness",
+                "status": "retired"
               },
               {
                 "id": "GATE-999",
                 "name": "Goal Reconciliation",
                 "script": "validate_goal_reconciliation.py",
-                "purpose": "Final validation that plan achieves stated objectives"
+                "purpose": "Final validation that plan achieves stated objectives",
+                "status": "retired"
               },
               {
                 "id": "GATE-CONTEXT-001",
@@ -1274,7 +1288,23 @@
           "abstraction_governance",
           "path_abstraction_contract",
           "reusable_program_contract",
-          "implementation_behavior_contract"
+          "implementation_behavior_contract",
+          "array_mutation_policy",
+          "canonical_document_resolution",
+          "change_archival_policy",
+          "command_object_schema",
+          "decision_logging_policy",
+          "durable_execution_contract",
+          "executor_routing_policy",
+          "fallback_policy",
+          "governance_precedence",
+          "hermetic_step_contract",
+          "path_resolution_policy",
+          "pattern_resolution_policy",
+          "permission_tiers",
+          "provenance_contract",
+          "situational_determinism_contract",
+          "affected_execution_policy"
         ]
       },
       "section_purpose_map": {
@@ -2330,7 +2360,7 @@
           "actor": "Human User",
           "action": "Run validation gates",
           "command": "python scripts/NEWPHASEPLANPROCESS_plan_cli.py run-gates --plan-file [plan].json",
-          "expected_result": "All 27 validation gates pass + All 14 FM checks pass",
+          "expected_result": "All 50 validation gates pass + All 14 FM checks pass",
           "outputs": [
             "Gate validation report"
           ]
@@ -2354,7 +2384,7 @@
       ],
       "success_criteria": [
         "Plan file validates against schema",
-        "All 27 validation gates pass",
+        "All 50 validation gates pass",
         "All 14 failure mode checks pass",
         "Plan is executable without manual intervention"
       ]
@@ -3189,7 +3219,8 @@
         }
       ],
       "validation_command": "Command validating executor registry completeness and cross-file bindings",
-      "expect_exit_code": "Expected exit code from executor registry validation command"
+      "expect_exit_code": "Expected exit code from executor registry validation command",
+      "pattern_catalog_source": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json#/executor_registry/registered_executors[*].supported_pattern_ids"
     },
     "purpose": "Ensure every executable step binds only to a registered executor with validated pattern, config, and output contract compatibility."
   },
@@ -3474,7 +3505,7 @@
   "appendix": {
     "references": [
       {
-        "title": "Plan Template v3.3.0",
+        "title": "Plan Template v3.3.1",
         "file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
         "description": "Complete template with all features and examples"
       },
@@ -3484,7 +3515,7 @@
         "description": "JSON Schema defining plan validation rules"
       },
       {
-        "title": "Instruction Document v3.3.0",
+        "title": "Instruction Document v3.3.1",
         "file": "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_3.json",
         "description": "Complete guide for AI-driven plan generation and plan-filling behavior"
       },
@@ -3871,7 +3902,6 @@
         "owner_doc": "spec",
         "gate_id": "GATE-POL-001",
         "validator": "validate_policy_as_code.py",
-        "template_pointer": "/policy_as_code",
         "required_fields": [
           "enabled",
           "enforcement_mode",
@@ -3881,13 +3911,13 @@
         "evidence_path": ".state/evidence/GATE-POL-001/validation.json",
         "execution_stage": "pre_execution",
         "component_owner": "COMP-L2-02",
-        "status": "REGISTERED"
+        "status": "REGISTERED",
+        "spec_pointer": "/policy_as_code"
       },
       "github_enforcement_mapping": {
         "owner_doc": "spec",
         "gate_id": "GATE-GH-001",
         "validator": "validate_github_enforcement_mapping.py",
-        "template_pointer": "/github_enforcement_mapping",
         "required_fields": [
           "enabled",
           "enforcement_mode",
@@ -3897,13 +3927,13 @@
         "evidence_path": ".state/evidence/GATE-GH-001/validation.json",
         "execution_stage": "pre_execution",
         "component_owner": "COMP-L2-02",
-        "status": "REGISTERED"
+        "status": "REGISTERED",
+        "spec_pointer": "/github_enforcement_mapping"
       },
       "tool_context_generation": {
         "owner_doc": "spec",
         "gate_id": "GATE-CTX-001",
         "validator": "validate_tool_context_generation.py",
-        "template_pointer": "/tool_context_generation",
         "required_fields": [
           "enabled",
           "enforcement_mode",
@@ -3913,7 +3943,8 @@
         "evidence_path": ".state/evidence/GATE-CTX-001/validation.json",
         "execution_stage": "pre_execution",
         "component_owner": "COMP-L2-02",
-        "status": "REGISTERED"
+        "status": "REGISTERED",
+        "spec_pointer": "/tool_context_generation"
       }
     }
   },

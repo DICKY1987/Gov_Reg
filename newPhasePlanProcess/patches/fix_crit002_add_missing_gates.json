@@ -1,0 +1,56 @@
+[
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-ID-001",
+      "phase": "PH-02",
+      "step_id": null,
+      "purpose": "Verify phase_id, step_id, phase_step_key, and gate_execution_stage semantics are consistent",
+      "command": "python scripts/validate_execution_identity_policy.py --plan-file NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
+      "timeout_sec": 60,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": ["/validate_execution_identity_policy PASSED/"],
+      "forbid_stdout_regex": ["/validate_execution_identity_policy FAILED/"],
+      "expect_files": [],
+      "evidence": ".state/evidence/GATE-ID-001"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-IDX-001",
+      "phase": "PH-02",
+      "step_id": null,
+      "purpose": "Verify index generator classifies identity-bearing arrays as index_eligible and does not require whole-array replacement",
+      "command": "python scripts/validate_index_generator_rules.py --inventory inventory.json --index-dir indexes",
+      "timeout_sec": 60,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": ["/validate_index_generator_rules PASSED/"],
+      "forbid_stdout_regex": ["/validate_index_generator_rules FAILED/"],
+      "expect_files": [],
+      "evidence": ".state/evidence/GATE-IDX-001"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/validation_gates/-",
+    "value": {
+      "gate_id": "GATE-TOOLS-001",
+      "phase": "PH-02",
+      "step_id": null,
+      "purpose": "Verify all scripts, validators, schemas, and tools referenced by the three v3.3 documents exist or are declared in artifact_intent_manifest",
+      "command": "python scripts/validate_referenced_tooling_exists.py --template NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json --spec NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_3.json --instructions NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_3.json",
+      "timeout_sec": 60,
+      "retries": 0,
+      "expect_exit_code": 0,
+      "expect_stdout_regex": ["/validate_referenced_tooling_exists PASSED/"],
+      "forbid_stdout_regex": ["/validate_referenced_tooling_exists FAILED/"],
+      "expect_files": [],
+      "evidence": ".state/evidence/GATE-TOOLS-001"
+    }
+  }
+]

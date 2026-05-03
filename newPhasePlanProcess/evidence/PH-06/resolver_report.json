@@ -1,6 +1,6 @@
 {
   "cross_file_integrity": {
-    "checked_count": 83,
+    "checked_count": 86,
     "checks": [
       {
         "id": "PAT-EXAMPLE-PLAN-DOC",
@@ -432,6 +432,21 @@
         "id": "GATE-CTX-001",
         "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/63",
         "type": "template_gate"
+      },
+      {
+        "id": "GATE-ID-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/42",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-IDX-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/43",
+        "type": "template_gate"
+      },
+      {
+        "id": "GATE-TOOLS-001",
+        "pointer": "/architecture/system_layers/layer_2_validation/components/1/gate_registry/44",
+        "type": "template_gate"
       }
     ],
     "errors": [],
@@ -440,7 +455,7 @@
   "namespace_validation": {
     "counts": {
       "COMP": 17,
-      "EXEC": 2,
+      "EXEC": 3,
       "GATE-CFG": 6,
       "PAT": 2
     },
@@ -454,7 +469,7 @@
   },
   "resolver_module": "tools/resolver.py",
   "roundtrip_counts": {
-    "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json": 78,
+    "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json": 82,
     "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_3.json": 0,
     "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_3.json": 81
   },

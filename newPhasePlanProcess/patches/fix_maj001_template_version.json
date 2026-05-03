@@ -1,0 +1,12 @@
+[
+  {
+    "op": "replace",
+    "path": "/template_metadata/version",
+    "value": "3.3.1"
+  },
+  {
+    "op": "add",
+    "path": "/template_metadata/breaking_changes/-",
+    "value": "Added GATE-ID-001, GATE-IDX-001, GATE-TOOLS-001; aligned total active gate count to 50; populated canonicalization_contract.rules; registered EXEC-PYTHON-CLI-V1; synchronized all cross-document gate counts"
+  }
+]

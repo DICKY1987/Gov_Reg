@@ -1,0 +1,14 @@
+[
+  {
+    "op": "replace",
+    "path": "/canonicalization_contract/rules",
+    "value": [
+      "sort_json_object_keys",
+      "normalize_timestamps_to_utc_iso8601",
+      "use_lf_line_endings",
+      "strip_trailing_whitespace",
+      "stable_array_ordering_by_identity_for_index_eligible_arrays",
+      "preserve_declared_array_order_for_structural_arrays"
+    ]
+  }
+]

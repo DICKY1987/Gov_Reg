@@ -234,7 +234,7 @@
         },
         {
           "classification": "structural",
-          "element_type": "empty",
+          "element_type": "str",
           "index_output": null,
           "patch_mode": "replace_whole_array",
           "path": "/canonicalization_contract/rules",
@@ -492,6 +492,54 @@
           "index_output": null,
           "patch_mode": "replace_whole_array",
           "path": "/executor_registry/registered_executors/1/supported_pattern_ids",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/executor_registry/registered_executors/2/determinism_requirements",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/executor_registry/registered_executors/2/forbidden_capabilities",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "empty",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/executor_registry/registered_executors/2/output_contract_refs",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/executor_registry/registered_executors/2/supported_config_schema_versions",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/executor_registry/registered_executors/2/supported_parameter_schema_versions",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "empty",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/executor_registry/registered_executors/2/supported_pattern_ids",
           "reason": "default structural classification"
         },
         {
@@ -3618,6 +3666,78 @@
         },
         {
           "classification": "structural",
+          "element_type": "empty",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/47/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/47/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/47/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "empty",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/48/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/48/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/48/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "empty",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/49/expect_files",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/49/expect_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
+          "element_type": "str",
+          "index_output": null,
+          "patch_mode": "replace_whole_array",
+          "path": "/validation_gates/49/forbid_stdout_regex",
+          "reason": "default structural classification"
+        },
+        {
+          "classification": "structural",
           "element_type": "object",
           "index_output": null,
           "patch_mode": "replace_whole_array",
@@ -3833,11 +3953,11 @@
           "reason": "default structural classification"
         }
       ],
-      "source_sha256": "b5d536d58d89409e59f2f221bf0e39d03d3dd36da67ed2fdbc5c05aecb05e56e"
+      "source_sha256": "7758885d02ef63075d7e105e66a07983d1ce5229c7f360dd3138c11e83b85625"
     },
     "NEWPHASEPLANPROCESS_INSTRUCTION_DOCUMENT_V3_3.json": {
       "arrays": [],
-      "source_sha256": "8e6665bcee3cbbcc111bd905d4b1481e740948e5ad31435e6eee9e6633749c75"
+      "source_sha256": "5b72ce9e03497d2eccb6e7bec071b4155536c8949c31c50ab78d7dc70e06265f"
     },
     "NEWPHASEPLANPROCESS_TECHNICAL_SPECIFICATION_V3_3.json": {
       "arrays": [
@@ -5633,7 +5753,7 @@
           "reason": "default structural classification"
         }
       ],
-      "source_sha256": "bed28c0c4926f302a884772f95918d131eb0b404b0e072bbfa2a82bc71970c30"
+      "source_sha256": "506bdcf439abf57183ab50d0df510a487a7690cb721d6987e0913a0ea94939d1"
     }
   },
   "inventory_version": "1.1.0"

@@ -32,7 +32,8 @@
     },
     "by_executor_id": {
       "EXEC-GATE-EXTRACTOR": "/executor_registry/registered_executors/1",
-      "EXEC-PLAN-DOC-WRITER": "/executor_registry/registered_executors/0"
+      "EXEC-PLAN-DOC-WRITER": "/executor_registry/registered_executors/0",
+      "EXEC-PYTHON-CLI-V1": "/executor_registry/registered_executors/2"
     },
     "by_gate_id": {
       "GATE-001": "/validation_gates/0",
@@ -67,6 +68,8 @@
       "GATE-GH-001": "/validation_gates/45",
       "GATE-GOV-001": "/validation_gates/29",
       "GATE-HERM-001": "/validation_gates/31",
+      "GATE-ID-001": "/validation_gates/47",
+      "GATE-IDX-001": "/validation_gates/48",
       "GATE-LOG-001": "/validation_gates/32",
       "GATE-PATH-001": "/validation_gates/22",
       "GATE-PATH-002": "/validation_gates/23",
@@ -81,7 +84,8 @@
       "GATE-REGISTRY-001": "/validation_gates/17",
       "GATE-ROUT-001": "/validation_gates/30",
       "GATE-RPROG-001": "/validation_gates/25",
-      "GATE-RPROG-002": "/validation_gates/26"
+      "GATE-RPROG-002": "/validation_gates/26",
+      "GATE-TOOLS-001": "/validation_gates/49"
     },
     "by_pattern_id": {
       "PAT-EXAMPLE-GATE-EXTRACTION": "/execution_patterns/task_pattern_mappings/1",
@@ -104,5 +108,5 @@
     }
   },
   "source_file": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json",
-  "source_sha256": "b5d536d58d89409e59f2f221bf0e39d03d3dd36da67ed2fdbc5c05aecb05e56e"
+  "source_sha256": "7758885d02ef63075d7e105e66a07983d1ce5229c7f360dd3138c11e83b85625"
 }

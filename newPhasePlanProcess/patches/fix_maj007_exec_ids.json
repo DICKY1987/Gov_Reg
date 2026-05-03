@@ -1,0 +1,22 @@
+[
+  {
+    "op": "add",
+    "path": "/executor_registry/registered_executors/-",
+    "value": {
+      "executor_id": "EXEC-PYTHON-CLI-V1",
+      "executor_entrypoint": "python scripts/execute_pattern.py",
+      "supported_pattern_ids": [],
+      "supported_config_schema_versions": ["1.0.0"],
+      "supported_parameter_schema_versions": ["1.0.0"],
+      "output_contract_refs": [],
+      "determinism_requirements": ["stable_input_order", "no_runtime_prompt_override"],
+      "forbidden_capabilities": ["write_outside_file_scope", "invoke_unregistered_subexecutor"],
+      "note": "Default routing executor; handles all pattern-bound steps not covered by a more specific executor"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/executor_registry/catalog_source",
+    "value": "NEWPHASEPLANPROCESS_AUTONOMOUS_DELIVERY_TEMPLATE_V3_3.json#/executor_registry/registered_executors"
+  }
+]
